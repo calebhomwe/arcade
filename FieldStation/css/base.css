@@ -1,0 +1,116 @@
+/* FIELD STATION — field-notebook art direction.
+   Paper, ink, terracotta. No neon, no glass, no bloom. */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Archivo+Black&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap');
+
+:root{
+  --paper:#f2e9d8;
+  --paper2:#e8dcc6;
+  --ink:#241f28;
+  --ink2:#4a4150;
+  --rust:#b8543a;
+  --ochre:#c98b32;
+  --sage:#5f7d5a;
+  --slate:#3f5c6b;
+  --plum:#6b4258;
+  --dust:#9a8570;
+  --line:#241f28;
+  --display:'Archivo Black','Arial Black',Impact,sans-serif;
+  --text:'Archivo',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --serif:'Newsreader',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--paper);color:var(--ink);font-family:var(--text);font-weight:500;
+  /* faint ruled-paper grid, like a lab notebook */
+  background-image:
+    linear-gradient(rgba(36,31,40,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(36,31,40,.045) 1px,transparent 1px);
+  background-size:26px 26px;
+  overflow-x:hidden;
+}
+button{font-family:var(--text);cursor:pointer;border:none;background:none;color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:22px 16px 60px}
+
+/* ── printed elements ── */
+.card{background:var(--paper);border:2px solid var(--line);box-shadow:5px 5px 0 rgba(36,31,40,.22)}
+.kicker{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--rust);font-weight:700}
+.h1{font-family:var(--display);font-size:clamp(1.8rem,5.5vw,2.9rem);line-height:.95;text-transform:uppercase}
+.h2{font-family:var(--display);font-size:1.15rem;text-transform:uppercase;letter-spacing:.01em}
+.rule{height:2px;background:var(--rust);width:56px;margin:10px 0}
+.lede{color:var(--ink2);line-height:1.6;margin-top:10px;max-width:60ch}
+.btn{display:inline-block;padding:11px 18px;border:2px solid var(--line);background:var(--ink);
+     color:var(--paper);font-family:var(--display);font-size:.82rem;letter-spacing:.07em;
+     text-transform:uppercase;box-shadow:4px 4px 0 rgba(36,31,40,.22)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 rgba(36,31,40,.22)}
+.btn.go{background:var(--rust)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.tag{display:inline-block;padding:3px 8px;border:1.5px solid var(--line);font-size:.6rem;
+     font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.tag.sci{background:var(--slate);color:var(--paper);border-color:var(--slate)}
+.tag.eng{background:var(--plum);color:var(--paper);border-color:var(--plum)}
+
+/* ── hub ── */
+.masthead{display:flex;justify-content:space-between;align-items:flex-end;
+          border-bottom:3px solid var(--line);padding-bottom:14px;flex-wrap:wrap;gap:14px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));margin-top:22px}
+.mod{display:flex;flex-direction:column;text-align:left;padding:0;overflow:hidden}
+.mod:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 rgba(36,31,40,.22)}
+.mod .fig{height:112px;border-bottom:2px solid var(--line);background:var(--paper2);position:relative}
+.mod .fig svg{position:absolute;inset:0;width:100%;height:100%}
+.mod .body{padding:13px 15px 16px}
+.mod .body p{color:var(--ink2);font-size:.86rem;line-height:1.45;margin-top:6px}
+.mod .meta{display:flex;gap:6px;align-items:center;margin-top:11px;flex-wrap:wrap}
+.bar{height:6px;background:var(--paper2);border:1.5px solid var(--line);margin-top:11px}
+.bar i{display:block;height:100%;background:var(--sage)}
+
+/* ── in-game shell ── */
+.gamebar{display:flex;align-items:center;gap:12px;border-bottom:3px solid var(--line);
+         padding-bottom:12px;margin-bottom:18px;flex-wrap:wrap}
+.gamebar .spacer{flex:1}
+.readout{display:flex;gap:0;border:2px solid var(--line);background:var(--paper)}
+.readout .c{padding:6px 12px;border-right:2px solid var(--line)}
+.readout .c:last-child{border-right:none}
+.readout .l{font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dust);font-weight:700}
+.readout .v{font-family:var(--display);font-size:1rem;line-height:1.1}
+.task{background:var(--ink);color:var(--paper);padding:13px 16px;border:2px solid var(--line);
+      box-shadow:5px 5px 0 rgba(36,31,40,.22)}
+.task .k{font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ochre);font-weight:700}
+.task .t{font-family:var(--display);font-size:1.05rem;margin-top:5px;line-height:1.3}
+.task .d{font-size:.85rem;color:#cfc6bb;margin-top:6px;line-height:1.5}
+.stage{margin-top:18px;display:grid;gap:18px}
+canvas.board{width:100%;display:block;border:2px solid var(--line);background:var(--paper2);
+             box-shadow:5px 5px 0 rgba(36,31,40,.22);touch-action:none}
+.panel{border:2px solid var(--line);background:var(--paper);padding:14px;
+       box-shadow:5px 5px 0 rgba(36,31,40,.22)}
+.panel h3{font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;
+          padding-bottom:7px;border-bottom:2px solid var(--line);margin-bottom:11px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:8px 12px;border:2px solid var(--line);background:var(--paper);font-weight:700;
+      font-size:.84rem;box-shadow:3px 3px 0 rgba(36,31,40,.18)}
+.chip:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(36,31,40,.18)}
+.chip.on{background:var(--ink);color:var(--paper)}
+.chip.used{opacity:.3;pointer-events:none}
+.slider{width:100%;accent-color:var(--rust);margin-top:8px}
+.note{font-size:.82rem;color:var(--ink2);line-height:1.55}
+.good{color:var(--sage);font-weight:700}
+.bad{color:var(--rust);font-weight:700}
+
+/* ── teaching callout: appears AFTER an answer, explains why ── */
+.why{border-left:5px solid var(--ochre);background:var(--paper2);padding:12px 14px;margin-top:12px;
+     font-family:var(--serif);font-size:.95rem;line-height:1.6}
+.why b{font-family:var(--text);font-weight:700;font-size:.82rem;letter-spacing:.08em;
+       text-transform:uppercase;display:block;margin-bottom:4px;color:var(--rust)}
+
+/* ── toast ── */
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:90;
+       display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:var(--ink);color:var(--paper);padding:10px 18px;border:2px solid var(--line);
+       font-family:var(--display);font-size:.85rem;box-shadow:4px 4px 0 rgba(36,31,40,.3);
+       animation:tin .25s ease, tout .3s ease 1.9s forwards}
+.toast.win{background:var(--sage)} .toast.err{background:var(--rust)}
+@keyframes tin{from{opacity:0;transform:translateY(12px)}}
+@keyframes tout{to{opacity:0;transform:translateY(-8px)}}
+
+@media(max-width:720px){ .wrap{padding:16px 12px 50px} }

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>HOLE GRIND</title>
+<style>
+  :root{
+    --ink:#0b0d12; --panel:#151a24; --panel2:#1d2432; --line:#2c3547;
+    --text:#e8edf7; --dim:#8b97ad; --gold:#ffc94a; --good:#57d98a; --bad:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--ink);color:var(--text);
+    font-family:ui-monospace,"Consolas","DejaVu Sans Mono",monospace;overflow:hidden;
+    -webkit-user-select:none;user-select:none;touch-action:none}
+  /* A canvas is a REPLACED element: with width:auto, `inset:0` does NOT stretch it --
+     it keeps its 300x150 intrinsic size and the whole game renders into a postage
+     stamp in the top-left. Explicit viewport units are required. */
+  #game{position:fixed;left:0;top:0;width:100vw;height:100vh;display:block}
+  .layer{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(6,8,12,.86);backdrop-filter:blur(3px);z-index:10}
+  .layer.on{display:flex}
+  .card{width:min(760px,94vw);max-height:92vh;overflow:auto;background:var(--panel);
+    border:1px solid var(--line);border-radius:14px;padding:22px 24px;
+    box-shadow:0 18px 60px rgba(0,0,0,.6)}
+  h1{margin:0 0 2px;font-size:34px;letter-spacing:6px}
+  h2{margin:18px 0 8px;font-size:14px;letter-spacing:3px;color:var(--dim);font-weight:600}
+  .sub{color:var(--dim);font-size:12px;margin-bottom:14px;line-height:1.6}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .stat{flex:1 1 120px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:9px;padding:9px 11px}
+  .stat b{display:block;font-size:19px;color:var(--gold)}
+  .stat span{font-size:10px;color:var(--dim);letter-spacing:2px}
+  button{font-family:inherit;font-size:13px;color:var(--text);background:var(--panel2);
+    border:1px solid var(--line);border-radius:9px;padding:10px 16px;cursor:pointer;
+    letter-spacing:1px;transition:background .12s,border-color .12s}
+  button:hover:not(:disabled){background:#28324a;border-color:#455madd}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  button.go{background:#2a6cf0;border-color:#4a86ff;font-size:15px;padding:13px 26px;font-weight:700}
+  button.go:hover{background:#3a7cff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:8px}
+  .up{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+  .up .t{font-size:12px;font-weight:700;letter-spacing:1px}
+  .up .d{font-size:10px;color:var(--dim);margin:3px 0 8px;line-height:1.5;min-height:28px}
+  .up .b{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .pips{font-size:11px;color:var(--gold);letter-spacing:2px}
+  .dist{background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+    padding:9px 11px;cursor:pointer;font-size:12px}
+  .dist.sel{border-color:var(--gold);background:#2a2517}
+  .dist.lock{opacity:.5;cursor:pointer}
+  .dist .n{font-weight:700;letter-spacing:1px}
+  .dist .m{font-size:10px;color:var(--dim);margin-top:3px}
+  .bar{height:7px;background:#0d1017;border-radius:4px;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#2a6cf0,#57d98a)}
+  .keys{font-size:10px;color:var(--dim);margin-top:14px;letter-spacing:1px}
+  #toast{position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:20;
+    pointer-events:none;font-size:13px;letter-spacing:2px;color:var(--gold);
+    text-shadow:0 2px 10px #000;opacity:0;transition:opacity .25s}
+  #toast.on{opacity:1}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="toast"></div>
+
+<div class="layer on" id="hub"><div class="card">
+  <h1>HOLE GRIND</h1>
+  <div class="sub">Steer the hole. Swallow anything smaller than you. Grow, then swallow
+    what used to be too big. Rival holes eat you if they get bigger first.</div>
+  <div class="row" id="hubStats"></div>
+  <h2>DISTRICT</h2>
+  <div class="grid" id="districts"></div>
+  <h2>UPGRADES</h2>
+  <div class="grid" id="upgrades"></div>
+  <div class="row" style="margin-top:18px">
+    <button class="go" id="btnPlay">DROP IN</button>
+    <button id="btnWipe">WIPE SAVE</button>
+  </div>
+  <div class="keys">WASD / ARROWS / hold MOUSE to move &nbsp;·&nbsp; ESC pauses &nbsp;·&nbsp;
+    everything saves locally, works offline</div>
+</div></div>
+
+<div class="layer" id="over"><div class="card">
+  <h1 id="ovTitle">RUN OVER</h1>
+  <div class="sub" id="ovWhy"></div>
+  <div class="row" id="ovStats"></div>
+  <h2>PROGRESS</h2>
+  <div id="ovProg" class="sub"></div>
+  <div class="row" style="margin-top:14px">
+    <button class="go" id="btnAgain">RUN AGAIN</button>
+    <button id="btnHub">HUB</button>
+  </div>
+</div></div>
+
+<div class="layer" id="pause"><div class="card">
+  <h1>PAUSED</h1>
+  <div class="sub">Nothing is uploading anywhere. Take your time.</div>
+  <div class="row"><button class="go" id="btnResume">RESUME</button>
+  <button id="btnQuit">ABANDON RUN</button></div>
+</div></div>
+
+<script>
+"use strict";
+/* ------------------------------------------------------------------ *
+ * HOLE GRIND — hole.io-style absorb-and-grow grinder.
+ * Single file, Canvas 2D, zero network. Meta-progression in localStorage.
+ * ------------------------------------------------------------------ */
+
+//// ---------- tuning ----------
+const BASE_R      = 9;      // starting hole radius (px, world space)
+const GROW        = 1.15;   // r = sqrt(BASE^2 + mass*GROW)  -> area-linear growth
+const BASE_SPEED  = 340;    // px/s
+const RUN_TIME    = 90;     // seconds before upgrades
+const ARENA       = 2400;   // square world side
+const EAT_RATIO   = 1.00;   // obj is edible when obj.r < hole.r * EAT_RATIO
+
+// prop tiers: name, radius, mass, colour, shape
+const TIERS = [
+  {n:"coin",   r:5,  m:2,    c:"#ffd75e", s:"disc"},
+  {n:"cone",   r:8,  m:6,    c:"#ff8b3d", s:"cone"},
+  {n:"bench",  r:12, m:18,   c:"#a97b4f", s:"box"},
+  {n:"tree",   r:18, m:45,   c:"#4ea86a", s:"tree"},
+  {n:"car",    r:26, m:120,  c:"#e05a63", s:"car"},
+  {n:"bus",    r:38, m:320,  c:"#4a90e2", s:"car"},
+  {n:"house",  r:55, m:850,  c:"#c9c4b4", s:"box"},
+  {n:"tower",  r:80, m:2200, c:"#8e96ad", s:"box"},
+];
+
+const DISTRICTS = [
+  {n:"SUBURB",    cost:0,     rivals:1, dens:1.00, top:5, mult:1.00, tint:"#1b2a1f"},
+  {n:"DOWNTOWN",  cost:900,   rivals:2, dens:1.15, top:6, mult:1.35, tint:"#1b2130"},
+  {n:"HARBOUR",   cost:4500,  rivals:3, dens:1.25, top:7, mult:1.75, tint:"#152730"},
+  {n:"SKYLINE",   cost:18000, rivals:4, dens:1.35, top:8, mult:2.30, tint:"#251c2e"},
+  {n:"THE VOID",  cost:60000, rivals:5, dens:1.50, top:8, mult:3.20, tint:"#241a1a"},
+];
+
+const UPGRADES = [
+  {id:"size",  t:"WIDE MOUTH",  max:10, cost:i=>120*Math.pow(1.55,i),
+   d:"Start each run bigger.",            f:i=>`+${(i*7)}% start radius`},
+  {id:"speed", t:"SLIPSTREAM",  max:10, cost:i=>140*Math.pow(1.55,i),
+   d:"Move faster across the map.",       f:i=>`+${(i*6)}% speed`},
+  {id:"time",  t:"OVERTIME",    max:10, cost:i=>200*Math.pow(1.6,i),
+   d:"Longer runs, more to swallow.",     f:i=>`+${i*6}s run time`},
+  {id:"pull",  t:"GRAVITY WELL",max:8,  cost:i=>180*Math.pow(1.6,i),
+   d:"Drags nearby edible props in.",     f:i=>`+${i*12}% pull range`},
+  {id:"greed", t:"GREED",       max:10, cost:i=>250*Math.pow(1.65,i),
+   d:"More coins banked per run.",        f:i=>`+${i*18}% coins`},
+  {id:"digest",t:"DIGESTION",   max:8,  cost:i=>300*Math.pow(1.7,i),
+   d:"Each prop feeds you more mass.",    f:i=>`+${i*5}% mass gain`},
+];
+
+//// ---------- save ----------
+const SAVE_KEY = "holegrind.save.v2";
+const FRESH = () => ({
+  coins:0, xp:0, best:0, runs:0, totalScore:0,
+  up:{size:0,speed:0,time:0,pull:0,greed:0,digest:0},
+  unlocked:[0], district:0, cleared:[]
+});
+let save = FRESH();
+
+function load(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(raw){
+      const o = JSON.parse(raw);
+      save = Object.assign(FRESH(), o);
+      save.up = Object.assign(FRESH().up, o.up||{});
+      if(!Array.isArray(save.unlocked)||!save.unlocked.length) save.unlocked=[0];
+      if(!Array.isArray(save.cleared)) save.cleared=[];
+    }
+  }catch(e){ save = FRESH(); }
+}
+function persist(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){}
+}
+const playerLevel = () => 1 + Math.floor(Math.sqrt(save.xp/900));
+const xpInto  = () => save.xp - 900*Math.pow(playerLevel()-1,2);
+const xpNeed  = () => 900*(Math.pow(playerLevel(),2)-Math.pow(playerLevel()-1,2));
+
+//// ---------- canvas ----------
+const cv = document.getElementById("game"), ctx = cv.getContext("2d");
+let VW=1280, VH=720, DPR=1;
+function resize(){
+  DPR = Math.min(2, window.devicePixelRatio||1);
+  VW = cv.clientWidth || window.innerWidth;
+  VH = cv.clientHeight|| window.innerHeight;
+  cv.width = Math.round(VW*DPR); cv.height = Math.round(VH*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener("resize", resize);
+
+//// ---------- input ----------
+const keys = Object.create(null);
+let mouseDown=false, mouseX=0, mouseY=0;
+addEventListener("keydown", e=>{
+  keys[e.code]=true;
+  if(e.code==="Escape"){ togglePause(); }
+  if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(e.code)) e.preventDefault();
+});
+addEventListener("keyup", e=>{ keys[e.code]=false; });
+cv.addEventListener("mousedown", e=>{mouseDown=true;mouseX=e.clientX;mouseY=e.clientY;});
+addEventListener("mouseup",   ()=>{mouseDown=false;});
+addEventListener("mousemove", e=>{mouseX=e.clientX;mouseY=e.clientY;});
+cv.addEventListener("touchstart", e=>{mouseDown=true;const t=e.touches[0];mouseX=t.clientX;mouseY=t.clientY;e.preventDefault();},{passive:false});
+cv.addEventListener("touchmove",  e=>{const t=e.touches[0];mouseX=t.clientX;mouseY=t.clientY;e.preventDefault();},{passive:false});
+addEventListener("touchend",  ()=>{mouseDown=false;});
+
+//// ---------- run state ----------
+const R = {
+  on:false, paused:false, over:false, t:0, timeLeft:0, district:0,
+  hole:null, props:[], rivals:[], parts:[], score:0, eaten:0,
+  wave:0, endReason:"", cam:{x:0,y:0,z:1}, shake:0, autopilot:false, apTarget:null
+};
+const rnd  = (a,b)=>a+Math.random()*(b-a);
+const clamp= (v,a,b)=>v<a?a:v>b?b:v;
+const radiusFor = m => Math.sqrt(BASE_R*BASE_R + m*GROW);
+
+function upLvl(id){ return save.up[id]|0; }
+function startMass(){ // mass equivalent of the size upgrade
+  const r = BASE_R*(1+upLvl("size")*0.07);
+  return Math.max(0,(r*r-BASE_R*BASE_R)/GROW);
+}
+function moveSpeed(h){
+  // Big holes MUST slow down hard. Sweep area grows with r while prey mass grows with
+  // r^2, so without this the run goes cubic and one 90s run banks a whole district.
+  const slow = 1/(1+Math.max(0,h.r-BASE_R)*0.030);
+  return BASE_SPEED*(1+upLvl("speed")*0.06)*slow*(1+(playerLevel()-1)*0.01);
+}
+function pullRange(h){ return h.r*(2.20 + upLvl("pull")*0.22) + 26; }
+function massGain(){ return 1 + upLvl("digest")*0.05; }
+
+function makeHole(x,y,mass,isPlayer){
+  return {x,y,mass,r:radiusFor(mass),isPlayer,vx:0,vy:0,
+          hue:isPlayer?0:Math.floor(rnd(0,360)),dead:false,tx:0,ty:0,think:0};
+}
+
+function spawnProp(d, forceTier){
+  const D = DISTRICTS[d];
+  let ti;
+  if(forceTier!=null) ti = forceTier;
+  else{
+    // weighted toward small; district raises the ceiling
+    const top = D.top;
+    ti = Math.min(top-1, Math.floor(Math.pow(Math.random(), 1.9)*top));
+  }
+  const T = TIERS[ti];
+  const pad = T.r+20;
+  return {x:rnd(pad,ARENA-pad), y:rnd(pad,ARENA-pad), tier:ti, r:T.r, m:T.m,
+          c:T.c, s:T.s, rot:rnd(0,Math.PI*2), fall:0, gone:false};
+}
+
+function beginRun(d){
+  R.district = clamp(d,0,DISTRICTS.length-1);
+  const D = DISTRICTS[R.district];
+  R.on=true; R.paused=false; R.over=false; R.t=0; R.wave=0;
+  R.timeLeft = RUN_TIME + upLvl("time")*6;
+  R.score=0; R.eaten=0; R.parts.length=0; R.endReason=""; R.apTarget=null;
+  R.hole = makeHole(ARENA/2, ARENA/2, startMass(), true);
+  R.props.length=0;
+  const n = Math.round(760*D.dens);
+  for(let i=0;i<n;i++) R.props.push(spawnProp(R.district));
+  R.rivals.length=0;
+  for(let i=0;i<D.rivals;i++){
+    const a = (i/D.rivals)*Math.PI*2 + rnd(0,1);
+    R.rivals.push(makeHole(ARENA/2+Math.cos(a)*700, ARENA/2+Math.sin(a)*700,
+                           startMass()*0.75, false));
+  }
+  R.cam.x=R.hole.x; R.cam.y=R.hole.y; R.cam.z=zoomFor(R.hole.r);
+  showLayer(null);
+}
+
+function zoomFor(r){ return clamp(30/(r*0.55+19), 0.40, 1.30); }
+
+function endRun(reason){
+  if(R.over) return;
+  R.over=true; R.on=false; R.endReason=reason;
+  const D = DISTRICTS[R.district];
+  const coins = Math.floor(R.score*0.075*D.mult*(1+upLvl("greed")*0.18));
+  const xp    = Math.floor(R.score*0.25*D.mult);
+  save.coins += coins; save.xp += xp; save.runs++; save.totalScore += R.score;
+  const pb = R.score > save.best; if(pb) save.best = R.score;
+  // clearing = beating the district quota unlocks the next one for purchase view
+  const quota = districtQuota(R.district);
+  const clr = R.score >= quota;
+  if(clr && !save.cleared.includes(R.district)) save.cleared.push(R.district);
+  persist();
+  showOver({coins,xp,pb,clr,quota});
+}
+function districtQuota(d){ return Math.round(25000*Math.pow(2.8,d)); }
+
+//// ---------- simulation ----------
+function absorb(h, mass, isPlayerGain){
+  h.mass += mass*(h.isPlayer?massGain():1);
+  h.r = radiusFor(h.mass);
+}
+function burst(x,y,c,n){
+  for(let i=0;i<n;i++){
+    const a=rnd(0,6.28), s=rnd(30,150);
+    R.parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.25,.6),t:0,c});
+  }
+}
+
+function steerHole(h, dt, tx, ty, spd){
+  const dx=tx-h.x, dy=ty-h.y, d=Math.hypot(dx,dy);
+  if(d>1){ h.vx = dx/d*spd; h.vy = dy/d*spd; } else { h.vx*=0.6; h.vy*=0.6; }
+  h.x = clamp(h.x + h.vx*dt, h.r, ARENA-h.r);
+  h.y = clamp(h.y + h.vy*dt, h.r, ARENA-h.r);
+}
+
+function eatPass(h, dt){
+  const pr = h.isPlayer ? pullRange(h) : h.r*1.15;
+  for(let i=0;i<R.props.length;i++){
+    const p=R.props[i];
+    if(p.gone) continue;
+    const dx=h.x-p.x, dy=h.y-p.y, d=Math.hypot(dx,dy);
+    const edible = p.r < h.r*EAT_RATIO;
+    if(!edible){
+      // too big: it physically blocks the rim a touch (visual nudge only)
+      continue;
+    }
+    if(p.fall>0){
+      p.fall += dt*3.2;
+      p.x += dx*dt*6; p.y += dy*dt*6;
+      if(p.fall>=1){
+        p.gone=true;
+        absorb(h,p.m);
+        if(h.isPlayer){
+          R.score += Math.round(p.m*4*DISTRICTS[R.district].mult);
+          R.eaten++;
+          burst(p.x,p.y,p.c,Math.min(14,3+p.tier*2));
+          R.shake = Math.min(9, R.shake + 0.6 + p.tier*0.35);
+        }
+      }
+      continue;
+    }
+    if(d < h.r*0.95 + p.r*0.20){ p.fall = 0.01; continue; }
+    if(h.isPlayer && d < pr){ // gravity well drag
+      const f = (1 - d/pr) * 260 * dt;
+      p.x += dx/d*f; p.y += dy/d*f;
+    }
+  }
+}
+
+function rivalThink(h, dt){
+  h.think -= dt;
+  if(h.think<=0 || (Math.abs(h.tx-h.x)<12 && Math.abs(h.ty-h.y)<12)){
+    h.think = rnd(0.4,1.1);
+    // hunt the player when clearly bigger, else nearest edible cluster
+    const P=R.hole;
+    if(P && !P.dead && h.r > P.r*1.08 && Math.hypot(P.x-h.x,P.y-h.y) < 900){
+      h.tx=P.x; h.ty=P.y;
+    }else{
+      let best=null,bd=1e9;
+      for(let i=0;i<R.props.length;i+=3){
+        const p=R.props[i];
+        if(p.gone||p.r>=h.r) continue;
+        const d=Math.hypot(p.x-h.x,p.y-h.y)/(1+p.m*0.02);
+        if(d<bd){bd=d;best=p;}
+      }
+      if(best){h.tx=best.x;h.ty=best.y;}
+      else{h.tx=rnd(0,ARENA);h.ty=rnd(0,ARENA);}
+    }
+  }
+  steerHole(h, dt, h.tx, h.ty, BASE_SPEED*0.86*(1/(1+Math.max(0,h.r-BASE_R)*0.030)));
+  eatPass(h, dt);
+}
+
+// Rival size is GOVERNED, not free-running. Letting rivals eat their way up on their
+// own made them 60% bigger than the player inside 8s in every district, so every run
+// degenerated into being hunted from second one. Instead each rival converges on a
+// fixed fraction of the player's mass: SUBURB rivals stay harmless so the mechanic can
+// be learned, and later districts push the fraction past 1.0 so they genuinely hunt.
+function rivalScale(dt){
+  for(let i=0;i<R.rivals.length;i++){
+    const rv=R.rivals[i];
+    const want = Math.max(0, R.hole.mass*(0.72 + R.district*0.14 + i*0.05));
+    // clamp DOWN hard, converge UP smoothly -- a rival that swallowed a bus used to
+    // spike 25% over its cap for a second and eat the player in the tutorial district.
+    if(rv.mass > want) rv.mass = want;
+    else rv.mass += (want-rv.mass)*Math.min(1, dt*0.6);
+    if(rv.mass<0) rv.mass=0;
+    rv.r = radiusFor(rv.mass);
+  }
+}
+
+function holeVsHole(dt){
+  const all=[R.hole].concat(R.rivals).filter(h=>h&&!h.dead);
+  for(let i=0;i<all.length;i++) for(let j=i+1;j<all.length;j++){
+    const a=all[i], b=all[j];
+    const d=Math.hypot(a.x-b.x,a.y-b.y);
+    const big = a.r>=b.r?a:b, small = a.r>=b.r?b:a;
+    if(big.r > small.r*1.05 && d < big.r*0.85){
+      small.dead=true;
+      absorb(big, small.mass*0.7);
+      burst(small.x,small.y,"#ffffff",22);
+      if(small.isPlayer){ endRun("swallowed"); }
+      else if(big.isPlayer){
+        R.score += Math.round(small.mass*6*DISTRICTS[R.district].mult);
+        R.shake = 10; toast("RIVAL SWALLOWED");
+      }
+    }
+  }
+  R.rivals = R.rivals.filter(h=>!h.dead);
+}
+
+function playerInput(){
+  let ix=0, iy=0;
+  if(keys.KeyA||keys.ArrowLeft) ix-=1;
+  if(keys.KeyD||keys.ArrowRight)ix+=1;
+  if(keys.KeyW||keys.ArrowUp)   iy-=1;
+  if(keys.KeyS||keys.ArrowDown) iy+=1;
+  if(ix||iy){
+    const l=Math.hypot(ix,iy);
+    return {x:R.hole.x+ix/l*400, y:R.hole.y+iy/l*400};
+  }
+  if(mouseDown){
+    return {x:R.cam.x+(mouseX-VW/2)/R.cam.z, y:R.cam.y+(mouseY-VH/2)/R.cam.z};
+  }
+  if(R.autopilot){
+    // COMMIT to one target until it is swallowed or becomes invalid. Re-picking the
+    // nearest prop every frame makes the hole orbit a moving centroid and eat almost
+    // nothing -- that bug made the autopilot look like the game was broken.
+    let best = R.apTarget;
+    const stale = !best || best.gone || best.r >= R.hole.r*EAT_RATIO ||
+                  Math.hypot(best.x-R.hole.x, best.y-R.hole.y) > 900;
+    if(stale){
+      best=null; let bd=1e9;
+      for(const p of R.props){
+        if(p.gone||p.r>=R.hole.r*EAT_RATIO) continue;
+        const d=Math.hypot(p.x-R.hole.x,p.y-R.hole.y)/(1+p.m*0.05);
+        if(d<bd){bd=d;best=p;}
+      }
+      R.apTarget = best;
+    }
+    // dodge anything clearly bigger than us
+    for(const rv of R.rivals){
+      const d=Math.hypot(rv.x-R.hole.x,rv.y-R.hole.y);
+      if(rv.r>R.hole.r*1.12 && d < rv.r*3.5+70){
+        const ax=(R.hole.x-rv.x)/(d||1), ay=(R.hole.y-rv.y)/(d||1);
+        return {x:clamp(R.hole.x+ax*500,120,ARENA-120), y:clamp(R.hole.y+ay*500,120,ARENA-120)};
+      }
+    }
+    if(best) return {x:best.x,y:best.y};
+  }
+  return null;
+}
+
+function step(dt){
+  if(!R.on || R.paused || R.over) return;
+  R.t += dt;
+  R.timeLeft -= dt;
+  if(R.timeLeft<=0){ R.timeLeft=0; endRun("time"); return; }
+
+  const h=R.hole;
+  const tgt = playerInput();
+  if(tgt) steerHole(h, dt, tgt.x, tgt.y, moveSpeed(h));
+  else { h.vx*=0.85; h.vy*=0.85; h.x+=h.vx*dt; h.y+=h.vy*dt; }
+  eatPass(h, dt);
+
+  for(const rv of R.rivals) rivalThink(rv, dt);
+  rivalScale(dt);
+  holeVsHole(dt);
+
+  // escalating difficulty: waves of progressively bigger props, and rivals fed
+  const wantWave = Math.floor(R.t/12);
+  if(wantWave>R.wave){
+    R.wave = wantWave;
+    const D=DISTRICTS[R.district];
+    const lift = Math.min(D.top-1, 1+Math.floor(R.wave*0.7));
+    for(let i=0;i<26;i++) R.props.push(spawnProp(R.district, Math.min(D.top-1,
+       lift - (Math.random()<0.45?1:0))));
+    if(R.wave%2===0) toast("WAVE "+R.wave+" — BIGGER PREY");
+  }
+  // keep the field stocked
+  let alive=0; for(const p of R.props) if(!p.gone) alive++;
+  if(alive < 420*DISTRICTS[R.district].dens){
+    for(let i=0;i<70;i++) R.props.push(spawnProp(R.district));
+  }
+  if(R.props.length>1400) R.props = R.props.filter(p=>!p.gone);
+
+  // particles
+  for(const q of R.parts){ q.t+=dt; q.x+=q.vx*dt; q.y+=q.vy*dt; q.vx*=.92; q.vy*=.92; }
+  R.parts = R.parts.filter(q=>q.t<q.life);
+
+  // camera
+  const z = zoomFor(h.r);
+  R.cam.z += (z-R.cam.z)*Math.min(1,dt*2.2);
+  R.cam.x += (h.x-R.cam.x)*Math.min(1,dt*7);
+  R.cam.y += (h.y-R.cam.y)*Math.min(1,dt*7);
+  R.shake = Math.max(0, R.shake-dt*14);
+}
+
+//// ---------- render ----------
+function w2s(x,y){ return [ (x-R.cam.x)*R.cam.z+VW/2, (y-R.cam.y)*R.cam.z+VH/2 ]; }
+
+function drawProp(p){
+  const [sx,sy]=w2s(p.x,p.y), z=R.cam.z, r=p.r*z;
+  if(sx<-r*3||sy<-r*3||sx>VW+r*3||sy>VH+r*3) return;
+  const k = p.fall>0 ? Math.max(0.05,1-p.fall) : 1;
+  ctx.save(); ctx.translate(sx,sy); ctx.scale(k,k); ctx.rotate(p.rot);
+  ctx.globalAlpha = p.fall>0 ? Math.max(0,1-p.fall*0.8) : 1;
+  // shadow
+  ctx.fillStyle="rgba(0,0,0,.22)";
+  ctx.beginPath(); ctx.ellipse(r*0.14,r*0.20,r,r*0.85,0,0,6.283); ctx.fill();
+  ctx.fillStyle=p.c;
+  if(p.s==="disc"){ ctx.beginPath(); ctx.arc(0,0,r,0,6.283); ctx.fill();
+    ctx.fillStyle="rgba(255,255,255,.35)"; ctx.beginPath(); ctx.arc(-r*.25,-r*.25,r*.4,0,6.283); ctx.fill(); }
+  else if(p.s==="cone"){ ctx.beginPath(); ctx.moveTo(0,-r); ctx.lineTo(r*.85,r*.7);
+    ctx.lineTo(-r*.85,r*.7); ctx.closePath(); ctx.fill();
+    ctx.fillStyle="rgba(255,255,255,.5)"; ctx.fillRect(-r*.5,-r*.1,r,r*.22); }
+  else if(p.s==="tree"){ ctx.fillStyle="#6b4a2c"; ctx.fillRect(-r*.14,0,r*.28,r*.8);
+    ctx.fillStyle=p.c; ctx.beginPath(); ctx.arc(0,-r*.15,r*.85,0,6.283); ctx.fill();
+    ctx.fillStyle="rgba(255,255,255,.14)"; ctx.beginPath(); ctx.arc(-r*.3,-r*.45,r*.35,0,6.283); ctx.fill(); }
+  else if(p.s==="car"){ const w=r*1.9,hh=r*1.05;
+    ctx.fillStyle=p.c; rr(-w/2,-hh/2,w,hh,r*.3); ctx.fill();
+    ctx.fillStyle="rgba(20,28,40,.75)"; rr(-w*.16,-hh*.36,w*.44,hh*.72,r*.16); ctx.fill();
+    ctx.fillStyle="rgba(255,255,255,.16)"; rr(-w/2,-hh/2,w,hh*.28,r*.2); ctx.fill(); }
+  else { const w=r*1.75,hh=r*1.6;
+    ctx.fillStyle=p.c; rr(-w/2,-hh/2,w,hh,r*.14); ctx.fill();
+    ctx.fillStyle="rgba(0,0,0,.20)"; rr(-w/2,-hh/2,w,hh*.22,r*.1); ctx.fill();
+    ctx.fillStyle="rgba(255,255,255,.10)";
+    for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) ctx.fillRect(i*w*.26-w*.07,j*hh*.26-hh*.06,w*.14,hh*.12); }
+  ctx.restore();
+}
+function rr(x,y,w,h,r){ ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+function drawHole(h){
+  const [sx,sy]=w2s(h.x,h.y), r=h.r*R.cam.z;
+  const g=ctx.createRadialGradient(sx,sy,r*0.1,sx,sy,r);
+  if(h.isPlayer){ g.addColorStop(0,"#000"); g.addColorStop(.72,"#05070c"); g.addColorStop(1,"#14203a"); }
+  else{ g.addColorStop(0,"#000"); g.addColorStop(.72,"#0a0508"); g.addColorStop(1,`hsl(${h.hue},55%,22%)`); }
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(sx,sy,r,0,6.283); ctx.fill();
+  ctx.lineWidth=Math.max(1.4,r*0.07);
+  ctx.strokeStyle = h.isPlayer ? "rgba(120,170,255,.85)" : `hsla(${h.hue},80%,60%,.85)`;
+  ctx.beginPath(); ctx.arc(sx,sy,r*0.98,0,6.283); ctx.stroke();
+  // swirl
+  ctx.globalAlpha=.35; ctx.lineWidth=Math.max(1,r*.04);
+  ctx.strokeStyle=h.isPlayer?"#6ea8ff":`hsl(${h.hue},80%,65%)`;
+  for(let k=0;k<3;k++){ ctx.beginPath();
+    ctx.arc(sx,sy,r*(0.3+k*0.22), R.t*(1.6+k)*(h.isPlayer?1:-1), R.t*(1.6+k)*(h.isPlayer?1:-1)+2.1);
+    ctx.stroke(); }
+  ctx.globalAlpha=1;
+}
+
+function drawWorld(){
+  const D=DISTRICTS[R.district];
+  ctx.fillStyle=D.tint; ctx.fillRect(0,0,VW,VH);
+  const z=R.cam.z;
+  // ground plates
+  const cell=200*z;
+  const ox=((-R.cam.x*z+VW/2)%cell+cell)%cell, oy=((-R.cam.y*z+VH/2)%cell+cell)%cell;
+  ctx.fillStyle="rgba(255,255,255,.020)";
+  for(let x=-1;x*cell+ox<VW+cell;x++) for(let y=-1;y*cell+oy<VH+cell;y++)
+    if((x+y)&1) ctx.fillRect(x*cell+ox,y*cell+oy,cell,cell);
+  // roads
+  ctx.strokeStyle="rgba(255,255,255,.055)"; ctx.lineWidth=Math.max(1,26*z);
+  for(let i=0;i<=6;i++){
+    const wx=i*(ARENA/6);
+    const [ax]=w2s(wx,0), [,ay]=w2s(0,wx);
+    ctx.beginPath(); ctx.moveTo(ax,0); ctx.lineTo(ax,VH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,ay); ctx.lineTo(VW,ay); ctx.stroke();
+  }
+  // arena border
+  const [bx,by]=w2s(0,0);
+  ctx.strokeStyle="rgba(255,90,90,.45)"; ctx.lineWidth=3;
+  ctx.strokeRect(bx,by,ARENA*z,ARENA*z);
+}
+
+function drawHUD(){
+  const pad=14;
+  ctx.font="700 13px ui-monospace,Consolas,monospace"; ctx.textBaseline="top";
+  // time bar
+  const full = RUN_TIME + upLvl("time")*6;
+  const w=Math.min(360,VW-28);
+  ctx.fillStyle="rgba(10,14,20,.72)"; rr(pad,pad,w,58,8); ctx.fill();
+  ctx.fillStyle="#8b97ad"; ctx.fillText("TIME", pad+12, pad+9);
+  ctx.fillStyle= R.timeLeft<15?"#ff6b6b":"#e8edf7";
+  ctx.fillText(R.timeLeft.toFixed(1)+"s", pad+62, pad+9);
+  ctx.fillStyle="#8b97ad"; ctx.fillText("SCORE", pad+150, pad+9);
+  ctx.fillStyle="#ffc94a"; ctx.fillText(String(R.score), pad+208, pad+9);
+  ctx.fillStyle="#0d1017"; rr(pad+12,pad+32,w-24,8,4); ctx.fill();
+  ctx.fillStyle="#2a6cf0"; rr(pad+12,pad+32,(w-24)*clamp(R.timeLeft/full,0,1),8,4); ctx.fill();
+
+  // size readout + next tier
+  const h=R.hole;
+  let next=null;
+  for(const T of TIERS) if(T.r>=h.r*EAT_RATIO){ next=T; break; }
+  ctx.fillStyle="rgba(10,14,20,.72)"; rr(pad,pad+66,w,44,8); ctx.fill();
+  ctx.fillStyle="#8b97ad"; ctx.fillText("SIZE", pad+12, pad+74);
+  ctx.fillStyle="#57d98a"; ctx.fillText(h.r.toFixed(1), pad+62, pad+74);
+  ctx.fillStyle="#8b97ad";
+  ctx.fillText(next?("NEXT: "+next.n.toUpperCase()+" @ "+next.r):"NEXT: EVERYTHING", pad+120, pad+74);
+  if(next){
+    const need=(next.r*next.r-BASE_R*BASE_R)/GROW, have=h.mass;
+    const prevR = TIERS[Math.max(0,TIERS.indexOf(next)-1)].r;
+    const prevNeed=(prevR*prevR-BASE_R*BASE_R)/GROW;
+    const f=clamp((have-prevNeed)/Math.max(1,need-prevNeed),0,1);
+    ctx.fillStyle="#0d1017"; rr(pad+12,pad+94,w-24,7,4); ctx.fill();
+    ctx.fillStyle="#57d98a"; rr(pad+12,pad+94,(w-24)*f,7,4); ctx.fill();
+  }
+  // district + rivals right side
+  ctx.textAlign="right";
+  ctx.fillStyle="#8b97ad";
+  ctx.fillText(DISTRICTS[R.district].n+"  ·  x"+DISTRICTS[R.district].mult.toFixed(2), VW-pad-4, pad+9);
+  ctx.fillText("RIVALS "+R.rivals.length, VW-pad-4, pad+28);
+  const q=districtQuota(R.district);
+  ctx.fillStyle=R.score>=q?"#57d98a":"#8b97ad";
+  ctx.fillText("QUOTA "+R.score+" / "+q, VW-pad-4, pad+47);
+  ctx.textAlign="left";
+
+  // minimap
+  const ms=110, mx=VW-ms-pad, my=VH-ms-pad;
+  ctx.fillStyle="rgba(10,14,20,.7)"; rr(mx,my,ms,ms,8); ctx.fill();
+  const k=ms/ARENA;
+  for(const rv of R.rivals){ ctx.fillStyle=`hsl(${rv.hue},80%,60%)`;
+    ctx.beginPath(); ctx.arc(mx+rv.x*k,my+rv.y*k,Math.max(2,rv.r*k*2),0,6.283); ctx.fill(); }
+  ctx.fillStyle="#6ea8ff";
+  ctx.beginPath(); ctx.arc(mx+R.hole.x*k,my+R.hole.y*k,Math.max(2.5,R.hole.r*k*2),0,6.283); ctx.fill();
+}
+
+function render(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(!R.hole){ ctx.fillStyle="#0b0d12"; ctx.fillRect(0,0,VW,VH); return; }
+  if(R.shake>0.05){
+    ctx.translate(rnd(-R.shake,R.shake), rnd(-R.shake,R.shake));
+  }
+  drawWorld();
+  // sort so bigger props draw later (cheap depth feel)
+  const vis=R.props;
+  for(let i=0;i<vis.length;i++) if(!vis[i].gone && vis[i].tier<4) drawProp(vis[i]);
+  for(const rv of R.rivals) drawHole(rv);
+  drawHole(R.hole);
+  for(let i=0;i<vis.length;i++) if(!vis[i].gone && vis[i].tier>=4) drawProp(vis[i]);
+  for(const q of R.parts){
+    const [sx,sy]=w2s(q.x,q.y);
+    ctx.globalAlpha=1-q.t/q.life; ctx.fillStyle=q.c;
+    ctx.fillRect(sx-2,sy-2,4,4);
+  }
+  ctx.globalAlpha=1;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(R.on && !R.over) drawHUD();
+}
+
+//// ---------- loop ----------
+let last=performance.now(), fps=0, fAcc=0, fT=0;
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000); last=now;
+  fAcc++; fT+=dt; if(fT>=1){ fps=fAcc/fT; fAcc=0; fT=0; }
+  step(dt);
+  render();
+  requestAnimationFrame(frame);
+}
+
+//// ---------- UI ----------
+const $ = id=>document.getElementById(id);
+function showLayer(id){
+  for(const l of ["hub","over","pause"]) $(l).classList.toggle("on", l===id);
+}
+let toastT=null;
+function toast(msg){
+  const el=$("toast"); el.textContent=msg; el.classList.add("on");
+  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("on"),1400);
+}
+function togglePause(){
+  if(!R.on||R.over) return;
+  R.paused=!R.paused; showLayer(R.paused?"pause":null);
+}
+function fmt(n){ return n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e4?(n/1e3).toFixed(1)+"k":String(n); }
+
+let selDistrict = 0;
+function renderHub(){
+  selDistrict = save.unlocked.includes(save.district)? save.district : 0;
+  $("hubStats").innerHTML =
+    `<div class="stat"><b>${fmt(save.coins)}</b><span>COINS</span></div>
+     <div class="stat"><b>LV ${playerLevel()}</b><span>${xpInto()} / ${xpNeed()} XP</span>
+       <div class="bar"><i style="width:${clamp(xpInto()/xpNeed()*100,0,100)}%"></i></div></div>
+     <div class="stat"><b>${fmt(save.best)}</b><span>BEST RUN</span></div>
+     <div class="stat"><b>${save.runs}</b><span>RUNS</span></div>`;
+  $("districts").innerHTML = DISTRICTS.map((d,i)=>{
+    const un = save.unlocked.includes(i);
+    return `<div class="dist ${un?"":"lock"} ${i===selDistrict?"sel":""}" data-d="${i}">
+      <div class="n">${un?"":"🔒 "}${d.n}</div>
+      <div class="m">${un?`payout x${d.mult.toFixed(2)} · ${d.rivals} rivals · quota ${fmt(districtQuota(i))}`
+                        :`unlock for ${fmt(d.cost)} coins`}
+        ${save.cleared.includes(i)?" · ✔ cleared":""}</div></div>`;
+  }).join("");
+  for(const el of $("districts").children){
+    el.onclick = ()=>{
+      const i=+el.dataset.d;
+      if(save.unlocked.includes(i)){ save.district=i; persist(); renderHub(); }
+      else if(save.coins>=DISTRICTS[i].cost){
+        save.coins-=DISTRICTS[i].cost; save.unlocked.push(i); save.district=i;
+        persist(); toast(DISTRICTS[i].n+" UNLOCKED"); renderHub();
+      } else toast("NEED "+fmt(DISTRICTS[i].cost-save.coins)+" MORE COINS");
+    };
+  }
+  $("upgrades").innerHTML = UPGRADES.map(u=>{
+    const lv=upLvl(u.id), maxed=lv>=u.max, cost=Math.round(u.cost(lv));
+    return `<div class="up"><div class="t">${u.t}</div>
+      <div class="d">${u.d}<br><span style="color:#57d98a">${u.f(lv)}</span></div>
+      <div class="b"><span class="pips">${"■".repeat(lv)}${"·".repeat(u.max-lv)}</span>
+      <button data-u="${u.id}" ${maxed||save.coins<cost?"disabled":""}>
+        ${maxed?"MAX":fmt(cost)+" ⨀"}</button></div></div>`;
+  }).join("");
+  for(const b of $("upgrades").querySelectorAll("button[data-u]")){
+    b.onclick=()=>{ buyUpgrade(b.dataset.u); };
+  }
+}
+function buyUpgrade(id){
+  const u=UPGRADES.find(x=>x.id===id); if(!u) return false;
+  const lv=upLvl(id); if(lv>=u.max) return false;
+  const cost=Math.round(u.cost(lv));
+  if(save.coins<cost){ toast("NOT ENOUGH COINS"); return false; }
+  save.coins-=cost; save.up[id]=lv+1; persist(); renderHub(); toast(u.t+" LV"+(lv+1));
+  return true;
+}
+function showOver(res){
+  $("ovTitle").textContent = R.endReason==="swallowed" ? "SWALLOWED" : "TIME UP";
+  $("ovWhy").textContent = R.endReason==="swallowed"
+    ? "A rival hole got bigger than you and took the whole map with it."
+    : "The run clock ran out. Everything you swallowed is banked.";
+  $("ovStats").innerHTML =
+    `<div class="stat"><b>${fmt(R.score)}</b><span>SCORE${res.pb?" ★ BEST":""}</span></div>
+     <div class="stat"><b>+${fmt(res.coins)}</b><span>COINS</span></div>
+     <div class="stat"><b>+${fmt(res.xp)}</b><span>XP</span></div>
+     <div class="stat"><b>${R.eaten}</b><span>SWALLOWED</span></div>
+     <div class="stat"><b>${R.hole.r.toFixed(1)}</b><span>FINAL SIZE</span></div>`;
+  const nxt = DISTRICTS[R.district+1];
+  $("ovProg").innerHTML =
+    `District quota ${fmt(res.quota)} — ${res.clr?"<span style='color:#57d98a'>CLEARED</span>"
+      :"<span style='color:#ff6b6b'>not met</span>"}<br>
+     Bank: <b style="color:#ffc94a">${fmt(save.coins)}</b> coins · LV ${playerLevel()}
+     ${nxt&&!save.unlocked.includes(R.district+1)
+        ? `<br>Next district <b>${nxt.n}</b> costs ${fmt(nxt.cost)} coins.`:""}`;
+  showLayer("over");
+  renderHub();
+}
+
+$("btnPlay").onclick  = ()=>beginRun(save.district);
+$("btnAgain").onclick = ()=>beginRun(save.district);
+$("btnHub").onclick   = ()=>{ renderHub(); showLayer("hub"); };
+$("btnResume").onclick= ()=>togglePause();
+$("btnQuit").onclick  = ()=>{ R.paused=false; endRun("time"); };
+$("btnWipe").onclick  = ()=>{
+  save=FRESH(); persist(); renderHub(); toast("SAVE WIPED");
+};
+
+//// ---------- debug handle (headless harness drives this) ----------
+window.__DEBUG = {
+  get state(){
+    return {
+      running:R.on, over:R.over, paused:R.paused, t:+R.t.toFixed(2),
+      timeLeft:+R.timeLeft.toFixed(2), district:R.district,
+      holeR: R.hole?+R.hole.r.toFixed(2):0, holeMass: R.hole?+R.hole.mass.toFixed(1):0,
+      x:R.hole?Math.round(R.hole.x):0, y:R.hole?Math.round(R.hole.y):0,
+      score:R.score, eaten:R.eaten, wave:R.wave,
+      props:R.props.filter(p=>!p.gone).length,
+      edible:R.hole?R.props.filter(p=>!p.gone&&p.r<R.hole.r).length:0,
+      tooBig:R.hole?R.props.filter(p=>!p.gone&&p.r>=R.hole.r).length:0,
+      rivals:R.rivals.length, biggestRival:R.rivals.reduce((a,b)=>Math.max(a,b.r),0),
+      nearest: (()=>{ if(!R.hole) return -1; let b=1e9;
+        for(const p of R.props){ if(p.gone||p.r>=R.hole.r*EAT_RATIO) continue;
+          const d=Math.hypot(p.x-R.hole.x,p.y-R.hole.y); if(d<b)b=d; }
+        return b>1e8?-1:+b.toFixed(1); })(),
+      fps:Math.round(fps), autopilot:R.autopilot, endReason:R.endReason,
+      coins:save.coins, best:save.best, runs:save.runs, level:playerLevel(),
+      unlocked:save.unlocked.slice(), up:Object.assign({},save.up)
+    };
+  },
+  start:(d)=>beginRun(d==null?save.district:d),
+  autopilot:(v)=>{ R.autopilot = v!==false; return R.autopilot; },
+  moveTo:(x,y)=>{ R.hole.x=clamp(x,0,ARENA); R.hole.y=clamp(y,0,ARENA); },
+  grant:(c)=>{ save.coins+=c; persist(); renderHub(); return save.coins; },
+  buy:(id)=>buyUpgrade(id),
+  unlock:(i)=>{ if(!save.unlocked.includes(i)) save.unlocked.push(i);
+                save.district=i; persist(); renderHub(); return save.unlocked.slice(); },
+  end:()=>endRun("time"),
+  wipe:()=>{ save=FRESH(); persist(); renderHub(); },
+  tiers:TIERS, districts:DISTRICTS, upgrades:UPGRADES.map(u=>u.id),
+  saveKey:SAVE_KEY
+};
+
+//// ---------- boot ----------
+load(); resize(); renderHub(); requestAnimationFrame(frame);
+</script>
+</body>
+</html>

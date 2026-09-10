@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>FISHING FOR WORDS</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0d2740;
+    font-family:system-ui,Segoe UI,Arial,sans-serif;user-select:none}
+  #cv{display:block;width:100vw;height:100vh}
+  .ovr{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;background:rgba(10,24,38,.9);color:#eaf5f0;z-index:10;overflow:auto}
+  .ovr h1{font-size:52px;margin:0 0 6px;letter-spacing:5px;color:#ffd257}
+  .ovr h2{font-size:26px;margin:0 0 10px;letter-spacing:2px;color:#bfe3f5}
+  .ovr p{margin:4px 0;font-size:16px;color:#bcd8cf;max-width:640px;text-align:center}
+  .ovr button{margin:10px 6px 0;font-size:19px;letter-spacing:1px;padding:11px 30px;
+    border:0;border-radius:8px;background:#ffd257;color:#2c3d2e;font-weight:700;cursor:pointer}
+  .ovr button:hover{background:#ffe07f}
+  .ovr button:disabled{background:#5a6a60;color:#9aa89e;cursor:default}
+  .ovr button.mode{background:#5cc8e8}
+  .ovr button.mode:hover{background:#8fdcf2}
+  .stats{display:flex;gap:26px;margin-top:12px}
+  .stats div{text-align:center}
+  .stats b{display:block;font-size:24px;color:#fff}
+  .stats span{font-size:12px;color:#9fbfae;letter-spacing:1px}
+  .shoprow{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+  .shopcol{background:rgba(255,255,255,.06);border-radius:10px;padding:12px 16px;min-width:190px}
+  .shopcol h3{margin:0 0 6px;font-size:15px;color:#ffd257;letter-spacing:1px}
+  .shopcol p{font-size:13px;margin:2px 0}
+  .shopcol button{font-size:14px;padding:7px 14px;margin-top:6px}
+  .trophy{margin-top:14px;font-size:14px;color:#ffdf8a;max-width:640px;text-align:center}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="menu" class="ovr">
+  <h1>FISHING FOR WORDS</h1>
+  <p>Cast a line, tap the strike ring, land letter-fish and number-fish.
+     Spell the clue word, or weigh your catch against the sum &mdash; a wrong
+     keep muddies the bucket and costs coins. SPACE / click does everything.</p>
+  <div class="stats">
+    <div><b id="m-coins">0</b><span>COINS</span></div>
+    <div><b id="m-best">0</b><span>BEST DAY</span></div>
+    <div><b id="m-words">0</b><span>WORDS SPELLED</span></div>
+    <div><b id="m-trophies">0</b><span>TROPHIES</span></div>
+  </div>
+  <div>
+    <button id="btn-spell" class="mode">PLAY: SPELLING</button>
+    <button id="btn-math" class="mode">PLAY: MATHS</button>
+  </div>
+  <div id="m-trophylist" class="trophy"></div>
+</div>
+
+<div id="dayend" class="ovr hidden">
+  <h2 id="de-title">DAY COMPLETE</h2>
+  <p id="de-line"></p>
+  <div class="stats">
+    <div><b id="de-earn">0</b><span>EARNED</span></div>
+    <div><b id="de-kept">0</b><span>GOOD CATCHES</span></div>
+    <div><b id="de-mud">0</b><span>MUDDIED</span></div>
+    <div><b id="de-coins">0</b><span>COIN BANK</span></div>
+  </div>
+  <div class="shoprow" id="shop"></div>
+  <div>
+    <button id="btn-nextday">NEXT DAY</button>
+    <button id="btn-menu">MENU</button>
+  </div>
+  <div id="de-trophy" class="trophy"></div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================ FISHING FOR WORDS
+   Cozy fishing: cast, strike-ring, letter-fish (spelling) and weigh-fish
+   (maths). Single file, zero network, Canvas 2D, all art procedural.
+   Question core extracted from Spell & Maths Galaxy (tiered generators
+   + grade-tiered sentence-clue word bank + one-line teaching hints).
+   ========================================================================= */
+const METakey = "wordfishing_meta_v1";
+const CASTS_PER_DAY = 14;
+const QUOTA = {spell:2, math:4};          // words per day / correct keeps per day
+const BUCKET_CAP = [8,12,16];             // bucket tier -> slots
+const ROD_WIN    = [16,24,34];            // rod tier -> strike ring half-window (px)
+const ROD_NAME   = ["Bamboo Rod","Fibreglass Rod","Carbon Pro Rod"];
+const LURE_NAME  = ["Worm Hook","Spinner Lure","Golden Lure"];
+const RARITY_MULT = {common:1, rare:2, legendary:5};
+const SPECIES = ["Carp","Perch","Trout","Bass","Pike","Salmon","Catfish","Koi","Minnow","Bream"];
+
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+let VW = 0, VH = 0;
+function resize(){ VW = cv.width = window.innerWidth; VH = cv.height = window.innerHeight; }
+window.addEventListener("resize", resize); resize();
+
+const R  = (a,b)=>a+Math.random()*(b-a);
+const RI = (a,b)=>Math.floor(R(a,b+1));
+const clamp = (v,a,b)=>v<a?a:v>b?b:v;
+const pick = arr=>arr[Math.floor(Math.random()*arr.length)];
+function shuf(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function lerpC(c1,c2,t){ return "rgb("+Math.round(lerp(c1[0],c2[0],t))+","+Math.round(lerp(c1[1],c2[1],t))+","+Math.round(lerp(c1[2],c2[2],t))+")"; }
+
+/* ═══════════ meta progress (localStorage) ═══════════ */
+function loadMeta(){
+  try { const m = JSON.parse(localStorage.getItem(METakey)); if (m && typeof m==="object") return m; }
+  catch(e){}
+  return {coins:0, bestDay:0, words:0, mathCorrect:0, casts:0, trophies:[], gear:{rod:0,lure:0,bucket:0}};
+}
+function saveMeta(m){ try { localStorage.setItem(METakey, JSON.stringify(m)); } catch(e){} }
+let meta = loadMeta();
+
+/* ═══════════ word bank — grade-tiered, sentence-context clues ═══════════
+   [word, 'sentence with ~ where the word goes'] — extracted from
+   Spell & Maths Galaxy. */
+const WORDS={
+1:[['cat','the ~ says meow'],['dog','the ~ says woof'],['sun','the ~ lights the day'],
+   ['hat','she wore a ~ on her head'],['bus','we rode the ~ to town'],['fish','a ~ swims in water'],
+   ['frog','a green ~ jumps and croaks'],['bird','a ~ has feathers and wings'],
+   ['cake','we ate birthday ~'],['star','each ~ burns far away'],['moon','the ~ circles the earth'],
+   ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a ~ crosses the sea'],
+   ['milk','the cat drank ~'],['book','she read a ~ at night'],['door','he knocked on the ~'],
+   ['foot','put your sock on your ~'],['hand','wash your ~ before eating'],
+   ['king','the ~ wore a golden crown'],['ring','a diamond ~ on her finger'],
+   ['road','the ~ goes over the hill'],['snow','cold white ~ fell all night'],
+   ['bear','the big ~ slept all winter'],['nest','eggs rest in a ~'],
+   ['rain','~ fell from the grey clouds'],['boat','they sailed a small ~'],
+   ['farm','cows and sheep live on a ~'],['goat','the ~ ate the grass'],
+   ['jump','you ~ over the log'],['lamp','turn on the ~ to read'],
+   ['leaf','a red ~ fell from the tree'],['pond','ducks swim on the ~'],
+   ['sock','one ~ is missing again'],['wing','each bird has a left and right ~'],
+   ['wood','the fire is made of ~']],
+2:[['garden','flowers grow in the ~'],['bridge','the train crossed the ~'],
+   ['monkey','a ~ climbs and swings'],['orange','an ~ is a round citrus fruit'],
+   ['purple','~ is red mixed with blue'],['school','you learn at ~'],
+   ['pencil','you write with a ~'],['tiger','a ~ is a big striped cat'],
+   ['planet','earth is a ~'],['castle','knights lived in a ~'],
+   ['engine','the ~ makes the ship move'],['flower','a ~ opens in the sun'],
+   ['dolphin','a ~ is a clever sea animal'],['rocket','a ~ climbs out of the sky'],
+   ['breakfast','we eat ~ in the morning'],['brother','my ~ is older than me'],
+   ['chair','sit on the ~ at the desk'],['cheese','the mouse ate the ~'],
+   ['chicken','the ~ laid an egg'],['circle','draw a ~ with no corners'],
+   ['clothes','fold your ~ neatly'],['dinner','~ is the evening meal'],
+   ['eleven','ten plus one is ~'],['family','my ~ is big and loud'],
+   ['forest','wolves live deep in the ~'],['friend','a ~ shares with you'],
+   ['granite','countertops are made of ~'],['happiness','~ is a warm feeling'],
+   ['holiday','we travel on every ~'],['honey','bees make sweet ~'],
+   ['horse','she rides her ~ daily'],['island','an ~ is land in the sea'],
+   ['jacket','wear a ~ when it is cold'],['kitchen','soup cooks in the ~'],
+   ['library','borrow books from the ~'],['market','fruit is sold at the ~'],
+   ['morning','the ~ comes after night'],['mountain','climb the tall ~'],
+   ['picture','paint a ~ of the sea'],['present','unwrap the birthday ~'],
+   ['shadow','your ~ follows the sun'],['thunder','~ rumbles after lightning'],
+   ['ticket','buy a ~ for the train'],['window','look out of the ~']],
+3:[['beautiful','the sunset was ~'],['adventure','a long risky ~'],
+   ['telescope','a ~ makes far things near'],['dangerous','a ~ road hugs the cliff'],
+   ['elephant','the grey ~ has a trunk'],['gravity','~ pulls you down'],
+   ['giraffe','the ~ has a very long neck'],['hospital','the sick are cared for in a ~'],
+   ['horizon','the sun sinks below the ~'],['lightning','~ is a bright crack in a storm'],
+   ['umbrella','an ~ keeps the rain off'],['volcano','the ~ erupted at dawn'],
+   ['navigate','sailors ~ by the stars'],['knowledge','~ is everything learned'],
+   ['ancestor','your great-grandmother is an ~'],['champion','the ~ held the trophy high'],
+   ['community','our ~ held a fair'],['curious','the ~ child asked why'],
+   ['decision','think hard before a ~'],['describe','~ what you saw'],
+   ['different','each snowflake is ~'],['distance','measure the ~ between towns'],
+   ['divide','~ twelve by three'],['earthquake','an ~ shakes the ground'],
+   ['enormous','an ~ whale swam past'],['familiar','that song sounds ~'],
+   ['important','brushing teeth is ~'],['impossible','it is ~ to touch the sun'],
+   ['insect','an ~ has six legs'],['journey','the ~ took three days'],
+   ['medicine','bitter ~ made him well'],['memory','a good ~ helps in school'],
+   ['multiply','~ five by four to get twenty'],['neighbor','our ~ borrowed sugar'],
+   ['observe','scientists ~ carefully'],['partner','choose a ~ for the game'],
+   ['protect','a coat will ~ you'],['receive','did you ~ my letter?'],
+   ['special','today is a ~ day'],['subtract','~ nine from fifteen'],
+   ['surface','the ~ of the lake was still'],['surprise','the party was a ~']],
+4:[['accomplish','you can ~ anything with practice'],['believe','always ~ in yourself'],
+   ['calendar','mark the date on the ~'],['category','sort each word into a ~'],
+   ['cemetery','the old ~ sits on the hill'],['definite','a ~ maybe the answer is no'],
+   ['dictionary','look the word up in a ~'],['embarrass','do not ~ yourself on stage'],
+   ['environment','care for the ~'],['equipment','check the climbing ~'],
+   ['especially','I like fruit, ~ apples'],['exaggerate','do not ~ the story'],
+   ['familiar','that tune feels ~'],['February','~ is the shortest month'],
+   ['government','the ~ makes laws'],['guardian','a ~ watches over you'],
+   ['height','the ~ of the mountain'],['immediately','come here ~'],
+   ['interrupt','do not ~ the speaker'],['knowledge','~ grows when shared'],
+   ['laboratory','experiments happen in a ~'],['language','a second ~ opens doors'],
+   ['maintenance','car ~ prevents breakdowns'],['mathematics','~ is the language of science'],
+   ['mischievous','the ~ kitten unraveled yarn'],['necessary','water is ~ for life'],
+   ['occasion','a birthday is a happy ~'],['opposite','north is the ~ of south'],
+   ['parallel','train tracks run ~'],['parliament','laws are debated in ~'],
+   ['peninsula','Italy is a ~'],['perseverance','~ beats talent'],
+   ['privilege','education is a ~, not a right'],['pronounce','~ each syllable slowly'],
+   ['question','raise a hand to ask a ~'],['receive','you ~ what you are given'],
+   ['recommend','I ~ this book'],['rhythm','clap the ~ of the song'],
+   ['separate','~ the recycling'],['success','hard work leads to ~'],
+   ['temperature','check the ~ outside'],['threshold','step across the ~'],
+   ['twelfth','December is the ~ month'],['vacuum','a ~ cleans the carpet']],
+5:[['abundance','a harvest of ~'],['acknowledge','~ your mistakes bravely'],
+   ['agriculture','~ feeds the nation'],['ambiguous','an ~ answer confuses everyone'],
+   ['antique','the ~ clock struck nine'],['bureaucracy','permits vanish into the ~'],
+   ['catalyst','an idea can be a ~ for change'],['colleague','greet every ~ kindly'],
+   ['conscience','let your ~ be your guide'],['conscientious','a ~ student checks twice'],
+   ['controversy','the rule caused ~'],['determination','~ moved the boulder'],
+   ['dilemma','a difficult ~ with no easy choice'],['diligent','the ~ bee worked all day'],
+   ['ecosystem','a reef is a living ~'],['entrepreneur','an ~ starts a business'],
+   ['exaggerate','fishermen ~ the size'],['extraordinary','an ~ aurora lit the sky'],
+   ['fascinating','the documentary was ~'],['generosity','her ~ knew no limits'],
+   ['hypocrisy','~ is saying one thing, doing another'],['hypothetical','a ~ question imagines what if'],
+   ['influential','an ~ writer changes minds'],['innovation','~ reshapes the world'],
+   ['interpret','poets ~ dreams'],['legitimate','a ~ claim stands in court'],
+   ['maintenance','the bridge needs ~'],['metaphor','a ~ says love is a rose'],
+   ['negotiate','~ before you sign'],['omnipotent','no one is truly ~'],
+   ['phenomenon','an eclipse is a rare ~'],['photosynthesis','leaves feed themselves by ~'],
+   ['possibilities','the future holds endless ~'],['preliminary','the ~ results look good'],
+   ['resilience','~ is bouncing back'],['sacrifice','a ~ for the team'],
+   ['simultaneous','the drums kept a ~ beat'],['sophisticated','a ~ argument, well reasoned'],
+   ['strategist','a great ~ sees three moves ahead'],['sufficient','one coat was ~'],
+   ['synonymous','kind and caring are ~'],['threshold','cross the ~ into the lab']]
+};
+
+/* ═══════════ math generators — tiered, with teaching hints ═══════════ */
+function opts(ans,spread,min,max,n=3){
+  const s=new Set([ans]); let g=0;
+  while(s.size<n+1&&g++<400){const v=ans+RI(-spread,spread); if(v!==ans&&v>=min&&v<=max)s.add(v);}
+  let b=1; while(s.size<n+1){ if(ans+b<=max)s.add(ans+b); if(s.size<n+1&&ans-b>=min)s.add(ans-b); b++; }
+  return shuf([...s]);
+}
+function hintFor(op,a,b){
+  switch(op){
+    case '+': return 'start at '+a+', count on '+b+' more';
+    case '−': return 'count up from '+b+' to '+a;
+    case '×': return b+' groups of '+a+' — or '+a+' groups of '+b;
+    case '÷': return 'how many '+b+'s make '+a+'?';
+    default: return '';
+  }
+}
+function qQuick(d){
+  let a,b,op,ans,sp,mn,mx,hint='';
+  if(d===1){op=Math.random()<.5?'+':'−';a=RI(1,10);b=RI(1,10);if(op==='−'&&b>a){const t=a;a=b;b=t;}
+            ans=op==='+'?a+b:a-b;sp=4;mn=0;mx=20;}
+  else if(d===2){const r=Math.random();
+    if(r<.34){op='+';a=RI(5,30);b=RI(5,30);ans=a+b;sp=7;mn=0;mx=64;}
+    else if(r<.68){op='−';a=RI(10,45);b=RI(1,a);ans=a-b;sp=7;mn=0;mx=45;}
+    else{op='×';a=RI(2,9);b=RI(2,9);ans=a*b;sp=8;mn=0;mx=90;}}
+  else if(d===3){const r=Math.random();
+    if(r<.25){op='+';a=RI(25,99);b=RI(25,99);ans=a+b;sp=14;mn=0;mx=200;}
+    else if(r<.5){op='−';a=RI(40,99);b=RI(10,a);ans=a-b;sp=14;mn=0;mx=99;}
+    else if(r<.78){op='×';a=RI(3,12);b=RI(3,12);ans=a*b;sp=12;mn=0;mx=150;}
+    else{op='÷';b=RI(2,9);ans=RI(2,12);a=b*ans;sp=6;mn=0;mx=20;}}
+  else{ /* tier 4: two-step, fractions of a quantity, percentages */
+    const r=Math.random();
+    if(r<.4){ const b1=RI(2,9),b2=RI(2,9); a=RI(3,18); ans=a+b1*b2;
+      return{prompt:a+' + '+b1+' × '+b2,note:'multiply first, then add',
+             hint:b1+' × '+b2+' = '+(b1*b2)+', then '+a+' + '+(b1*b2),
+             answer:String(ans),gates:opts(ans,15,0,Math.max(120,ans+20)).map(String)}; }
+    if(r<.7){ const den=pick([2,3,4,5]); const num=pick([1,1,1,2,3].filter(n=>n<den));
+      const T=den*RI(3,12); ans=T/den*num;
+      return{prompt:num+'/'+den+' of '+T,note:'take the fraction of the whole',
+             hint:'divide '+T+' by '+den+' (bottom), then times by '+num+' (top)',
+             answer:String(ans),gates:opts(ans,Math.max(4,Math.round(ans*.3)),0,ans*2+6).map(String)}; }
+    const p=pick([10,20,25,50,75]), T=pick([20,40,60,80,100,200]);
+    ans=T/100*p;
+    return{prompt:p+'% of '+T,note:'take the percentage of the whole',
+           hint:p+'% of '+T+' = '+T+' ÷ 100 × '+p,
+           answer:String(ans),gates:opts(ans,Math.max(6,Math.round(ans*.35)),0,ans*2+10).map(String)};
+  }
+  hint=hintFor(op,a,b);
+  return{prompt:a+' '+op+' '+b,note:'',hint,answer:String(ans),gates:opts(ans,sp,mn,mx).map(String)};
+}
+
+/* ═══════════ game state ═══════════ */
+let phase = "menu";       // menu | ready | charging | waiting | strike | hooked | result | dayend
+let mode = "spell";       // spell | math
+let day = 1, castsUsed = 0;
+let bucket = [];          // {good:bool, label, value, rarity, name}
+let wordsDone = 0, mathCorrect = 0;
+let word = null;          // {t, h}        spelling target
+let wordIdx = 0;          // letters revealed so far
+let question = null;      // math question object
+let wordTier = 1, mathTier = 1;
+let school = [];          // swimming fish
+let power = 0, powerDir = 1;
+let bobber = {x:0, y:0, t:0};
+let biteT = 0, ring = {r:0, target:24, closing:false};
+let hookedFish = null;    // {label, rarity, name, correct}
+let hint = "", hintT = 0, toast = "", toastT = 0, toastCol = "#fff";
+let lastResult = null;
+let dayEarnings = 0, dayKept = 0, dayMud = 0;
+let TS = 1, frames = 0, fps = 0, fpsT = 0, matchT = 0;
+let dbgForce = null, dbgRarity = null;   // playtest forcing
+let keepBtn = null, relBtn = null;       // canvas button hit-rects
+
+const tierFor = ()=> mode==="spell" ? clamp(1+Math.floor((day-1)/2),1,5)
+                                    : clamp(1+Math.floor((day-1)/2),1,4);
+
+function needLetter(){ return word ? (word.t[wordIdx]||"").toUpperCase() : ""; }
+function answerNow(){ return question ? question.answer : ""; }
+
+function clueText(){
+  if (mode==="spell" && word){
+    const masked = word.t.split('').map((c,i)=>i<wordIdx?c.toUpperCase():'·').join('');
+    const s = word.h.replace('~', masked);
+    return 'Spell the word: "'+s.charAt(0).toUpperCase()+s.slice(1)+'"';
+  }
+  if (mode==="math" && question)
+    return "Keep fish weighing the answer of "+question.prompt.replace(/-/g,'−');
+  return "";
+}
+
+function rollRarity(){
+  const l = meta.gear.lure;
+  const leg = 0.02 + l*0.05, rare = 0.12 + l*0.04;
+  const x = Math.random();
+  return x < leg ? "legendary" : x < leg+rare ? "rare" : "common";
+}
+function rarityTag(r){ return r==="legendary" ? "Golden" : r==="rare" ? "Silver" : ""; }
+function fishValue(r){ return RARITY_MULT[r] || 1; }
+
+function refreshSchool(){
+  school = [];
+  let labels = [];
+  if (mode==="spell" && word){
+    const remaining = word.t.slice(wordIdx).split('');
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+    const distract = [];
+    while (distract.length < 8){
+      const c = pick(alphabet.split(''));
+      if (c !== needLetter().toLowerCase()) distract.push(c);
+    }
+    labels = shuf(remaining.concat(distract)).slice(0,10).map(c=>c.toUpperCase());
+    if (labels.indexOf(needLetter()) < 0) labels[RI(0,2)] = needLetter();
+  } else if (mode==="math" && question){
+    labels = question.gates.slice();
+    const extra = opts(+question.answer, Math.max(4,Math.round(+question.answer*0.3)), 0, +question.answer*2+8, 5);
+    labels = shuf(labels.concat(extra)).slice(0,10);
+  }
+  for (const L of labels){
+    school.push({ x:R(300, VW-80), y:R(WL()+60, VH-50), vx:R(18,42)*(Math.random()<0.5?-1:1),
+                  label:String(L), ph:R(0,6), size:R(16,26),
+                  rarity:rollRarity(), species:pick(SPECIES) });
+  }
+}
+
+function WL(){ return Math.round(VH*0.42); }   // waterline y
+
+/* ═══════════ day / mode lifecycle ═══════════ */
+function newWord(){
+  wordTier = tierFor();
+  const bank = WORDS[wordTier];
+  const w = pick(bank);
+  word = {t:w[0], h:w[1]};
+  wordIdx = 0;
+}
+function newQuestion(){
+  mathTier = tierFor();
+  question = qQuick(mathTier);
+}
+function startDay(m){
+  mode = m || mode;
+  day = 1; castsUsed = 0; bucket = []; wordsDone = 0; mathCorrect = 0;
+  dayEarnings = 0; dayKept = 0; dayMud = 0; hint = ""; toast = "";
+  if (mode==="spell") newWord(); else newQuestion();
+  refreshSchool();
+  phase = "ready";
+  showOverlay(null);
+}
+function nextDay(){
+  day++; castsUsed = 0; bucket = []; wordsDone = 0; mathCorrect = 0;
+  dayEarnings = 0; dayKept = 0; dayMud = 0; hint = "";
+  if (mode==="spell") newWord(); else newQuestion();
+  refreshSchool();
+  phase = "ready";
+  showOverlay(null);
+}
+
+/* ═══════════ casting / striking ═══════════ */
+function beginCharge(){ if (phase!=="ready") return; phase="charging"; power=0; powerDir=1; }
+function castLine(p){
+  power = clamp(p,0,1);
+  bobber.x = 250 + 80 + power*Math.min(420, VW-420);
+  bobber.x = clamp(bobber.x, 300, VW-60);
+  bobber.y = WL()+6; bobber.t = 0;
+  phase = "waiting";
+  biteT = R(1.0, 2.6);
+  refreshSchool();
+}
+function biteNow(){
+  if (phase!=="waiting") return;
+  phase = "strike"; ring = {r:130, target:24, closing:true};
+}
+function tapStrike(){
+  if (phase!=="strike") return;
+  const win = ROD_WIN[meta.gear.rod];
+  if (Math.abs(ring.r - ring.target) <= win) hookFish();
+  else missCast(ring.r > ring.target+win ? "Too early!" : "Too late!");
+}
+function missCast(msg){
+  castsUsed++;
+  meta.casts++; saveMeta(meta);
+  lastResult = {ok:false, msg};
+  toast = msg; toastT = 1.4; toastCol = "#ff9d8a";
+  endCastOrDay();
+}
+function pickBitingFish(){
+  let want = mode==="spell" ? needLetter() : answerNow();
+  const cands = school.filter(f=>String(f.label)===String(want));
+  const pool = cands.length && Math.random() < 0.45 + meta.gear.lure*0.12 ? cands : school;
+  return pool.length ? pick(pool) : null;
+}
+function hookFish(){
+  const f = pickBitingFish() || {label: mode==="spell"?needLetter():answerNow(), rarity:'common', species:pick(SPECIES), size:22};
+  if (dbgForce){ f.label = dbgForce; dbgForce = null; }
+  if (dbgRarity){ f.rarity = dbgRarity; dbgRarity = null; }
+  const want = mode==="spell" ? needLetter() : answerNow();
+  hookedFish = {
+    label: String(f.label), rarity: f.rarity, name: (rarityTag(f.rarity)+" "+f.species).trim(),
+    correct: String(f.label)===String(want), size: f.size,
+  };
+  phase = "hooked";
+}
+function decideKeep(keepIt){
+  if (phase!=="hooked" || !hookedFish) return;
+  const f = hookedFish; hookedFish = null;
+  castsUsed++; meta.casts++;
+  if (!keepIt){
+    lastResult = {ok:false, msg:"Released the "+f.label+" fish"};
+    toast = "Released — the "+f.name+" swims away"; toastT = 1.4; toastCol = "#cfe3cf";
+    saveMeta(meta); endCastOrDay(); return;
+  }
+  const val = (mode==="spell" ? 2 : 6) * fishValue(f.rarity);
+  if (f.correct){
+    /* spelling keeps are sorted straight into the keeper's net (the word);
+       only math catches and muddied fish occupy bucket slots */
+    if (mode!=="spell") bucket.push({good:true, label:f.label, value:val, rarity:f.rarity, name:f.name});
+    dayEarnings += val; dayKept++;
+    if (f.rarity==="legendary") addTrophy(f);
+    if (mode==="spell"){
+      wordIdx++;
+      if (wordIdx >= word.t.length){
+        wordsDone++; meta.words++;
+        const bonus = 10 * wordTier;
+        dayEarnings += bonus;
+        toast = "WORD! "+word.t.toUpperCase()+" spelled  +"+bonus+" bonus"; toastT=2.2; toastCol="#ffd257";
+        if (wordsDone < QUOTA.spell) newWord();
+      } else {
+        toast = "Kept "+f.label+" — the word fills in!"; toastT=1.4; toastCol="#a8e6a0";
+      }
+    } else {
+      mathCorrect++; meta.mathCorrect++;
+      toast = "Weighed "+f.label+" — correct catch!"; toastT=1.6; toastCol="#a8e6a0";
+      if (mathCorrect < QUOTA.math) newQuestion();
+    }
+    lastResult = {ok:true, label:f.label};
+  } else {
+    bucket.push({good:false, label:f.label, value:0, rarity:f.rarity, name:f.name});
+    dayMud++;
+    meta.coins = Math.max(0, meta.coins-2);
+    if (mode==="spell"){
+      hint = "You need the letter '"+needLetter()+"' next — "+clueText();
+    } else if (question){
+      hint = question.hint || hintFor('×',0,0);
+      if (question.note) hint = question.note+" — "+hint;
+    }
+    hintT = 6;
+    if (f.rarity==="legendary") addTrophy(f);
+    toast = "Muddied the bucket! That one was not the catch  -2 coins"; toastT=2.0; toastCol="#ff9d8a";
+    lastResult = {ok:false, label:f.label, polluted:true};
+  }
+  saveMeta(meta);
+  endCastOrDay();
+}
+function addTrophy(f){
+  meta.trophies.push({name:f.name, label:f.label, day, mode});
+  if (meta.trophies.length > 30) meta.trophies = meta.trophies.slice(-30);
+}
+function endCastOrDay(){
+  phase = "result";
+  resultT = 0.7;
+}
+let resultT = 0;
+function finishCast(){
+  const cap = BUCKET_CAP[meta.gear.bucket];
+  const quotaDone = mode==="spell" ? wordsDone>=QUOTA.spell : mathCorrect>=QUOTA.math;
+  if (castsUsed>=CASTS_PER_DAY || bucket.length>=cap || quotaDone){ endDay(); return; }
+  phase = "ready";
+}
+function endDay(){
+  meta.coins += dayEarnings;
+  if (dayEarnings > meta.bestDay) meta.bestDay = dayEarnings;
+  saveMeta(meta);
+  phase = "dayend";
+  document.getElementById("de-title").textContent = "DAY "+day+" COMPLETE";
+  const quotaDone = mode==="spell" ? wordsDone>=QUOTA.spell : mathCorrect>=QUOTA.math;
+  document.getElementById("de-line").textContent =
+    (quotaDone ? "Quota met — the keeper is delighted! "
+               : (castsUsed>=CASTS_PER_DAY ? "The sun set on your casts. " : "The bucket was full. ")) +
+    "Bucket sold.";
+  document.getElementById("de-earn").textContent = dayEarnings;
+  document.getElementById("de-kept").textContent = dayKept;
+  document.getElementById("de-mud").textContent = dayMud;
+  document.getElementById("de-coins").textContent = meta.coins;
+  buildShop();
+  const tt = document.getElementById("de-trophy");
+  tt.textContent = meta.trophies.length
+    ? "Trophy shelf: "+meta.trophies.slice(-4).map(t=>t.name+" '"+t.label+"'").join(" · ") : "";
+  showOverlay("dayend");
+}
+
+/* ═══════════ shop ═══════════ */
+const SHOP = [
+  {key:"rod",   names:ROD_NAME,  costs:[null,20,45], desc:t=>"strike window ±"+ROD_WIN[t]+"px"},
+  {key:"lure",  names:LURE_NAME, costs:[null,15,35], desc:t=>"better rarity odds"},
+  {key:"bucket",names:["Small Bucket","Wide Bucket","Keeper's Net"], costs:[null,12,28], desc:t=>BUCKET_CAP[t]+" slots"},
+];
+function buildShop(){
+  const host = document.getElementById("shop");
+  host.innerHTML = "";
+  for (const it of SHOP){
+    const tier = meta.gear[it.key];
+    const col = document.createElement("div");
+    col.className = "shopcol";
+    const h = document.createElement("h3"); h.textContent = it.names[tier]; col.appendChild(h);
+    const p = document.createElement("p"); p.textContent = it.desc(tier); col.appendChild(p);
+    const btn = document.createElement("button");
+    if (tier >= 2){ btn.textContent = "MAXED"; btn.disabled = true; }
+    else {
+      const cost = it.costs[tier+1];
+      btn.textContent = "BUY "+it.names[tier+1]+" — "+cost+"c";
+      btn.id = "buy-"+it.key;
+      if (meta.coins < cost) btn.disabled = true;
+      btn.addEventListener("click", ()=>{
+        if (meta.coins >= cost && meta.gear[it.key] < 2){
+          meta.coins -= cost; meta.gear[it.key]++;
+          saveMeta(meta);
+          document.getElementById("de-coins").textContent = meta.coins;
+          buildShop();
+        }
+      });
+    }
+    col.appendChild(btn);
+    host.appendChild(col);
+  }
+}
+
+/* ═══════════ overlays / menu ═══════════ */
+function showOverlay(which){
+  for (const id of ["menu","dayend"])
+    document.getElementById(id).classList.toggle("hidden", id!==which);
+  if (which==="menu"){
+    document.getElementById("m-coins").textContent = meta.coins;
+    document.getElementById("m-best").textContent = meta.bestDay;
+    document.getElementById("m-words").textContent = meta.words;
+    document.getElementById("m-trophies").textContent = meta.trophies.length;
+    const tl = document.getElementById("m-trophylist");
+    tl.textContent = meta.trophies.length
+      ? "Trophy shelf: "+meta.trophies.slice(-6).map(t=>t.name+" '"+t.label+"'").join(" · ") : "";
+  }
+}
+document.getElementById("btn-spell").addEventListener("click", ()=>startDay("spell"));
+document.getElementById("btn-math").addEventListener("click", ()=>startDay("math"));
+document.getElementById("btn-nextday").addEventListener("click", ()=>nextDay());
+document.getElementById("btn-menu").addEventListener("click", ()=>{ phase="menu"; showOverlay("menu"); });
+
+/* ═══════════ input ═══════════ */
+function actionTap(){
+  if (phase==="ready") beginCharge();
+  else if (phase==="charging") castLine(power);
+  else if (phase==="strike") tapStrike();
+}
+window.addEventListener("keydown", e=>{
+  const k = e.key.toLowerCase();
+  if (k===" "){ e.preventDefault(); actionTap(); }
+  if (phase==="hooked"){
+    if (k==="k") decideKeep(true);
+    if (k==="r") decideKeep(false);
+  }
+});
+cv.addEventListener("pointerdown", e=>{
+  if (phase==="hooked"){
+    if (keepBtn && hitRect(keepBtn,e.clientX,e.clientY)) return decideKeep(true);
+    if (relBtn  && hitRect(relBtn, e.clientX,e.clientY)) return decideKeep(false);
+    return;
+  }
+  actionTap();
+});
+function hitRect(r,x,y){ return x>=r.x && x<=r.x+r.w && y>=r.y && y<=r.y+r.h; }
+cv.addEventListener("contextmenu", e=>e.preventDefault());
+
+/* ═══════════ update ═══════════ */
+let lastT = performance.now();
+function frame(now){
+  requestAnimationFrame(frame);
+  let dt = (now-lastT)/1000; lastT = now;
+  if (dt>0.05) dt = 0.05;
+  dt *= TS;
+  frames++; fpsT += dt;
+  if (fpsT>=1){ fps=frames; frames=0; fpsT=0; }
+  if (phase!=="menu" && phase!=="dayend") matchT += dt;
+
+  if (phase==="charging"){
+    power += powerDir*dt*1.4;
+    if (power>=1){ power=1; powerDir=-1; }
+    if (power<=0){ power=0; powerDir=1; }
+  }
+  if (phase==="waiting"){
+    bobber.t += dt;
+    biteT -= dt;
+    if (biteT<=0) biteNow();
+  }
+  if (phase==="strike"){
+    ring.r -= dt*95;
+    const win = ROD_WIN[meta.gear.rod];
+    if (ring.r < ring.target - win) missCast("Too slow — it spat the hook!");
+  }
+  if (phase==="result"){
+    resultT -= dt;
+    if (resultT<=0) finishCast();
+  }
+  if (toastT>0) toastT -= dt;
+  if (hintT>0) hintT -= dt;
+
+  // fish always drift while a day is on
+  if (phase!=="menu" && phase!=="dayend"){
+    const wl = WL();
+    for (const f of school){
+      f.x += f.vx*dt;
+      f.ph += dt*2;
+      if (f.x<280){ f.x=280; f.vx=Math.abs(f.vx); }
+      if (f.x>VW-60){ f.x=VW-60; f.vx=-Math.abs(f.vx); }
+      f.y = clamp(f.y, wl+50, VH-40);
+    }
+  }
+  draw();
+}
+requestAnimationFrame(frame);
+
+/* ═══════════ rendering ═══════════ */
+const SKY = {  // [top, bottom] per time of day
+  morn:[[158,200,232],[255,230,199]],
+  noon:[[125,184,232],[207,233,245]],
+  dusk:[[106,111,176],[255,158,109]],
+};
+function skyColors(){
+  const t = phase==="menu"||phase==="dayend" ? 0.25 : clamp(castsUsed/CASTS_PER_DAY,0,1);
+  let a,b,f;
+  if (t<0.5){ a=SKY.morn; b=SKY.noon; f=t*2; } else { a=SKY.noon; b=SKY.dusk; f=(t-0.5)*2; }
+  return [lerpC(a[0],b[0],f), lerpC(a[1],b[1],f)];
+}
+function draw(){
+  const wl = WL();
+  const [top,bot] = skyColors();
+
+  // sky
+  const g = ctx.createLinearGradient(0,0,0,wl);
+  g.addColorStop(0,top); g.addColorStop(1,bot);
+  ctx.fillStyle = g; ctx.fillRect(0,0,VW,wl);
+  // sun arc
+  const t = phase==="menu"||phase==="dayend" ? 0.25 : clamp(castsUsed/CASTS_PER_DAY,0,1);
+  const sx = lerp(80, VW-120, t), sy = wl - 60 - Math.sin(t*Math.PI)*(wl-140);
+  ctx.fillStyle = t>0.75 ? "#ff9e5e" : "#ffe9a8";
+  ctx.beginPath(); ctx.arc(sx, sy, 26, 0, 7); ctx.fill();
+  // clouds
+  ctx.fillStyle = "rgba(255,255,255,.75)";
+  for (let i=0;i<4;i++){
+    const cx = ((i*397 + matchT*8 + i*i*53) % (VW+200)) - 100;
+    const cy = 40 + i*34;
+    ctx.beginPath();
+    ctx.arc(cx,cy,16,0,7); ctx.arc(cx+20,cy-8,20,0,7); ctx.arc(cx+44,cy,15,0,7);
+    ctx.fill();
+  }
+
+  // water
+  const wg = ctx.createLinearGradient(0,wl,0,VH);
+  wg.addColorStop(0,"#3f7f9e"); wg.addColorStop(1,"#123a52");
+  ctx.fillStyle = wg; ctx.fillRect(0,wl,VW,VH-wl);
+  ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0,wl);
+  for (let x=0;x<=VW;x+=24) ctx.lineTo(x, wl + Math.sin(x*0.02 + matchT*1.6)*2.4);
+  ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,.08)";
+  for (let i=1;i<5;i++){
+    const y = wl + (VH-wl)*i/5;
+    ctx.beginPath();
+    for (let x=0;x<=VW;x+=32) ctx.lineTo(x, y + Math.sin(x*0.015 + matchT + i)*3);
+    ctx.stroke();
+  }
+
+  if (phase==="menu" || phase==="dayend"){ drawFrameEnd(); return; }
+
+  drawDock(wl);
+  drawSchool(wl);
+  drawLineAndBobber(wl);
+  drawHUD(wl);
+  if (phase==="hooked") drawDecision();
+  drawFrameEnd();
+}
+function drawFrameEnd(){
+  // toast
+  if (toastT>0 && toast){
+    ctx.font = "bold 22px system-ui"; ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(0,0,0,.45)";
+    const w = ctx.measureText(toast).width;
+    ctx.fillRect(VW/2-w/2-16, VH*0.62-26, w+32, 38);
+    ctx.fillStyle = toastCol; ctx.globalAlpha = clamp(toastT,0,1);
+    ctx.fillText(toast, VW/2, VH*0.62);
+    ctx.globalAlpha = 1;
+  }
+}
+function drawDock(wl){
+  // planks
+  ctx.fillStyle = "#8a5f3a"; ctx.fillRect(0, wl-14, 240, 16);
+  ctx.fillStyle = "#75512f";
+  for (let x=0;x<240;x+=48) ctx.fillRect(x, wl-14, 3, 16);
+  // posts
+  ctx.fillStyle = "#6b4526";
+  ctx.fillRect(26, wl-14, 12, 70); ctx.fillRect(200, wl-14, 12, 70);
+  // fisherman silhouette
+  ctx.fillStyle = "#2e3d34";
+  ctx.beginPath(); ctx.arc(120, wl-72, 11, 0, 7); ctx.fill();          // head
+  ctx.fillRect(107, wl-62, 26, 40);                                      // body
+  ctx.fillRect(112, wl-24, 8, 12); ctx.fillRect(122, wl-24, 8, 12);      // legs
+  ctx.strokeStyle = "#2e3d34"; ctx.lineWidth = 5; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(130, wl-52); ctx.lineTo(176, wl-84); ctx.stroke();  // arm+rod
+  rodTip = {x:176, y:wl-84};
+}
+let rodTip = {x:176, y:0};
+function drawSchool(wl){
+  for (const f of school){
+    drawFish(f.x, f.y + Math.sin(f.ph)*6, f.vx<0, f.label, f.rarity, f.size);
+  }
+}
+function drawFish(x,y,flip,label,rarity,size){
+  ctx.save(); ctx.translate(x,y); if (flip) ctx.scale(-1,1);
+  let body = "#7fb2c8", belly = "#b9d8e4";
+  if (rarity==="rare"){ body="#c6d4dc"; belly="#eef4f7"; }
+  if (rarity==="legendary"){ body="#e8b83a"; belly="#ffe9a8"; }
+  // tail
+  ctx.fillStyle = body;
+  ctx.beginPath(); ctx.moveTo(-size*0.9,0); ctx.lineTo(-size*1.5,-size*0.6);
+  ctx.lineTo(-size*1.5,size*0.6); ctx.closePath(); ctx.fill();
+  // body
+  ctx.beginPath(); ctx.ellipse(0,0,size,size*0.55,0,0,7); ctx.fill();
+  ctx.fillStyle = belly;
+  ctx.beginPath(); ctx.ellipse(0,size*0.2,size*0.7,size*0.28,0,0,7); ctx.fill();
+  // fin + eye
+  ctx.fillStyle = body;
+  ctx.beginPath(); ctx.moveTo(0,-size*0.5); ctx.lineTo(size*0.25,-size*0.95); ctx.lineTo(size*0.4,-size*0.45);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#17242c";
+  ctx.beginPath(); ctx.arc(size*0.6,-size*0.12,size*0.11,0,7); ctx.fill();
+  // shimmer for special fish
+  if (rarity!=="common"){
+    ctx.strokeStyle = rarity==="legendary" ? "rgba(255,240,170,.9)" : "rgba(240,248,255,.7)";
+    ctx.lineWidth = 2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.ellipse(0,0,size+4,size*0.55+4,0,0,7); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // letter / weight on the flank
+  ctx.fillStyle = "#12232e"; ctx.font = "bold "+Math.round(size*0.85)+"px system-ui";
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.save(); if (flip) ctx.scale(-1,1);
+  ctx.strokeStyle = "rgba(255,255,255,.65)"; ctx.lineWidth = 3;
+  ctx.strokeText(String(label), -size*0.15, 0);
+  ctx.fillText(String(label), -size*0.15, 0);
+  ctx.restore();
+  ctx.restore();
+  ctx.textBaseline = "alphabetic";
+}
+function drawLineAndBobber(wl){
+  if (phase==="ready" || phase==="charging"){
+    // idle line hanging
+    ctx.strokeStyle = "rgba(240,248,255,.55)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(rodTip.x, rodTip.y);
+    ctx.quadraticCurveTo(rodTip.x+40, rodTip.y+70, rodTip.x+52, wl+26);
+    ctx.stroke();
+    drawBobber(rodTip.x+52, wl+26 + Math.sin(matchT*2)*2);
+    if (phase==="charging") drawPowerMeter();
+    return;
+  }
+  if (phase==="waiting" || phase==="strike" || phase==="result"){
+    ctx.strokeStyle = "rgba(240,248,255,.55)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(rodTip.x, rodTip.y);
+    ctx.quadraticCurveTo((rodTip.x+bobber.x)/2, rodTip.y-40, bobber.x, bobber.y);
+    ctx.stroke();
+    const by = bobber.y + Math.sin(bobber.t*4)*2;
+    drawBobber(bobber.x, by);
+    // ripples
+    ctx.strokeStyle = "rgba(255,255,255,.3)";
+    for (let i=0;i<3;i++){
+      const rp = ((bobber.t*0.7 + i/3) % 1);
+      ctx.globalAlpha = 0.35*(1-rp);
+      ctx.beginPath(); ctx.ellipse(bobber.x, wl+4, 12+rp*36, 4+rp*9, 0, 0, 7); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    if (phase==="strike"){
+      // strike ring closing on the bobber
+      const win = ROD_WIN[meta.gear.rod];
+      ctx.strokeStyle = "rgba(255,210,87,.95)"; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(bobber.x, by, ring.r, 0, 7); ctx.stroke();
+      // the hit zone
+      ctx.strokeStyle = "rgba(120,230,140,.9)"; ctx.lineWidth = 3; ctx.setLineDash([6,5]);
+      ctx.beginPath(); ctx.arc(bobber.x, by, ring.target, 0, 7); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = "bold 16px system-ui"; ctx.textAlign = "center"; ctx.fillStyle = "#fff";
+      ctx.fillText("TAP when the ring meets the green circle!", bobber.x, wl-46);
+    }
+  }
+}
+function drawBobber(x,y){
+  ctx.strokeStyle = "#17242c"; ctx.lineWidth = 1.5;
+  ctx.fillStyle = "#e04338";
+  ctx.beginPath(); ctx.arc(x,y,9,Math.PI,0); ctx.fill();
+  ctx.fillStyle = "#f4f4f4";
+  ctx.beginPath(); ctx.arc(x,y,9,0,Math.PI); ctx.fill();
+  ctx.stroke();
+}
+function drawPowerMeter(){
+  const x = 60, y = WL()-140, w = 18, h = 110;
+  ctx.fillStyle = "rgba(0,0,0,.4)"; ctx.fillRect(x-3,y-3,w+6,h+6);
+  const gg = ctx.createLinearGradient(0,y+h,0,y);
+  gg.addColorStop(0,"#79d979"); gg.addColorStop(0.7,"#ffd257"); gg.addColorStop(1,"#e05050");
+  ctx.fillStyle = gg;
+  ctx.fillRect(x, y+h*(1-power), w, h*power);
+  ctx.font = "bold 13px system-ui"; ctx.textAlign = "center"; ctx.fillStyle = "#fff";
+  ctx.fillText("POWER", x+w/2, y-12);
+  ctx.fillText("tap to cast", x+w/2, y+h+22);
+}
+function drawDecision(){
+  const f = hookedFish; if (!f) return;
+  ctx.fillStyle = "rgba(8,20,32,.72)"; ctx.fillRect(0,0,VW,VH);
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#ffd257"; ctx.font = "bold 30px system-ui";
+  ctx.fillText("HOOKED A FISH!", VW/2, VH*0.2);
+  drawFish(VW/2, VH*0.42, false, f.label, f.rarity, Math.max(34, f.size*1.8));
+  ctx.fillStyle = "#eaf5f0"; ctx.font = "19px system-ui";
+  ctx.fillText(f.name+"  ·  "+(mode==="spell" ? "letter '"+f.label+"'" : "weighs "+f.label), VW/2, VH*0.42+90);
+  ctx.font = "16px system-ui"; ctx.fillStyle = "#bcd8cf";
+  ctx.fillText(mode==="spell" ? "Keep it only if it is the next letter of the word."
+                              : "Keep it only if its weight answers the sum.", VW/2, VH*0.42+120);
+  // buttons
+  const bw = 170, bh = 52, gy = VH*0.62;
+  keepBtn = {x:VW/2-bw-24, y:gy, w:bw, h:bh};
+  relBtn  = {x:VW/2+24,     y:gy, w:bw, h:bh};
+  ctx.fillStyle = "#4caf6d"; ctx.fillRect(keepBtn.x,keepBtn.y,bw,bh);
+  ctx.fillStyle = "#c9705c"; ctx.fillRect(relBtn.x,relBtn.y,bw,bh);
+  ctx.fillStyle = "#fff"; ctx.font = "bold 20px system-ui";
+  ctx.fillText("KEEP [K]", keepBtn.x+bw/2, gy+33);
+  ctx.fillText("RELEASE [R]", relBtn.x+bw/2, gy+33);
+}
+function drawHUD(wl){
+  ctx.textBaseline = "alphabetic";
+  // top bar
+  ctx.fillStyle = "rgba(8,20,32,.55)"; ctx.fillRect(0,0,VW,74);
+  ctx.textAlign = "left"; ctx.font = "bold 17px system-ui"; ctx.fillStyle = "#fff";
+  ctx.fillText("DAY "+day+"   CASTS LEFT "+(CASTS_PER_DAY-castsUsed), 20, 30);
+  ctx.fillStyle = "#ffd257";
+  ctx.fillText("COINS "+meta.coins, 20, 56);
+  // quota
+  ctx.textAlign = "right";
+  ctx.fillStyle = "#fff";
+  const q = mode==="spell" ? "WORDS "+wordsDone+"/"+QUOTA.spell : "CORRECT "+mathCorrect+"/"+QUOTA.math;
+  ctx.fillText(q, VW-20, 30);
+  ctx.fillStyle = "#bcd8cf"; ctx.font = "14px system-ui";
+  ctx.fillText(mode==="spell" ? "SPELLING" : "MATHS", VW-20, 52);
+  // clue banner (the keeper's net)
+  const clue = clueText();
+  ctx.font = "bold 21px system-ui"; ctx.textAlign = "center";
+  const cw = ctx.measureText(clue).width;
+  ctx.fillStyle = "rgba(8,20,32,.62)";
+  ctx.fillRect(VW/2-cw/2-18, 88, cw+36, 40);
+  ctx.strokeStyle = "#8fd3a8"; ctx.lineWidth = 2;
+  ctx.strokeRect(VW/2-cw/2-18, 88, cw+36, 40);
+  ctx.fillStyle = "#d8f5e0"; ctx.fillText(clue, VW/2, 115);
+  // spelling progress letters
+  if (mode==="spell" && word){
+    ctx.font = "bold 26px system-ui"; ctx.fillStyle = "#ffd257";
+    let lx = VW/2 - (word.t.length*26)/2;
+    for (let i=0;i<word.t.length;i++){
+      ctx.fillStyle = i<wordIdx ? "#a8e6a0" : "rgba(255,255,255,.25)";
+      ctx.fillText(i<wordIdx ? word.t[i].toUpperCase() : "·", lx+13+i*26, 160);
+    }
+  }
+  // bucket slots bottom-left
+  const cap = BUCKET_CAP[meta.gear.bucket];
+  ctx.textAlign = "left"; ctx.font = "bold 13px system-ui";
+  ctx.fillStyle = "#cfe3cf"; ctx.fillText("BUCKET", 20, VH-84);
+  for (let i=0;i<cap;i++){
+    const s = bucket[i];
+    ctx.fillStyle = s ? (s.good ? "#4caf6d" : "#7a6248") : "rgba(255,255,255,.14)";
+    ctx.fillRect(20+i*34, VH-74, 28, 36);
+    if (s){
+      ctx.fillStyle = "#fff"; ctx.font = "bold 15px system-ui"; ctx.textAlign = "center";
+      ctx.fillText(String(s.label).slice(0,2), 20+i*34+14, VH-50);
+      ctx.textAlign = "left"; ctx.font = "bold 13px system-ui";
+    }
+  }
+  // hint bottom-center
+  if (hintT>0 && hint){
+    ctx.font = "16px system-ui"; ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(8,20,32,.6)";
+    const hw = ctx.measureText(hint).width;
+    ctx.fillRect(VW/2-hw/2-12, VH-46, hw+24, 30);
+    ctx.fillStyle = "#ffd9a0"; ctx.globalAlpha = clamp(hintT,0,1);
+    ctx.fillText(hint, VW/2, VH-25);
+    ctx.globalAlpha = 1;
+  }
+  // controls bottom-right
+  ctx.textAlign = "right"; ctx.font = "13px system-ui"; ctx.fillStyle = "rgba(255,255,255,.6)";
+  ctx.fillText("SPACE/click: charge · cast · strike", VW-16, VH-40);
+  ctx.fillText("K keep / R release when hooked", VW-16, VH-20);
+}
+
+/* ═══════════ debug hook (playtest gate) ═══════════ */
+window.__fish_debug = {
+  version: "1.0",
+  start(m){ startDay(m==="math"?"math":"spell"); },
+  nextDay(){ nextDay(); },
+  wipe(){ meta = {coins:0,bestDay:0,words:0,mathCorrect:0,casts:0,trophies:[],gear:{rod:0,lure:0,bucket:0}}; saveMeta(meta); },
+  meta(){ return JSON.parse(JSON.stringify(meta)); },
+  state(){
+    return {
+      phase, mode, day, castsUsed, castsLeft:CASTS_PER_DAY-castsUsed,
+      word: word?word.t:null, wordIdx, needLetter:needLetter(), wordsDone,
+      prompt: question?question.prompt:null, answer:answerNow(), mathCorrect,
+      bucket: bucket.map(b=>({good:b.good,label:b.label})), bucketFull: bucket.length>=BUCKET_CAP[meta.gear.bucket],
+      coins: meta.coins, gear:{...meta.gear}, quotaDone: mode==="spell"?wordsDone>=QUOTA.spell:mathCorrect>=QUOTA.math,
+      hint, hintT:+hintT.toFixed(2), toast, hooked: hookedFish?{label:hookedFish.label,rarity:hookedFish.rarity,correct:hookedFish.correct}:null,
+      lastResult, power:+power.toFixed(3), ringR:+ring.r.toFixed(1), dayEarnings,
+      trophies: meta.trophies.length, fps, time:+matchT.toFixed(1),
+      overlayVisible: !document.getElementById("menu").classList.contains("hidden") ? "menu"
+                    : !document.getElementById("dayend").classList.contains("hidden") ? "dayend" : null,
+    };
+  },
+  charge(){ beginCharge(); },
+  releaseCast(p){ castLine(p===undefined?power:p); },
+  biteNow(){ biteNow(); },
+  tap(){ if (phase==="strike") tapStrike(); else actionTap(); },
+  perfect(){ if (phase!=="strike") return false; ring.r = ring.target; tapStrike(); return true; },
+  autoCatch(){ if (phase==="ready"){ castLine(0.7); biteNow(); ring.r = ring.target; tapStrike(); return true; } return false; },
+  keep(){ decideKeep(true); },
+  release(){ decideKeep(false); },
+  force(kind,val){ dbgForce = kind==="rarity" ? null : String(val); if (kind==="rarity") dbgRarity = String(val); },
+  forceRarity(r){ dbgRarity = String(r); },
+  buy(item){ const b = document.getElementById("buy-"+item); if (b && !b.disabled) b.click(); return !!(b && !b.disabled); },
+  speed(x){ TS = clamp(x,0.25,6); },
+};
+showOverlay("menu");
+</script>
+</body>
+</html>

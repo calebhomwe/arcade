@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f2e9d8">
+<title>Field Station</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f2e9d8'/><rect x='18' y='18' width='64' height='64' fill='none' stroke='%23b8543a' stroke-width='8'/><circle cx='50' cy='50' r='14' fill='%23241f28'/></svg>">
+<link rel="stylesheet" href="css/base.css">
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="toast"></div>
+
+<script type="module">
+import { $, el, Progress, Sound, toast } from './js/core.js';
+
+/* ── module registry ──────────────────────────────────────
+   Each game is an ES module exporting { meta, start(root, api) }.
+   Loaded lazily so the hub stays instant.                    */
+const MODULES = [
+  { id:'circuit',  file:'./js/games/circuit.js',
+    title:'Circuit Bay', subject:'sci', years:'Y7–9',
+    topic:'Electricity · series, parallel, V = I × R',
+    blurb:'Build real circuits on a node lattice. A nodal-analysis solver computes every voltage and current — bulbs are only as bright as the physics allows.' },
+
+  { id:'etymon',   file:'./js/games/etymon.js',
+    title:'Signal Room', subject:'eng', years:'Y5–9',
+    topic:'Vocabulary · Greek & Latin morphemes',
+    blurb:'Assemble words from roots, prefixes and suffixes. Then decode words you have never seen — the whole point of knowing morphemes.' },
+
+  { id:'particles',file:'./js/games/particles.js',
+    title:'Particle Chamber', subject:'sci', years:'Y7–8',
+    topic:'States of matter · kinetic theory',
+    blurb:'A live molecular-dynamics simulation. Heat it, cool it, squeeze it. Melting and boiling are things you cause, not facts you memorise.' },
+
+  { id:'punctuation', file:'./js/games/punctuation.js',
+    title:'Log Office', subject:'eng', years:'Y5–8',
+    topic:'Punctuation · meaning and ambiguity',
+    blurb:'Station logs arrive unpunctuated. Place the marks — and watch the sentence mean two completely different things depending where the comma lands.' },
+
+  { id:'reaction', file:'./js/games/reaction.js',
+    title:'Reaction Bench', subject:'sci', years:'Y8–9',
+    topic:'Chemical equations · conservation of mass',
+    blurb:'Balance equations with live atom-count bars on both sides. You can see conservation of mass happening rather than being told about it.' },
+
+  { id:'foodweb',  file:'./js/games/foodweb.js',
+    title:'Ecology Deck', subject:'sci', years:'Y6–9',
+    topic:'Ecosystems · food webs, trophic cascades',
+    blurb:'A population model with real feedback. Remove one species and watch the collapse ripple through the web three levels away.' },
+
+  { id:'syntax',   file:'./js/games/syntax.js',
+    title:'Drafting Room', subject:'eng', years:'Y5–9',
+    topic:'Grammar · clauses and sentence structure',
+    blurb:'Build sentences from clause blocks against a brief: fronted adverbial, relative clause, complex sentence. Grammar as construction, not labelling.' }
+];
+
+const FIG = {
+  circuit:`<svg viewBox="0 0 200 100"><g fill="none" stroke="#241f28" stroke-width="2.5">
+    <path d="M20 30h50M100 30h80M20 30v40M20 70h160v-40"/><circle cx="85" cy="30" r="15"/>
+    <path d="M75 20l20 20M75 40l20-20"/></g>
+    <rect x="55" y="62" width="6" height="16" fill="#241f28"/><rect x="66" y="56" width="6" height="28" fill="#241f28"/>
+    <circle cx="85" cy="30" r="22" fill="#c98b32" opacity=".25"/></svg>`,
+  etymon:`<svg viewBox="0 0 200 100"><g font-family="Archivo Black" font-size="19" fill="#241f28">
+    <rect x="14" y="34" width="52" height="32" fill="none" stroke="#6b4258" stroke-width="2.5"/><text x="24" y="56" fill="#6b4258">bio</text>
+    <rect x="72" y="34" width="46" height="32" fill="none" stroke="#241f28" stroke-width="2.5"/><text x="82" y="56">log</text>
+    <rect x="124" y="34" width="46" height="32" fill="none" stroke="#b8543a" stroke-width="2.5"/><text x="134" y="56" fill="#b8543a">ist</text>
+    </g><path d="M14 78h156" stroke="#241f28" stroke-width="2"/></svg>`,
+  particles:`<svg viewBox="0 0 200 100"><rect x="12" y="12" width="176" height="76" fill="none" stroke="#241f28" stroke-width="2.5"/>
+    <g fill="#3f5c6b">${Array.from({length:22},(_,i)=>`<circle cx="${22+((i*37)%156)}" cy="${24+((i*53)%56)}" r="5"/>`).join('')}</g>
+    <g stroke="#b8543a" stroke-width="2"><path d="M40 76l14-12M96 30l16 10M150 66l-14-14"/></g></svg>`,
+  punctuation:`<svg viewBox="0 0 200 100"><g font-family="Newsreader" font-size="46" fill="#241f28">
+    <text x="20" y="62">Let’s eat</text></g>
+    <text x="132" y="62" font-family="Newsreader" font-size="46" fill="#b8543a">,</text>
+    <path d="M20 74h150" stroke="#241f28" stroke-width="2"/>
+    <text x="20" y="92" font-family="Archivo" font-size="11" fill="#4a4150">one comma, two meanings</text></svg>`,
+  reaction:`<svg viewBox="0 0 200 100"><g font-family="Archivo Black" font-size="17" fill="#241f28">
+    <text x="16" y="46">CH₄ + 2O₂</text><text x="118" y="46">CO₂</text></g>
+    <path d="M100 40h14M108 34l7 6-7 6" stroke="#b8543a" stroke-width="2.5" fill="none"/>
+    <g><rect x="16" y="58" width="34" height="9" fill="#5f7d5a"/><rect x="16" y="70" width="34" height="9" fill="#5f7d5a"/>
+    <rect x="118" y="58" width="34" height="9" fill="#5f7d5a"/><rect x="118" y="70" width="34" height="9" fill="#5f7d5a"/></g></svg>`,
+  foodweb:`<svg viewBox="0 0 200 100"><g stroke="#241f28" stroke-width="2" fill="none">
+    <path d="M40 78L70 46M100 78L70 46M70 46L120 30M160 74L120 30M120 30L100 78"/></g>
+    <g fill="#5f7d5a"><circle cx="40" cy="78" r="9"/><circle cx="100" cy="78" r="9"/><circle cx="160" cy="74" r="9"/></g>
+    <circle cx="70" cy="46" r="10" fill="#c98b32"/><circle cx="120" cy="30" r="11" fill="#b8543a"/></svg>`,
+  syntax:`<svg viewBox="0 0 200 100">
+    <rect x="12" y="26" width="64" height="26" fill="#6b4258"/><rect x="82" y="26" width="46" height="26" fill="#241f28"/>
+    <rect x="134" y="26" width="54" height="26" fill="none" stroke="#241f28" stroke-width="2.5" stroke-dasharray="5 4"/>
+    <g font-family="Archivo" font-size="9" font-weight="700" fill="#f2e9d8" letter-spacing="1">
+      <text x="20" y="43">ADVERBIAL</text><text x="90" y="43">MAIN</text></g>
+    <text x="140" y="43" font-family="Archivo" font-size="9" font-weight="700" fill="#241f28">SUB?</text>
+    <path d="M12 66h176" stroke="#241f28" stroke-width="2"/>
+    <path d="M12 74h120" stroke="#b8543a" stroke-width="2"/></svg>`
+};
+
+/* ── hub ─────────────────────────────────────────────────── */
+function renderHub() {
+  const db = Progress.all();
+  const done = MODULES.filter(m => Progress.moduleScore(m.id) >= 100).length;
+  const app = $('#app');
+  app.replaceChildren();
+
+  const head = el('div', { class:'masthead' },
+    el('div', {},
+      el('div', { class:'kicker' }, 'Northern Reach Field Station · Curriculum Wing'),
+      el('h1', { class:'h1', style:'margin-top:6px' }, 'Field Station'),
+      el('div', { class:'rule' }),
+      el('p', { class:'lede' },
+        'Seven instruments. Each one only works if you understand what it is doing — ' +
+        'there is no answer to guess, because you are operating the thing itself.')),
+    el('div', { style:'text-align:right' },
+      el('div', { class:'kicker' }, 'Station record'),
+      el('div', { style:'font-family:var(--display);font-size:1.5rem;margin-top:4px' },
+        `${done}/${MODULES.length} certified`),
+      el('div', { class:'note', style:'margin-top:2px' },
+        `${db.totalRight} correct · ${db.streak} day streak`)));
+  app.append(head);
+
+  const grid = el('div', { class:'grid' });
+  MODULES.forEach(m => {
+    const pct = Progress.moduleScore(m.id);
+    const fig = el('div', { class:'fig' });
+    fig.innerHTML = FIG[m.id];                       // static author-authored SVG
+    const card = el('button', { class:'card mod', onclick: () => open(m) },
+      fig,
+      el('div', { class:'body' },
+        el('div', { class:'h2' }, m.title),
+        el('div', { class:'note', style:'margin-top:4px;color:var(--rust);font-weight:700;font-size:.74rem' }, m.topic),
+        el('p', {}, m.blurb),
+        el('div', { class:'meta' },
+          el('span', { class:'tag ' + m.subject }, m.subject === 'sci' ? 'Science' : 'English'),
+          el('span', { class:'tag' }, m.years),
+          pct >= 100 ? el('span', { class:'tag', style:'background:#5f7d5a;color:#f2e9d8;border-color:#5f7d5a' }, 'Certified') : ''),
+        el('div', { class:'bar' }, el('i', { style:`width:${pct}%` }))));
+    grid.append(card);
+  });
+  app.append(grid);
+
+  app.append(el('div', { class:'panel', style:'margin-top:26px' },
+    el('h3', {}, 'Skill map'),
+    skillMap(),
+    el('div', { style:'margin-top:14px' },
+      el('button', { class:'btn ghost', onclick: () => {
+        if (confirm('Erase all station records?')) { Progress.reset(); renderHub(); }
+      }}, 'Reset record'))));
+}
+
+function skillMap() {
+  const skills = Progress.all().skills;
+  const keys = Object.keys(skills).sort((a, b) => skills[b] - skills[a]);
+  if (!keys.length) return el('p', { class:'note' },
+    'Nothing recorded yet. Every graded attempt in any instrument lands here, tracked per skill.');
+  return el('div', {},
+    keys.map(k => el('div', { style:'margin-bottom:9px' },
+      el('div', { style:'display:flex;justify-content:space-between;font-size:.8rem;font-weight:700' },
+        el('span', {}, k), el('span', {}, Math.round(skills[k]) + '%')),
+      el('div', { class:'bar', style:'margin-top:3px' },
+        el('i', { style:`width:${skills[k]}%;background:${skills[k] > 70 ? '#5f7d5a' : skills[k] > 35 ? '#c98b32' : '#b8543a'}` })))));
+}
+
+/* ── loader ──────────────────────────────────────────────── */
+async function open(m) {
+  Sound.init();
+  const app = $('#app');
+  app.replaceChildren(el('p', { class:'note' }, 'Opening ' + m.title + '…'));
+  try {
+    const mod = await import(m.file);
+    app.replaceChildren();
+    const bar = el('div', { class:'gamebar' },
+      el('button', { class:'btn ghost', onclick: renderHub }, '← Station'),
+      el('div', {},
+        el('div', { class:'kicker' }, m.topic),
+        el('div', { class:'h2', style:'margin-top:2px' }, m.title)),
+      el('div', { class:'spacer' }),
+      el('span', { class:'tag ' + m.subject }, m.subject === 'sci' ? 'Science' : 'English'),
+      el('span', { class:'tag' }, m.years));
+    app.append(bar);
+    const root = el('div');
+    app.append(root);
+    mod.start(root, {
+      record: (skill, ok) => Progress.record(m.id + '/' + skill, ok),
+      complete: pct => { Progress.setModule(m.id, pct); },
+      toast, Sound, home: renderHub
+    });
+    scrollTo(0, 0);
+  } catch (err) {
+    app.replaceChildren(
+      el('button', { class:'btn ghost', onclick: renderHub }, '← Station'),
+      el('div', { class:'panel', style:'margin-top:16px' },
+        el('h3', {}, 'Instrument offline'),
+        el('p', { class:'note' }, String(err && err.message || err))));
+  }
+}
+
+renderHub();
+addEventListener('pointerdown', () => Sound.init(), { once:true });
+</script>
+</body>
+</html>

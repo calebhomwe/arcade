@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>MATH MINER — dig down, solve the rocks</title>
+<style>
+  :root{
+    --ink:#17110c; --deep:#241709; --amber:#f0a832; --gem:#37d6a0; --rust:#c1543a;
+    --bone:#f2e6cf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--ink);color:var(--bone);
+    font-family:"Courier New",Courier,monospace;overflow:hidden;
+    -webkit-user-select:none;user-select:none}
+  #wrap{position:relative;width:100vw;height:100vh}
+  canvas{display:block;width:100%;height:100%}
+
+  .overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(12,8,4,.82);z-index:10}
+  .overlay.show{display:flex}
+  .panel{background:var(--deep);border:3px solid var(--amber);border-radius:10px;
+    padding:26px 34px;max-width:640px;width:92%;box-shadow:0 0 40px rgba(240,168,50,.25);
+    text-align:center;max-height:92vh;overflow:auto}
+  h1{font-size:42px;letter-spacing:4px;color:var(--amber);text-shadow:2px 2px 0 #7a4c00}
+  h1 span{color:var(--gem)}
+  h2{font-size:22px;color:var(--amber);margin-bottom:10px;letter-spacing:2px}
+  .sub{color:#cdb38a;font-size:14px;margin:8px 0 18px}
+  .btn{display:inline-block;background:var(--amber);color:var(--ink);border:none;cursor:pointer;
+    font-family:inherit;font-weight:bold;font-size:17px;padding:12px 22px;border-radius:8px;
+    margin:6px;letter-spacing:1px;box-shadow:0 3px 0 #8a5c00}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 #8a5c00}
+  .btn.alt{background:var(--gem);box-shadow:0 3px 0 #14795a}
+  .btn.dim{background:#8b7f6a;box-shadow:0 3px 0 #4c4436}
+  .btn.small{font-size:13px;padding:8px 14px}
+
+  #pzPrompt{font-size:34px;color:var(--bone);margin:10px 0;letter-spacing:2px;min-height:44px}
+  #pzClue{font-size:16px;color:#cdb38a;margin-bottom:12px;line-height:1.5}
+  #gems{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+  .gem{width:86px;height:86px;border:none;cursor:pointer;border-radius:14px;
+    font-family:inherit;font-size:22px;font-weight:bold;color:#08281c;
+    background:radial-gradient(circle at 35% 30%, #9df3cf, var(--gem) 55%, #148860);
+    clip-path:polygon(50% 0,100% 32%,82% 100%,18% 100%,0 32%);
+    display:flex;align-items:center;justify-content:center}
+  .gem:hover{filter:brightness(1.15)}
+  .gem.baked{background:radial-gradient(circle at 35% 30%,#ff9d7a,var(--rust) 55%,#7d2c1a);color:#fff}
+  #pzHint{min-height:22px;color:var(--amber);font-size:15px;margin-top:6px}
+  #pzType{background:#0f0a05;border:2px solid var(--amber);color:var(--bone);
+    font-family:inherit;font-size:20px;padding:8px 12px;border-radius:6px;width:150px;
+    text-align:center;margin-top:8px}
+  .row{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
+
+  #hud{position:absolute;top:0;left:0;right:0;display:none;justify-content:space-between;
+    padding:10px 14px;z-index:5;pointer-events:none;font-size:15px}
+  #hud.show{display:flex}
+  .hudbox{background:rgba(15,10,5,.72);border:2px solid rgba(240,168,50,.5);border-radius:8px;
+    padding:6px 12px;line-height:1.6}
+  #energyBar{width:170px;height:12px;background:#241505;border:1px solid #6b5220;border-radius:6px;overflow:hidden}
+  #energyFill{height:100%;background:linear-gradient(90deg,#37d6a0,#f0a832);width:100%}
+  #elevBtn{pointer-events:auto}
+  #toasts{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:6;
+    display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+  .toast{background:rgba(15,10,5,.85);border:2px solid var(--amber);border-radius:8px;
+    padding:6px 16px;font-size:14px;animation:tst 2.6s forwards}
+  @keyframes tst{0%{opacity:0;transform:translateY(10px)}12%{opacity:1;transform:none}
+    80%{opacity:1}100%{opacity:0}}
+
+  .shopItem{display:flex;justify-content:space-between;align-items:center;gap:10px;
+    background:rgba(0,0,0,.25);border:1px solid #6b5220;border-radius:8px;padding:10px 14px;
+    margin:8px 0;text-align:left}
+  .shopItem .nm{font-weight:bold;color:var(--amber)}
+  .shopItem .ds{font-size:12px;color:#cdb38a}
+  .stats{font-size:14px;color:#cdb38a;line-height:1.7;margin:10px 0}
+  .stats b{color:var(--bone)}
+  #best{font-size:13px;color:#8b7f6a;margin-top:14px}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="cv"></canvas>
+
+  <div id="hud">
+    <div class="hudbox">
+      DEPTH <b id="hDepth">0</b>m &nbsp; <span id="hBand">COAL SEAM</span><br>
+      CARGO <b id="hCargo">0</b> &nbsp; $<b id="hMoney">0</b> &nbsp; <span id="hOre"></span>
+    </div>
+    <div class="hudbox">
+      ENERGY <span id="hEnergy">20/20</span>
+      <div id="energyBar"><div id="energyFill"></div></div>
+      <span id="hDyn"></span>
+      <button class="btn small alt" id="elevBtn">[E] ELEVATOR UP</button>
+    </div>
+  </div>
+  <div id="toasts"></div>
+
+  <!-- MENU -->
+  <div class="overlay show" id="menu"><div class="panel">
+    <h1>MATH <span>MINER</span></h1>
+    <div class="sub">dig down &middot; solve the rocks &middot; haul the ore home</div>
+    <div class="stats" id="menuStats"></div>
+    <button class="btn" id="btnMath">MATH MODE</button>
+    <button class="btn alt" id="btnSpell">SPELLING MODE</button>
+    <div id="best"></div>
+    <div class="sub" style="margin-top:14px;font-size:12px">
+      ARROWS / WASD to move &amp; dig &middot; walk into a cracked rock to open its puzzle<br>
+      E = elevator to surface &middot; every dig costs energy &middot; zero energy sends you home
+    </div>
+  </div></div>
+
+  <!-- PUZZLE ROCK -->
+  <div class="overlay" id="puzzle"><div class="panel">
+    <h2 id="pzTag">LOCKED ROCK</h2>
+    <div id="pzClue"></div>
+    <div id="pzPrompt"></div>
+    <div id="gems"></div>
+    <div id="pzHint"></div>
+    <div class="row">
+      <input id="pzType" placeholder="type answer" autocomplete="off">
+      <button class="btn small" id="pzDyn">DYNAMITE</button>
+      <button class="btn small dim" id="pzCancel">WALK AWAY</button>
+    </div>
+  </div></div>
+
+  <!-- SHOP -->
+  <div class="overlay" id="shop"><div class="panel">
+    <h2>SURFACE SHOP</h2>
+    <div class="stats" id="shopStats"></div>
+    <div id="shopItems"></div>
+    <button class="btn alt" id="shopDig">DESCEND AGAIN</button>
+  </div></div>
+
+  <!-- RESULTS -->
+  <div class="overlay" id="results"><div class="panel">
+    <h2 id="resTitle">BACK ON THE SURFACE</h2>
+    <div class="stats" id="resStats"></div>
+    <button class="btn" id="resShop">VISIT SHOP</button>
+    <button class="btn alt" id="resAgain">DESCEND AGAIN</button>
+  </div></div>
+</div>
+
+<script>
+"use strict";
+/* ═══════════════════════ helpers ═══════════════════════ */
+const $=s=>document.querySelector(s);
+const rnd=(a,b)=>a+Math.random()*(b-a), rint=(a,b)=>Math.floor(rnd(a,b+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=rint(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const KEY='mm_save';
+let SAVE=store.get(KEY,{money:30,up:{pick:0,lamp:0,tank:0,elev:0},dyn:0,best:0,
+                        col:{coal:0,iron:0,gold:0,diamond:0},runs:0,solved:0});
+const saveNow=()=>store.set(KEY,SAVE);
+
+/* ═══════════ QUESTION CORE — extracted from SpellMathsGalaxy ═══════════ */
+/* one-line teaching hints, shown after a miss */
+function hintFor(op,a,b){
+  switch(op){
+    case '+': return `start at ${a}, count on ${b} more`;
+    case '−': return `count up from ${b} to ${a}`;
+    case '×': return `${b} groups of ${a} — or ${a} groups of ${b}`;
+    case '÷': return `how many ${b}s make ${a}?`;
+    default: return '';
+  }
+}
+function opts(ans,spread,min,max,n=3){
+  const s=new Set([ans]); let g=0;
+  while(s.size<n+1&&g++<400){const v=ans+rint(-spread,spread); if(v!==ans&&v>=min&&v<=max)s.add(v);}
+  let b=1; while(s.size<n+1){ if(ans+b<=max)s.add(ans+b); if(s.size<n+1&&ans-b>=min)s.add(ans-b); b++; }
+  return shuf([...s]);
+}
+/* tiered arithmetic: d = tier 1..4 */
+function qQuick(d){
+  let a,b,op,ans,sp,mn,mx,hint='';
+  if(d===1){op=Math.random()<.5?'+':'−';a=rint(1,10);b=rint(1,10);if(op==='−'&&b>a)[a,b]=[b,a];
+            ans=op==='+'?a+b:a-b;sp=4;mn=0;mx=20;}
+  else if(d===2){const r=Math.random();
+    if(r<.34){op='+';a=rint(5,30);b=rint(5,30);ans=a+b;sp=7;mn=0;mx=64;}
+    else if(r<.68){op='−';a=rint(10,45);b=rint(1,a);ans=a-b;sp=7;mn=0;mx=45;}
+    else{op='×';a=rint(2,9);b=rint(2,9);ans=a*b;sp=8;mn=0;mx=90;}}
+  else if(d===3){const r=Math.random();
+    if(r<.25){op='+';a=rint(25,99);b=rint(25,99);ans=a+b;sp=14;mn=0;mx=200;}
+    else if(r<.5){op='−';a=rint(40,99);b=rint(10,a);ans=a-b;sp=14;mn=0;mx=99;}
+    else if(r<.78){op='×';a=rint(3,12);b=rint(3,12);ans=a*b;sp=12;mn=0;mx=150;}
+    else{op='÷';b=rint(2,9);ans=rint(2,12);a=b*ans;sp=6;mn=0;mx=20;}}
+  else{ /* tier 4: two-step, fractions of a quantity, percentages */
+    const r=Math.random();
+    if(r<.4){const b1=rint(2,9),b2=rint(2,9); a=rint(3,18); ans=a+b1*b2;
+      return{prompt:`${a} + ${b1} × ${b2}`,note:'multiply first, then add',
+             hint:`${b1} × ${b2} = ${b1*b2}, then ${a} + ${b1*b2}`,
+             answer:String(ans),gates:opts(ans,15,0,Math.max(120,ans+20)).map(String)};}
+    if(r<.7){const den=pick([2,3,4,5]); const num=pick([1,1,1,2,3].filter(n=>n<den));
+      const T=den*rint(3,12); ans=T/den*num;
+      return{prompt:`${num}/${den} of ${T}`,note:'take the fraction of the whole',
+             hint:`divide ${T} by ${den} (bottom), then times by ${num} (top)`,
+             answer:String(ans),gates:opts(ans,Math.max(4,Math.round(ans*.3)),0,ans*2+6).map(String)};}
+    const p=pick([10,20,25,50,75]), T=pick([20,40,60,80,100,200]);
+    ans=T/100*p;
+    return{prompt:`${p}% of ${T}`,note:'take the percentage of the whole',
+           hint:`${p}% of ${T} = ${T} ÷ 100 × ${p}`,
+           answer:String(ans),gates:opts(ans,Math.max(6,Math.round(ans*.35)),0,ans*2+10).map(String)};
+  }
+  hint=hintFor(op,a,b);
+  return{prompt:`${a} ${op} ${b}`,note:'',hint,answer:String(ans),gates:opts(ans,sp,mn,mx).map(String)};
+}
+/* grade-tiered word bank with sentence-context clues (~ marks the word) */
+const WORDS={
+ 1:[['cat','the ~ says meow'],['dog','the ~ says woof'],['sun','the ~ lights the day'],
+    ['hat','she wore a ~ on her head'],['bus','we rode the ~ to town'],['fish','a ~ swims in water'],
+    ['frog','a green ~ jumps and croaks'],['bird','a ~ has feathers and wings'],
+    ['cake','we ate birthday ~'],['star','each ~ burns far away'],['moon','the ~ circles the earth'],
+    ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a ~ crosses the sea'],
+    ['milk','the cat drank ~'],['book','she read a ~ at night'],['door','he knocked on the ~'],
+    ['foot','put your sock on your ~'],['hand','wash your ~ before eating'],
+    ['king','the ~ wore a golden crown'],['ring','a diamond ~ on her finger'],
+    ['road','the ~ goes over the hill'],['snow','cold white ~ fell all night'],
+    ['bear','the big ~ slept all winter'],['nest','eggs rest in a ~'],
+    ['rain','~ fell from the grey clouds'],['boat','they sailed a small ~'],
+    ['farm','cows and sheep live on a ~'],['goat','the ~ ate the grass'],
+    ['jump','you ~ over the log'],['lamp','turn on the ~ to read'],
+    ['leaf','a red ~ fell from the tree'],['pond','ducks swim on the ~'],
+    ['sock','one ~ is missing again'],['wing','each bird has a left and right ~'],
+    ['wood','the fire is made of ~']],
+ 2:[['garden','flowers grow in the ~'],['bridge','the train crossed the ~'],
+    ['monkey','a ~ climbs and swings'],['orange','an ~ is a round citrus fruit'],
+    ['purple','~ is red mixed with blue'],['school','you learn at ~'],
+    ['pencil','you write with a ~'],['tiger','a ~ is a big striped cat'],
+    ['planet','earth is a ~'],['castle','knights lived in a ~'],
+    ['engine','the ~ makes the ship move'],['flower','a ~ opens in the sun'],
+    ['dolphin','a ~ is a clever sea animal'],['rocket','a ~ climbs out of the sky'],
+    ['breakfast','we eat ~ in the morning'],['brother','my ~ is older than me'],
+    ['chair','sit on the ~ at the desk'],['cheese','the mouse ate the ~'],
+    ['chicken','the ~ laid an egg'],['circle','draw a ~ with no corners'],
+    ['clothes','fold your ~ neatly'],['dinner','~ is the evening meal'],
+    ['eleven','ten plus one is ~'],['family','my ~ is big and loud'],
+    ['forest','wolves live deep in the ~'],['friend','a ~ shares with you'],
+    ['granite','countertops are made of ~'],['happiness','~ is a warm feeling'],
+    ['holiday','we travel on every ~'],['honey','bees make sweet ~'],
+    ['horse','she rides her ~ daily'],['island','an ~ is land in the sea'],
+    ['jacket','wear a ~ when it is cold'],['kitchen','soup cooks in the ~'],
+    ['library','borrow books from the ~'],['market','fruit is sold at the ~'],
+    ['morning','the ~ comes after night'],['mountain','climb the tall ~'],
+    ['picture','paint a ~ of the sea'],['present','unwrap the birthday ~'],
+    ['sandbox','children play in the ~'],['shadow','your ~ follows the sun'],
+    ['stretch','~ before you run'],['thunder','~ rumbles after lightning'],
+    ['ticket','buy a ~ for the train'],['window','look out of the ~']],
+ 3:[['beautiful','the sunset was ~'],['adventure','a long risky ~'],
+    ['telescope','a ~ makes far things near'],['dangerous','a ~ road hugs the cliff'],
+    ['elephant','the grey ~ has a trunk'],['gravity','~ pulls you down'],
+    ['giraffe','the ~ has a very long neck'],['hospital','the sick are cared for in a ~'],
+    ['horizon','the sun sinks below the ~'],['lightning','~ is a bright crack in a storm'],
+    ['umbrella','an ~ keeps the rain off'],['volcano','the ~ erupted at dawn'],
+    ['navigate','sailors ~ by the stars'],['knowledge','~ is everything learned'],
+    ['ancestor','your great-grandmother is an ~'],['champion','the ~ held the trophy high'],
+    ['community','our ~ held a fair'],['curious','the ~ child asked why'],
+    ['decision','think hard before a ~'],['describe','~ what you saw'],
+    ['different','each snowflake is ~'],['distance','measure the ~ between towns'],
+    ['divide','~ twelve by three'],['earthquake','an ~ shakes the ground'],
+    ['enormous','an ~ whale swam past'],['familiar','that song sounds ~'],
+    ['important','brushing teeth is ~'],['impossible','it is ~ to touch the sun'],
+    ['insect','an ~ has six legs'],['journey','the ~ took three days'],
+    ['medicine','bitter ~ made him well'],['memory','a good ~ helps in school'],
+    ['multiply','~ five by four to get twenty'],['neighbor','our ~ borrowed sugar'],
+    ['observe','scientists ~ carefully'],['partner','choose a ~ for the game'],
+    ['protect','a coat will ~ you'],['receive','did you ~ my letter?'],
+    ['special','today is a ~ day'],['subtract','~ nine from fifteen'],
+    ['surface','the ~ of the lake was still'],['surprise','the party was a ~']],
+ 4:[['accomplish','you can ~ anything with practice'],['believe','always ~ in yourself'],
+    ['calendar','mark the date on the ~'],['category','sort each word into a ~'],
+    ['cemetery','the old ~ sits on the hill'],['definite','a ~ maybe the answer is no'],
+    ['dictionary','look the word up in a ~'],['embarrass','do not ~ yourself on stage'],
+    ['environment','care for the ~'],['equipment','check the climbing ~'],
+    ['especially','I like fruit, ~ apples'],['exaggerate','do not ~ the story'],
+    ['familiar','that tune feels ~'],['February','~ is the shortest month'],
+    ['government','the ~ makes laws'],['guardian','a ~ watches over you'],
+    ['height','the ~ of the mountain'],['immediately','come here ~'],
+    ['interrupt','do not ~ the speaker'],['knowledge','~ grows when shared'],
+    ['laboratory','experiments happen in a ~'],['language','a second ~ opens doors'],
+    ['maintenance','car ~ prevents breakdowns'],['mathematics','~ is the language of science'],
+    ['mischievous','the ~ kitten unraveled yarn'],['necessary','water is ~ for life'],
+    ['occasion','a birthday is a happy ~'],['opposite','north is the ~ of south'],
+    ['parallel','train tracks run ~'],['parliament','laws are debated in ~'],
+    ['peninsula','Italy is a ~'],['perseverance','~ beats talent'],
+    ['privilege','education is a ~, not a right'],['pronounce','~ each syllable slowly'],
+    ['question','raise a hand to ask a ~'],['receive','you ~ what you are given'],
+    ['recommend','I ~ this book'],['rhythm','clap the ~ of the song'],
+    ['separate','~ the recycling'],['success','hard work leads to ~'],
+    ['temperature','check the ~ outside'],['threshold','step across the ~'],
+    ['twelfth','December is the ~ month'],['vacuum','a ~ cleans the carpet']],
+ 5:[['abundance','a harvest of ~'],['acknowledge','~ your mistakes bravely'],
+    ['agriculture','~ feeds the nation'],['ambiguous','an ~ answer confuses everyone'],
+    ['antique','the ~ clock struck nine'],['bureaucracy','permits vanish into the ~'],
+    ['catalyst','an idea can be a ~ for change'],['colleague','greet every ~ kindly'],
+    ['conscience','let your ~ be your guide'],['conscientious','a ~ student checks twice'],
+    ['controversy','the rule caused ~'],['determination','~ moved the boulder'],
+    ['dilemma','a difficult ~ with no easy choice'],['diligent','the ~ bee worked all day'],
+    ['ecosystem','a reef is a living ~'],['entrepreneur','an ~ starts a business'],
+    ['exaggerate','fishermen ~ the size'],['extraordinary','an ~ aurora lit the sky'],
+    ['fascinating','the documentary was ~'],['generosity','her ~ knew no limits'],
+    ['hypocrisy','~ is saying one thing, doing another'],['hypothetical','a ~ question imagines what if'],
+    ['influential','an ~ writer changes minds'],['innovation','~ reshapes the world'],
+    ['interpret','poets ~ dreams'],['legitimate','a ~ claim stands in court'],
+    ['maintenance','the bridge needs ~'],['metaphor','a ~ says love is a rose'],
+    ['negotiate','~ before you sign'],['omnipotent','no one is truly ~'],
+    ['phenomenon','an eclipse is a rare ~'],['photosynthesis','leaves feed themselves by ~'],
+    ['possibilities','the future holds endless ~'],['preliminary','the ~ results look good'],
+    ['resilience','~ is bouncing back'],['sacrifice','a ~ for the team'],
+    ['simultaneous','the drums kept a ~ beat'],['sophisticated','a ~ argument, well reasoned'],
+    ['strategist','a great ~ sees three moves ahead'],['sufficient','one coat was ~'],
+    ['synonymous','kind and caring are ~'],['threshold','cross the ~ into the lab']]
+};
+const word=lv=>{const w=pick(WORDS[clamp(lv,1,5)]);return{t:w[0],h:w[1]}};
+/* render a sentence clue with the masked word in place */
+function clueSentence(w,idx){
+  const masked=w.t.split('').map((c,i)=>i<idx?c:'·').join('');
+  return w.h.replace('~',masked);
+}
+
+/* question at a depth (tiles below surface). the tier ramp IS the descent */
+const mathTierAt = dep=>clamp(1+Math.floor(dep/25),1,4);
+const wordLevelAt= dep=>clamp(1+Math.floor(dep/22),1,5);
+function makeQuestion(mode,dep){
+  if(mode==='math'){
+    const q=qQuick(mathTierAt(dep));
+    /* 3 gem-choices total: the answer + 2 distractors from the extracted gate set */
+    const gates=shuf([q.answer,...q.gates.filter(g=>g!==q.answer).slice(0,2)]);
+    return{kind:'math',prompt:q.prompt,answer:q.answer,gates,hint:q.hint,note:q.note};
+  }
+  const w=word(wordLevelAt(dep));
+  return{kind:'spell',word:w.t,clue:w.h,
+         hint:`it starts with "${w.t[0].toUpperCase()}" — ${w.h.replace('~','_____')}`,
+         letters:shuf(w.t.split(''))};
+}
+
+/* ═══════════ world ═══════════ */
+const TILE=42, W_TILES=17;
+const ORE={coal:{v:4,c:'#2b2b2e',gl:'#54545c',lo:0,hi:19},
+           iron:{v:10,c:'#8d7b6a',gl:'#c9b6a2',lo:20,hi:44},
+           gold:{v:25,c:'#9c7a1e',gl:'#f0c545',lo:45,hi:74},
+           diamond:{v:60,c:'#1f7f8f',gl:'#8ff2ff',lo:75,hi:9999}};
+const ORE_KINDS=['coal','iron','gold','diamond'];
+const oreAt=dep=>{for(const k of ORE_KINDS){const o=ORE[k];if(dep>=o.lo&&dep<=o.hi)return k}return 'coal'};
+
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const wrap=document.getElementById('wrap');
+let VW=0,VH=0;
+function resize(){VW=cv.width=wrap.clientWidth;VH=cv.height=wrap.clientHeight;}
+addEventListener('resize',resize);resize();
+
+/* tile codes: 0 empty, 1 dirt, 2 puzzle rock, 3 hard rock, 10..13 ore */
+const T_EMPTY=0,T_DIRT=1,T_ROCK=2,T_HARD=3;
+const G={ rows:[], mode:'math', running:false, over:false, onSurface:true,
+  px:8, py:0, energy:20, maxEnergy:20, cargo:{coal:0,iron:0,gold:0,diamond:0},
+  score:0, rocksBroken:0, wrong:0, dug:0, shake:0, moveCd:0,
+  lastHint:'', curRock:null, curQ:null, spellIdx:0, t:0, fps:60,
+  frames:0, fpsT:performance.now(), particles:[], usedElev:0, maxDepth:0, hp:{} };
+
+function genRow(r){ /* r >= 1 underground */
+  const row=new Array(W_TILES).fill(T_DIRT);
+  for(let x=0;x<W_TILES;x++){
+    const roll=Math.random();
+    if(r<=2){ row[x]= roll<.16?T_ROCK : T_DIRT; }
+    else if(roll<.20) row[x]=T_ROCK;
+    else if(roll<.31) row[x]=T_HARD;
+    else if(roll<.43) row[x]=10+ORE_KINDS.indexOf(oreAt(r));
+  }
+  return row;
+}
+function rowAt(r){
+  while(G.rows.length<=r) G.rows.push(genRow(G.rows.length));
+  return G.rows[r];
+}
+const tileAt=(x,y)=>{ if(y<=0) return T_EMPTY; if(x<0||x>=W_TILES) return T_HARD; return rowAt(y)[x]; };
+function setTile(x,y,v){ rowAt(y)[x]=v; }
+
+function startRun(mode){
+  G.mode=mode; G.running=true; G.over=false; G.onSurface=false;
+  G.maxEnergy=20+SAVE.up.tank*10; G.energy=G.maxEnergy;
+  G.cargo={coal:0,iron:0,gold:0,diamond:0}; G.score=0; G.rocksBroken=0;
+  G.wrong=0; G.dug=0; G.maxDepth=0; G.particles=[]; G.lastHint=''; G.curRock=null; G.hp={};
+  G.px=Math.floor(W_TILES/2);
+  const elev=SAVE.up.elev*15;
+  G.usedElev=elev; G.py=0;
+  if(elev>0){ /* elevator ride: carve a pocket at shortcut depth */
+    G.py=elev; G.maxDepth=elev;
+    for(let y=Math.max(1,elev-1);y<=elev;y++)
+      for(let x=G.px-1;x<=G.px+1;x++) setTile(x,y,T_EMPTY);
+  }
+  SAVE.runs++; saveNow();
+  hideAll(); document.getElementById('hud').classList.add('show');
+  toast(elev>0?`ELEVATOR DOWN TO ${elev}m — ${mode==='math'?'MATH':'SPELLING'} ROCKS BELOW`
+              :`${mode==='math'?'MATH':'SPELLING'} MODE — DIG!`);
+}
+function hideAll(){ for(const id of['menu','puzzle','shop','results'])
+  document.getElementById(id).classList.remove('show'); }
+
+/* ═══════════ digging ═══════════ */
+function bump(x,y){
+  const t=tileAt(x,y);
+  if(t===T_EMPTY) return;
+  if(t===T_ROCK){ openPuzzle(x,y); return; }
+  const hpKey=y+'_'+x;
+  G.hp[hpKey]=(G.hp[hpKey]===undefined?hardness(t,y):G.hp[hpKey]) - (1+SAVE.up.pick);
+  digFx(x,y);
+  if(G.hp[hpKey]<=0){ clearTile(x,y,t); delete G.hp[hpKey]; }
+  else spendEnergy(1);
+}
+const hardness=(t,y)=> t===T_HARD ? 2+Math.floor(y/28) : 1;
+function clearTile(x,y,t){
+  setTile(x,y,T_EMPTY); G.dug++;
+  if(t>=10){ const kind=ORE_KINDS[t-10];
+    G.cargo[kind]++; toast(`+1 ${kind.toUpperCase()} ore`); }
+  burst(x,y, t>=10?ORE[ORE_KINDS[t-10]].gl:'#6b4a2a', 10);
+  spendEnergy(1);
+  maybeCaveIn(y);
+}
+function spendEnergy(n){
+  G.energy=Math.max(0,G.energy-n);
+  if(G.energy<=0 && G.running && !G.over) forcedSurface();
+}
+function maybeCaveIn(y){
+  if(y>15 && Math.random()<.05){
+    G.shake=.5; toast('CAVE-IN! −1 energy'); burst(G.px,G.py,'#a8846b',18);
+    spendEnergy(1);
+  }
+}
+function forcedSurface(){
+  G.over=true; G.py=0; G.onSurface=true;
+  endRun('OUT OF ENERGY — the winch hauled you up');
+}
+function endRun(reason){
+  if(!G.running && !G.over) return;
+  G.running=false; hideAll(); document.getElementById('hud').classList.remove('show');
+  let earned=0; const lines=[];
+  for(const k of ORE_KINDS){
+    if(G.cargo[k]){ earned+=G.cargo[k]*ORE[k].v; lines.push(`${G.cargo[k]}× ${k} @$${ORE[k].v}`); }
+    SAVE.col[k]+=G.cargo[k];
+  }
+  const depth=G.usedElev+G.maxDepth;
+  SAVE.money+=earned; SAVE.solved+=G.rocksBroken;
+  if(depth>SAVE.best) SAVE.best=depth;
+  saveNow();
+  document.getElementById('resTitle').textContent =
+    reason.includes('ENERGY')?'WINCHED HOME — TANK EMPTY':'BACK ON THE SURFACE';
+  document.getElementById('resStats').innerHTML=
+    `${reason}<br><br>ORE SOLD: <b>$${earned}</b>${lines.length?'<br>'+lines.join(' &middot;'):''}<br>`+
+    `Rocks solved: <b>${G.rocksBroken}</b> &middot; Tiles dug: <b>${G.dug}</b> &middot; Misses: <b>${G.wrong}</b><br>`+
+    `Deepest point: <b>${depth}m</b> &middot; Wallet: <b>$${SAVE.money}</b>`;
+  document.getElementById('results').classList.add('show');
+  refreshMenu();
+}
+
+/* movement */
+function move(dx,dy){
+  if(!G.running||G.over) return;
+  if(performance.now()<G.moveCd) return;
+  const nx=G.px+dx, ny=G.py+dy;
+  if(ny<0){ G.py=0; G.onSurface=true; return; } /* walk on the grass */
+  const t=tileAt(nx,ny);
+  if(t===T_EMPTY){ G.px=nx; G.py=ny; G.onSurface=(ny===0);
+    G.moveCd=performance.now()+110; if(ny>G.maxDepth)G.maxDepth=ny; }
+  else { G.moveCd=performance.now()+160; bump(nx,ny); }
+}
+addEventListener('keydown',e=>{
+  if(document.getElementById('puzzle').classList.contains('show')) return;
+  const k=e.key.toLowerCase();
+  if(k==='arrowup'||k==='w') move(0,-1);
+  else if(k==='arrowdown'||k==='s') move(0,1);
+  else if(k==='arrowleft'||k==='a') move(-1,0);
+  else if(k==='arrowright'||k==='d') move(1,0);
+  else if(k==='e'&&G.running&&!G.over) endRun('RODE THE ELEVATOR HOME');
+});
+document.getElementById('elevBtn').addEventListener('click',()=>{
+  if(G.running&&!G.over) endRun('RODE THE ELEVATOR HOME'); });
+
+/* ═══════════ puzzle overlay ═══════════ */
+function openPuzzle(x,y){
+  const hk='r'+x+'_'+y;
+  if((G.hp[hk]||0)>performance.now()){ toast('the rock is hardened — let it cool'); return; }
+  G.curRock={x,y}; G.curQ=makeQuestion(G.mode,y); G.spellIdx=0;
+  const q=G.curQ;
+  document.getElementById('pzTag').textContent = G.mode==='math'
+    ? `CRACKED ROCK — TIER ${mathTierAt(y)}` : `WORD ROCK — LEVEL ${wordLevelAt(y)}`;
+  document.getElementById('pzHint').textContent='';
+  const inp=document.getElementById('pzType');
+  inp.value=''; inp.style.display = G.mode==='math'?'':'none';
+  document.getElementById('pzDyn').style.display = SAVE.dyn>0?'':'none';
+  const gems=document.getElementById('gems'); gems.innerHTML='';
+  if(q.kind==='math'){
+    document.getElementById('pzClue').textContent=q.note||'pick the gem that answers the cracks';
+    document.getElementById('pzPrompt').textContent=q.prompt;
+    q.gates.forEach(v=>{
+      const b=document.createElement('button'); b.className='gem'; b.textContent=v;
+      b.addEventListener('click',()=>submitMath(v)); gems.appendChild(b);
+    });
+  } else {
+    document.getElementById('pzClue').innerHTML=`&ldquo;${clueSentence({t:q.word,h:q.clue},0)}&rdquo;`;
+    document.getElementById('pzPrompt').textContent='tap the letters in order';
+    q.letters.forEach((L,i)=>{
+      const b=document.createElement('button'); b.className='gem'; b.textContent=L;
+      b.addEventListener('click',()=>submitLetter(i)); gems.appendChild(b);
+    });
+  }
+  document.getElementById('puzzle').classList.add('show');
+}
+function closePuzzle(){
+  document.getElementById('puzzle').classList.remove('show'); G.curRock=null; G.curQ=null;
+}
+document.getElementById('pzCancel').addEventListener('click',closePuzzle);
+document.getElementById('pzType').addEventListener('keydown',e=>{
+  if(e.key==='Enter') submitMath(e.target.value.trim());
+});
+function submitMath(v){
+  if(!G.curQ||G.curQ.kind!=='math') return;
+  if(String(v)===G.curQ.answer) solveRock();
+  else wrongAnswer(`not quite — ${G.curQ.hint}`);
+}
+function submitLetter(i){
+  if(!G.curQ||G.curQ.kind!=='spell') return;
+  const q=G.curQ, btns=document.getElementById('gems').children;
+  if(q.letters[i]===q.word[G.spellIdx]){
+    G.spellIdx++;
+    document.getElementById('pzClue').innerHTML=
+      `&ldquo;${clueSentence({t:q.word,h:q.clue},G.spellIdx)}&rdquo;`;
+    if(btns[i]) btns[i].style.visibility='hidden';
+    if(G.spellIdx>=q.word.length) solveRock();
+  } else wrongAnswer(q.hint);
+}
+function solveRock(){
+  const r=G.curRock; if(!r) return;
+  setTile(r.x,r.y,T_EMPTY); G.rocksBroken++; G.score+=10;
+  delete G.hp['r'+r.x+'_'+r.y];
+  burst(r.x,r.y,'#37d6a0',14);
+  if(Math.random()<.30){ const kind=oreAt(r.y); G.cargo[kind]++;
+    toast(`ROCK SHATTERED — +1 ${kind.toUpperCase()}!`); }
+  else toast('ROCK SHATTERED');
+  closePuzzle();
+}
+function wrongAnswer(hint){
+  G.wrong++; G.lastHint=hint;
+  G.hardenUntil=performance.now()+2000;
+  G.hp['r'+G.curRock.x+'_'+G.curRock.y]=G.hardenUntil;
+  document.getElementById('pzHint').textContent='>> '+hint;
+  document.getElementById('pzTag').textContent='HARDENED FOR 2s — LEARN THIS';
+  const gems=document.getElementById('gems');
+  for(const c of gems.children) c.classList.add('baked');
+  setTimeout(()=>{ if(document.getElementById('puzzle').classList.contains('show')&&G.curRock) closePuzzle(); },900);
+  spendEnergy(1);
+}
+document.getElementById('pzDyn').addEventListener('click',()=>{
+  if(SAVE.dyn<=0||!G.curRock) return;
+  SAVE.dyn--; saveNow(); toast('DYNAMITE! the rock folds instantly'); solveRock();
+});
+
+/* ═══════════ shop ═══════════ */
+const SHOP=[
+ {id:'pick', nm:'PICKAXE POWER', max:4, price:l=>50*(l+1), ds:l=>`pick damage ${1+l} >> ${2+l} — chews hard rock faster`},
+ {id:'lamp', nm:'HEADLAMP',      max:4, price:l=>60*(l+1), ds:l=>`light radius ${(3.2+l*.9).toFixed(1)} >> ${(4.1+l*.9).toFixed(1)} tiles`},
+ {id:'tank', nm:'BATTERY TANK',  max:4, price:l=>70*(l+1), ds:l=>`energy ${20+l*10} >> ${30+l*10} per descent`},
+ {id:'elev',nm:'ELEVATOR SHAFT', max:4, price:l=>90*(l+1), ds:l=>`start at ${l*15}m >> ${(l+1)*15}m depth`},
+ {id:'dyn', nm:'DYNAMITE',       max:99,price:()=>30,      ds:()=>'consumable — auto-solve one rock'},
+];
+function openShop(){
+  hideAll();
+  document.getElementById('shopStats').innerHTML=
+    `Wallet: <b>$${SAVE.money}</b> &middot; Deepest ever: <b>${SAVE.best}m</b><br>`+
+    `Collection — coal <b>${SAVE.col.coal}</b> · iron <b>${SAVE.col.iron}</b> · gold <b>${SAVE.col.gold}</b> · diamond <b>${SAVE.col.diamond}</b>`;
+  const box=document.getElementById('shopItems'); box.innerHTML='';
+  for(const it of SHOP){
+    const lv=SAVE.up[it.id]||0, maxed=lv>=it.max, cost=it.price(lv);
+    const el=document.createElement('div'); el.className='shopItem';
+    const info=document.createElement('div');
+    info.innerHTML=`<div class="nm">${it.nm}${it.id!=='dyn'?` — LV ${lv}`:` × ${SAVE.dyn}`}</div>
+      <div class="ds">${maxed?'fully upgraded':it.ds(lv)}</div>`;
+    const b=document.createElement('button');
+    b.className='btn small'+((maxed||SAVE.money<cost)?' dim':'');
+    b.textContent=maxed?'MAX':`$${cost}`;
+    b.addEventListener('click',()=>buyItem(it.id));
+    el.appendChild(info); el.appendChild(b); box.appendChild(el);
+  }
+  document.getElementById('shop').classList.add('show');
+}
+function buyItem(id){
+  const it=SHOP.find(s=>s.id===id); if(!it) return false;
+  const lv=SAVE.up[id]||0;
+  if(lv>=it.max) return false;
+  const cost=it.price(lv);
+  if(SAVE.money<cost) return false;
+  SAVE.money-=cost;
+  if(id==='dyn') SAVE.dyn++; else SAVE.up[id]=lv+1;
+  saveNow(); openShop(); return true;
+}
+document.getElementById('resShop').addEventListener('click',openShop);
+document.getElementById('shopDig').addEventListener('click',()=>startRun(G.mode));
+document.getElementById('resAgain').addEventListener('click',()=>startRun(G.mode));
+document.getElementById('btnMath').addEventListener('click',()=>startRun('math'));
+document.getElementById('btnSpell').addEventListener('click',()=>startRun('spell'));
+
+function toast(msg){
+  const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.getElementById('toasts').appendChild(t); setTimeout(()=>t.remove(),2700);
+}
+
+/* ═══════════ fx ═══════════ */
+function burst(tx,ty,color,n){
+  for(let i=0;i<n;i++) G.particles.push({x:tx*TILE+TILE/2,y:ty*TILE+TILE/2,
+    vx:rnd(-90,90),vy:rnd(-140,30),life:rnd(.3,.8),c:color});
+}
+const digFx=(x,y)=>burst(x,y,'#8a6a44',4);
+
+/* ═══════════ render ═══════════ */
+function draw(){
+  const shx=G.shake>0?rnd(-1,1)*G.shake*6:0, shy=G.shake>0?rnd(-1,1)*G.shake*6:0;
+  const camX=(G.px+.5)*TILE - VW/2 + shx;
+  const camY=(G.py+.5)*TILE - VH/2 + shy;
+  const sx=x=>x*TILE-camX, sy=y=>y*TILE-camY;
+
+  /* sky + surface strip */
+  const skyTop=Math.min(0,sy(-6)), skyBot=Math.max(0,sy(1));
+  if(skyBot>skyTop){
+    const grd=ctx.createLinearGradient(0,skyTop,0,sy(1));
+    grd.addColorStop(0,'#8fd3f0'); grd.addColorStop(1,'#d9b982');
+    ctx.fillStyle=grd; ctx.fillRect(0,skyTop,VW,skyBot-skyTop);
+    ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.arc(VW-90,sy(-4)+30,26,0,7); ctx.fill();
+    /* shop shack */
+    ctx.fillStyle='#5a3b22'; ctx.fillRect(sx(1),sy(0)-54,TILE*3,54);
+    ctx.fillStyle='#c1543a'; ctx.beginPath();
+    ctx.moveTo(sx(1)-6,sy(0)-54); ctx.lineTo(sx(1)+TILE*1.5,sy(0)-84);
+    ctx.lineTo(sx(1)+TILE*3+6,sy(0)-54); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#f0c545'; ctx.fillRect(sx(1)+14,sy(0)-38,22,20);
+    ctx.fillStyle='#f2e6cf'; ctx.font='bold 12px "Courier New"';
+    ctx.fillText('SHOP',sx(1)+TILE*1.05,sy(0)-60);
+    ctx.fillStyle='#4e7a35'; ctx.fillRect(0,sy(0)-6,VW,6);
+  }
+
+  const y0=Math.max(1,Math.floor(camY/TILE)-1), y1=Math.floor((camY+VH)/TILE)+1;
+  const x0=Math.max(0,Math.floor(camX/TILE)), x1=Math.min(W_TILES-1,Math.ceil((camX+VW)/TILE));
+  const now=performance.now();
+  for(let y=y0;y<=y1;y++){
+    const row=rowAt(y);
+    for(let x=x0;x<=x1;x++){
+      const t=row[x], px=sx(x), py=sy(y);
+      if(t===T_EMPTY) continue;
+      if(t===T_DIRT){
+        ctx.fillStyle=`rgb(${86+((x*7+y*13)%12)},${56+((x*5+y*11)%9)},${30+((x*3+y*7)%8)})`;
+        ctx.fillRect(px,py,TILE,TILE);
+        ctx.fillStyle='rgba(0,0,0,.18)'; ctx.fillRect(px,py,TILE,3); ctx.fillRect(px,py,3,TILE);
+      } else if(t===T_HARD){
+        ctx.fillStyle='#6e6259'; ctx.fillRect(px,py,TILE,TILE);
+        ctx.strokeStyle='#4c443c'; ctx.lineWidth=2;
+        for(let i=0;i<2;i++){ctx.beginPath();ctx.moveTo(px+6+i*14,py+6);
+          ctx.lineTo(px+14+i*14,py+TILE-6);ctx.stroke();}
+      } else if(t===T_ROCK){
+        ctx.fillStyle='#7a6a52'; ctx.fillRect(px,py,TILE,TILE);
+        ctx.strokeStyle='#3d3225'; ctx.lineWidth=2;
+        ctx.beginPath();ctx.moveTo(px+6,py+8);ctx.lineTo(px+18,py+22);ctx.lineTo(px+10,py+34);ctx.stroke();
+        ctx.fillStyle='#f0a832'; ctx.font='bold 12px "Courier New"'; ctx.textAlign='center';
+        ctx.fillText(rockBadge(x,y),px+TILE/2,py+TILE/2+4); ctx.textAlign='left';
+      } else if(t>=10){
+        const o=ORE[ORE_KINDS[t-10]];
+        ctx.fillStyle='#5b3a1e'; ctx.fillRect(px,py,TILE,TILE);
+        ctx.fillStyle=o.c;
+        ctx.beginPath();ctx.moveTo(px+TILE/2,py+8);ctx.lineTo(px+TILE-8,py+TILE/2);
+        ctx.lineTo(px+TILE/2,py+TILE-8);ctx.lineTo(px+8,py+TILE/2);ctx.closePath();ctx.fill();
+        ctx.fillStyle=o.gl; ctx.fillRect(px+TILE/2-3,py+TILE/2-3,7,7);
+      }
+      const hk='r'+x+'_'+y;
+      if((G.hp[hk]||0)>now){ ctx.fillStyle='rgba(193,84,58,.55)'; ctx.fillRect(px,py,TILE,TILE); }
+    }
+  }
+
+  for(const p of G.particles){ ctx.fillStyle=p.c; ctx.fillRect(p.x-camX-2,p.y-camY-2,4,4); }
+
+  /* the miner */
+  const mx=sx(G.px)+TILE/2, my=sy(G.py)+TILE/2;
+  ctx.save(); ctx.translate(mx,my);
+  ctx.fillStyle='#26537c'; ctx.fillRect(-9,-6,18,20);          /* overalls */
+  ctx.fillStyle='#e8b98a'; ctx.fillRect(-7,-16,14,12);         /* head */
+  ctx.fillStyle='#f0c545'; ctx.fillRect(-9,-19,18,6);          /* helmet */
+  ctx.fillStyle='#fffbe6'; ctx.beginPath();ctx.arc(0,-16,3,0,7);ctx.fill();
+  ctx.fillStyle='#17110c'; ctx.fillRect(-4,-11,2,2); ctx.fillRect(2,-11,2,2);
+  ctx.restore();
+
+  /* darkness + lamp (deep = darker) */
+  const dark=clamp((G.py-3)/16,0,.93);
+  if(dark>0){
+    const lampR=(3.2+SAVE.up.lamp*.9)*TILE;
+    ctx.fillStyle=`rgba(3,2,0,${dark})`;
+    ctx.beginPath(); ctx.rect(0,0,VW,VH); ctx.arc(mx,my,lampR,0,7,true); ctx.fill('evenodd');
+    const g2=ctx.createRadialGradient(mx,my,lampR*.25,mx,my,lampR);
+    g2.addColorStop(0,'rgba(255,238,180,0)');
+    g2.addColorStop(1,'rgba(255,238,180,0.14)');
+    ctx.fillStyle=g2; ctx.beginPath(); ctx.arc(mx,my,lampR,0,7); ctx.fill();
+  }
+}
+/* stable badge text carved on each rock (no per-frame RNG churn) */
+const badgeCache={};
+function rockBadge(x,y){
+  const k=y*W_TILES+x;
+  if(!badgeCache[k]){
+    const q=makeQuestion(G.mode,y);
+    badgeCache[k]= q.kind==='math' ? q.prompt : q.word.length+'-LTR WORD';
+  }
+  return badgeCache[k];
+}
+
+/* ═══════════ loop ═══════════ */
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000); last=now; G.t+=dt;
+  G.frames++; if(now-G.fpsT>1000){G.fps=G.frames;G.frames=0;G.fpsT=now;}
+  if(G.shake>0) G.shake=Math.max(0,G.shake-dt*1.6);
+  for(const p of G.particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=380*dt;p.life-=dt;}
+  G.particles=G.particles.filter(p=>p.life>0);
+  ctx.clearRect(0,0,VW,VH);
+  draw();
+  document.getElementById('hDepth').textContent=G.py;
+  document.getElementById('hBand').textContent=
+    ({coal:'COAL SEAM',iron:'IRON BELT',gold:'GOLD ZONE',diamond:'DIAMOND VAULT'})[oreAt(Math.max(1,G.py))];
+  document.getElementById('hCargo').textContent=
+    G.cargo.coal+G.cargo.iron+G.cargo.gold+G.cargo.diamond;
+  document.getElementById('hMoney').textContent=SAVE.money;
+  document.getElementById('hOre').textContent=
+    `C:${G.cargo.coal} I:${G.cargo.iron} G:${G.cargo.gold} D:${G.cargo.diamond}`;
+  document.getElementById('hEnergy').textContent=`${G.energy}/${G.maxEnergy}`;
+  document.getElementById('energyFill').style.width=(100*G.energy/G.maxEnergy)+'%';
+  document.getElementById('hDyn').textContent=SAVE.dyn>0?`dyn x${SAVE.dyn}`:'';
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+function refreshMenu(){
+  document.getElementById('menuStats').innerHTML=
+    `Wallet <b>$${SAVE.money}</b> &middot; Deepest <b>${SAVE.best}m</b> &middot; Runs <b>${SAVE.runs}</b> &middot; Rocks solved <b>${SAVE.solved}</b>`;
+  document.getElementById('best').textContent=
+    `collection — ${SAVE.col.coal} coal · ${SAVE.col.iron} iron · ${SAVE.col.gold} gold · ${SAVE.col.diamond} diamond`;
+}
+refreshMenu();
+
+/* ═══════════ test hook ═══════════ */
+window.__DEBUG={
+  get state(){
+    const hk=G.curRock?('r'+G.curRock.x+'_'+G.curRock.y):null;
+    return {
+      mode:G.mode, running:G.running, over:G.over, onSurface:G.onSurface,
+      depth:G.py, maxDepth:G.maxDepth+G.usedElev, energy:G.energy, maxEnergy:G.maxEnergy,
+      money:SAVE.money, cargo:{...G.cargo},
+      cargoTotal:G.cargo.coal+G.cargo.iron+G.cargo.gold+G.cargo.diamond,
+      score:G.score, rocksBroken:G.rocksBroken, wrong:G.wrong, dug:G.dug,
+      up:{...SAVE.up}, dyn:SAVE.dyn, best:SAVE.best, runs:SAVE.runs,
+      hardenMsLeft: hk?Math.max(0,(G.hp[hk]||0)-performance.now()):0,
+      hardenedCount: Object.values(G.hp).filter(v=>v>performance.now()).length,
+      lastHint:G.lastHint, puzzleOpen:document.getElementById('puzzle').classList.contains('show'),
+      gemCount:document.querySelectorAll('#gems .gem').length,
+      resultsOpen:document.getElementById('results').classList.contains('show'),
+      shopOpen:document.getElementById('shop').classList.contains('show'),
+      menuOpen:document.getElementById('menu').classList.contains('show'),
+      curPrompt:G.curQ?(G.curQ.kind==='math'?G.curQ.prompt:G.curQ.word.length+'-letter word'):null,
+      fps:G.fps,
+    };
+  },
+  wipe(){ localStorage.removeItem(KEY);
+    SAVE={money:30,up:{pick:0,lamp:0,tank:0,elev:0},dyn:0,best:0,
+          col:{coal:0,iron:0,gold:0,diamond:0},runs:0,solved:0};
+    refreshMenu(); },
+  start(m){ startRun(m||'math'); },
+  grant(n){ SAVE.money+=n; saveNow(); },
+  buy(id){ return buyItem(id); },
+  dig(dx,dy){ move(dx,dy); },
+  qAt(dep){ return makeQuestion(G.mode,dep); },
+  curQ(){ return G.curQ ? (G.curQ.kind==='math'
+    ? {kind:'math',answer:G.curQ.answer,prompt:G.curQ.prompt}
+    : {kind:'spell',word:G.curQ.word}) : null; },
+  tierAt(dep){ return G.mode==='math'?mathTierAt(dep):wordLevelAt(dep); },
+  setEnergy(n){ G.energy=Math.max(0,n); },
+  placeDirt(x,y){ setTile(x,y,T_DIRT); },
+  nearestRock(){
+    for(let r=1;r<40;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
+      if(Math.max(Math.abs(dx),Math.abs(dy))!==r)continue;
+      if(tileAt(G.px+dx,G.py+dy)===T_ROCK) return{x:G.px+dx,y:G.py+dy};
+    } return null; },
+  tp(x,y){ G.px=x; G.py=y; if(y>G.maxDepth)G.maxDepth=y; },
+  clearAround(x,y){ for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)
+    if((i||j)&&tileAt(x+i,y+j)!==T_EMPTY) setTile(x+i,y+j,T_EMPTY); },
+  placeRock(x,y){ setTile(x,y,T_ROCK); },
+  bumpRock(x,y){ openPuzzle(x,y); },
+  answerTyped(v){ submitMath(v); },
+  answerGem(i){ const b=document.querySelectorAll('#gems .gem')[i]; if(b)b.click(); },
+  letter(i){ submitLetter(i); },
+  solveCurrent(){ if(G.curRock) solveRock(); },
+  forceCaveIn(){ maybeCaveIn(20); },
+  useDynamite(){ if(SAVE.dyn>0&&G.curRock){SAVE.dyn--;saveNow();solveRock();return true} return false; },
+  returnSurface(){ endRun('RODE THE ELEVATOR HOME'); },
+  openShop, refreshMenu,
+};
+</script>
+</body>
+</html>

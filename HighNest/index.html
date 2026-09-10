@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#efe3cc" />
+<title>HIGH NEST</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f4ead8'/><circle cx='50' cy='46' r='20' fill='%23c1543a'/><circle cx='43' cy='44' r='5' fill='%23fff' /><circle cx='57' cy='44' r='5' fill='%23fff' /><circle cx='44' cy='45' r='2.4' fill='%232b2117'/><circle cx='56' cy='45' r='2.4' fill='%232b2117'/></svg>" />
+<style>
+  :root{
+    --ink:#2b2117; --paper:#f4ead8; --bone:#cbb99b; --rust:#c1543a;
+    --ochre:#d99a3c; --sage:#7d9470; --dust:#a8846b;
+    --display:'Arial Black','Archivo Black',Impact,sans-serif;
+    --text:'Segoe UI',-apple-system,Roboto,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;background:var(--paper);color:var(--ink);
+    font-family:var(--text);overscroll-behavior:none;user-select:none;-webkit-user-select:none}
+  canvas{display:block;position:fixed;inset:0}
+
+  /* HUD: paper cards, bolted shadows — same printed language as the studio's other games */
+  #hud{position:fixed;top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));
+       right:max(10px,env(safe-area-inset-right));display:none;justify-content:space-between;
+       align-items:flex-start;pointer-events:none;z-index:5}
+  .rack{display:flex;border:2px solid var(--ink);background:var(--paper);
+       box-shadow:4px 4px 0 rgba(43,33,23,.35)}
+  .cell{padding:6px 12px;border-right:2px solid var(--ink);text-align:center;min-width:64px}
+  .cell:last-child{border-right:none}
+  .cell .lab{font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dust);font-weight:700}
+  .cell .val{font-family:var(--display);font-size:1.15rem;line-height:1.1}
+  #combo.hot{color:var(--rust)}
+
+  .screen{position:fixed;inset:0;display:none;place-items:center;padding:20px;z-index:10;
+          background:rgba(244,234,216,.9);pointer-events:auto}
+  .screen.on{display:grid}
+  .panel{width:min(460px,100%);text-align:center}
+  .kicker{font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:var(--rust);font-weight:700}
+  .title{font-family:var(--display);font-size:clamp(2.4rem,10vw,3.8rem);line-height:.92;
+         letter-spacing:-.02em;text-transform:uppercase;color:var(--ink)}
+  .rule{height:2px;background:var(--rust);width:64px;margin:14px auto}
+  .lede{color:#6b5a52;margin-top:8px;line-height:1.6;font-size:.92rem;max-width:30em;margin-inline:auto}
+  .btn{cursor:pointer;width:100%;margin-top:18px;padding:14px;font-family:var(--display);
+       font-size:1rem;letter-spacing:.06em;text-transform:uppercase;background:var(--rust);
+       color:var(--paper);border:2px solid var(--ink);box-shadow:5px 5px 0 rgba(43,33,23,.35)}
+  .btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 rgba(43,33,23,.35)}
+  .btn.quiet{background:var(--paper);color:var(--ink)}
+  .marks{font-family:var(--display);font-size:1.5rem;letter-spacing:.3em;color:var(--ochre);margin:10px 0}
+  .log{display:flex;justify-content:space-between;padding:8px 12px;
+       border-bottom:2px solid rgba(203,185,155,.5);font-size:.86rem;font-weight:600;color:var(--dust)}
+  .log b{font-family:var(--display);color:var(--ink)}
+  #newbest{display:none;font-family:var(--display);color:var(--rust);margin-top:8px;
+           font-size:1rem;letter-spacing:.12em}
+  .hint{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);margin-top:14px}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="hud">
+  <div class="rack">
+    <div class="cell"><span class="lab">Planks</span><span class="val" id="score">0</span></div>
+    <div class="cell"><span class="lab">Height</span><span class="val" id="height">0m</span></div>
+    <div class="cell"><span class="lab">Combo</span><span class="val" id="combo">—</span></div>
+    <div class="cell"><span class="lab">Best</span><span class="val" id="best">0</span></div>
+  </div>
+</div>
+
+<div class="screen on" id="s-menu"><div class="panel">
+  <div class="kicker">Timberline Construction Co.</div>
+  <div class="title" style="margin-top:6px">High<br>Nest</div>
+  <div class="rule"></div>
+  <p class="lede">One owl. One tree. The world's tallest treehouse.
+     Drop each plank as it swings — whatever hangs over the edge is sawn off and falls.
+     Land them perfectly and the tree rewards you with wider planks.</p>
+  <button class="btn" id="play">Start building</button>
+  <p class="hint">Tap · click · space — anywhere drops the plank</p>
+</div></div>
+
+<div class="screen" id="s-pause"><div class="panel">
+  <div class="kicker">Saw set down</div>
+  <div class="title" style="font-size:2.2rem;margin-top:6px">Holding</div>
+  <div class="rule"></div>
+  <button class="btn" id="resume">Back to work</button>
+  <button class="btn quiet" id="abandon">Knock it down</button>
+</div></div>
+
+<div class="screen" id="s-over"><div class="panel">
+  <div class="kicker" id="overKick">The foreman whistles</div>
+  <div class="title" style="font-size:2.6rem;margin-top:6px" id="overTitle">Timber!</div>
+  <div class="rule"></div>
+  <div id="newbest">★ NEW BEST ★</div>
+  <div id="overStats" style="text-align:left"></div>
+  <button class="btn" id="again">Build another</button>
+  <button class="btn quiet" id="menu2">Back to the shed</button>
+</div></div>
+
+<script>
+(()=>{ 'use strict';
+/* ═══════════ HIGH NEST — a treehouse tower stacker ═══════════
+   Fully offline single file. Canvas 2D, no assets, no network.
+   Loop: a plank swings above the tower; tap drops it. Overlap with the
+   plank below is kept, the rest falls away. Perfect drops chain a combo
+   and regrow width. The camera climbs through a full day: dawn, noon,
+   dusk, starry night. */
+const $=s=>document.querySelector(s);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t;
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let REC=store.get('hn_rec',{games:0,best:0,planks:0,perfects:0});
+
+const P={ink:'#2b2117',paper:'#f4ead8',bone:'#cbb99b',rust:'#c1543a',ochre:'#d99a3c',
+         sage:'#7d9470',dust:'#a8846b',wood:['#c99a5f','#b98a54','#a1743f'],
+         bark:'#7a5733',barkD:'#5e4226'};
+
+/* ═══ audio: mallet thocks and bottle chimes. wood, not synths. ═══ */
+const AU={ctx:null,on:store.get('hn_snd',true),
+  init(){if(!this.ctx){try{this.ctx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+         if(this.ctx&&this.ctx.state==='suspended')this.ctx.resume();},
+  env(f,d,type,v,detune=0){if(!this.on||!this.ctx)return;const c=this.ctx,t=c.currentTime,
+    o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;
+    o.detune.value=detune;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0008,t+d);
+    o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+.05);},
+  thock(){this.env(120,.16,'sine',.28);this.env(78,.22,'triangle',.2,8);},
+  perfect(n){const b=523*Math.pow(2,Math.min(n,9)/12);
+    this.env(b,.3,'sine',.14);this.env(b*1.5,.34,'sine',.09,.02);},
+  grow(){this.env(392,.18,'triangle',.12);this.env(523,.22,'triangle',.1,.06);
+         this.env(659,.26,'triangle',.09,.12);},
+  over(){[330,262,196,147].forEach((f,i)=>this.env(f,.4,'triangle',.14,i*.13));},
+  click(){this.env(660,.06,'sine',.05);}
+};
+
+/* ═══ canvas ═══ */
+const cv=$('#cv'),ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+addEventListener('resize',resize);resize();
+
+/* ═══ world: x=0 is the tree axis, alt grows upward in px ═══ */
+const PLANK_H=22, START_W=176, MAX_W=200, PERFECT_EPS=7, SWING=250;
+const G=2600;
+const state={phase:'menu',paused:false,
+  planks:[],debris:[],parts:[],floats:[],leaves:[],
+  slider:null,speed:0,dirn:1,count:0,combo:0,bestCombo:0,perfects:0,
+  camAlt:0,camTarget:0,shake:0,owl:{hop:0,blink:0},
+  best:REC.best,time:0};
+
+function topPlank(){return state.planks[state.planks.length-1];}
+function altOf(i){return (i+1)*PLANK_H;}          /* top surface of plank i */
+
+function reset(){
+  state.planks=[{x:0,w:START_W,tone:0}];state.debris=[];state.parts=[];state.floats=[];
+  state.count=0;state.combo=0;state.bestCombo=0;state.perfects=0;
+  state.camAlt=0;state.camTarget=0;state.shake=0;state.owl.hop=0;
+  newSlider();hud();
+}
+function newSlider(){
+  const t=topPlank();
+  state.speed=Math.min(2.0+state.count*0.045,7.2);
+  state.dirn=state.count%2?-1:1;
+  state.slider={x:-state.dirn*SWING,w:t?Math.min(t.w,MAX_W):START_W,alt:altOf(state.planks.length)};
+}
+/* world→screen: ground sits at 72% of screen height, camera rises with the tower */
+function wy(alt){return H*.78-(alt-state.camAlt);}
+function wx(x){return W/2+x;}
+
+/* ═══ drop: the whole game is this function ═══ */
+function drop(){
+  if(state.phase!=='play'||state.paused||!state.slider)return false;
+  const s=state.slider,t=topPlank();
+  const dx=s.x-t.x, ov=Math.min(s.x+s.w/2,t.x+t.w/2)-Math.max(s.x-s.w/2,t.x-t.w/2);
+  state.slider=null;
+  if(ov<=2){ /* missed the tower entirely */
+    state.debris.push({x:s.x,alt:s.alt,w:s.w,vx:rnd(-40,40),vy:60,vr:rnd(-6,6),rot:0,tone:1});
+    gameOver();return false;
+  }
+  if(Math.abs(dx)<=PERFECT_EPS){ /* perfect: keep full width, snap to centre */
+    state.planks.push({x:t.x,w:s.w,tone:state.planks.length%3});
+    state.combo++;state.perfects++;
+    state.bestCombo=Math.max(state.bestCombo,state.combo);
+    ring(s.x,s.alt+PLANK_H/2,P.ochre);
+    float(s.x,s.alt+46,'PERFECT'+(state.combo>1?' ×'+state.combo:''),P.rust);
+    AU.perfect(state.combo);
+    state.owl.hop=1;
+    if(state.combo%4===0&&t.w<MAX_W){ t.w=Math.min(t.w+18,MAX_W);
+      float(t.x,s.alt+70,'WIDER PLANKS',P.sage);AU.grow(); }
+    puff(s.x,s.alt,10);
+  } else { /* saw off the overhang: keep the overlap, drop the rest as debris */
+    const nx=(Math.max(s.x-s.w/2,t.x-t.w/2)+Math.min(s.x+s.w/2,t.x+t.w/2))/2;
+    state.planks.push({x:nx,w:ov,tone:state.planks.length%3});
+    const cw=s.w-ov, side=dx>0?1:-1;
+    state.debris.push({x:nx+side*(ov+cw)/2,alt:s.alt,w:cw,
+      vx:side*rnd(30,80),vy:rnd(40,90),vr:side*rnd(2,6),rot:0,tone:state.planks.length%3});
+    state.combo=0; state.shake=Math.min(1,.2+Math.abs(dx)/120);
+    AU.thock(); puff(nx,s.alt,14);
+    state.planks[state.planks.length-1].squash=1;
+  }
+  state.count++;
+  state.camTarget=Math.max(0,altOf(state.planks.length-1)-H*.30);
+  hud();
+  setTimeout(()=>{if(state.phase==='play')newSlider();},state.combo>0?60:110);
+  return true;
+}
+
+function gameOver(){
+  state.phase='over';state.best=Math.max(state.best,state.count);
+  const nb=state.count>=REC.best&&state.count>0;
+  REC.games++;REC.best=Math.max(REC.best,state.count);
+  REC.planks+=state.count;REC.perfects+=state.perfects;store.set('hn_rec',REC);
+  AU.over();
+  $('#overKick').textContent=state.count>=REC.best*0.9?'Solid frame work':'The foreman whistles';
+  $('#overTitle').textContent=state.count<8?'Kindling':state.count<25?'Timber!':state.count<60?'A Proper Nest':'Sky Roost';
+  $('#newbest').style.display=nb?'block':'none';
+  $('#overStats').innerHTML=[['Planks',state.count],['Height',(state.count*0.5).toFixed(1)+' m'],
+    ['Perfects',state.perfects],['Best combo','×'+state.bestCombo],['All-time best',REC.best]]
+    .map(([a,b])=>`<div class="log"><span>${a}</span><b>${b}</b></div>`).join('');
+  show('#s-over');$('#hud').style.display='none';
+}
+function hud(){
+  $('#score').textContent=state.count;$('#height').textContent=(state.count*.5).toFixed(1)+'m';
+  $('#best').textContent=Math.max(REC.best,state.count);
+  const c=$('#combo');c.textContent=state.combo>0?'×'+state.combo:'—';
+  c.classList.toggle('hot',state.combo>1);
+}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  if(id)$(id).classList.add('on');}
+
+/* ═══ effects ═══ */
+function puff(x,alt,n){for(let i=0;i<n;i++)state.parts.push({x:x+rnd(-30,30),alt:alt+rnd(-6,6),
+  r:rnd(3,8),vr:rnd(14,30),a:rnd(.35,.6),va:-.9});}
+function ring(x,alt,col){state.parts.push({ring:true,x,alt,r:10,vr:120,a:.9,va:-1.6,col});}
+function float(x,alt,txt,col){state.floats.push({x,alt,txt,col,a:1,vy:46});}
+
+/* ═══ update ═══ */
+let last=0;
+function tick(ts){
+  requestAnimationFrame(tick);
+  const dt=Math.min((ts-last)/1000||0,.05);last=ts;state.time+=dt;
+  const run=state.phase==='play'&&!state.paused;
+  const dtr=state.paused?0:dt;
+
+  if(run&&state.slider){ /* swing */
+    state.slider.x+=state.dirn*state.speed*60*dt;
+    if(state.slider.x>SWING){state.slider.x=SWING;state.dirn=-1;}
+    if(state.slider.x<-SWING){state.slider.x=-SWING;state.dirn=1;}
+  }
+  /* camera */
+  state.camAlt=lerp(state.camAlt,state.camTarget,1-Math.pow(.008,dt));
+  state.shake=Math.max(0,state.shake-dt*3);
+  state.owl.hop=Math.max(0,state.owl.hop-dt*2.4);
+  state.owl.blink=(state.owl.blink+dt)%4;
+
+  /* debris physics (frozen while paused) */
+  for(let i=state.debris.length-1;i>=0;i--){const d=state.debris[i];
+    d.alt+=d.vy*dtr;d.vy-=G*dtr;d.x+=d.vx*dtr;d.rot+=d.vr*dtr;
+    if(d.alt<state.camAlt-420)state.debris.splice(i,1);}
+  /* particles */
+  for(let i=state.parts.length-1;i>=0;i--){const p=state.parts[i];
+    p.r+=p.vr*dt;p.a+=p.va*dt;if(p.a<=0)state.parts.splice(i,1);}
+  for(let i=state.floats.length-1;i>=0;i--){const f=state.floats[i];
+    f.alt+=f.vy*dt;f.a-=dt*.9;if(f.a<=0)state.floats.splice(i,1);}
+  /* ambient leaves drift down past the cabin */
+  if(run&&Math.random()<dt*.5)state.leaves.push({x:rnd(-W/2,W/2),alt:state.camAlt+H,
+    vy:rnd(30,60),vx:rnd(-20,20),rot:rnd(0,6),vr:rnd(-2,2),s:rnd(4,7)});
+  for(let i=state.leaves.length-1;i>=0;i--){const l=state.leaves[i];
+    l.alt-=l.vy*dt;l.x+=Math.sin(state.time*2+l.rot)*12*dt+l.vx*dt;l.rot+=l.vr*dt;
+    if(l.alt<state.camAlt-40)state.leaves.splice(i,1);}
+
+  render();
+}
+requestAnimationFrame(tick);
+
+/* ═══ render ═══ */
+function skyPhase(){ /* full day cycle every 36 planks of altitude */
+  const cyc=Math.max(0,state.camAlt)/(36*PLANK_H);
+  const stops=[ /* [top,bottom,sun,starAmount] — warm print colours, never neon */
+    ['#f6dfb0','#f4ead8','#f0b45f',0],   /* dawn */
+    ['#cfe0d8','#f2ecc9','#f6cf6e',0],   /* noon */
+    ['#d9a98a','#f2d9a8','#e08a4a',0],   /* dusk */
+    ['#4a4258','#8a6a6a','#e8dcc4',.9],  /* night */
+    ['#6a7a8a','#d9b98f','#f0b45f',0]];  /* dawn again */
+  const f=(cyc%1)*4, i=Math.floor(f), t=f-i;
+  const mix=(a,b)=>{const A=hex(a),B=hex(b);return `rgb(${A.map((v,k)=>Math.round(lerp(v,B[k],t))).join(',')})`;};
+  return {top:mix(stops[i][0],stops[(i+1)%5][0]),
+          bot:mix(stops[i][1],stops[(i+1)%5][1]),
+          sun:mix(stops[i][2],stops[(i+1)%5][2]),
+          star:lerp(stops[i][3],stops[(i+1)%5][3],t),cyc};
+}
+const hexCache={};
+function hex(h){if(!hexCache[h])hexCache[h]=[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];return hexCache[h];}
+
+function render(){
+  const sky=skyPhase();
+  const shx=(Math.random()-.5)*state.shake*10, shy=(Math.random()-.5)*state.shake*10;
+  ctx.save();ctx.translate(shx,shy);
+
+  /* sky */
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,sky.top);g.addColorStop(1,sky.bot);
+  ctx.fillStyle=g;ctx.fillRect(-8,-8,W+16,H+16);
+
+  /* stars */
+  if(sky.star>0.02){ctx.save();ctx.globalAlpha=sky.star;
+    for(let i=0;i<60;i++){const sx=(i*173.3)%W,sy=(i*97.7)%(H*.7);
+      const tw=.5+.5*Math.sin(state.time*2+i);ctx.fillStyle='#f4ead8';
+      ctx.fillRect(sx,sy,1.6+tw,1.6+tw);}ctx.restore();}
+
+  /* sun/moon: one flat disc, low on the horizon side */
+  ctx.fillStyle=sky.sun;ctx.beginPath();
+  ctx.arc(W*.78,H*.24-Math.sin(sky.cyc*Math.PI*2)*H*.1,34,0,7);ctx.fill();
+  ctx.strokeStyle=P.ink;ctx.globalAlpha=.25;ctx.lineWidth=2;ctx.stroke();ctx.globalAlpha=1;
+
+  /* rolling hills, two parallax layers */
+  hills(H*.86,H*.16,'#b7a488',.06);
+  hills(H*.92,H*.12,'#9c8a6c',.12);
+
+  /* clouds: flat paper puffs drifting */
+  ctx.fillStyle='rgba(244,234,216,.85)';
+  for(let i=0;i<4;i++){const cx=((state.time*8+i*W/3.2)%(W+240))-120,
+    cy=H*.16+i*H*.09+Math.sin(i*3)*14;
+    puffCloud(cx,cy,40+i*9);}
+
+  /* ground */
+  const gy=wy(0);
+  if(gy<H+60){ctx.fillStyle='#8f9a6d';ctx.fillRect(-8,gy,W+16,H-gy+8);
+    ctx.fillStyle=P.sage;ctx.fillRect(-8,gy,W+16,7);}
+
+  /* tree trunk from ground up to the tower top */
+  const topAlt=altOf(state.planks.length-1);
+  trunk(gy,topAlt);
+
+  /* planks */
+  for(let i=0;i<state.planks.length;i++){const p=state.planks[i],y=wy(altOf(i));
+    if(y<-40||y>H+40)continue;
+    plank(wx(p.x),y,p.w,PLANK_H,p.tone,p.squash);
+    p.squash=Math.max(0,(p.squash||0)-.08);}
+
+  /* owl on the top plank */
+  if(state.phase!=='menu')owl(wx(topPlank().x)+topPlank().w/2-16,
+    wy(topAlt)-10-state.owl.hop*10);
+
+  /* slider */
+  if(state.slider){const s=state.slider;
+    plank(wx(s.x),wy(s.alt),s.w,PLANK_H,1,0,true);}
+
+  /* debris */
+  for(const d of state.debris){ctx.save();
+    ctx.translate(wx(d.x),wy(d.alt));ctx.rotate(d.rot);
+    plankRaw(-d.w/2,-PLANK_H/2,d.w,PLANK_H,d.tone);ctx.restore();}
+
+  /* particles + floats */
+  for(const p of state.parts){ctx.save();ctx.globalAlpha=Math.max(0,p.a);
+    if(p.ring){ctx.strokeStyle=p.col||P.paper;ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(wx(p.x),wy(p.alt),p.r,0,7);ctx.stroke();}
+    else{ctx.fillStyle=P.bone;ctx.beginPath();
+      ctx.arc(wx(p.x),wy(p.alt),p.r,0,7);ctx.fill();}ctx.restore();}
+  for(const f of state.floats){ctx.save();ctx.globalAlpha=Math.max(0,f.a);
+    ctx.fillStyle=f.col;ctx.font='700 15px '+"'Arial Black',Impact,sans-serif";
+    ctx.textAlign='center';ctx.fillText(f.txt,wx(f.x),wy(f.alt));ctx.restore();}
+
+  /* falling leaves */
+  ctx.fillStyle=P.sage;
+  for(const l of state.leaves){ctx.save();ctx.translate(wx(l.x),wy(l.alt));
+    ctx.rotate(l.rot);ctx.beginPath();ctx.ellipse(0,0,l.s,l.s*.45,0,0,7);ctx.fill();ctx.restore();}
+
+  /* best-height marker: a dotted line at your all-time best altitude */
+  if(REC.best>3){const by=wy(REC.best*PLANK_H);
+    if(by>-20&&by<H+20){ctx.save();ctx.strokeStyle=P.rust;ctx.globalAlpha=.5;
+      ctx.setLineDash([8,8]);ctx.lineWidth=2;ctx.beginPath();
+      ctx.moveTo(0,by);ctx.lineTo(W,by);ctx.stroke();
+      ctx.globalAlpha=.8;ctx.fillStyle=P.rust;ctx.font='700 11px Arial';
+      ctx.textAlign='left';ctx.fillText('BEST '+REC.best,10,by-6);ctx.restore();}}
+
+  ctx.restore();
+}
+function hills(baseY,amp,col,par){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(0,H);
+  for(let x=0;x<=W;x+=8){const y=baseY
+    -Math.abs(Math.sin((x+state.camAlt*par)*.006))*amp
+    -Math.abs(Math.sin((x+state.camAlt*par)*.017+2))*amp*.4;
+    ctx.lineTo(x,y);}
+  ctx.lineTo(W,H);ctx.closePath();ctx.fill();}
+function puffCloud(x,y,r){ctx.beginPath();
+  ctx.arc(x,y,r*.6,0,7);ctx.arc(x+r*.55,y+4,r*.42,0,7);ctx.arc(x-r*.55,y+5,r*.38,0,7);
+  ctx.fill();}
+function trunk(gy,topAlt){
+  const y0=Math.min(gy,H+40), y1=wy(topAlt);
+  if(y1>y0)return;
+  const wTop=lerp(46,20,clamp(state.camAlt/4000,0,1)),wBot=54;
+  ctx.fillStyle=P.bark;ctx.beginPath();
+  ctx.moveTo(wx(-wBot/2),y0);ctx.lineTo(wx(-wTop/2),y1);
+  ctx.lineTo(wx(wTop/2),y1);ctx.lineTo(wx(wBot/2),y0);ctx.closePath();ctx.fill();
+  /* bark arcs */
+  ctx.strokeStyle=P.barkD;ctx.lineWidth=2;ctx.globalAlpha=.5;
+  for(let a=0;a<7;a++){const yy=lerp(y0,y1,a/7);
+    if(yy<-20||yy>H+20)continue;const ww=lerp(wBot,wTop,a/7);
+    ctx.beginPath();ctx.moveTo(wx(-ww*.28),yy);
+    ctx.quadraticCurveTo(wx(0),yy+8,wx(ww*.28),yy);ctx.stroke();}
+  ctx.globalAlpha=1;
+}
+function plank(x,y,w,h,tone,squash=0,ghost=false){
+  ctx.save();
+  if(ghost)ctx.globalAlpha=.92;
+  const sq=1-(squash||0)*.18;
+  ctx.translate(x,y+h/2);ctx.scale(1+(squash||0)*.12,sq);ctx.translate(-x,-(y+h/2));
+  plankRaw(x-w/2,y,w,h,tone);ctx.restore();
+}
+function plankRaw(x,y,w,h,tone){
+  ctx.fillStyle=P.wood[tone%3];
+  ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,4):ctx.rect(x,y,w,h);ctx.fill();
+  ctx.strokeStyle='rgba(43,33,23,.55)';ctx.lineWidth=1.6;
+  ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,4):ctx.rect(x,y,w,h);ctx.stroke();
+  /* grain */
+  ctx.strokeStyle='rgba(94,66,38,.35)';ctx.lineWidth=1;
+  for(let k=1;k<3;k++){const gy=y+h*k/3;ctx.beginPath();ctx.moveTo(x+5,gy);
+    ctx.lineTo(x+w-5,gy);ctx.stroke();}
+  /* nail dots */
+  ctx.fillStyle='rgba(43,33,23,.5)';
+  ctx.beginPath();ctx.arc(x+7,y+h/2,1.8,0,7);ctx.arc(x+w-7,y+h/2,1.8,0,7);ctx.fill();
+}
+function owl(x,y){ctx.save();ctx.translate(x,y);
+  ctx.fillStyle=P.rust;ctx.beginPath();ctx.ellipse(0,0,13,15,0,0,7);ctx.fill();
+  ctx.fillStyle=P.rust; /* ear tufts */
+  ctx.beginPath();ctx.moveTo(-9,-11);ctx.lineTo(-4,-16);ctx.lineTo(-2,-9);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(9,-11);ctx.lineTo(4,-16);ctx.lineTo(2,-9);ctx.closePath();ctx.fill();
+  ctx.fillStyle=P.paper;ctx.beginPath();
+  ctx.arc(-4.5,-3,4.5,0,7);ctx.arc(4.5,-3,4.5,0,7);ctx.fill();
+  const blink=state.owl.blink>3.86;
+  if(!blink){ctx.fillStyle=P.ink;ctx.beginPath();
+    ctx.arc(-4.5,-3,2,0,7);ctx.arc(4.5,-3,2,0,7);ctx.fill();}
+  else{ctx.strokeStyle=P.ink;ctx.lineWidth=1.4;ctx.beginPath();
+    ctx.moveTo(-7,-3);ctx.lineTo(-2,-3);ctx.moveTo(2,-3);ctx.lineTo(7,-3);ctx.stroke();}
+  ctx.fillStyle=P.ochre;ctx.beginPath();ctx.moveTo(0,1);ctx.lineTo(-2.5,4);ctx.lineTo(2.5,4);ctx.closePath();ctx.fill();
+  ctx.restore();}
+
+/* ═══ input ═══ */
+function primary(){AU.init();
+  if(state.phase==='menu')return startGame();
+  if(state.phase==='over')return;
+  drop();}
+function startGame(){reset();state.phase='play';state.paused=false;
+  show(null);$('#hud').style.display='flex';AU.click();}
+addEventListener('pointerdown',e=>{
+  if(e.target.closest('button')||e.target.closest('.screen'))return;primary();});
+addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.key===' '||e.key==='Enter'){e.preventDefault();
+    if(state.phase==='menu')startGame();
+    else if(state.phase==='play')drop();
+    else if(state.phase==='over')restart();}
+  if(e.key==='Escape'&&state.phase==='play')togglePause();
+  if(e.key==='m'||e.key==='M'){AU.on=!AU.on;store.set('hn_snd',AU.on);}});
+function togglePause(){state.paused=!state.paused;
+  show(state.paused?'#s-pause':null);}
+function restart(){startGame();}
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&state.phase==='play'&&!state.paused)togglePause();});
+$('#play').onclick=startGame;
+$('#resume').onclick=togglePause;
+$('#abandon').onclick=()=>{state.paused=false;gameOver();};
+$('#again').onclick=restart;
+$('#menu2').onclick=()=>{state.phase='menu';show('#s-menu');};
+
+/* ═══ test hook (read-mostly; used by tools/playtest.py) ═══ */
+window.__nest_debug={
+  state:()=>({phase:state.phase,paused:state.paused,count:state.count,combo:state.combo,
+    perfects:state.perfects,best:state.best,speed:state.speed,
+    slider:state.slider?{x:state.slider.x,w:state.slider.w,alt:state.slider.alt}:null,
+    top:topPlank()?{x:topPlank().x,w:topPlank().w}:null,
+    planks:state.planks.length,debris:state.debris.length,rec:{...REC},snd:AU.on}),
+  start(){startGame();},
+  dropAt(x){if(state.slider){state.slider.x=clamp(x,-SWING,SWING);return drop();}
+    return false;},
+  drop(){return state.slider?drop():false;},
+  pause(){if(state.phase==='play'&&!state.paused)togglePause();},
+  end(){if(state.phase==='play')gameOver();},
+  wipe(){try{localStorage.removeItem('hn_rec')}catch(e){}
+    REC={games:0,best:0,planks:0,perfects:0};state.best=0;}
+};
+})();
+</script>
+</body>
+</html>

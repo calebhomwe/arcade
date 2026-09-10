@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SURVIV ROYALE</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#4e8b52;
+    font-family:system-ui,Segoe UI,Arial,sans-serif;user-select:none}
+  #cv{display:block;width:100vw;height:100vh;cursor:crosshair}
+  .ovr{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;background:rgba(14,26,17,.86);color:#eaf5ec;z-index:10}
+  .ovr h1{font-size:56px;margin:0 0 8px;letter-spacing:6px;color:#ffd257}
+  .ovr h2{font-size:30px;margin:0 0 14px;letter-spacing:3px}
+  .ovr p{margin:4px 0;font-size:17px;color:#bcd8bf}
+  .ovr button{margin-top:22px;font-size:22px;letter-spacing:2px;padding:12px 46px;
+    border:0;border-radius:6px;background:#ffd257;color:#2c3d2e;font-weight:700;
+    cursor:pointer}
+  .ovr button:hover{background:#ffe07f}
+  .stats{display:flex;gap:26px;margin-top:14px}
+  .stats div{text-align:center}
+  .stats b{display:block;font-size:24px;color:#fff}
+  .stats span{font-size:12px;color:#9fbfa3;letter-spacing:1px}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div id="menu" class="ovr">
+  <h1>SURVIV ROYALE</h1>
+  <p>16 drop in. 1 walks out. WASD move &middot; mouse aim &middot; LMB fire &middot; R reload &middot; 3 bandage &middot; 4 medkit</p>
+  <div class="stats">
+    <div><b id="m-wins">0</b><span>WINS</span></div>
+    <div><b id="m-kills">0</b><span>KILLS</span></div>
+    <div><b id="m-matches">0</b><span>MATCHES</span></div>
+    <div><b id="m-best">-</b><span>BEST PLACE</span></div>
+  </div>
+  <button id="btn-play">PLAY</button>
+</div>
+
+<div id="death" class="ovr hidden">
+  <h2>ELIMINATED</h2>
+  <p id="d-line"></p>
+  <div class="stats">
+    <div><b id="d-place">#-</b><span>PLACE</span></div>
+    <div><b id="d-kills">0</b><span>KILLS</span></div>
+    <div><b id="d-dmg">0</b><span>DAMAGE</span></div>
+    <div><b id="d-time">0s</b><span>SURVIVED</span></div>
+  </div>
+  <button id="btn-again-d">PLAY AGAIN</button>
+</div>
+
+<div id="win" class="ovr hidden">
+  <h1>VICTORY!</h1>
+  <p>Last one standing.</p>
+  <div class="stats">
+    <div><b>#1</b><span>PLACE</span></div>
+    <div><b id="w-kills">0</b><span>KILLS</span></div>
+    <div><b id="w-dmg">0</b><span>DAMAGE</span></div>
+    <div><b id="w-time">0s</b><span>SURVIVED</span></div>
+  </div>
+  <button id="btn-again-w">PLAY AGAIN</button>
+</div>
+
+<script>
+"use strict";
+/* ============================================================ SURVIV ROYALE
+   Top-down 2D battle royale vs 15 bots. Single file, zero network, Canvas 2D.
+   ========================================================================= */
+const WORLD = 3000;
+const PLAYER_SPEED = 260;
+const BOT_COUNT = 15;
+const BOT_AIM_ERROR = 8;          // degrees — the difficulty knob
+const BOT_REACTION = 0.25;        // seconds before a bot opens fire
+const GAS_RADII = [2100, 1450, 950, 600, 340, 160];
+const GAS_HOLD = 45, GAS_SHRINK = 20;
+const METakey = "surviv_meta_v1";
+
+const WEAPONS = {
+  pistol : {name:"M9",    dmg:13, rate:3.0, mag:8,  spread:4,  bspd:900,  pellets:1, reload:1.0, ammo:"pistol", tier:0},
+  smg    : {name:"MP5",   dmg:9,  rate:10,  mag:30, spread:7,  bspd:1000, pellets:1, reload:1.7, ammo:"smg",    tier:1},
+  shotgun: {name:"M870",  dmg:8,  rate:1.2, mag:5,  spread:14, bspd:800,  pellets:7, reload:2.4, ammo:"shell",  tier:2},
+  ar     : {name:"AK-47", dmg:14, rate:6.5, mag:25, spread:3,  bspd:1200, pellets:1, reload:2.2, ammo:"ar",     tier:3},
+};
+const AMMO_BOX = {pistol:30, smg:60, shell:15, ar:40};
+
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+let VW = 0, VH = 0;
+function resize(){ VW = cv.width = window.innerWidth; VH = cv.height = window.innerHeight; }
+window.addEventListener("resize", resize); resize();
+
+const R = (a,b)=>a+Math.random()*(b-a);
+const RI = (a,b)=>Math.floor(R(a,b+1));
+const clamp = (v,a,b)=>v<a?a:v>b?b:v;
+const d2 = (ax,ay,bx,by)=>Math.hypot(ax-bx, ay-by);
+const pick = arr=>arr[Math.floor(Math.random()*arr.length)];
+
+/* ------------------------------------------------ meta progress */
+function loadMeta(){
+  try { const m = JSON.parse(localStorage.getItem(METakey)); if (m && typeof m==="object") return m; }
+  catch(e){}
+  return {bestPlace:null, wins:0, kills:0, matches:0};
+}
+function saveMeta(m){ try { localStorage.setItem(METakey, JSON.stringify(m)); } catch(e){} }
+let meta = loadMeta();
+
+/* ------------------------------------------------ game state */
+let phase = "menu";              // menu | playing | dead | won
+let obstacles = [], bots = [], bullets = [], loots = [], dmgNums = [], feed = [];
+let gas = {cx:WORLD/2, cy:WORLD/2, r:GAS_RADII[0], tx:0, ty:0, tr:GAS_RADII[1], phase:0, t:GAS_HOLD, shrinking:false};
+let matchT = 0, placement = 0, shake = 0, hitFlash = 0, peace = false;
+let specMode = false, TS = 1;
+let shotsFired = 0, botShots = 0;
+let frames = 0, fps = 0, fpsT = 0;
+
+const player = {
+  x:0, y:0, r:22, hp:100, weapon:"pistol", mag:8,
+  reserve:{pistol:32, smg:0, shell:0, ar:0},
+  meds:{bandage:1, medkit:0},
+  kills:0, dmg:0, fireCd:0, reloadT:0, useT:0, useKind:null,
+  aim:0, lastShot:-9,
+};
+const keys = {};
+const mouse = {x:0, y:0, down:false};
+
+/* ------------------------------------------------ world generation */
+function overlaps(x,y,r){
+  for (const o of obstacles) if (d2(x,y,o.x,o.y) < r+o.r+14) return true;
+  return false;
+}
+function place(r, clearCx, clearCy, clearR){
+  for (let i=0;i<300;i++){
+    const x = R(r+40, WORLD-r-40), y = R(r+40, WORLD-r-40);
+    if (clearR && d2(x,y,clearCx,clearCy) < clearR) continue;
+    if (!overlaps(x,y,r)) return {x,y};
+  }
+  return null;
+}
+function spawnLoot(x, y, forcedKind){
+  const roll = Math.random();
+  let kind = forcedKind;
+  if (!kind){
+    if (roll < 0.38) kind = pick(["smg","smg","shotgun","ar","pistol"]);
+    else if (roll < 0.72) kind = pick(["pistol","smg","shell","ar"]) + "Ammo";
+    else kind = roll < 0.9 ? "bandage" : "medkit";
+  }
+  loots.push({x:x+R(-12,12), y:y+R(-12,12), kind});
+}
+function genWorld(){
+  obstacles = []; loots = [];
+  const CX = WORLD/2, CY = WORLD/2;
+  for (let i=0;i<40;i++){ const p = place(58, CX, CY, 320); if (p) obstacles.push({type:"tree", x:p.x, y:p.y, r:R(46,64)}); }
+  for (let i=0;i<32;i++){ const p = place(34, CX, CY, 320); if (p) obstacles.push({type:"rock", x:p.x, y:p.y, r:R(26,38)}); }
+  for (let i=0;i<50;i++){ const p = place(30, CX, CY, 320); if (p) obstacles.push({type:"crate", x:p.x, y:p.y, r:28, hp:100}); }
+  for (let i=0;i<26;i++){ const p = place(44, CX, CY, 320); if (p) obstacles.push({type:"bush", x:p.x, y:p.y, r:R(38,52)}); }
+  for (let i=0;i<30;i++){
+    const p = place(14, null, 0, 0);
+    if (p) spawnLoot(p.x, p.y);
+  }
+}
+function newMatch(){
+  genWorld();
+  bullets = []; dmgNums = []; feed = [];
+  matchT = 0; placement = 0; shake = 0; hitFlash = 0; shotsFired = 0; botShots = 0;
+  Object.assign(player, {
+    x:WORLD/2 + R(-120,120), y:WORLD/2 + R(-120,120), hp:100,
+    weapon:"pistol", mag:8, reserve:{pistol:32, smg:0, shell:0, ar:0},
+    meds:{bandage:1, medkit:0}, kills:0, dmg:0,
+    fireCd:0, reloadT:0, useT:0, useKind:null, lastShot:-9,
+  });
+  const jx = WORLD/2 + R(-200,200), jy = WORLD/2 + R(-200,200);
+  gas = {cx:jx, cy:jy, r:GAS_RADII[0], tx:jx, ty:jy, tr:GAS_RADII[1],
+         phase:0, t:GAS_HOLD, shrinking:false};
+  bots = [];
+  for (let i=0;i<BOT_COUNT;i++){
+    let x, y, tries = 0;
+    do { x = R(220, WORLD-220); y = R(220, WORLD-220); tries++; }
+    while ((d2(x,y,player.x,player.y) < 900 || overlaps(x,y,24)) && tries < 200);
+    const w = pick(["pistol","pistol","pistol","smg","smg","shotgun"]);
+    bots.push({
+      id:i+1, name:"Bot "+(i+1), x, y, r:22, hp:100, weapon:w, mag:WEAPONS[w].mag,
+      meds:{bandage:RI(0,1), medkit:0}, state:"wander", wx:R(400,WORLD-400), wy:R(400,WORLD-400),
+      think:R(0,0.4), react:0, strafe:Math.random()<0.5?1:-1, strafeT:R(0.5,1.4),
+      target:null, lootT:null, fireCd:0, reloadT:0, healT:0, lastShot:-9,
+      burst:0, burstMax:4, pause:0, combatAfter:R(6, 75),
+      skin:pick(["#c8a06a","#a8785a","#e0b589","#8a5f46","#d9a066"]),
+    });
+  }
+  phase = "playing";
+  showOverlay(null);
+}
+
+/* ------------------------------------------------ end of match */
+function endMatch(won){
+  if (phase !== "playing") return;
+  phase = won ? "won" : "dead";
+  meta.matches++;
+  meta.kills += player.kills;
+  if (won) meta.wins++;
+  const place = won ? 1 : placement;
+  if (meta.bestPlace === null || place < meta.bestPlace) meta.bestPlace = place;
+  saveMeta(meta);
+  if (won){
+    document.getElementById("w-kills").textContent = player.kills;
+    document.getElementById("w-dmg").textContent = Math.round(player.dmg);
+    document.getElementById("w-time").textContent = Math.round(matchT)+"s";
+    showOverlay("win");
+  } else {
+    document.getElementById("d-place").textContent = "#"+placement;
+    document.getElementById("d-kills").textContent = player.kills;
+    document.getElementById("d-dmg").textContent = Math.round(player.dmg);
+    document.getElementById("d-time").textContent = Math.round(matchT)+"s";
+    showOverlay("death");
+  }
+}
+function entityDie(ent, killerName){
+  // death crate: drop their gear
+  if (ent.weapon && ent.weapon !== "pistol") spawnLoot(ent.x, ent.y, ent.weapon);
+  spawnLoot(ent.x + 20, ent.y, pick(["pistolAmmo","smgAmmo","shell","arAmmo"]));
+  if (Math.random() < 0.6) spawnLoot(ent.x, ent.y + 20, pick(["bandage","bandage","medkit"]));
+  feed.push({text:killerName+" eliminated "+(ent===player?"You":ent.name), t:6});
+  if (feed.length > 5) feed.shift();
+}
+function applyDamage(ent, dmg, srcIsPlayer, killerName){
+  if (phase !== "playing" && !(specMode && phase === "dead")) return;
+  ent.hp -= dmg;
+  dmgNums.push({x:ent.x+R(-8,8), y:ent.y-26, vy:-46, t:0.9, txt:Math.round(dmg)});
+  if (srcIsPlayer) player.dmg += Math.min(dmg, ent.hp + dmg);
+  if (ent === player){ shake = Math.min(shake+5, 14); hitFlash = 0.18; }
+  if (ent.hp <= 0){
+    if (ent === player){
+      entityDie(player, killerName);
+      placement = bots.length + 1;
+      endMatch(false);
+    } else {
+      entityDie(ent, killerName);
+      if (srcIsPlayer) player.kills++;
+      bots.splice(bots.indexOf(ent), 1);
+      if (bots.length === 0 && player.hp > 0) endMatch(true);
+    }
+  }
+}
+
+/* ------------------------------------------------ collision helpers */
+function blocksMove(o){ return o.type === "rock" || o.type === "crate"; }
+function blocksBullet(o){ return o.type !== "bush"; }
+function moveCircle(e, dx, dy){
+  e.x = clamp(e.x + dx, 30, WORLD-30);
+  e.y = clamp(e.y + dy, 30, WORLD-30);
+  for (const o of obstacles){
+    if (!blocksMove(o)) continue;
+    const d = d2(e.x, e.y, o.x, o.y), min = e.r + o.r;
+    if (d < min && d > 0.001){
+      const push = (min - d) / d;
+      e.x += (e.x - o.x) * push;
+      e.y += (e.y - o.y) * push;
+    }
+  }
+}
+function segCircle(ax, ay, bx, by, cx, cy, cr){
+  const dx = bx-ax, dy = by-ay, L2 = dx*dx + dy*dy;
+  let t = L2 ? ((cx-ax)*dx + (cy-ay)*dy) / L2 : 0;
+  t = clamp(t, 0, 1);
+  return d2(ax+dx*t, ay+dy*t, cx, cy) < cr;
+}
+function los(ax, ay, bx, by){
+  for (const o of obstacles){
+    if (o.type === "bush") continue;
+    if (segCircle(ax, ay, bx, by, o.x, o.y, o.r)) return false;
+  }
+  return true;
+}
+function inBush(e){
+  for (const o of obstacles)
+    if (o.type === "bush" && d2(e.x, e.y, o.x, o.y) < o.r) return true;
+  return false;
+}
+
+/* ------------------------------------------------ weapons */
+function fireWeapon(e, ang, isPlayer){
+  const w = WEAPONS[e.weapon];
+  if (e.mag <= 0 || e.fireCd > 0) return;
+  for (let i=0;i<w.pellets;i++){
+    const a = ang + R(-w.spread, w.spread) * Math.PI/180;
+    bullets.push({
+      x:e.x + Math.cos(ang)*34, y:e.y + Math.sin(ang)*34,
+      vx:Math.cos(a)*w.bspd, vy:Math.sin(a)*w.bspd,
+      dmg:w.dmg, owner:e, life:0.95,
+    });
+  }
+  e.mag--; e.fireCd = 1/w.rate; e.lastShot = performance.now()/1000;
+  if (isPlayer){ shotsFired++; shake = Math.min(shake+1.4, 10); }
+  else botShots++;
+}
+function startReload(e){
+  const w = WEAPONS[e.weapon];
+  if (e.reloadT > 0 || e.mag >= w.mag) return;
+  if (e === player && player.reserve[w.ammo] <= 0) return;   // bots have infinite reserve
+  e.reloadT = w.reload;
+}
+function finishReload(e){
+  const w = WEAPONS[e.weapon];
+  const need = w.mag - e.mag;
+  if (e === player){
+    const take = Math.min(need, player.reserve[w.ammo]);
+    player.reserve[w.ammo] -= take; e.mag += take;
+  } else e.mag = need;
+}
+function tryPickup(e, isPlayer){
+  for (let i=loots.length-1;i>=0;i--){
+    const L = loots[i];
+    if (d2(e.x, e.y, L.x, L.y) > e.r + 16) continue;
+    const k = L.kind;
+    if (WEAPONS[k]){
+      if (!isPlayer && WEAPONS[k].tier <= WEAPONS[e.weapon].tier) continue;
+      if (isPlayer && e.weapon !== "pistol")
+        spawnLoot(e.x, e.y, e.weapon);                        // swap drops old gun
+      e.weapon = k; e.mag = Math.min(e.mag, WEAPONS[k].mag);
+      if (e.mag === 0) e.mag = Math.min(WEAPONS[k].mag, 5);
+      loots.splice(i,1); e.reloadT = 0;
+    } else if (k.endsWith("Ammo")){
+      const cls = k.slice(0,-4);
+      if (isPlayer) player.reserve[cls] += AMMO_BOX[cls];
+      loots.splice(i,1);
+    } else if (k === "bandage" || k === "medkit"){
+      e.meds[k]++;
+      loots.splice(i,1);
+    }
+  }
+}
+function breakCrateObstacle(o){
+  obstacles.splice(obstacles.indexOf(o), 1);
+  const n = RI(1,2);
+  for (let i=0;i<n;i++) spawnLoot(o.x, o.y);
+}
+
+/* ------------------------------------------------ gas */
+function updateGas(dt){
+  if (gas.phase >= GAS_RADII.length-1 && !gas.shrinking){
+    gas.t = 0; return;                                        // final circle locked
+  }
+  gas.t -= dt;
+  if (!gas.shrinking && gas.t <= 0){
+    gas.shrinking = true; gas.t = GAS_SHRINK;
+    gas.tr = GAS_RADII[gas.phase+1];
+    const room = (gas.r - gas.tr) * 0.5, a = R(0, Math.PI*2), m = R(0, room);
+    gas.tx = clamp(gas.cx + Math.cos(a)*m, gas.tr+80, WORLD-gas.tr-80);
+    gas.ty = clamp(gas.cy + Math.sin(a)*m, gas.tr+80, WORLD-gas.tr-80);
+  } else if (gas.shrinking){
+    if (gas.t <= 0){
+      gas.cx = gas.tx; gas.cy = gas.ty; gas.r = gas.tr; gas.phase++;
+      gas.shrinking = false; gas.t = GAS_HOLD;
+    } else {
+      const f = dt / Math.max(gas.t + dt, 0.001);             // fraction of remaining shrink
+      gas.cx += (gas.tx-gas.cx)*f; gas.cy += (gas.ty-gas.cy)*f;
+      gas.r = Math.max(gas.tr, gas.r + (gas.tr-gas.r)*f);
+    }
+  }
+}
+function gasDps(){ return gas.phase >= 4 ? 6 : 2; }
+
+/* ------------------------------------------------ bot AI */
+function retarget(b){
+  let best = null, bd = 500;
+  const cands = [];
+  if (peace || matchT < b.combatAfter) return;      // staggered aggression for pacing
+  const graceOver = matchT > 3;                     // spawn grace: bots ignore You early
+  if (phase === "playing" && player.hp > 0 && graceOver) cands.push(player);
+  for (const o of bots) if (o !== b && matchT >= o.combatAfter) cands.push(o);
+  for (const c of cands){
+    const d = d2(b.x, b.y, c.x, c.y);
+    if (d < bd && los(b.x, b.y, c.x, c.y) && !(inBush(c) && d > 150)){
+      bd = d; best = c;
+    }
+  }
+  if (best && b.target !== best) b.react = BOT_REACTION;
+  b.target = best;
+  if (best) b.state = "engage";
+  else if (b.state === "engage") b.state = "wander";
+  if (!best && b.hp < 45 && b.meds.bandage > 0 && b.healT <= 0){ b.state = "heal"; b.healT = 2; }
+  if (!best && b.state === "wander" && Math.random() < 0.35){
+    let bl = null, bld = 900;
+    for (const L of loots){
+      const d = d2(b.x, b.y, L.x, L.y);
+      const want = (WEAPONS[L.kind] && WEAPONS[L.kind].tier > WEAPONS[b.weapon].tier)
+        || L.kind === "bandage" || L.kind === "medkit";
+      if (want && d < bld){ bld = d; bl = L; }
+    }
+    if (bl){ b.state = "loot"; b.lootT = bl; }
+  }
+}
+function moveToward(b, tx, ty, dt, spd){
+  const d = d2(b.x, b.y, tx, ty);
+  if (d < 4) return;
+  moveCircle(b, (tx-b.x)/d*spd*dt, (ty-b.y)/d*spd*dt);
+}
+function updateBot(b, dt){
+  b.fireCd = Math.max(0, b.fireCd - dt);
+  b.react = Math.max(0, b.react - dt);
+  if (b.reloadT > 0){ b.reloadT -= dt; if (b.reloadT <= 0) finishReload(b); }
+  b.think -= dt;
+  if (b.think <= 0){ b.think = 0.35; retarget(b); }
+
+  const gd = d2(b.x, b.y, gas.cx, gas.cy);
+  if (gd > gas.r * 0.82 && gas.r > 100) b.state = "flee";
+
+  if (b.state === "flee"){
+    moveToward(b, gas.cx + R(-1,1)*40, gas.cy + R(-1,1)*40, dt, PLAYER_SPEED*0.96);
+    if (gd < gas.r * 0.72){ b.state = "wander"; b.wx = gas.cx+R(-300,300); b.wy = gas.cy+R(-300,300); }
+  } else if (b.state === "engage" && b.target && b.target.hp > 0){
+    const T = b.target, d = d2(b.x, b.y, T.x, T.y);
+    b.strafeT -= dt;
+    if (b.strafeT <= 0){ b.strafe *= -1; b.strafeT = R(0.5,1.4); }
+    const ang = Math.atan2(T.y-b.y, T.x-b.x);
+    let mvx = Math.cos(ang + Math.PI/2) * b.strafe, mvy = Math.sin(ang + Math.PI/2) * b.strafe;
+    if (d > 340){ mvx += Math.cos(ang)*0.9; mvy += Math.sin(ang)*0.9; }
+    else if (d < 170){ mvx -= Math.cos(ang)*0.9; mvy -= Math.sin(ang)*0.9; }
+    const ml = Math.hypot(mvx, mvy) || 1;
+    moveCircle(b, mvx/ml*PLAYER_SPEED*0.85*dt, mvy/ml*PLAYER_SPEED*0.85*dt);
+    if (d < 520 && los(b.x, b.y, T.x, T.y)){
+      if (b.pause > 0) b.pause -= dt;
+      else if (b.react <= 0 && b.fireCd <= 0){
+        if (b.mag <= 0) startReload(b);
+        else {
+          if (b.burst === 0) b.burstMax = RI(3, 6);
+          const aim = ang + R(-1,1)*BOT_AIM_ERROR*Math.PI/180;
+          fireWeapon(b, aim, false);
+          if (++b.burst >= b.burstMax){ b.burst = 0; b.pause = R(0.6, 1.2); }
+        }
+      }
+    }
+  } else if (b.state === "heal"){
+    b.healT -= dt;
+    if (b.healT <= 0){ b.hp = Math.min(100, b.hp+25); b.meds.bandage--; b.state = "wander"; }
+  } else if (b.state === "loot" && b.lootT){
+    if (loots.indexOf(b.lootT) < 0){ b.state = "wander"; b.lootT = null; }
+    else moveToward(b, b.lootT.x, b.lootT.y, dt, PLAYER_SPEED*0.9);
+  } else { // wander
+    if (d2(b.x, b.y, b.wx, b.wy) < 40 || Math.random() < dt*0.08){
+      for (let t=0;t<6;t++){
+        const a = R(0, Math.PI*2), m = R(0, gas.r*0.8);
+        const wx = clamp(gas.cx + Math.cos(a)*m, 100, WORLD-100);
+        const wy = clamp(gas.cy + Math.sin(a)*m, 100, WORLD-100);
+        let crowded = false;
+        for (const o of bots) if (o !== b && d2(wx, wy, o.x, o.y) < 450){ crowded = true; break; }
+        if (!crowded || t === 5){ b.wx = wx; b.wy = wy; break; }
+      }
+    }
+    moveToward(b, b.wx, b.wy, dt, PLAYER_SPEED*0.7);
+  }
+  tryPickup(b, false);
+  if (gd > gas.r) applyDamage(b, gasDps()*dt, false, "the gas");
+}
+
+/* ------------------------------------------------ player update */
+function updatePlayer(dt){
+  player.fireCd = Math.max(0, player.fireCd - dt);
+  if (player.reloadT > 0){ player.reloadT -= dt; if (player.reloadT <= 0) finishReload(player); }
+  let mx = 0, my = 0;
+  if (keys["w"]) my -= 1;
+  if (keys["s"]) my += 1;
+  if (keys["a"]) mx -= 1;
+  if (keys["d"]) mx += 1;
+  if (mx || my){
+    const l = Math.hypot(mx, my);
+    moveCircle(player, mx/l*PLAYER_SPEED*dt, my/l*PLAYER_SPEED*dt);
+  }
+  const camX = player.x - VW/2, camY = player.y - VH/2;
+  player.aim = Math.atan2(mouse.y - (player.y - camY), mouse.x - (player.x - camX));
+  if (mouse.down && player.useT <= 0){
+    if (player.mag <= 0) startReload(player);
+    else fireWeapon(player, player.aim, true);
+  }
+  if (player.useT > 0){
+    player.useT -= dt;
+    if (player.useT <= 0){
+      player.hp = Math.min(100, player.hp + (player.useKind === "medkit" ? 100 : 25));
+      player.meds[player.useKind]--;
+      player.useKind = null;
+    }
+  }
+  tryPickup(player, true);
+  if (d2(player.x, player.y, gas.cx, gas.cy) > gas.r){
+    player.hp -= gasDps()*dt;
+    if (player.hp <= 0){
+      placement = bots.length + 1;
+      entityDie(player, "the gas");
+      endMatch(false);
+    }
+  }
+}
+
+/* ------------------------------------------------ bullets */
+function updateBullets(dt){
+  for (let i=bullets.length-1;i>=0;i--){
+    const b = bullets[i];
+    b.x += b.vx*dt; b.y += b.vy*dt; b.life -= dt;
+    let dead = b.life <= 0 || b.x<0 || b.y<0 || b.x>WORLD || b.y>WORLD;
+    if (!dead) for (const o of obstacles){
+      if (!blocksBullet(o)) continue;
+      if (o.type === "tree"){
+        if (d2(b.x, b.y, o.x, o.y) < o.r*0.75){ dead = true; break; }
+      } else if (d2(b.x, b.y, o.x, o.y) < o.r){
+        dead = true;
+        if (o.type === "crate"){
+          o.hp -= b.dmg;
+          if (o.hp <= 0) breakCrateObstacle(o);
+        }
+        break;
+      }
+    }
+    if (!dead){
+      const cands = [];
+      if (player.hp > 0) cands.push(player);
+      for (const bt of bots) cands.push(bt);
+      for (const c of cands){
+        if (c === b.owner) continue;
+        if (d2(b.x, b.y, c.x, c.y) < c.r + 3){
+          applyDamage(c, b.dmg, b.owner === player,
+                      b.owner === player ? "You" : b.owner.name);
+          dead = true; break;
+        }
+      }
+    }
+    if (dead) bullets.splice(i, 1);
+  }
+}
+
+/* ------------------------------------------------ main loop */
+let lastT = performance.now();
+function frame(now){
+  requestAnimationFrame(frame);
+  let dt = (now - lastT)/1000; lastT = now;
+  if (dt > 0.05) dt = 0.05;
+  dt *= TS;
+  frames++; fpsT += dt;
+  if (fpsT >= 1){ fps = frames; frames = 0; fpsT = 0; }
+  const steps = Math.max(1, Math.ceil(dt/0.02)), sdt = dt/steps;
+  for (let s=0; s<steps; s++){
+    if (phase === "playing"){
+      matchT += sdt;
+      updateGas(sdt);
+      updatePlayer(sdt);
+      for (const b of bots) updateBot(b, sdt);
+      updateBullets(sdt);
+    } else if (specMode && phase === "dead"){
+      matchT += sdt;
+      updateGas(sdt);                               // spectate: let the bots finish
+      for (const b of bots) updateBot(b, sdt);
+      updateBullets(sdt);
+    } else break;
+  }
+  for (let i=dmgNums.length-1;i>=0;i--){
+    const n = dmgNums[i]; n.t -= dt; n.y += n.vy*dt;
+    if (n.t <= 0) dmgNums.splice(i,1);
+  }
+  for (let i=feed.length-1;i>=0;i--){ feed[i].t -= dt; if (feed[i].t <= 0) feed.splice(i,1); }
+  shake = Math.max(0, shake - dt*18);
+  hitFlash = Math.max(0, hitFlash - dt);
+  draw();
+}
+requestAnimationFrame(frame);
+
+/* ------------------------------------------------ rendering */
+function camNow(){
+  return [clamp(player.x - VW/2, -60, Math.max(-60, WORLD-VW+60)) + (shake ? R(-shake,shake)*0.5 : 0),
+          clamp(player.y - VH/2, -60, Math.max(-60, WORLD-VH+60)) + (shake ? R(-shake,shake)*0.5 : 0)];
+}
+function draw(){
+  const [camX, camY] = camNow();
+  const W2S = (x,y)=>[x-camX, y-camY];
+
+  ctx.fillStyle = "#58a35c"; ctx.fillRect(0, 0, VW, VH);
+  // grass stripes
+  const s0 = Math.floor(camX/250)*250;
+  ctx.fillStyle = "rgba(0,0,0,0.045)";
+  for (let gx = s0; gx < camX+VW; gx += 500) ctx.fillRect(gx-camX, 0, 250, VH);
+  const t0 = Math.floor(camY/250)*250;
+  for (let gy = t0; gy < camY+VH; gy += 500) ctx.fillRect(0, gy-camY, VW, 250);
+  // border fence
+  ctx.strokeStyle = "#7a5a3a"; ctx.lineWidth = 6;
+  ctx.strokeRect(12-camX, 12-camY, WORLD-24, WORLD-24);
+
+  // obstacles
+  for (const o of obstacles){
+    const [x,y] = W2S(o.x,o.y);
+    if (x<-90||y<-90||x>VW+90||y>VH+90) continue;
+    if (o.type === "bush"){
+      ctx.fillStyle = "#3f7a45";
+      ctx.beginPath(); ctx.arc(x,y,o.r,0,7); ctx.fill();
+      ctx.fillStyle = "rgba(70,130,75,0.8)";
+      ctx.beginPath(); ctx.arc(x-o.r*0.25,y-o.r*0.25,o.r*0.6,0,7); ctx.fill();
+    } else if (o.type === "tree"){
+      ctx.fillStyle = "#6b4a2e";
+      ctx.beginPath(); ctx.arc(x,y,10,0,7); ctx.fill();
+      ctx.fillStyle = "#3c6e41";
+      ctx.beginPath(); ctx.arc(x,y,o.r*0.75,0,7); ctx.fill();
+      ctx.fillStyle = "rgba(60,110,65,0.85)";
+      ctx.beginPath(); ctx.arc(x-o.r*0.18,y-o.r*0.18,o.r*0.5,0,7); ctx.fill();
+    } else if (o.type === "rock"){
+      ctx.fillStyle = "#8d8d92";
+      ctx.beginPath();
+      for (let a=0;a<7;a++){
+        const an = a/7*Math.PI*2, rr = o.r*(0.85+0.15*Math.sin(a*3+o.x));
+        if (a) ctx.lineTo(x+Math.cos(an)*rr, y+Math.sin(an)*rr);
+        else ctx.moveTo(x+Math.cos(an)*rr, y+Math.sin(an)*rr);
+      }
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.14)";
+      ctx.beginPath(); ctx.arc(x-o.r*0.25,y-o.r*0.25,o.r*0.42,0,7); ctx.fill();
+    } else if (o.type === "crate"){
+      ctx.fillStyle = "#b07a3f"; ctx.fillRect(x-o.r,y-o.r,o.r*2,o.r*2);
+      ctx.strokeStyle = "#8a5a2a"; ctx.lineWidth = 4;
+      ctx.strokeRect(x-o.r+2,y-o.r+2,o.r*2-4,o.r*2-4);
+      ctx.beginPath(); ctx.moveTo(x-o.r,y-o.r); ctx.lineTo(x+o.r,y+o.r);
+      ctx.moveTo(x+o.r,y-o.r); ctx.lineTo(x-o.r,y+o.r); ctx.stroke();
+    }
+  }
+
+  // loot
+  for (const L of loots){
+    const [x,y] = W2S(L.x,L.y);
+    if (x<-40||y<-40||x>VW+40||y>VH+40) continue;
+    let col = "#c9b04a", txt = "?";
+    if (WEAPONS[L.kind]){ col = "#7d8a4a"; txt = L.kind[0].toUpperCase(); }
+    else if (L.kind.endsWith("Ammo")){ col = "#9a7c3f"; txt = "A"; }
+    else if (L.kind === "bandage"){ col = "#c8c8d2"; txt = "+"; }
+    else if (L.kind === "medkit"){ col = "#d05050"; txt = "+"; }
+    ctx.fillStyle = col;
+    ctx.strokeStyle = "rgba(0,0,0,0.35)"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(x,y,13,0,7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#222"; ctx.font = "bold 13px system-ui"; ctx.textAlign = "center";
+    ctx.fillText(txt, x, y+5);
+  }
+
+  // entities
+  if (player.hp > 0) drawActor(player, true, "#f2c56b");
+  for (const b of bots) drawActor(b, false, b.skin);
+
+  // bullets
+  ctx.strokeStyle = "#ffe9a8"; ctx.lineWidth = 3;
+  for (const b of bullets){
+    const [x,y] = W2S(b.x,b.y);
+    ctx.beginPath(); ctx.moveTo(x,y);
+    ctx.lineTo(x-b.vx*0.012, y-b.vy*0.012); ctx.stroke();
+  }
+
+  // damage numbers
+  ctx.font = "bold 15px system-ui"; ctx.textAlign = "center";
+  for (const n of dmgNums){
+    const [x,y] = W2S(n.x,n.y);
+    ctx.fillStyle = "rgba(255,"+Math.floor(120+n.t*130)+",60,"+clamp(n.t,0,1)+")";
+    ctx.fillText(n.txt, x, y);
+  }
+
+  // gas overlay (red outside safe circle)
+  const [gx,gy] = W2S(gas.cx,gas.cy);
+  ctx.fillStyle = "rgba(214,52,44,0.30)";
+  ctx.beginPath();
+  ctx.rect(0,0,VW,VH);
+  ctx.arc(gx, gy, gas.r, 0, Math.PI*2, true);
+  ctx.fill("evenodd");
+  ctx.strokeStyle = "rgba(255,80,70,0.85)"; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(gx, gy, gas.r, 0, Math.PI*2); ctx.stroke();
+  if (gas.shrinking && gas.phase < GAS_RADII.length-1){
+    const [tx,ty] = W2S(gas.tx,gas.ty);
+    ctx.strokeStyle = "rgba(255,255,255,0.9)"; ctx.lineWidth = 2;
+    ctx.setLineDash([10,8]);
+    ctx.beginPath(); ctx.arc(tx, ty, gas.tr, 0, Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // gas direction arrow when outside
+  if (phase === "playing" && d2(player.x,player.y,gas.cx,gas.cy) > gas.r){
+    const an = Math.atan2(gas.cy-player.y, gas.cx-player.x);
+    const ax = VW/2 + Math.cos(an)*90, ay = VH/2 + Math.sin(an)*90;
+    ctx.save(); ctx.translate(ax,ay); ctx.rotate(an);
+    ctx.fillStyle = "#ff6a5e";
+    ctx.beginPath(); ctx.moveTo(18,0); ctx.lineTo(-10,-12); ctx.lineTo(-10,12);
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+
+  if (phase !== "menu") drawHUD();
+
+  if (hitFlash > 0){
+    ctx.fillStyle = "rgba(214,40,40,"+(hitFlash*1.4)+")";
+    ctx.fillRect(0,0,VW,VH);
+  }
+}
+function drawActor(e, isPlayer, skin){
+  const [camX, camY] = camNow();
+  const x = e.x - camX, y = e.y - camY;
+  const hidden = inBush(e) ? (isPlayer ? 0.6 : 0.45) : 1;
+  ctx.globalAlpha = hidden;
+  const ang = isPlayer ? player.aim
+            : (e.target ? Math.atan2(e.target.y-e.y, e.target.x-e.x) : 0);
+  // gun barrel + hands
+  ctx.strokeStyle = "#33383d"; ctx.lineWidth = 10; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(x+Math.cos(ang)*12, y+Math.sin(ang)*12);
+  ctx.lineTo(x+Math.cos(ang)*34, y+Math.sin(ang)*34); ctx.stroke();
+  ctx.fillStyle = skin;
+  ctx.beginPath(); ctx.arc(x+Math.cos(ang+0.5)*20, y+Math.sin(ang+0.5)*20, 7, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+Math.cos(ang-0.5)*20, y+Math.sin(ang-0.5)*20, 7, 0, 7); ctx.fill();
+  // muzzle flash
+  const nowS = performance.now()/1000;
+  if (nowS - e.lastShot < 0.05){
+    ctx.fillStyle = "#ffe08a";
+    ctx.beginPath(); ctx.arc(x+Math.cos(ang)*40, y+Math.sin(ang)*40, 9, 0, 7); ctx.fill();
+  }
+  // body
+  ctx.fillStyle = skin;
+  ctx.beginPath(); ctx.arc(x, y, e.r, 0, 7); ctx.fill();
+  ctx.lineWidth = 3.5; ctx.strokeStyle = isPlayer ? "#222" : "rgba(0,0,0,0.45)"; ctx.stroke();
+  if (!isPlayer){
+    ctx.fillStyle = "rgba(0,0,0,0.12)";
+    ctx.beginPath(); ctx.arc(x, y, e.r*0.55, 0, 7); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  if (!isPlayer){
+    ctx.font = "12px system-ui"; ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.75)";
+    ctx.fillText(e.name, x, y - e.r - 18);
+    ctx.fillStyle = "rgba(0,0,0,0.4)";
+    ctx.fillRect(x-24, y-e.r-14, 48, 5);
+    ctx.fillStyle = "#6fd66f";
+    ctx.fillRect(x-24, y-e.r-14, 48*clamp(e.hp/100,0,1), 5);
+  }
+  if (isPlayer && player.useT > 0 && player.useKind){
+    const total = player.useKind === "medkit" ? 4 : 2;
+    ctx.fillStyle = "rgba(0,0,0,0.45)";
+    ctx.fillRect(x-30, y-e.r-20, 60, 8);
+    ctx.fillStyle = "#ffe08a";
+    ctx.fillRect(x-30, y-e.r-20, 60*(1-player.useT/total), 8);
+  }
+}
+function drawHUD(){
+  ctx.textBaseline = "alphabetic";
+  // health bar
+  ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.fillRect(VW/2-150, VH-58, 300, 26);
+  ctx.fillStyle = player.hp > 30 ? "#79d979" : "#e05050";
+  ctx.fillRect(VW/2-147, VH-55, 294*clamp(player.hp/100,0,1), 20);
+  ctx.fillStyle = "#fff"; ctx.font = "bold 15px system-ui"; ctx.textAlign = "center";
+  ctx.fillText(Math.max(0,Math.ceil(player.hp)), VW/2, VH-40);
+  // ammo
+  const w = WEAPONS[player.weapon];
+  ctx.textAlign = "right"; ctx.font = "bold 22px system-ui";
+  ctx.fillStyle = "#fff";
+  ctx.fillText(player.mag+" / "+player.reserve[w.ammo], VW-24, VH-34);
+  ctx.font = "13px system-ui"; ctx.fillStyle = "#cfe3cf";
+  ctx.fillText(w.name+"  [R reload]", VW-24, VH-58);
+  ctx.fillText("bandage x"+player.meds.bandage+" [3]   medkit x"+player.meds.medkit+" [4]", VW-24, VH-12);
+  // alive / kills
+  ctx.textAlign = "left"; ctx.font = "bold 17px system-ui"; ctx.fillStyle = "#fff";
+  ctx.fillText("ALIVE "+(bots.length + (player.hp>0?1:0)), 186, 34);
+  ctx.fillText("KILLS "+player.kills, 186, 58);
+  // gas timer
+  ctx.textAlign = "center"; ctx.font = "bold 17px system-ui";
+  const gt = gas.phase >= GAS_RADII.length-1 && !gas.shrinking ? "FINAL CIRCLE"
+           : gas.shrinking ? "GAS SHRINKING" : "GAS IN "+Math.ceil(gas.t)+"s";
+  ctx.fillStyle = gas.shrinking ? "#ff8278" : "#ffe3a1";
+  ctx.fillText(gt, VW/2, 34);
+  // kill feed
+  ctx.textAlign = "left"; ctx.font = "14px system-ui";
+  feed.forEach((f, i) => {
+    ctx.fillStyle = "rgba(255,255,255,"+clamp(f.t/2,0,0.95)+")";
+    ctx.fillText(f.text, 186, 92 + i*22);
+  });
+  // minimap (150px) bottom-left
+  const M = 150, mx = 20, my = VH - M - 20, k = M/WORLD;
+  ctx.fillStyle = "rgba(20,34,24,0.85)"; ctx.fillRect(mx, my, M, M);
+  ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 1;
+  ctx.strokeRect(mx, my, M, M);
+  ctx.fillStyle = "rgba(214,52,44,0.35)";
+  ctx.beginPath(); ctx.rect(mx, my, M, M);
+  ctx.arc(mx+gas.cx*k, my+gas.cy*k, gas.r*k, 0, Math.PI*2, true); ctx.fill("evenodd");
+  ctx.strokeStyle = "#ff6a5e";
+  ctx.beginPath(); ctx.arc(mx+gas.cx*k, my+gas.cy*k, gas.r*k, 0, Math.PI*2); ctx.stroke();
+  if (gas.shrinking){
+    ctx.strokeStyle = "rgba(255,255,255,0.8)"; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.arc(mx+gas.tx*k, my+gas.ty*k, gas.tr*k, 0, Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  for (const b of bots){
+    if (d2(b.x, b.y, player.x, player.y) < 700){
+      ctx.fillStyle = "#ff8278";
+      ctx.fillRect(mx+b.x*k-1.5, my+b.y*k-1.5, 3, 3);
+    }
+  }
+  if (player.hp > 0){
+    ctx.fillStyle = "#ffe3a1";
+    ctx.beginPath(); ctx.arc(mx+player.x*k, my+player.y*k, 3, 0, 7); ctx.fill();
+  }
+}
+
+/* ------------------------------------------------ overlays / menu */
+function showOverlay(which){
+  for (const id of ["menu","death","win"])
+    document.getElementById(id).classList.toggle("hidden", id !== which);
+  if (which === "menu"){
+    document.getElementById("m-wins").textContent = meta.wins;
+    document.getElementById("m-kills").textContent = meta.kills;
+    document.getElementById("m-matches").textContent = meta.matches;
+    document.getElementById("m-best").textContent = meta.bestPlace ? "#"+meta.bestPlace : "-";
+  }
+}
+document.getElementById("btn-play").addEventListener("click", ()=>newMatch());
+document.getElementById("btn-again-d").addEventListener("click", ()=>newMatch());
+document.getElementById("btn-again-w").addEventListener("click", ()=>newMatch());
+
+/* ------------------------------------------------ input */
+window.addEventListener("keydown", e=>{
+  const k = e.key.toLowerCase();
+  keys[k] = true;
+  if (k === "r" && phase === "playing") startReload(player);
+  if (phase !== "playing") return;
+  if (k === "3" && player.meds.bandage > 0 && player.useT <= 0 && player.hp < 100)
+    { player.useT = 2; player.useKind = "bandage"; }
+  if (k === "4" && player.meds.medkit > 0 && player.useT <= 0 && player.hp < 100)
+    { player.useT = 4; player.useKind = "medkit"; }
+});
+window.addEventListener("keyup", e=>{ keys[e.key.toLowerCase()] = false; });
+cv.addEventListener("mousemove", e=>{ mouse.x = e.clientX; mouse.y = e.clientY; });
+cv.addEventListener("mousedown", e=>{ if (e.button === 0) mouse.down = true; });
+window.addEventListener("mouseup", e=>{ if (e.button === 0) mouse.down = false; });
+cv.addEventListener("contextmenu", e=>e.preventDefault());
+
+/* ------------------------------------------------ debug hook (playtest gate) */
+window.__surviv_debug = {
+  version: "0.1",
+  start(){ newMatch(); },
+  peace(v){
+    peace = !!v;
+    if (peace) for (const b of bots){
+      b.target = null;
+      if (b.state === "engage") b.state = "wander";
+    }
+  },
+  spectate(v){ specMode = !!v; },
+  speed(x){ TS = clamp(x, 0.25, 6); },
+  wipe(){ meta = {bestPlace:null, wins:0, kills:0, matches:0}; saveMeta(meta); },
+  meta(){ return JSON.parse(JSON.stringify(meta)); },
+  lootList(){ return loots.map(L=>({x:L.x, y:L.y, kind:L.kind})); },
+  state(){
+    return {
+      phase, px:+player.x.toFixed(1), py:+player.y.toFixed(1),
+      hp:+player.hp.toFixed(1), weapon:player.weapon, mag:player.mag,
+      meds:{bandage:player.meds.bandage, medkit:player.meds.medkit},
+      reserveTotal:player.reserve.pistol+player.reserve.smg+player.reserve.shell+player.reserve.ar,
+      kills:player.kills, damage:+player.dmg.toFixed(0), time:+matchT.toFixed(1),
+      placement, alive:bots.length + (player.hp>0 && phase==="playing" ? 1 : 0),
+      bots:bots.map(b=>({x:+b.x.toFixed(0), y:+b.y.toFixed(0), hp:+b.hp.toFixed(0), state:b.state})),
+      obstacles:obstacles.length,
+      crates:obstacles.filter(o=>o.type==="crate").length,
+      loot:loots.length, bullets:bullets.length,
+      gasX:+gas.cx.toFixed(0), gasY:+gas.cy.toFixed(0), gasR:+gas.r.toFixed(0),
+      gasPhase:gas.phase, gasShrinking:gas.shrinking,
+      killFeed:feed.map(f=>f.text), shotsFired, botShots, fps,
+    };
+  },
+  teleport(x, y){ player.x = clamp(x, 40, WORLD-40); player.y = clamp(y, 40, WORLD-40); },
+  teleportBot(i, x, y){
+    const b = bots[i];
+    if (b){ b.x = x; b.y = y; b.state = "wander"; b.wx = x; b.wy = y; b.think = 0; b.combatAfter = 0; }
+  },
+  damageBot(i, d){
+    const b = bots[i];
+    if (b) applyDamage(b, d, true, "You");
+    else if (bots.length) applyDamage(bots[0], d, true, "You");
+  },
+  hurt(d){ player.hp = Math.max(1, player.hp - d); },
+  useMed(){
+    if (player.meds.bandage <= 0) player.meds.bandage = 1;   // test helper grant
+    if (player.useT > 0) return false;
+    player.useT = 2; player.useKind = "bandage"; return true;
+  },
+  breakCrate(){
+    const c = obstacles.find(o=>o.type==="crate");
+    if (c) breakCrateObstacle(c);
+  },
+  skipGasHold(){ if (!gas.shrinking && gas.phase < GAS_RADII.length-1) gas.t = 0.05; },
+  killAllBots(){
+    for (let i = bots.length-1; i >= 0; i--) applyDamage(bots[i], 9999, true, "You");
+  },
+  forceKill(){
+    if (phase !== "playing") return;
+    placement = bots.length + 1;
+    entityDie(player, "Bot Test");
+    endMatch(false);
+  },
+};
+showOverlay("menu");
+</script>
+</body>
+</html>

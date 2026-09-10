@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Quiz Tower Defense</title>
+<style>
+  html,body{margin:0;padding:0;background:#0b0e13;color:#e8e2d0;font-family:system-ui,Segoe UI,sans-serif;height:100%;overflow:hidden}
+  #wrap{display:flex;align-items:center;justify-content:center;height:100vh}
+  canvas{background:#141a22;box-shadow:0 0 40px #000a;max-width:100vw;max-height:100vh}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c" width="960" height="640"></canvas></div>
+<script>
+'use strict';
+/* ═══════════════════════════════════════════════════════════════════════════
+   QUIZ TOWER DEFENSE — knowledge-powered lane tower defense.
+   Single file. Canvas 2D. Zero network. All art procedural.
+   Question core (tiered math + hints, spelling word bank with sentence clues)
+   extracted from Spell & Maths Galaxy.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────── utils ─────────────────────────── */
+const CVS = document.getElementById('c');
+const CTX = CVS.getContext('2d');
+const W = CVS.width, H = CVS.height;
+const TAU = Math.PI * 2;
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rnd = Math.random;
+function rint(a,b){return a + Math.floor(rnd() * (b - a + 1));}
+function pick(arr){return arr[Math.floor(rnd() * arr.length)];}
+function shuf(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function clamp(v,a,b){return v<a?a:v>b?b:v;}
+function lerp(a,b,t){return a+(b-a)*t;}
+function dist(ax,ay,bx,by){return Math.hypot(bx-ax,by-ay);}
+
+/* seeded RNG per map (the "3 map paths (seeded)" contract) */
+function mapRng(seed){return mulberry32(seed*7919+13);}
+
+/* ═══════════ QUESTION CORE (extracted from SpellMathsGalaxy) ═══════════ */
+/* words — grade-tiered bank, sentence-context clues.
+   format: [word, 'sentence with ~ where the word goes'] */
+const WORDS={
+ 1:[ ['cat','the ~ says meow'],['dog','the ~ says woof'],['sun','the ~ lights the day'],
+    ['hat','she wore a ~ on her head'],['bus','we rode the ~ to town'],['fish','a ~ swims in water'],
+    ['frog','a green ~ jumps and croaks'],['bird','a ~ has feathers and wings'],
+    ['cake','we ate birthday ~'],['star','each ~ burns far away'],['moon','the ~ circles the earth'],
+    ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a ~ crosses the sea'],
+    ['milk','the cat drank ~'],['book','she read a ~ at night'],['king','the ~ wore a golden crown'],
+    ['road','the ~ goes over the hill'],['snow','cold white ~ fell all night'],['bear','the big ~ slept all winter'] ],
+ 2:[ ['garden','flowers grow in the ~'],['bridge','the train crossed the ~'],
+    ['monkey','a ~ climbs and swings'],['orange','an ~ is a round citrus fruit'],
+    ['purple','~ is red mixed with blue'],['school','you learn at ~'],
+    ['pencil','you write with a ~'],['tiger','a ~ is a big striped cat'],
+    ['planet','earth is a ~'],['castle','knights lived in a ~'],
+    ['engine','the ~ makes the ship move'],['flower','a ~ opens in the sun'],
+    ['dolphin','a ~ is a clever sea animal'],['rocket','a ~ climbs out of the sky'],
+    ['friend','a ~ shares with you'],['forest','wolves live deep in the ~'],
+    ['island','an ~ is land in the sea'],['market','fruit is sold at the ~'],
+    ['morning','the ~ comes after night'],['mountain','climb the tall ~'] ],
+ 3:[ ['beautiful','the sunset was ~'],['adventure','a long risky ~'],
+    ['telescope','a ~ makes far things near'],['dangerous','a ~ road hugs the cliff'],
+    ['elephant','the grey ~ has a trunk'],['gravity','~ pulls you down'],
+    ['giraffe','the ~ has a very long neck'],['hospital','the sick are cared for in a ~'],
+    ['horizon','the sun sinks below the ~'],['lightning','~ is a bright crack in a storm'],
+    ['umbrella','an ~ keeps the rain off'],['volcano','the ~ erupted at dawn'],
+    ['knowledge','~ is everything learned'],['champion','the ~ held the trophy high'],
+    ['community','our ~ held a fair'],['curious','the ~ child asked why'],
+    ['decision','think hard before a ~'],['different','each snowflake is ~'],
+    ['enormous','an ~ whale swam past'],['impossible','it is ~ to touch the sun'] ],
+ 4:[ ['accomplish','you can ~ anything with practice'],['believe','always ~ in yourself'],
+    ['calendar','mark the date on the ~'],['cemetery','the old ~ sits on the hill'],
+    ['definite','a ~ answer is final'],['dictionary','look the word up in a ~'],
+    ['embarrass','do not ~ yourself on stage'],['environment','care for the ~'],
+    ['especially','I like fruit, ~ apples'],['exaggerate','do not ~ the story'],
+    ['February','~ is the shortest month'],['government','the ~ makes laws'],
+    ['height','the ~ of the mountain'],['immediately','come here ~'],
+    ['interrupt','do not ~ the speaker'],['laboratory','experiments happen in a ~'],
+    ['necessary','water is ~ for life'],['parallel','train tracks run ~'],
+    ['perseverance','~ beats talent'],['rhythm','clap the ~ of the song'] ],
+ 5:[ ['abundance','a harvest of ~'],['acknowledge','~ your mistakes bravely'],
+    ['ambiguous','an ~ answer confuses everyone'],['catalyst','an idea can be a ~ for change'],
+    ['colleague','greet every ~ kindly'],['conscience','let your ~ be your guide'],
+    ['controversy','the rule caused ~'],['determination','~ moved the boulder'],
+    ['dilemma','a difficult ~ with no easy choice'],['diligent','the ~ bee worked all day'],
+    ['ecosystem','a reef is a living ~'],['entrepreneur','an ~ starts a business'],
+    ['phenomenon','an eclipse is a rare ~'],['photosynthesis','leaves feed themselves by ~'],
+    ['resilience','~ is bouncing back'],['sacrifice','a ~ for the team'],
+    ['simultaneous','the drums kept a ~ beat'],['strategist','a great ~ sees three moves ahead'],
+    ['sufficient','one coat was ~'],['threshold','cross the ~ into the lab'] ]
+};
+const word = lv => { const w = pick(WORDS[clamp(lv,1,5)]); return {t:w[0], h:w[1]}; };
+function clueSentence(w){
+  return w.h.replace('~','_____');
+}
+/* one-line teaching hints, shown after a miss */
+function hintFor(op,a,b){
+  switch(op){
+    case '+': return 'start at '+a+', count on '+b+' more';
+    case '−': return 'count up from '+b+' to '+a;
+    case '×': return b+' groups of '+a+' — or '+a+' groups of '+b;
+    case '÷': return 'how many '+b+'s make '+a+'?';
+    default: return '';
+  }
+}
+function opts(ans,spread,min,max,n){
+  const want=n+1, s=new Set([String(ans)]); let g=0;
+  const a0=Number(ans);
+  while(s.size<want&&g++<400){const v=a0+rint(-spread,spread); if(v!==a0&&v>=min&&v<=max)s.add(String(v));}
+  let b=1; while(s.size<want){ if(a0+b<=max)s.add(String(a0+b)); if(s.size<want&&a0-b>=min)s.add(String(a0-b)); b++; }
+  return shuf([...s]);
+}
+/* tiered arithmetic generators — tiers 1..4 (from SpellMathsGalaxy qQuick) */
+function qMath(d){
+  let a,b,op,ans,sp,mn,mx,hint='';
+  if(d===1){op=Math.random()<.5?'+':'−';a=rint(1,10);b=rint(1,10);if(op==='−'&&b>a){const t=a;a=b;b=t;}
+            ans=op==='+'?a+b:a-b;sp=4;mn=0;mx=20;}
+  else if(d===2){const r=Math.random();
+    if(r<.34){op='+';a=rint(5,30);b=rint(5,30);ans=a+b;sp=7;mn=0;mx=64;}
+    else if(r<.68){op='−';a=rint(10,45);b=rint(1,a);ans=a-b;sp=7;mn=0;mx=45;}
+    else{op='×';a=rint(2,9);b=rint(2,9);ans=a*b;sp=8;mn=0;mx=90;}}
+  else if(d===3){const r=Math.random();
+    if(r<.25){op='+';a=rint(25,99);b=rint(25,99);ans=a+b;sp=14;mn=0;mx=200;}
+    else if(r<.5){op='−';a=rint(40,99);b=rint(10,a);ans=a-b;sp=14;mn=0;mx=99;}
+    else if(r<.78){op='×';a=rint(3,12);b=rint(3,12);ans=a*b;sp=12;mn=0;mx=150;}
+    else{op='÷';b=rint(2,9);ans=rint(2,12);a=b*ans;sp=6;mn=0;mx=20;}}
+  else{ /* tier 4: two-step, fractions of a quantity, percentages */
+    const r=Math.random();
+    if(r<.4){const b1=rint(2,9),b2=rint(2,9); a=rint(3,18); ans=a+b1*b2;
+      hint=b1+' × '+b2+' = '+(b1*b2)+', then '+a+' + '+(b1*b2);
+      return{prompt:a+' + '+b1+' × '+b2,note:'multiply first, then add',hint,
+             answer:String(ans),options:opts(ans,15,0,Math.max(120,ans+20),3)};}
+    if(r<.7){const den=pick([2,3,4,5]); const num=pick([1,1,1,2,3].filter(n=>n<den));
+      const T=den*rint(3,12); ans=T/den*num;
+      hint='divide '+T+' by '+den+' (bottom), then times by '+num+' (top)';
+      return{prompt:num+'/'+den+' of '+T,note:'take the fraction of the whole',hint,
+             answer:String(ans),options:opts(ans,Math.max(4,Math.round(ans*.3)),0,ans*2+6,3)};}
+    const p=pick([10,20,25,50,75]), T=pick([20,40,60,80,100,200]);
+    ans=T/100*p;
+    hint=p+'% of '+T+' = '+T+' ÷ 100 × '+p;
+    return{prompt:p+'% of '+T,note:'take the percentage of the whole',hint,
+           answer:String(ans),options:opts(ans,Math.max(6,Math.round(ans*.35)),0,ans*2+10,3)};
+  }
+  hint=hintFor(op,a,b);
+  return{prompt:a+' '+op+' '+b,note:'',hint,answer:String(ans),options:opts(ans,sp,mn,mx,3)};
+}
+/* spelling question: clue sentence + 4 word pedestals */
+function qSpell(d){
+  const w=word(clamp(d,1,5));
+  const pool=[]; const bank=WORDS[clamp(d,1,5)];
+  let guard=0;
+  while(pool.length<3&&guard++<200){const c=pick(bank)[0]; if(c!==w.t&&pool.indexOf(c)<0)pool.push(c);}
+  const options=shuf([w.t].concat(pool));
+  return{prompt:clueSentence(w),note:'complete the sentence',
+         hint:'starts with "'+w.t[0].toUpperCase()+'" — '+w.t.length+' letters',
+         answer:w.t,options};
+}
+function makeQuestion(mode,tier){
+  const q = mode==='math' ? qMath(clamp(tier,1,4)) : qSpell(clamp(tier,1,5));
+  q.answerIndex = q.options.indexOf(q.answer);
+  if(q.answerIndex<0){q.options[0]=q.answer;q.answerIndex=0;}
+  return q;
+}
+
+/* ═══════════ layout / maps ═══════════ */
+const CELL=48, COLS=16, ROWS=10, FX=0, FY=64, FW=COLS*CELL, FH=ROWS*CELL;
+const PANEL_X=FW, PANEL_W=W-FW;                 /* right sidebar 768..960 */
+const CMD_Y=FY+FH, CMD_H=H-CMD_Y;               /* command strip 544..640 */
+
+/* 3 seeded winding maps: waypoint corners (grid col,row), castle at the end.
+   A seeded RNG jitters the fixed lanes so each map's exact polyline is
+   deterministic per seed. */
+const MAPS=[
+ {name:'Ridge Run',   wps:[[0,1],[6,1],[6,4],[11,4],[11,7],[2,7],[2,9],[15,9]], seed:11},
+ {name:'Snake Vale',  wps:[[0,8],[4,8],[4,2],[8,2],[8,7],[12,7],[12,1],[15,1]], seed:22},
+ {name:'Kings Bend',  wps:[[0,5],[3,5],[3,1],[7,1],[7,8],[11,8],[11,3],[15,3]], seed:33},
+];
+let pathPts=[], pathLen=0, cumL=[], pathCells=new Set(), castleXY={x:0,y:0};
+
+function buildPath(mapIdx){
+  const m=MAPS[mapIdx], r=mapRng(m.seed);
+  const corners = m.wps.map(function(wp){return {x:FX+(wp[0]+.5)*CELL, y:FY+(wp[1]+.5)*CELL};});
+  const pts=[corners[0]];
+  for(let i=1;i<corners.length;i++){
+    const a=corners[i-1], b=corners[i];
+    const len=dist(a.x,a.y,b.x,b.y), steps=Math.max(2,Math.round(len/24));
+    const nx=-(b.y-a.y)/len, ny=(b.x-a.x)/len;
+    for(let s=1;s<steps;s++){
+      const t=s/steps, j=(r()-.5)*20;
+      pts.push({x:lerp(a.x,b.x,t)+nx*j, y:lerp(a.y,b.y,t)+ny*j});
+    }
+    pts.push(b);
+  }
+  let L=0; const cum=[0];
+  for(let i=1;i<pts.length;i++){L+=dist(pts[i-1].x,pts[i-1].y,pts[i].x,pts[i].y);cum.push(L);}
+  pathPts=pts; pathLen=L; cumL=cum;
+  const last=pts[pts.length-1]; castleXY={x:last.x,y:last.y};
+  pathCells=new Set();
+  for(let d=0; d<=L; d+=12){
+    const p=pointAt(d);
+    const cx=Math.floor((p.x-FX)/CELL), cy=Math.floor((p.y-FY)/CELL);
+    if(cx>=0&&cx<COLS&&cy>=0&&cy<ROWS) pathCells.add(cx+','+cy);
+  }
+  const base=Array.from(pathCells);
+  for(const k of base){const parts=k.split(',');const cx=+parts[0],cy=+parts[1];
+    const ring=[[1,0],[-1,0],[0,1],[0,-1]];
+    for(const dxy of ring)pathCells.add((cx+dxy[0])+','+(cy+dxy[1]));}
+}
+function pointAt(d){
+  d=clamp(d,0,pathLen);
+  let lo=0,hi=cumL.length-1;
+  while(lo<hi){const mid=(lo+hi)>>1; if(cumL[mid]<d)lo=mid+1;else hi=mid;}
+  const i=Math.max(1,lo);
+  const a=pathPts[i-1],b=pathPts[i];
+  const seg=cumL[i]-cumL[i-1]||1, t=(d-cumL[i-1])/seg;
+  return {x:lerp(a.x,b.x,t), y:lerp(a.y,b.y,t)};
+}
+
+/* pedestal spots — 4 fixed cells in the right column, off the path */
+const PEDESTAL_CELLS=[[13,1],[13,3],[13,5],[13,7]];
+
+/* ═══════════ tower defs ═══════════ */
+const TOWERS={
+  arrow:  {name:'Arrow',  cost:50,  dmg:[8,13,20],    rate:[.55,.45,.35],  range:[115,130,150], color:'#e0b34d'},
+  cannon: {name:'Cannon', cost:90,  dmg:[18,28,42],   rate:[1.5,1.3,1.05], range:[130,150,170], color:'#c56a3a', splash:[34,40,48]},
+  frost:  {name:'Frost',  cost:70,  dmg:[4,7,11],     rate:[.9,.8,.7],     range:[105,120,135], color:'#7fc7e8', slow:1.6},
+  answer: {name:'Answer Turret', cost:25, dmg:[0,0,0], rate:[9,9,9], range:[0,0,0], color:'#b48ce0'},
+};
+const UPGRADE_COST=[45,75];
+
+/* ═══════════ game state ═══════════ */
+const G={
+  phase:'menu',            /* menu | playing | shop | gameover | victory */
+  mode:'math', map:0,
+  wave:0,
+  gold:0, hp:100, maxHp:100,
+  towers:[], enemies:[], bullets:[], particles:[], texts:[],
+  power:'normal',          /* normal | overcharge | sputter */
+  question:null, answered:false, hintMsg:'', hintTimer:0,
+  pedestals:[],
+  golemAlive:false, lastGolemLoot:null,
+  spawnQueue:[], waveT:0, waveActive:false, golemSpawned:false,
+  focusToken:false,
+  selected:null, selTower:null, hoverCell:null,
+  shots:0, kills:0, time:0, frames:0, fps:60, fpsT:0,
+  stars:0, endMsg:'',
+  screenShake:0,
+};
+const META_KEY='quiztower_meta_v1';
+function loadMeta(){try{return JSON.parse(localStorage.getItem(META_KEY))||{};}catch(e){return {};}}
+function saveMeta(m){try{localStorage.setItem(META_KEY,JSON.stringify(m));}catch(e){}}
+function meta(){const m=loadMeta(); m.matches=m.matches||0; m.wins=m.wins||0; m.best=m.best||{}; return m;}
+
+const WAVE_COUNT=10;
+function waveTier(w){return clamp(1+Math.floor((w-1)/3),1,4);}
+function waveSpellTier(w){return clamp(1+Math.floor((w-1)/2),1,5);}
+
+function startGame(mode,mapIdx){
+  G.mode=mode; G.map=mapIdx;
+  buildPath(mapIdx);
+  G.phase='playing'; G.wave=0; G.gold=180; G.hp=100; G.maxHp=100;
+  G.towers=[]; G.enemies=[]; G.bullets=[]; G.particles=[]; G.texts=[];
+  G.power='normal'; G.question=null; G.answered=false; G.hintMsg=''; G.hintTimer=0;
+  G.pedestals=[]; G.golemAlive=false; G.lastGolemLoot=null;
+  G.spawnQueue=[]; G.waveT=0; G.waveActive=false; G.golemSpawned=false;
+  G.focusToken=false; G.selected=null; G.selTower=null;
+  G.shots=0; G.kills=0; G.time=0; G.screenShake=0;
+  G.stars=0; G.endMsg='';
+}
+
+function startWave(){
+  if(G.wave>=WAVE_COUNT||G.waveActive)return;
+  if(G.phase!=='playing')return;
+  G.wave++;
+  G.waveActive=true; G.waveT=0; G.golemSpawned=false;
+  G.question=makeQuestion(G.mode, G.mode==='math'?waveTier(G.wave):waveSpellTier(G.wave));
+  G.answered=false; G.power='normal'; G.hintMsg='';
+  const w=G.wave;
+  const nRun=5+2*w;
+  G.spawnQueue=[];
+  for(let i=0;i<nRun;i++)G.spawnQueue.push({t:.6+i*.95, type:'runner'});
+  if([3,5,7,9,10].indexOf(w)>=0){
+    G.spawnQueue.push({t:2.2, type:'golem'});
+    if(w>=7)G.spawnQueue.push({t:6.5, type:'golem'});
+  }
+  G.spawnQueue.sort(function(x,y){return x.t-y.t;});
+  summonPedestals();
+  flash('WAVE '+w+' — power the towers!','#e8c76a');
+}
+function summonPedestals(){
+  G.pedestals = PEDESTAL_CELLS.map(function(cell,i){
+    return {
+      cx:cell[0], cy:cell[1], x:FX+(cell[0]+.5)*CELL, y:FY+(cell[1]+.5)*CELL,
+      option:G.question?G.question.options[i]:(''+(i+1)),
+      correct:G.question? i===G.question.answerIndex : false,
+      armed:false, turret:null, id:i, locked:false,
+    };
+  });
+}
+
+/* power states */
+function answerPanel(i){
+  if(!G.question||G.answered||!G.waveActive)return;
+  G.answered=true;
+  if(i===G.question.answerIndex){
+    setPower('overcharge');
+    flash('CORRECT — TOWERS OVERCHARGED!','#ffd76a');
+    burst(W/2,CMD_Y+40,'#ffd76a',26);
+  }else{
+    setPower('sputter');
+    G.hintMsg=G.question.hint||('the answer was: '+G.question.answer);
+    G.hintTimer=8;
+    flash('WRONG — towers sputter...','#e07a6a');
+  }
+  for(const p of G.pedestals)p.locked=true;
+}
+function setPower(p){
+  if(G.focusToken&&p==='sputter'){G.focusToken=false;flash('Focus Token burns — overcharge anyway!','#b48ce0');p='overcharge';}
+  G.power=p;
+}
+function fireIntervalMul(){return G.power==='overcharge'?.45:G.power==='sputter'?2.1:1;}
+function dmgMul(){return G.power==='overcharge'?1.5:G.power==='sputter'?.6:1;}
+
+/* ─────────────────────────── towers ─────────────────────────── */
+function cellFree(cx,cy){
+  if(cx<0||cx>=COLS||cy<0||cy>=ROWS)return false;
+  if(pathCells.has(cx+','+cy))return false;
+  return !G.towers.some(function(t){return t.type!=='answer'&&t.cx===cx&&t.cy===cy;});
+}
+function placeTower(cx,cy,type){
+  const def=TOWERS[type];
+  if(!def)return false;
+  if(type==='answer')return false;
+  if(!cellFree(cx,cy))return false;
+  if(G.gold<def.cost)return false;
+  G.gold-=def.cost;
+  G.towers.push({type:type,cx:cx,cy:cy,x:FX+(cx+.5)*CELL,y:FY+(cy+.5)*CELL,level:0,cd:0});
+  burst(FX+(cx+.5)*CELL,FY+(cy+.5)*CELL,def.color,10);
+  return true;
+}
+function placeAnswerTurret(pedId){
+  const p=G.pedestals[pedId];
+  if(!p||p.armed||p.turret)return false;
+  if(G.gold<TOWERS.answer.cost)return false;
+  G.gold-=TOWERS.answer.cost;
+  p.armed=true;
+  p.turret={type:'answer',cx:p.cx,cy:p.cy,x:p.x,y:p.y,level:0,cd:0,pedId:pedId};
+  G.towers.push(p.turret);
+  burst(p.x,p.y,'#b48ce0',12);
+  return true;
+}
+function upgradeTower(t){
+  if(!t||t.type==='answer'||t.level>=2)return false;
+  const cost=UPGRADE_COST[t.level];
+  if(G.gold<cost)return false;
+  G.gold-=cost; t.level++;
+  burst(t.x,t.y,'#fff2c0',14);
+  flash(TOWERS[t.type].name+' upgraded to level '+(t.level+1),'#fff2c0');
+  return true;
+}
+function sellTower(t){
+  if(!t||t.type==='answer')return false;
+  let spent=TOWERS[t.type].cost;
+  for(let i=0;i<t.level;i++)spent+=UPGRADE_COST[i];
+  const refund=Math.floor(spent*.6);
+  G.gold+=refund;
+  G.towers=G.towers.filter(function(o){return o!==t;});
+  if(G.selTower===t)G.selTower=null;
+  flash('+'+refund+' gold refunded','#e0b34d');
+  return true;
+}
+
+/* ─────────────────────────── enemies / waves ─────────────────────────── */
+function spawnEnemy(type){
+  const w=G.wave;
+  if(type==='golem'){
+    G.enemies.push({type:'golem',hp:110+24*w,maxHp:110+24*w,speed:26,dmg:20,loot:30+5*w,d:0,slow:0,r:17,golem:true,dead:false});
+    G.golemAlive=true; G.golemSpawned=true;
+    flash('A QUIZ GOLEM marches — arm a pedestal!','#b48ce0');
+  }else{
+    G.enemies.push({type:'runner',hp:26+9*w,maxHp:26+9*w,speed:42+2.4*w,dmg:10,loot:8+Math.floor(w/2),d:0,slow:0,r:11,golem:false,dead:false});
+  }
+}
+function damageEnemy(e,amount){
+  if(e.dead)return;
+  e.hp-=amount;
+  if(e.hp<=0){
+    e.dead=true; G.kills++;
+    let loot=e.loot;
+    const pos=pointAt(e.d);
+    if(e.golem){
+      const armedCorrect=G.pedestals.some(function(p){return p.armed&&p.correct;});
+      const base=e.loot;
+      if(armedCorrect)loot*=2;
+      G.lastGolemLoot={base:base,actual:loot,doubled:armedCorrect};
+      if(armedCorrect)flash('GOLEM LOOT DOUBLED — +'+loot+' gold!','#ffd76a');
+      else flash('golem down — +'+loot+' gold (arm the right pedestal for double)','#b48ce0');
+    }
+    G.gold+=loot;
+    burst(pos.x,pos.y, e.golem?'#b48ce0':'#e07a6a', e.golem?22:8);
+  }
+}
+function hurtCastle(n){
+  G.hp-=n; G.screenShake=10;
+  if(G.hp<=0){G.hp=0;endGame(false);}
+}
+function endGame(won){
+  if(won){
+    G.phase='victory';
+    G.stars = G.hp>=G.maxHp*.8?3 : G.hp>=G.maxHp*.5?2 : 1;
+    G.endMsg='CASTLE STANDS — '+G.stars+' star'+(G.stars>1?'s':'');
+    const m=meta(); m.wins++; m.matches++;
+    const k=G.mode+'_'+G.map;
+    m.best[k]=Math.max(m.best[k]||0,G.stars);
+    saveMeta(m);
+  }else{
+    G.phase='gameover'; G.stars=0;
+    G.endMsg='THE CASTLE HAS FALLEN';
+    const m=meta(); m.matches++; saveMeta(m);
+  }
+}
+function killAll(){
+  G.spawnQueue=[];
+  for(const e of G.enemies){e.hp=0;damageEnemy(e,0.01);}
+  G.enemies=G.enemies.filter(function(e){return !e.dead;});
+}
+function waveCleared(){
+  G.waveActive=false;
+  const bonus=30+10*G.wave;
+  G.gold+=bonus;
+  G.question=null;
+  G.pedestals=[];
+  flash('WAVE '+G.wave+' CLEAR — +'+bonus+' gold bonus','#8fe8a0');
+  if(G.wave>=WAVE_COUNT){endGame(true);return;}
+  G.phase='shop';
+}
+
+/* ─────────────────────────── shop ─────────────────────────── */
+const SHOP=[
+  {id:'repair', name:'Repair Castle', desc:'+10 hearts', cost:50},
+  {id:'focus',  name:'Focus Token',   desc:'a wrong answer still overcharges', cost:60},
+  {id:'bricks', name:'Reinforce',     desc:'+10 max hearts (and heal 10)', cost:80},
+];
+function buy(id){
+  const it=SHOP.find(function(s){return s.id===id;});
+  if(!it||G.gold<it.cost)return false;
+  if(id==='repair'){ if(G.hp>=G.maxHp)return false; G.hp=clamp(G.hp+10,0,G.maxHp); }
+  else if(id==='focus'){ if(G.focusToken)return false; G.focusToken=true; }
+  else if(id==='bricks'){ G.maxHp+=10; G.hp=clamp(G.hp+10,0,G.maxHp); }
+  G.gold-=it.cost;
+  flash(it.name+' purchased','#8fe8a0');
+  return true;
+}
+function closeShop(){ G.phase='playing'; }
+
+/* ─────────────────────────── update ─────────────────────────── */
+function update(dt){
+  G.time+=dt; G.frames++;
+  if(G.hintTimer>0)G.hintTimer-=dt;
+  if(G.screenShake>0)G.screenShake=Math.max(0,G.screenShake-dt*30);
+  updateFx(dt);
+  if(G.phase!=='playing')return;
+
+  if(G.waveActive){
+    G.waveT+=dt;
+    while(G.spawnQueue.length&&G.spawnQueue[0].t<=G.waveT){
+      spawnEnemy(G.spawnQueue.shift().type);
+    }
+    for(const e of G.enemies){
+      const sl=e.slow>0?.45:1;
+      if(e.slow>0)e.slow-=dt;
+      e.d+=e.speed*sl*dt;
+      if(e.d>=pathLen){
+        e.dead=true;
+        hurtCastle(e.dmg);
+        burst(castleXY.x,castleXY.y,'#e05a4a',14);
+      }
+    }
+    G.enemies=G.enemies.filter(function(e){return !e.dead;});
+    G.golemAlive=G.enemies.some(function(e){return e.golem;});
+
+    const fiMul=fireIntervalMul(), dm=dmgMul();
+    for(const t of G.towers){
+      if(t.type==='answer')continue;
+      t.cd-=dt;
+      if(t.cd>0)continue;
+      const def=TOWERS[t.type];
+      let best=null,bd=-1;
+      for(const e of G.enemies){
+        const ep=pointAt(e.d);
+        if(dist(t.x,t.y,ep.x,ep.y)<=def.range[t.level]&&e.d>bd){bd=e.d;best=e;}
+      }
+      if(best){
+        t.cd=def.rate[t.level]*fiMul;
+        const bp=pointAt(best.d);
+        const ang=Math.atan2(bp.y-t.y,bp.x-t.x);
+        G.bullets.push({x:t.x,y:t.y-10,ax:bp.x,ay:bp.y,tx:best,ang:ang,
+          speed:t.type==='cannon'?300:420, dmg:def.dmg[t.level]*dm,
+          kind:t.type, splash:def.splash?def.splash[t.level]:0,
+          slow:def.slow||0, life:2, hit:false});
+        G.shots++;
+        puff(t.x+Math.cos(ang)*14,t.y-10+Math.sin(ang)*14,'rgba(170,170,170,0.5)',4);
+      }
+    }
+    for(const b of G.bullets){
+      b.life-=dt;
+      if(b.tx&&!b.tx.dead){const tp=pointAt(b.tx.d);b.ax=tp.x;b.ay=tp.y;}
+      const dx=b.ax-b.x, dy=b.ay-b.y;
+      const dd=Math.hypot(dx,dy)||1;
+      const step=b.speed*dt;
+      if(dd<=step+6){
+        b.hit=true;
+        if(b.splash){
+          for(const e of G.enemies){
+            const ep=pointAt(e.d);
+            if(dist(b.x,b.y,ep.x,ep.y)<=b.splash)damageEnemy(e,b.dmg*.7+(e===b.tx?b.dmg*.3:0));
+          }
+          ring(b.x,b.y,b.splash,'#e8a05a');
+        }else if(b.tx&&!b.tx.dead){
+          damageEnemy(b.tx,b.dmg);
+          if(b.slow)b.tx.slow=b.slow;
+          puff(b.x,b.y,b.kind==='frost'?'#bfe8ff':'#e8d0a0',5);
+        }
+      }else{
+        b.x+=dx/dd*step; b.y+=dy/dd*step;
+        b.ang=Math.atan2(dy,dx);
+      }
+    }
+    G.bullets=G.bullets.filter(function(b){return !b.hit&&b.life>0;});
+    G.enemies=G.enemies.filter(function(e){return !e.dead;});
+    if(!G.spawnQueue.length&&!G.enemies.length)waveCleared();
+  }
+}
+
+/* ─────────────────────────── fx ─────────────────────────── */
+function flash(msg,color){G.texts.push({msg:msg,color:color,t:2.4,y:112,vy:-16,big:true});}
+function burst(x,y,color,n){for(let i=0;i<n;i++){const a=rnd()*TAU,s=30+rnd()*90;
+  G.particles.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.4+rnd()*.5,color:color,r:1.5+rnd()*2.5});}}
+function puff(x,y,color,n){for(let i=0;i<n;i++){const a=rnd()*TAU,s=10+rnd()*30;
+  G.particles.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-10,life:.25+rnd()*.3,color:color,r:1+rnd()*2});}}
+function ring(x,y,r,color){G.particles.push({x:x,y:y,vx:0,vy:0,life:.35,color:color,ring:true,r:6,rmax:r});}
+function updateFx(dt){
+  for(const p of G.particles){p.life-=dt;p.x+=(p.vx||0)*dt;p.y+=(p.vy||0)*dt;if(p.ring)p.r=lerp(p.r,p.rmax,dt*10);}
+  G.particles=G.particles.filter(function(p){return p.life>0;});
+  for(const t of G.texts){t.t-=dt;t.y+=t.vy*dt;}
+  G.texts=G.texts.filter(function(t){return t.t>0;});
+}
+
+/* ═══════════ rendering ═══════════ */
+function rr(x,y,w,h,r){CTX.beginPath();CTX.moveTo(x+r,y);CTX.arcTo(x+w,y,x+w,y+h,r);CTX.arcTo(x+w,y+h,x,y+h,r);CTX.arcTo(x,y+h,x,y,r);CTX.arcTo(x,y,x+w,y,r);CTX.closePath();}
+let hits=[];
+function hit(id,x,y,w,h,fn){hits.push({id:id,x:x,y:y,w:w,h:h,fn:fn});}
+
+function draw(){
+  hits=[];
+  CTX.setTransform(1,0,0,1,0,0);
+  if(G.screenShake>0)CTX.translate((rnd()-.5)*G.screenShake,(rnd()-.5)*G.screenShake);
+  if(G.phase==='menu'){drawMenu();return;}
+  drawField(); drawTowers(); drawEnemies(); drawBullets(); drawPedestals();
+  drawParticles(); drawHUD(); drawSidebar(); drawCommand(); drawTexts();
+  if(G.phase==='shop')drawShop();
+  if(G.phase==='gameover'||G.phase==='victory')drawEnd();
+  CTX.setTransform(1,0,0,1,0,0);
+}
+function drawMenu(){
+  const g=CTX.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#101826');g.addColorStop(1,'#1a2233');
+  CTX.fillStyle=g;CTX.fillRect(0,0,W,H);
+  for(let i=0;i<70;i++){const x=(i*137)%W, y=(i*89)%H;
+    CTX.fillStyle='rgba(255,255,255,'+(.06+(i%5)*.03)+')';CTX.fillRect(x,y,2,2);}
+  CTX.textAlign='center';
+  CTX.fillStyle='#ffd76a';CTX.font='bold 52px system-ui';
+  CTX.fillText('QUIZ TOWER DEFENSE',W/2,150);
+  CTX.fillStyle='#9aa4b8';CTX.font='18px system-ui';
+  CTX.fillText('towers only fire at full power when you feed them knowledge',W/2,190);
+  const modes=[['math','MATH MODE','tiered arithmetic'],['spell','SPELLING MODE','sentence clues + word pedestals']];
+  modes.forEach(function(m,i){
+    const x=W/2-240,y=250+i*90,w=480,h=70;
+    const on=(G.mode===m[0]);
+    CTX.fillStyle=on?'#2c3a55':'#1a2233';rr(x,y,w,h,10);CTX.fill();
+    CTX.strokeStyle=on?'#ffd76a':'#39435a';CTX.lineWidth=2;CTX.stroke();
+    CTX.fillStyle=on?'#ffd76a':'#c8d0e0';CTX.font='bold 22px system-ui';
+    CTX.fillText(m[1],W/2,y+30);
+    CTX.fillStyle='#8a94a8';CTX.font='14px system-ui';
+    CTX.fillText(m[2],W/2,y+52);
+    hit('menu_mode_'+m[0],x,y,w,h,function(){G.mode=m[0];});
+  });
+  const mx=W/2-180,my=440,mw=360,mh=64;
+  CTX.fillStyle='#1a2233';rr(mx,my,mw,mh,10);CTX.fill();
+  CTX.strokeStyle='#39435a';CTX.lineWidth=2;CTX.stroke();
+  CTX.fillStyle='#c8d0e0';CTX.font='bold 20px system-ui';
+  CTX.fillText('MAP '+(G.map+1)+'/3 — '+MAPS[G.map].name,W/2,my+39);
+  hit('menu_map',mx,my,mw,mh,function(){G.map=(G.map+1)%MAPS.length;});
+  const sx=W/2-130,sy=540,sw=260,sh=64;
+  CTX.fillStyle='#3a7d4f';rr(sx,sy,sw,sh,12);CTX.fill();
+  CTX.strokeStyle='#8fe8a0';CTX.lineWidth=2;CTX.stroke();
+  CTX.fillStyle='#fff';CTX.font='bold 24px system-ui';
+  CTX.fillText('DEFEND THE CASTLE',W/2,sy+40);
+  hit('menu_start',sx,sy,sw,sh,function(){startGame(G.mode,G.map);});
+  const m=meta();
+  if(m.wins||m.matches){
+    CTX.fillStyle='#6a7488';CTX.font='14px system-ui';
+    CTX.fillText('wins '+m.wins+' · matches '+m.matches,W/2,625);
+  }
+  CTX.textAlign='left';
+}
+function drawField(){
+  for(let cy=0;cy<ROWS;cy++)for(let cx=0;cx<COLS;cx++){
+    CTX.fillStyle=(cx+cy)%2?'#25331f':'#223021';
+    CTX.fillRect(FX+cx*CELL,FY+cy*CELL,CELL,CELL);
+  }
+  if(G.phase==='playing'&&G.selected&&G.selected!=='answer'&&G.hoverCell){
+    const cx=G.hoverCell[0],cy=G.hoverCell[1];
+    if(cx>=0&&cx<COLS&&cy>=0&&cy<ROWS){
+      const ok=cellFree(cx,cy)&&G.gold>=TOWERS[G.selected].cost;
+      CTX.fillStyle=ok?'rgba(140,230,150,.25)':'rgba(230,90,80,.25)';
+      CTX.fillRect(FX+cx*CELL,FY+cy*CELL,CELL,CELL);
+    }
+  }
+  CTX.strokeStyle='#6b5a3f';CTX.lineWidth=34;CTX.lineJoin='round';CTX.lineCap='round';
+  CTX.beginPath();CTX.moveTo(pathPts[0].x,pathPts[0].y);
+  for(let i=1;i<pathPts.length;i++)CTX.lineTo(pathPts[i].x,pathPts[i].y);
+  CTX.stroke();
+  CTX.strokeStyle='#8a7652';CTX.lineWidth=26;
+  CTX.beginPath();CTX.moveTo(pathPts[0].x,pathPts[0].y);
+  for(let i=1;i<pathPts.length;i++)CTX.lineTo(pathPts[i].x,pathPts[i].y);
+  CTX.stroke();
+  const s0=pathPts[0];
+  CTX.fillStyle='#3a2f22';rr(s0.x-16,s0.y-22,20,44,4);CTX.fill();
+  drawCastle(castleXY.x,castleXY.y);
+  if(G.selTower){
+    const def=TOWERS[G.selTower.type];
+    if(def.range&&def.range[G.selTower.level]){
+      CTX.fillStyle='rgba(255,255,255,.07)';
+      CTX.beginPath();CTX.arc(G.selTower.x,G.selTower.y,def.range[G.selTower.level],0,TAU);CTX.fill();
+      CTX.strokeStyle='rgba(255,255,255,.35)';CTX.setLineDash([5,5]);CTX.stroke();CTX.setLineDash([]);
+    }
+  }
+}
+function drawCastle(x,y){
+  const hpF=G.hp/G.maxHp;
+  CTX.save();CTX.translate(x,y);
+  CTX.fillStyle='#7b8794';rr(-26,-30,52,54,3);CTX.fill();
+  CTX.fillStyle='#5a6570';
+  for(let i=-2;i<=2;i++)CTX.fillRect(i*11-4,-38,8,10);
+  CTX.fillStyle=hpF>.5?'#4f7fb8':hpF>.25?'#c8a03a':'#c05a3a';
+  CTX.beginPath();CTX.moveTo(0,-52);CTX.lineTo(16,-34);CTX.lineTo(-16,-34);CTX.closePath();CTX.fill();
+  CTX.fillStyle='#2a323c';rr(-7,-12,14,26,6);CTX.fill();
+  CTX.restore();
+  CTX.fillStyle='#e05a6a';CTX.font='bold 14px system-ui';CTX.textAlign='center';
+  CTX.fillText('♥ '+Math.ceil(G.hp),x,y+42);CTX.textAlign='left';
+}
+function drawTowers(){
+  for(const t of G.towers){
+    if(t.type==='answer')continue;
+    const def=TOWERS[t.type];
+    const lv=t.level;
+    CTX.save();CTX.translate(t.x,t.y);
+    if(G.power==='overcharge'){
+      CTX.shadowColor='#ffd76a';CTX.shadowBlur=16+Math.sin(G.time*10)*6;
+    }else if(G.power==='sputter'){
+      CTX.globalAlpha=.55+Math.sin(G.time*24)*.15;
+    }
+    CTX.fillStyle='#4a4238';rr(-14,-6,28,22,4);CTX.fill();
+    if(t.type==='arrow'){
+      CTX.fillStyle='#8a7652';CTX.fillRect(-3,-16,6,14);
+      CTX.fillStyle=def.color;CTX.beginPath();CTX.arc(0,-18,5,0,TAU);CTX.fill();
+    }else if(t.type==='cannon'){
+      CTX.fillStyle='#3a332c';CTX.beginPath();CTX.arc(0,-8,12,0,TAU);CTX.fill();
+      CTX.fillStyle=def.color;CTX.beginPath();CTX.arc(0,-8,7,0,TAU);CTX.fill();
+      CTX.fillStyle='#2a241f';CTX.fillRect(-4,-24,8,12);
+    }else{
+      CTX.fillStyle='#bfe8ff';CTX.beginPath();
+      for(let i=0;i<6;i++){const a=i/6*TAU+G.time;const r=i%2?4:9;
+        CTX.lineTo(Math.cos(a)*r,-10+Math.sin(a)*r);}
+      CTX.closePath();CTX.fill();
+    }
+    CTX.restore();
+    CTX.fillStyle='#ffd76a';
+    for(let i=0;i<=lv;i++)CTX.fillRect(t.x-8+i*6,t.y+12,4,4);
+    if(G.selTower===t){
+      CTX.strokeStyle='#fff';CTX.lineWidth=2;
+      CTX.strokeRect(t.x-18,t.y-26,36,46);
+    }
+  }
+}
+function drawEnemies(){
+  for(const e of G.enemies){
+    const p=pointAt(e.d);
+    CTX.save();CTX.translate(p.x,p.y);
+    if(e.golem){
+      CTX.fillStyle='#5a4a78';rr(-15,-18,30,34,6);CTX.fill();
+      CTX.strokeStyle='#b48ce0';CTX.lineWidth=2;CTX.stroke();
+      CTX.fillStyle='#2a2238';rr(-10,-12,20,14,3);CTX.fill();
+      CTX.fillStyle='#ffd76a';CTX.font='bold 15px system-ui';CTX.textAlign='center';
+      CTX.fillText('?',0,0);CTX.textAlign='left';
+      CTX.fillStyle='#3d3252';rr(-19,10,10,10,3);CTX.fill();rr(9,10,10,10,3);CTX.fill();
+    }else{
+      CTX.fillStyle=e.slow>0?'#7fc7e8':'#a8443a';
+      CTX.beginPath();CTX.arc(0,0,e.r,0,TAU);CTX.fill();
+      CTX.fillStyle='rgba(0,0,0,.2)';CTX.beginPath();CTX.arc(0,2,e.r*.55,0,TAU);CTX.fill();
+      CTX.fillStyle='#ffd0c0';CTX.fillRect(-4,-4,2.5,2.5);CTX.fillRect(2,-4,2.5,2.5);
+    }
+    const f=clamp(e.hp/e.maxHp,0,1);
+    CTX.fillStyle='rgba(0,0,0,.6)';CTX.fillRect(-14,e.golem?-28:-18,28,4);
+    CTX.fillStyle=e.golem?'#b48ce0':'#e05a4a';CTX.fillRect(-14,e.golem?-28:-18,28*f,4);
+    CTX.restore();
+  }
+}
+function drawBullets(){
+  for(const b of G.bullets){
+    CTX.save();CTX.translate(b.x,b.y);CTX.rotate(b.ang);
+    if(b.kind==='cannon'){CTX.fillStyle='#2f2924';CTX.beginPath();CTX.arc(0,0,5,0,TAU);CTX.fill();}
+    else if(b.kind==='frost'){CTX.fillStyle='#bfe8ff';CTX.fillRect(-6,-1.5,12,3);}
+    else{CTX.fillStyle='#f0d8a0';CTX.fillRect(-7,-1,14,2);}
+    CTX.restore();
+  }
+}
+function drawPedestals(){
+  if(!G.pedestals.length||!G.question)return;
+  G.pedestals.forEach(function(p,i){
+    CTX.save();CTX.translate(p.x,p.y);
+    const col=(p.correct&&G.answered)?'#8fe8a0':p.armed?'#b48ce0':'#7d9470';
+    CTX.fillStyle='#4a4438';rr(-18,2,36,16,4);CTX.fill();
+    CTX.fillStyle=col;rr(-14,-14,28,16,4);CTX.fill();
+    CTX.strokeStyle='#2a2620';CTX.lineWidth=2;CTX.stroke();
+    if(p.armed){
+      CTX.fillStyle='#b48ce0';CTX.beginPath();CTX.arc(0,-24,8,0,TAU);CTX.fill();
+      CTX.fillStyle='#fff';CTX.font='bold 10px system-ui';CTX.textAlign='center';
+      CTX.fillText('A',0,-20);CTX.textAlign='left';
+      if(G.answered&&p.correct){
+        CTX.strokeStyle='#8fe8a0';CTX.lineWidth=2;
+        CTX.beginPath();CTX.arc(0,-24,13+Math.sin(G.time*6)*2,0,TAU);CTX.stroke();
+      }
+    }
+    CTX.fillStyle='#e8e2d0';CTX.font='bold 12px system-ui';CTX.textAlign='center';
+    CTX.fillText(String.fromCharCode(65+i),0,28);
+    CTX.textAlign='left';
+    CTX.restore();
+  });
+}
+function drawParticles(){
+  for(const p of G.particles){
+    CTX.globalAlpha=clamp(p.life*2,0,1);
+    if(p.ring){CTX.strokeStyle=p.color;CTX.lineWidth=3;CTX.beginPath();CTX.arc(p.x,p.y,p.r,0,TAU);CTX.stroke();}
+    else{CTX.fillStyle=p.color;CTX.beginPath();CTX.arc(p.x,p.y,p.r,0,TAU);CTX.fill();}
+  }
+  CTX.globalAlpha=1;
+}
+function drawTexts(){
+  CTX.textAlign='center';
+  for(const t of G.texts){
+    CTX.globalAlpha=clamp(t.t,0,1);
+    CTX.fillStyle=t.color;CTX.font='bold 22px system-ui';
+    CTX.fillText(t.msg,W/2,t.y);
+  }
+  CTX.globalAlpha=1;CTX.textAlign='left';
+}
+function drawHUD(){
+  CTX.fillStyle='#0e1420';CTX.fillRect(0,0,W,FY);
+  CTX.fillStyle='#ffd76a';CTX.font='bold 20px system-ui';
+  CTX.fillText('WAVE '+G.wave+'/'+WAVE_COUNT,16,34);
+  CTX.fillStyle='#e05a6a';CTX.font='bold 16px system-ui';
+  CTX.fillText('♥ '+Math.ceil(G.hp)+'/'+G.maxHp,150,34);
+  CTX.fillStyle='#e0b34d';
+  CTX.fillText('◎ '+Math.floor(G.gold)+' gold',250,34);
+  const pw=G.power==='overcharge'?'OVERCHARGE ▲':G.power==='sputter'?'SPUTTER ▼':'NORMAL';
+  CTX.fillStyle=G.power==='overcharge'?'#ffd76a':G.power==='sputter'?'#e07a6a':'#7a8498';
+  CTX.font='bold 16px system-ui';
+  CTX.fillText(pw,400,34);
+  if(G.focusToken){CTX.fillStyle='#b48ce0';CTX.fillText('✦ focus',530,34);}
+  if(G.phase==='playing'&&!G.waveActive&&G.wave<WAVE_COUNT){
+    const bx=640,by=10,bw=100,bh=44;
+    CTX.fillStyle='#3a7d4f';rr(bx,by,bw,bh,8);CTX.fill();
+    CTX.fillStyle='#fff';CTX.font='bold 15px system-ui';
+    CTX.fillText('START',bx+50,by+27);
+    hit('start_wave',bx,by,bw,bh,function(){startWave();});
+  }
+}
+function drawSidebar(){
+  const x=PANEL_X;
+  CTX.fillStyle='#121a26';CTX.fillRect(x,FY,PANEL_W,H-FY);
+  CTX.fillStyle='#e8e2d0';CTX.font='bold 15px system-ui';
+  CTX.fillText('BUILD',x+14,FY+26);
+  const list=['arrow','cannon','frost'];
+  list.forEach(function(k,i){
+    const def=TOWERS[k];
+    const y=FY+40+i*78;
+    const on=G.selected===k;
+    CTX.fillStyle=on?'#2c3a55':'#1a2436';rr(x+8,y,168,68,8);CTX.fill();
+    CTX.strokeStyle=on?def.color:'#2a3648';CTX.lineWidth=2;CTX.stroke();
+    CTX.fillStyle=def.color;CTX.font='bold 15px system-ui';
+    CTX.fillText(def.name,x+16,y+22);
+    CTX.fillStyle='#c8d0e0';CTX.font='12px system-ui';
+    const blurb=k==='arrow'?'fast single shot':k==='cannon'?'splash damage':'slows enemies';
+    CTX.fillText(blurb,x+16,y+40);
+    CTX.fillStyle=G.gold>=def.cost?'#ffd76a':'#7a5a4a';
+    CTX.fillText('◎'+def.cost,x+16,y+58);
+    hit('build_'+k,x+8,y,168,68,function(){G.selected=G.selected===k?null:k;G.selTower=null;});
+  });
+  const ay=FY+40+3*78;
+  const pedActive=G.waveActive&&G.question&&!G.answered;
+  const onA=G.selected==='answer';
+  CTX.fillStyle=onA?'#3d2c55':'#1a2436';rr(x+8,ay,168,68,8);CTX.fill();
+  CTX.strokeStyle=pedActive?'#b48ce0':'#2a3648';CTX.lineWidth=2;CTX.stroke();
+  CTX.fillStyle=pedActive?'#b48ce0':'#6a7488';CTX.font='bold 15px system-ui';
+  CTX.fillText('Answer Turret',x+16,ay+22);
+  CTX.fillStyle='#8a94a8';CTX.font='12px system-ui';
+  CTX.fillText(pedActive?'arm a pedestal (A-D)':'active when golems march',x+16,ay+40);
+  CTX.fillStyle=G.gold>=25?'#ffd76a':'#7a5a4a';
+  CTX.fillText('◎25',x+16,ay+58);
+  hit('build_answer',x+8,ay,168,68,function(){if(pedActive)G.selected=onA?null:'answer';});
+  if(G.selTower&&G.selTower.type!=='answer'){
+    const ty=ay+84;
+    CTX.fillStyle='#1a2436';rr(x+8,ty,168,92,8);CTX.fill();
+    CTX.fillStyle='#e8e2d0';CTX.font='bold 14px system-ui';
+    CTX.fillText(TOWERS[G.selTower.type].name+' Lv'+(G.selTower.level+1),x+16,ty+22);
+    if(G.selTower.level<2){
+      CTX.fillStyle='#ffd76a';CTX.font='13px system-ui';
+      CTX.fillText('UPGRADE ◎'+UPGRADE_COST[G.selTower.level],x+16,ty+44);
+      hit('tower_upgrade',x+8,ty+30,168,26,function(){upgradeTower(G.selTower);});
+    }else{
+      CTX.fillStyle='#8fe8a0';CTX.font='13px system-ui';
+      CTX.fillText('MAX LEVEL',x+16,ty+44);
+    }
+    CTX.fillStyle='#c8a0a0';CTX.font='13px system-ui';
+    CTX.fillText('SELL (60% back)',x+16,ty+70);
+    hit('tower_sell',x+8,ty+56,168,24,function(){sellTower(G.selTower);});
+  }
+}
+function drawCommand(){
+  CTX.fillStyle='#0e1420';CTX.fillRect(0,CMD_Y,FW,CMD_H);
+  if(G.phase!=='playing'||!G.question){
+    CTX.fillStyle='#5a6478';CTX.font='14px system-ui';
+    CTX.fillText(G.wave===0?'Press START to open wave 1 — its Command Panel question will appear here.'
+      :'Between waves: build, upgrade, or press START.',16,CMD_Y+26);
+    if(G.hintTimer>0&&G.hintMsg){
+      CTX.fillStyle='#cbb99b';CTX.font='italic 14px system-ui';
+      CTX.fillText('hint: '+G.hintMsg,16,CMD_Y+48);
+    }
+    return;
+  }
+  CTX.fillStyle='#ffd76a';CTX.font='bold 13px system-ui';
+  CTX.fillText('COMMAND PANEL — answer to power the towers:',14,CMD_Y+20);
+  CTX.fillStyle='#fff';CTX.font='bold 20px system-ui';
+  CTX.fillText(G.question.prompt,14,CMD_Y+44);
+  if(G.question.note){CTX.fillStyle='#8a94a8';CTX.font='12px system-ui';
+    CTX.fillText(G.question.note,14,CMD_Y+60);}
+  const bw=178,bh=30,gap=6,x0=14;
+  for(let i=0;i<4;i++){
+    const bx=x0+i*(bw+gap), by=CMD_Y+66;
+    if(G.answered){
+      const right=i===G.question.answerIndex;
+      CTX.fillStyle=right?'#3a7d4f':'#5a3430';rr(bx,by,bw,bh,6);CTX.fill();
+    }else{
+      CTX.fillStyle='#1f2a3d';rr(bx,by,bw,bh,6);CTX.fill();
+      CTX.strokeStyle='#3a4a66';CTX.lineWidth=1.5;CTX.stroke();
+      hit('cmd_'+i,bx,by,bw,bh,function(){answerPanel(i);});
+    }
+    CTX.fillStyle=G.answered?(i===G.question.answerIndex?'#c8f0d0':'#e0b0a8'):'#e8e2d0';
+    CTX.font='bold 13px system-ui';
+    const label=String.fromCharCode(65+i)+') '+G.question.options[i];
+    CTX.fillText(label.length>27?label.slice(0,26)+'…':label,bx+8,by+20);
+  }
+  if(G.hintTimer>0&&G.hintMsg){
+    CTX.fillStyle='#cbb99b';CTX.font='italic 13px system-ui';
+    CTX.fillText('hint: '+G.hintMsg,14,CMD_Y+30);
+  }
+}
+function drawShop(){
+  CTX.fillStyle='rgba(6,10,16,.85)';CTX.fillRect(0,0,W,H);
+  CTX.textAlign='center';
+  CTX.fillStyle='#8fe8a0';CTX.font='bold 30px system-ui';
+  CTX.fillText('WAVE '+G.wave+' CLEARED — ARMORY',W/2,140);
+  CTX.fillStyle='#c8d0e0';CTX.font='16px system-ui';
+  CTX.fillText('spend gold before the next wave',W/2,172);
+  CTX.textAlign='left';
+  SHOP.forEach(function(s,i){
+    const x=W/2-260,y=210+i*90,w=520,h=74;
+    CTX.fillStyle='#16202e';rr(x,y,w,h,10);CTX.fill();
+    CTX.strokeStyle='#2a3a4c';CTX.lineWidth=2;CTX.stroke();
+    CTX.fillStyle='#e8e2d0';CTX.font='bold 18px system-ui';
+    CTX.fillText(s.name,x+18,y+30);
+    CTX.fillStyle='#8a94a8';CTX.font='14px system-ui';
+    CTX.fillText(s.desc,x+18,y+54);
+    CTX.fillStyle=G.gold>=s.cost?'#ffd76a':'#7a5a4a';CTX.font='bold 18px system-ui';
+    CTX.fillText('◎'+s.cost,x+w-90,y+44);
+    hit('shop_'+s.id,x,y,w,h,function(){buy(s.id);});
+  });
+  const x=W/2-140,y=500,w=280,h=64;
+  CTX.fillStyle='#3a7d4f';rr(x,y,w,h,12);CTX.fill();
+  CTX.strokeStyle='#8fe8a0';CTX.lineWidth=2;CTX.stroke();
+  CTX.fillStyle='#fff';CTX.font='bold 22px system-ui';CTX.textAlign='center';
+  CTX.fillText('NEXT WAVE',W/2,y+40);
+  hit('shop_close',x,y,w,h,function(){closeShop();});
+  CTX.textAlign='left';
+}
+function drawEnd(){
+  CTX.fillStyle='rgba(6,10,16,.9)';CTX.fillRect(0,0,W,H);
+  CTX.textAlign='center';
+  const won=G.phase==='victory';
+  CTX.fillStyle=won?'#ffd76a':'#e05a4a';
+  CTX.font='bold 48px system-ui';
+  CTX.fillText(won?'VICTORY!':'GAME OVER',W/2,200);
+  CTX.fillStyle='#e8e2d0';CTX.font='22px system-ui';
+  CTX.fillText(G.endMsg,W/2,248);
+  CTX.fillText('waves survived '+Math.min(G.wave,WAVE_COUNT)+'/'+WAVE_COUNT+'   ·   kills '+G.kills,W/2,286);
+  if(won){
+    for(let i=0;i<3;i++){
+      star(W/2-70+i*70,340,26,i<G.stars?'#ffd76a':'#39435a');
+    }
+  }
+  const m=meta();
+  CTX.fillStyle='#8a94a8';CTX.font='16px system-ui';
+  CTX.fillText('career: '+m.wins+' wins / '+m.matches+' matches',W/2,410);
+  const x=W/2-160,y=460,w=320,h=62;
+  CTX.fillStyle='#3a5a7d';rr(x,y,w,h,12);CTX.fill();
+  CTX.strokeStyle='#8fb8e0';CTX.lineWidth=2;CTX.stroke();
+  CTX.fillStyle='#fff';CTX.font='bold 22px system-ui';
+  CTX.fillText('PLAY AGAIN',W/2,y+39);
+  hit('end_again',x,y,w,h,function(){startGame(G.mode,G.map);});
+  const mx=W/2-160,my=540,mw=320,mh=48;
+  CTX.fillStyle='#1a2436';rr(mx,my,mw,mh,10);CTX.fill();
+  CTX.fillStyle='#c8d0e0';CTX.font='bold 16px system-ui';
+  CTX.fillText('BACK TO MENU',W/2,my+30);
+  hit('end_menu',mx,my,mw,mh,function(){G.phase='menu';});
+  CTX.textAlign='left';
+}
+function star(x,y,r,color){
+  CTX.fillStyle=color;CTX.beginPath();
+  for(let i=0;i<10;i++){
+    const a=-Math.PI/2+i*Math.PI/5, rad=i%2?r*.45:r;
+    CTX.lineTo(x+Math.cos(a)*rad,y+Math.sin(a)*rad);
+  }
+  CTX.closePath();CTX.fill();
+}
+
+/* ─────────────────────────── input ─────────────────────────── */
+/* scale the fixed-resolution canvas up to fill the window (clicks already map via getBoundingClientRect) */
+function fit(){
+  const s=Math.min(innerWidth/W,innerHeight/H);
+  CVS.style.width=(W*s)+'px';CVS.style.height=(H*s)+'px';
+}
+addEventListener('resize',fit);fit();
+
+const mouse={x:0,y:0};
+CVS.addEventListener('mousemove',function(e){
+  const r=CVS.getBoundingClientRect();
+  mouse.x=(e.clientX-r.left)*(W/r.width);
+  mouse.y=(e.clientY-r.top)*(H/r.height);
+  G.hoverCell=[Math.floor((mouse.x-FX)/CELL),Math.floor((mouse.y-FY)/CELL)];
+});
+CVS.addEventListener('click',function(){
+  for(const h of hits){
+    if(mouse.x>=h.x&&mouse.x<h.x+h.w&&mouse.y>=h.y&&mouse.y<h.y+h.h){h.fn();return;}
+  }
+  if(G.phase==='playing'){
+    const cx=Math.floor((mouse.x-FX)/CELL), cy=Math.floor((mouse.y-FY)/CELL);
+    if(cx>=0&&cx<COLS&&cy>=0&&cy<ROWS){
+      const ped=G.pedestals.find(function(p){return p.cx===cx&&p.cy===cy;});
+      if(ped&&G.selected==='answer'){placeAnswerTurret(ped.id);return;}
+      const t=G.towers.find(function(t){return t.type!=='answer'&&t.cx===cx&&t.cy===cy;});
+      if(t){G.selTower=t;G.selected=null;return;}
+      if(G.selected&&G.selected!=='answer'){
+        const ok=placeTower(cx,cy,G.selected);
+        if(!ok&&G.gold<TOWERS[G.selected].cost)flash('not enough gold','#e07a6a');
+      }
+    }
+  }
+});
+
+/* ─────────────────────────── debug hook ─────────────────────────── */
+window.__tower_debug={
+  wipe:function(){try{localStorage.removeItem(META_KEY);}catch(e){}},
+  meta:function(){return meta();},
+  start:function(mode,mapIdx){startGame(mode||'math',mapIdx===undefined?0:mapIdx);},
+  startWave:function(){startWave();},
+  state:function(){
+    return {
+      phase:G.phase, mode:G.mode, map:G.map, wave:G.wave,
+      hp:G.hp, maxHp:G.maxHp, gold:Math.floor(G.gold),
+      towers:G.towers.length, enemies:G.enemies.length,
+      enemiesData:G.enemies.map(function(e){return {type:e.type,hp:e.hp,prog:e.d/pathLen};}),
+      power:G.power, fireIntervalMul:fireIntervalMul(), dmgMul:dmgMul(),
+      question:G.question?{prompt:G.question.prompt,options:G.question.options,
+                           answerIndex:G.question.answerIndex}:null,
+      answered:G.answered, hint:G.hintMsg,
+      pedestals:G.pedestals.map(function(p){return {armed:p.armed,correct:p.correct,option:p.option};}),
+      golemAlive:G.golemAlive, lastGolemLoot:G.lastGolemLoot,
+      shots:G.shots, kills:G.kills, waveActive:G.waveActive,
+      shopOpen:G.phase==='shop', stars:G.stars, focusToken:G.focusToken,
+      time:G.time, fps:G.fps,
+      selType:G.selected, selTowerLevel:G.selTower?G.selTower.level:null,
+      mapName:MAPS[G.map]?MAPS[G.map].name:'',
+    };
+  },
+  placeTower:function(cx,cy,type){return placeTower(cx,cy,type);},
+  placeAnswer:function(pedId){return placeAnswerTurret(pedId);},
+  answer:function(i){answerPanel(i);},
+  buy:function(id){return buy(id);},
+  closeShop:function(){closeShop();},
+  upgradeSel:function(){return G.selTower?upgradeTower(G.selTower):false;},
+  selectTowerAt:function(cx,cy){
+    const t=G.towers.find(function(t){return t.type!=='answer'&&t.cx===cx&&t.cy===cy;});
+    G.selTower=t||null; return !!t;},
+  sellSel:function(){return sellTower(G.selTower);},
+  killAll:function(){killAll();},
+  hurtCastle:function(n){hurtCastle(n);},
+  teleportEnemy:function(idx,prog){
+    const e=G.enemies[idx]; if(!e)return false;
+    e.d=clamp(prog,0,.9999)*pathLen; return true;},
+  damageEnemy:function(idx,n){const e=G.enemies[idx];if(!e)return false;
+    damageEnemy(e,n);G.enemies=G.enemies.filter(function(x){return !x.dead;});return true;},
+  setGold:function(n){G.gold=n;},
+};
+
+/* ─────────────────────────── main loop ─────────────────────────── */
+buildPath(0);
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000); last=now;
+  update(dt);
+  draw();
+  G.fpsT+=dt;
+  if(G.fpsT>=.5){G.fps=Math.round(G.frames/G.fpsT);G.frames=0;G.fpsT=0;}
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
