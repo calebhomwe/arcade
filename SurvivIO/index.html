@@ -771,6 +771,10 @@ function drawHUD(){
   ctx.fillStyle = "rgba(20,34,24,0.85)"; ctx.fillRect(mx, my, M, M);
   ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 1;
   ctx.strokeRect(mx, my, M, M);
+  // gas rings are world-sized: at phase 0 the ring is 105px against a 75px
+  // half-width, so clip every marker to the box or it spills onto the field
+  ctx.save();
+  ctx.beginPath(); ctx.rect(mx, my, M, M); ctx.clip();
   ctx.fillStyle = "rgba(214,52,44,0.35)";
   ctx.beginPath(); ctx.rect(mx, my, M, M);
   ctx.arc(mx+gas.cx*k, my+gas.cy*k, gas.r*k, 0, Math.PI*2, true); ctx.fill("evenodd");
@@ -791,6 +795,7 @@ function drawHUD(){
     ctx.fillStyle = "#ffe3a1";
     ctx.beginPath(); ctx.arc(mx+player.x*k, my+player.y*k, 3, 0, 7); ctx.fill();
   }
+  ctx.restore();
 }
 
 /* ------------------------------------------------ overlays / menu */
