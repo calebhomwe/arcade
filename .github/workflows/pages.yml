@@ -19,8 +19,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Stage publishable files
+        run: |
+          mkdir -p _site
+          # everything except _site itself and the git/CI plumbing
+          tar --exclude=./_site --exclude=./.git --exclude=./.github -cf - . | tar -xf - -C _site
+          # The SurvivorWave cabinet carries its development bench: 14 Python
+          # probe/patch scripts plus two diagnostic captures. A Pages URL is
+          # public even when the repo is not, so none of it ships. Every .py in
+          # this repo is one of those scripts and no cabinet fetches one at
+          # runtime, so stripping the extension outright is both safe and total.
+          find _site -name '*.py' -delete
+          find _site \( -name 'diag_*.png' -o -name 'batchB_diag.png' \) -delete
+          echo "--- staged for publication ---"
+          du -sh _site
+          find _site -name '*.py' | head
+          ls -la _site
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
