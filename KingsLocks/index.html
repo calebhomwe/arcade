@@ -69,8 +69,17 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
-const W=960, H=540;
-function fit(){const s=Math.min(innerWidth/W,innerHeight/H);cv.style.width=(W*s)+'px';cv.style.height=(H*s)+'px';}
+let W=960; const H=540, W_WIDE=960, W_NARROW=560;
+// The dungeon is a fixed 540 tall, so on a tall screen a uniform fit leaves the
+// game as a thin strip. Narrowing the view instead lets it scale up; camX
+// already clamps against W, so the only cost is seeing less of the corridor
+// ahead. clamp() is not defined yet at this point, hence the inline bounds.
+function fit(){
+  W=Math.round(Math.max(W_NARROW,Math.min(W_WIDE,H*innerWidth/innerHeight)));
+  cv.width=W;
+  const s=Math.min(innerWidth/W,innerHeight/H);
+  cv.style.width=(W*s)+'px';cv.style.height=(H*s)+'px';
+}
 addEventListener('resize',fit); fit();
 
 /* ── tiny helpers ─────────────────────────────────────────────────────── */
@@ -777,14 +786,18 @@ function drawRune(r,need,tt){
   }
 }
 function bubble(cx,cy,line1,need){
+  const line2=need!==undefined?'next rune needed: '+need:'';
   ctx.font='15px monospace';
-  const w=ctx.measureText(line1).width+28;
-  const x=clamp(cx,w/2+6,W-w/2-6);
+  let w=ctx.measureText(line1).width;
+  if(line2){ctx.font='12px monospace';w=Math.max(w,ctx.measureText(line2).width);}
+  w=Math.min(w+28,W-12);                       // never wider than the canvas
+  const x=clamp(cx,w/2+6,Math.max(w/2+6,W-w/2-6));
   ctx.fillStyle='rgba(12,14,22,.92)';ctx.strokeStyle='#8899bb';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.roundRect(x-w/2,cy-26,w,52,8);ctx.fill();ctx.stroke();
-  txt(line1,x,cy-13,15,'#ffd27f','left');
-  if(need!==undefined)
-    txt('next rune needed: '+need,x,cy+8,12,'#7f7','left');
+  // both lines were drawn left-aligned at x, which is the bubble's centre, so
+  // the label always ran out past the right edge; anchor to the inner left
+  txt(line1,x-w/2+14,cy-13,15,'#ffd27f','left');
+  if(line2)txt(line2,x-w/2+14,cy+8,12,'#7f7','left');
 }
 function drawLock(L,tt){
   const x=L.x-G.camX;
@@ -912,20 +925,29 @@ function drawHeart(x,y,full){
   ctx.closePath();ctx.fill();
 }
 function drawHUD(){
+  // below this width the centred depth label reaches the coin purse
+  const narrow=W<780;
   for(let i=0;i<Math.max(3,G.hp);i++)drawHeart(16+i*22,20,i<G.hp);
-  txt('hearts '+G.hp,100,20,13,'#e33');
-  ctx.fillStyle='#c9a227';ctx.beginPath();ctx.ellipse(W-210,20,7,9,0,0,7);ctx.fill();
-  txt(String(G.coins),W-196,20,16,'#ffd75e');
-  txt('scrolls '+G.scrolls+' [H]',W-104,20,13,'#8ab');
-  txt((G.mode==='math'?'MATH':'SPELLING')+'  ·  DEPTH '+G.level+(G.level%4===0?' — BOSS':''),W/2,20,15,'#dde','center',true);
-  txt('best: '+meta[bestKey()],W/2,38,12,'#889');
-  if(G.keys>0)txt('KEY HELD',34,46,13,'#ffd75e','center',true);
+  if(!narrow)txt('hearts '+G.hp,100,20,13,'#e33');
+  const scrollsTxt='scrolls '+G.scrolls+' [H]';
+  txt(scrollsTxt,W-14,20,13,'#8ab','right');
+  ctx.font='13px monospace';
+  const coinRight=W-24-ctx.measureText(scrollsTxt).width;
+  txt(String(G.coins),coinRight,20,16,'#ffd75e','right');
+  ctx.font='16px monospace';
+  ctx.fillStyle='#c9a227';ctx.beginPath();
+  ctx.ellipse(coinRight-ctx.measureText(String(G.coins)).width-12,20,7,9,0,0,7);ctx.fill();
+  const dy=narrow?46:20;
+  txt((G.mode==='math'?'MATH':'SPELLING')+'  ·  DEPTH '+G.level+(G.level%4===0?' — BOSS':''),W/2,dy,15,'#dde','center',true);
+  txt('best: '+meta[bestKey()],W/2,dy+18,12,'#889','center');
+  if(G.keys>0)txt('KEY HELD',34,narrow?76:46,13,'#ffd75e','center',true);
   if(G.hintT>0&&G.hintToast){
     ctx.fillStyle='rgba(20,26,16,.94)';ctx.strokeStyle='#7f7';ctx.lineWidth=2;
-    ctx.beginPath();ctx.roundRect(W/2-330,H-90,660,54,10);ctx.fill();ctx.stroke();
+    const tw=Math.min(660,W-40);
+    ctx.beginPath();ctx.roundRect(W/2-tw/2,H-90,tw,54,10);ctx.fill();ctx.stroke();
     txt('HINT — '+G.hintToast,W/2,H-63,15,'#af7','center');
   }
-  if(G.msgT>0)txt(G.msg,W/2,70,17,'#ffd27f','center',true);
+  if(G.msgT>0)txt(G.msg,W/2,narrow?96:70,17,'#ffd27f','center',true);
 }
 function drawMenu(tt){
   ctx.fillStyle='#0b0d12';ctx.fillRect(0,0,W,H);
@@ -933,7 +955,7 @@ function drawMenu(tt){
   for(const t of [{x:140,y:470},{x:820,y:470}])drawTorch(t,tt);
   const sc=1+Math.sin(tt*2)*.02;
   ctx.save();ctx.translate(W/2,110);ctx.scale(sc,sc);
-  txt("THE KING'S LOCKS",0,0,56,'#ffd75e','center',true);
+  txt("THE KING'S LOCKS",0,0,Math.min(56,(W-48)/9.9),'#ffd75e','center',true);
   ctx.restore();
   txt('doors and chests are locked by questions —',W/2,158,16,'#99a','center');
   txt('jump the runes in the right order to open them',W/2,180,16,'#99a','center');
