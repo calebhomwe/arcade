@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>The King's Locks</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#0b0d12;overflow:hidden}
+  body{display:flex;align-items:center;justify-content:center;font-family:monospace}
+  canvas{image-rendering:pixelated;background:#0b0d12;max-width:100vw;max-height:100vh;touch-action:none}
+  /* touch controls: coarse pointers only, so the desktop build is untouched */
+  #tp{position:fixed;inset:0;display:none;z-index:9;pointer-events:none;font-family:monospace}
+  body.touch #tp{display:block}
+  #tp .grp{display:none}
+  #tp .grp.on{display:block}
+  #tp button{position:absolute;pointer-events:auto;border:3px solid #6d7ba8;
+    background:rgba(18,22,38,.72);color:#ffd257;font-family:monospace;font-weight:700;
+    -webkit-tap-highlight-color:transparent;touch-action:none;border-radius:12px}
+  #tp button:active,#tp button.on{background:rgba(255,210,87,.88);color:#12162a}
+  .dpad{bottom:20px;width:78px;height:78px;font-size:28px;border-radius:50%!important}
+  #tLeft{left:16px} #tRight{left:104px}
+  #tJump{right:16px;width:92px;height:92px;bottom:20px;font-size:16px;border-radius:50%!important}
+  #tHint{right:122px;bottom:36px;width:60px;height:60px;font-size:14px;border-radius:50%!important}
+  .menuBtn{left:50%;transform:translateX(-50%);width:230px;height:52px;font-size:17px}
+  #tMath{bottom:188px} #tSpell{bottom:126px} #tHow{bottom:64px}
+  #tBuyH{bottom:188px} #tBuyS{bottom:126px} #tNext{bottom:64px}
+  #tRetry{bottom:64px}
+  /* the canvas is a fixed 16:9, so portrait letterboxes it to ~27% of the
+     screen against ~85% in landscape. Hint, do not block: it still plays. */
+  #rot{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:11;display:none;
+    background:rgba(18,22,38,.92);border:2px solid #6d7ba8;color:#ffd257;
+    padding:7px 14px;border-radius:10px;font:700 13px monospace;pointer-events:none}
+  @media (pointer:coarse) and (orientation:portrait){#rot{display:block}}
+</style>
+</head>
+<body>
+<canvas id="cv" width="960" height="540"></canvas>
+<div id="rot">&#8635; Rotate for a bigger view</div>
+<div id="tp">
+  <div class="grp" id="tpPlay">
+    <button class="dpad" id="tLeft" aria-label="Move left">&#9664;</button>
+    <button class="dpad" id="tRight" aria-label="Move right">&#9654;</button>
+    <button id="tJump" aria-label="Jump">JUMP</button>
+    <button id="tHint" aria-label="Use scroll">HINT</button>
+  </div>
+  <div class="grp" id="tpMenu">
+    <button class="menuBtn" id="tMath">1 &mdash; MATH RUN</button>
+    <button class="menuBtn" id="tSpell">2 &mdash; SPELL RUN</button>
+    <button class="menuBtn" id="tHow">HOW TO PLAY</button>
+  </div>
+  <div class="grp" id="tpShop">
+    <button class="menuBtn" id="tBuyH">1 &mdash; BUY HEART</button>
+    <button class="menuBtn" id="tBuyS">2 &mdash; BUY SCROLL</button>
+    <button class="menuBtn" id="tNext">CONTINUE</button>
+  </div>
+  <div class="grp" id="tpOver">
+    <button class="menuBtn" id="tRetry">BACK TO MENU</button>
+  </div>
+</div>
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════════════════
+   THE KING'S LOCKS — a question-locked side-scrolling platformer.
+   Sibling of Spell & Maths Galaxy (swarm lane DUNG). Single file, Canvas 2D,
+   zero network, all art procedural, boots on file://.
+   Doors and chests are LOCKED by questions: jump on the letter/number runes
+   below the lock in the right order. Wrong rune = spike trap + teaching hint.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const W=960, H=540;
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);cv.style.width=(W*s)+'px';cv.style.height=(H*s)+'px';}
+addEventListener('resize',fit); fit();
+
+/* ── tiny helpers ─────────────────────────────────────────────────────── */
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function mulberry32(seed){let t=seed>>>0;return function(){t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296;};}
+const aabb=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
+
+/* ═══════════ QUESTION CORE (lifted from Spell & Maths Galaxy) ═══════════ */
+/* words — grade-tiered bank, sentence-context clues. ~ is the masked word. */
+const WORDS={
+ 1:[['cat','the ~ says meow'],['dog','the ~ says woof'],['sun','the ~ lights the day'],
+    ['hat','she wore a ~ on her head'],['bus','we rode the ~ to town'],['fish','a ~ swims in water'],
+    ['frog','a green ~ jumps and croaks'],['bird','a ~ has feathers and wings'],
+    ['cake','we ate birthday ~'],['star','each ~ burns far away'],['moon','the ~ circles the earth'],
+    ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a ~ crosses the sea'],
+    ['milk','the cat drank ~'],['book','she read a ~ at night'],['door','he knocked on the ~'],
+    ['king','the ~ wore a golden crown'],['ring','a diamond ~ on her finger'],
+    ['road','the ~ goes over the hill'],['snow','cold white ~ fell all night'],
+    ['bear','the big ~ slept all winter'],['nest','eggs rest in a ~'],
+    ['rain','~ fell from the grey clouds'],['boat','they sailed a small ~'],
+    ['farm','cows and sheep live on a ~'],['goat','the ~ ate the grass'],
+    ['jump','you ~ over the log'],['lamp','turn on the ~ to read'],
+    ['leaf','a red ~ fell from the tree'],['pond','ducks swim on the ~'],
+    ['sock','one ~ is missing again'],['wing','each bird has a left and right ~'],
+    ['wood','the fire is made of ~']],
+ 2:[['garden','flowers grow in the ~'],['bridge','the train crossed the ~'],
+    ['monkey','a ~ climbs and swings'],['orange','an ~ is a round citrus fruit'],
+    ['purple','~ is red mixed with blue'],['school','you learn at ~'],
+    ['pencil','you write with a ~'],['tiger','a ~ is a big striped cat'],
+    ['planet','earth is a ~'],['castle','knights lived in a ~'],
+    ['engine','the ~ makes the ship move'],['flower','a ~ opens in the sun'],
+    ['dolphin','a ~ is a clever sea animal'],['rocket','a ~ climbs out of the sky'],
+    ['brother','my ~ is older than me'],['chair','sit on the ~ at the desk'],
+    ['cheese','the mouse ate the ~'],['chicken','the ~ laid an egg'],
+    ['circle','draw a ~ with no corners'],['dinner','~ is the evening meal'],
+    ['eleven','ten plus one is ~'],['family','my ~ is big and loud'],
+    ['forest','wolves live deep in the ~'],['friend','a ~ shares with you'],
+    ['honey','bees make sweet ~'],['horse','she rides her ~ daily'],
+    ['island','an ~ is land in the sea'],['jacket','wear a ~ when it is cold'],
+    ['kitchen','soup cooks in the ~'],['library','borrow books from the ~'],
+    ['market','fruit is sold at the ~'],['morning','the ~ comes after night'],
+    ['mountain','climb the tall ~'],['picture','paint a ~ of the sea'],
+    ['shadow','your ~ follows the sun'],['thunder','~ rumbles after lightning'],
+    ['ticket','buy a ~ for the train'],['window','look out of the ~']],
+ 3:[['beautiful','the sunset was ~'],['adventure','a long risky ~'],
+    ['telescope','a ~ makes far things near'],['dangerous','a ~ road hugs the cliff'],
+    ['elephant','the grey ~ has a trunk'],['gravity','~ pulls you down'],
+    ['giraffe','the ~ has a very long neck'],['hospital','the sick are cared for in a ~'],
+    ['horizon','the sun sinks below the ~'],['lightning','~ is a bright crack in a storm'],
+    ['umbrella','an ~ keeps the rain off'],['volcano','the ~ erupted at dawn'],
+    ['navigate','sailors ~ by the stars'],['knowledge','~ is everything learned'],
+    ['champion','the ~ held the trophy high'],['community','our ~ held a fair'],
+    ['curious','the ~ child asked why'],['decision','think hard before a ~'],
+    ['describe','~ what you saw'],['different','each snowflake is ~'],
+    ['distance','measure the ~ between towns'],['divide','~ twelve by three'],
+    ['earthquake','an ~ shakes the ground'],['enormous','an ~ whale swam past'],
+    ['familiar','that song sounds ~'],['important','brushing teeth is ~'],
+    ['insect','an ~ has six legs'],['journey','the ~ took three days'],
+    ['medicine','bitter ~ made him well'],['memory','a good ~ helps in school'],
+    ['multiply','~ five by four to get twenty'],['neighbor','our ~ borrowed sugar'],
+    ['observe','scientists ~ carefully'],['partner','choose a ~ for the game'],
+    ['protect','a coat will ~ you'],['receive','did you ~ my letter?'],
+    ['special','today is a ~ day'],['subtract','~ nine from fifteen'],
+    ['surface','the ~ of the lake was still'],['surprise','the party was a ~']],
+ 4:[['accomplish','you can ~ anything with practice'],['believe','always ~ in yourself'],
+    ['calendar','mark the date on the ~'],['category','sort each word into a ~'],
+    ['cemetery','the old ~ sits on the hill'],['dictionary','look the word up in a ~'],
+    ['embarrass','do not ~ yourself on stage'],['environment','care for the ~'],
+    ['equipment','check the climbing ~'],['especially','I like fruit, ~ apples'],
+    ['exaggerate','do not ~ the story'],['February','~ is the shortest month'],
+    ['government','the ~ makes laws'],['guardian','a ~ watches over you'],
+    ['height','the ~ of the mountain'],['immediately','come here ~'],
+    ['interrupt','do not ~ the speaker'],['laboratory','experiments happen in a ~'],
+    ['language','a second ~ opens doors'],['maintenance','car ~ prevents breakdowns'],
+    ['mischievous','the ~ kitten unraveled yarn'],['necessary','water is ~ for life'],
+    ['occasion','a birthday is a happy ~'],['opposite','north is the ~ of south'],
+    ['parallel','train tracks run ~'],['peninsula','Italy is a ~'],
+    ['perseverance','~ beats talent'],['privilege','education is a ~, not a right'],
+    ['pronounce','~ each syllable slowly'],['question','raise a hand to ask a ~'],
+    ['recommend','I ~ this book'],['rhythm','clap the ~ of the song'],
+    ['separate','~ the recycling'],['success','hard work leads to ~'],
+    ['temperature','check the ~ outside'],['threshold','step across the ~'],
+    ['twelfth','December is the ~ month'],['vacuum','a ~ cleans the carpet']],
+ 5:[['abundance','a harvest of ~'],['acknowledge','~ your mistakes bravely'],
+    ['agriculture','~ feeds the nation'],['ambiguous','an ~ answer confuses everyone'],
+    ['antique','the ~ clock struck nine'],['bureaucracy','permits vanish into the ~'],
+    ['catalyst','an idea can be a ~ for change'],['colleague','greet every ~ kindly'],
+    ['conscience','let your ~ be your guide'],['conscientious','a ~ student checks twice'],
+    ['controversy','the rule caused ~'],['determination','~ moved the boulder'],
+    ['dilemma','a difficult ~ with no easy choice'],['diligent','the ~ bee worked all day'],
+    ['ecosystem','a reef is a living ~'],['entrepreneur','an ~ starts a business'],
+    ['extraordinary','an ~ aurora lit the sky'],['fascinating','the documentary was ~'],
+    ['generosity','her ~ knew no limits'],['hypothetical','a ~ question imagines what if'],
+    ['influential','an ~ writer changes minds'],['innovation','~ reshapes the world'],
+    ['interpret','poets ~ dreams'],['legitimate','a ~ claim stands in court'],
+    ['metaphor','a ~ says love is a rose'],['negotiate','~ before you sign'],
+    ['phenomenon','an eclipse is a rare ~'],['photosynthesis','leaves feed themselves by ~'],
+    ['preliminary','the ~ results look good'],['resilience','~ is bouncing back'],
+    ['sacrifice','a ~ for the team'],['simultaneous','the drums kept a ~ beat'],
+    ['sophisticated','a ~ argument, well reasoned'],['strategist','a great ~ sees three moves ahead'],
+    ['sufficient','one coat was ~'],['threshold','cross the ~ into the lab']]
+};
+const word=lv=>{const w=pick(WORDS[clamp(lv,1,5)]);return{t:w[0],h:w[1]};};
+function clueSentence(w,idx){
+  const masked=w.t.split('').map((c,i)=>i<idx?c:'·').join('');
+  const s=w.h.replace('~',masked);
+  return s.charAt(0).toUpperCase()+s.slice(1);
+}
+/* one-line teaching hints, shown after a miss */
+function hintFor(op,a,b){
+  switch(op){
+    case '+': return `start at ${a}, count on ${b} more`;
+    case '−': return `count up from ${b} to ${a}`;
+    case '×': return `${b} groups of ${a} — or ${a} groups of ${b}`;
+    case '÷': return `how many ${b}s make ${a}?`;
+    default: return '';
+  }
+}
+function qMath(d){
+  let a,b,op,ans,sp,mn,mx,hint='';
+  if(d===1){op=Math.random()<.5?'+':'−';a=rint(1,10);b=rint(1,10);if(op==='−'&&b>a)[a,b]=[b,a];
+            ans=op==='+'?a+b:a-b;sp=4;mn=0;mx=20;}
+  else if(d===2){const r=Math.random();
+    if(r<.34){op='+';a=rint(5,30);b=rint(5,30);ans=a+b;sp=7;mn=0;mx=64;}
+    else if(r<.68){op='−';a=rint(10,45);b=rint(1,a);ans=a-b;sp=7;mn=0;mx=45;}
+    else{op='×';a=rint(2,9);b=rint(2,9);ans=a*b;sp=8;mn=0;mx=90;}}
+  else if(d===3){const r=Math.random();
+    if(r<.25){op='+';a=rint(25,99);b=rint(25,99);ans=a+b;sp=14;mn=0;mx=200;}
+    else if(r<.5){op='−';a=rint(40,99);b=rint(10,a);ans=a-b;sp=14;mn=0;mx=99;}
+    else if(r<.78){op='×';a=rint(3,12);b=rint(3,12);ans=a*b;sp=12;mn=0;mx=150;}
+    else{op='÷';b=rint(2,9);ans=rint(2,12);a=b*ans;sp=6;mn=0;mx=20;}}
+  else{ /* tier 4: two-step, fractions of a quantity, percentages */
+    const r=Math.random();
+    if(r<.4){const b1=rint(2,9),b2=rint(2,9); a=rint(3,18); ans=a+b1*b2;
+      return{prompt:`${a} + ${b1} × ${b2}`,hint:`${b1} × ${b2} = ${b1*b2}, then ${a} + ${b1*b2}`,
+             answer:String(ans)};}
+    if(r<.7){const den=pick([2,3,4,5]); const num=pick([1,1,1,2,3].filter(n=>n<den));
+      const T=den*rint(3,12); ans=T/den*num;
+      return{prompt:`${num}/${den} of ${T}`,hint:`divide ${T} by ${den} (bottom), then times by ${num} (top)`,
+             answer:String(ans)};}
+    const p=pick([10,20,25,50,75]), T=pick([20,40,60,80,100,200]);
+    ans=T/100*p;
+    return{prompt:`${p}% of ${T}`,hint:`${p}% of ${T} = ${T} ÷ 100 × ${p}`,answer:String(ans)};}
+  hint=hintFor(op,a,b);
+  return{prompt:`${a} ${op} ${b}`,hint,answer:String(ans)};
+}
+/* build a lock question for the current mode+level.
+   {prompt, hint, answer, chars} — chars are the rune glyphs to lay out. */
+function makeQuestion(mode,level){
+  const d=Math.min(4,1+Math.floor((level-1)/2));   /* difficulty ramp */
+  if(mode==='math'){
+    const q=qMath(d);
+    const need=q.answer.split('');
+    const chars=[...need];
+    const digs='0123456789';
+    let guard=0;
+    while(chars.length<Math.max(5,need.length+2)&&guard++<60){
+      const g=digs[rint(0,9)];
+      if(!need.includes(g))chars.push(g);
+    }
+    return{prompt:q.prompt+' = ?',hint:q.hint,answer:q.answer,chars:shuf(chars),kind:'math'};
+  }
+  const wt=Math.min(5,1+Math.floor((level-1)/2));
+  const w=word(wt);
+  return{prompt:clueSentence(w,0),hint:'rebuild the word from the sentence clue',
+         answer:w.t,chars:shuf(w.t.split('')),word:w,kind:'spell'};
+}
+
+/* ═══════════ audio (WebAudio, synthesized) ═══════════ */
+const AU={ctx:null,on:true,
+  init(){if(!this.ctx){try{this.ctx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+         if(this.ctx&&this.ctx.state==='suspended')this.ctx.resume();},
+  note(f,d=.15,type='square',v=.06,delay=0){
+    if(!this.on||!this.ctx)return;
+    const c=this.ctx,t=c.currentTime+delay,o=c.createOscillator(),g=c.createGain();
+    o.type=type;o.frequency.value=f;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);
+    g.gain.exponentialRampToValueAtTime(.0008,t+d);
+    o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+.05);},
+  jump(){this.note(300,.12,'square',.05);},
+  djump(){this.note(420,.12,'square',.05);},
+  coin(){this.note(880,.08,'square',.05);this.note(1320,.1,'square',.04,.06);},
+  good(){this.note(392,.12,'triangle',.07);this.note(523,.16,'triangle',.06,.08);},
+  bad(){this.note(110,.3,'sawtooth',.06);},
+  stomp(){this.note(180,.1,'square',.07);this.note(90,.15,'square',.05,.05);},
+  hurt(){this.note(140,.25,'sawtooth',.07);},
+  unlock(){[392,494,587,784].forEach((f,i)=>this.note(f,.2,'triangle',.06,i*.09));},
+  die(){[330,262,196,131].forEach((f,i)=>this.note(f,.25,'sawtooth',.06,i*.14));}
+};
+
+/* ═══════════ meta (localStorage) ═══════════ */
+const MKEY='worddungeon.meta.v1';
+function loadMeta(){try{const m=JSON.parse(localStorage.getItem(MKEY));if(m&&typeof m==='object')return m;}catch(e){}return{bestMath:0,bestSpell:0,runs:0,coinsEarned:0};}
+function saveMeta(m){try{localStorage.setItem(MKEY,JSON.stringify(m));}catch(e){}}
+let meta=loadMeta();
+
+/* ═══════════ input ═══════════ */
+const keys={};
+addEventListener('keydown',e=>{
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code))e.preventDefault();
+  if(!keys[e.code])onKeyPress(e.code);
+  keys[e.code]=true; AU.init();
+});
+addEventListener('keyup',e=>{keys[e.code]=false;});
+
+/* ═══════════ touch ═══════════
+   The pad drives the same keys{} and onKeyPress() the keyboard does, so no
+   game logic changes: held buttons set key codes that leftDown()/rightDown()/
+   jumpDown() already read, and one-shot buttons forward a key code. */
+if(matchMedia('(pointer: coarse)').matches){
+  document.body.classList.add('touch');
+  const hold=(id,code)=>{
+    const el=document.getElementById(id);
+    const set=v=>e=>{
+      if(v&&!keys[code])onKeyPress(code);
+      keys[code]=v; el.classList.toggle('on',v); AU.init();
+      if(v&&el.setPointerCapture)try{el.setPointerCapture(e.pointerId);}catch(_){}
+      e.preventDefault();
+    };
+    el.addEventListener('pointerdown',set(true));
+    for(const ev of ['pointerup','pointercancel','pointerleave'])
+      el.addEventListener(ev,set(false));
+  };
+  const tap=(id,code)=>document.getElementById(id)
+    .addEventListener('pointerdown',e=>{e.preventDefault();AU.init();onKeyPress(code);});
+
+  hold('tLeft','ArrowLeft'); hold('tRight','ArrowRight'); hold('tJump','Space');
+  tap('tHint','KeyH');
+  tap('tMath','Digit1');  tap('tSpell','Digit2'); tap('tHow','KeyH');
+  tap('tBuyH','Digit1');  tap('tBuyS','Digit2');  tap('tNext','Enter');
+  tap('tRetry','Enter');
+
+  // show only the group that matches the phase we are actually in
+  const grp={menu:'tpMenu',play:'tpPlay',shop:'tpShop',gameover:'tpOver'};
+  setInterval(()=>{
+    const want=grp[G.phase];
+    for(const id of Object.values(grp))
+      document.getElementById(id).classList.toggle('on',id===want);
+    document.getElementById('tHint').style.visibility=G.scrolls>0?'visible':'hidden';
+  },120);
+}
+const leftDown=()=>keys.ArrowLeft||keys.KeyA;
+const rightDown=()=>keys.ArrowRight||keys.KeyD;
+const jumpDown=()=>keys.Space||keys.ArrowUp||keys.KeyW;
+let prevJump=false;
+
+/* ═══════════ game state ═══════════ */
+const G={phase:'menu',mode:'math',level:1,hp:3,coins:0,keys:0,scrolls:1,
+  player:null,level_w:0,solids:[],coinsArr:[],torches:[],slimes:[],locks:[],exit:null,
+  hazards:[],particles:[],camX:0,hintToast:'',hintT:0,runSeed:1,howto:false,
+  boss:null,shopSel:0,time:0,frames:0,fps:0,trapCount:0,bossWins:0,msg:'',msgT:0};
+
+function newPlayer(x,y){return{x,y,w:24,h:34,vx:0,vy:0,onG:false,jumps:0,face:1,inv:0,anim:0,dead:false};}
+function say(msg,t){G.msg=msg;G.msgT=t||2.2;}
+function toast(hint){G.hintToast=hint;G.hintT=4.0;}
+
+/* ── level construction: 9 section templates, seeded composition ──────── */
+const SECW=820, GY=460, FLOORH=100;
+function addFloor(s,x0,x1){s.push({x:x0,y:GY,w:x1-x0,h:FLOORH,type:'floor'});}
+/* each template fills one 820px section starting at x */
+const TEMPLATES=[
+  function flat(s,R,x,c){ /* torch-lit corridor with a coin arc */
+    addFloor(s,x,x+SECW);
+    c.torches.push({x:x+200,y:GY-10},{x:x+620,y:GY-10});
+    for(let i=0;i<5;i++)c.coins.push({x:x+340+i*34,y:GY-70-Math.sin(i/4*Math.PI)*60,taken:false});
+  },
+  function stairs(s,R,x,c){ /* ascending steps */
+    addFloor(s,x,x+SECW);
+    for(let i=0;i<4;i++)s.push({x:x+160+i*130,y:GY-40*(i+1),w:110,h:40*(i+1)+FLOORH,type:'block'});
+    for(let i=0;i<4;i++)c.coins.push({x:x+205+i*130,y:GY-40*(i+1)-40,taken:false});
+    c.torches.push({x:x+60,y:GY-10});
+  },
+  function platforms(s,R,x,c){ /* floating platforms over a coin field */
+    addFloor(s,x,x+SECW);
+    s.push({x:x+180,y:GY-110,w:150,h:20,type:'plat'});
+    s.push({x:x+430,y:GY-190,w:150,h:20,type:'plat'});
+    s.push({x:x+640,y:GY-110,w:130,h:20,type:'plat'});
+    c.coins.push({x:x+250,y:GY-150,taken:false},{x:x+500,y:GY-230,taken:false},{x:x+700,y:GY-150,taken:false});
+    c.torches.push({x:x+400,y:GY-10},{x:x+760,y:GY-10});
+  },
+  function spikes(s,R,x,c){ /* floor spike strip, hop across via platforms */
+    addFloor(s,x,x+180); addFloor(s,x+640,x+SECW);
+    c.hazards.push({x:x+180,y:GY-16,w:300,h:16});
+    s.push({x:x+280,y:GY-120,w:120,h:20,type:'plat'});
+    s.push({x:x+440,y:GY-60,w:120,h:20,type:'plat'});
+    c.coins.push({x:x+340,y:GY-160,taken:false},{x:x+490,y:GY-100,taken:false});
+    c.torches.push({x:x+700,y:GY-10});
+  },
+  function pillars(s,R,x,c){ /* pillars between stretches — precision jumps */
+    addFloor(s,x,x+SECW);
+    for(let i=0;i<3;i++){const px=x+180+i*220;s.push({x:px,y:GY-150,w:70,h:150+FLOORH,type:'block'});}
+    c.coins.push({x:x+120,y:GY-40,taken:false},{x:x+395,y:GY-40,taken:false},{x:x+660,y:GY-40,taken:false});
+    c.torches.push({x:x+60,y:GY-10},{x:x+780,y:GY-10});
+  },
+  function towers(s,R,x,c){ /* twin towers — double-jump required */
+    addFloor(s,x,x+SECW);
+    s.push({x:x+200,y:GY-220,w:120,h:220+FLOORH,type:'block'});
+    s.push({x:x+520,y:GY-220,w:120,h:220+FLOORH,type:'block'});
+    s.push({x:x+360,y:GY-320,w:120,h:18,type:'plat'});
+    c.coins.push({x:x+260,y:GY-260,taken:false},{x:x+580,y:GY-260,taken:false},{x:x+420,y:GY-360,taken:false});
+    c.torches.push({x:x+100,y:GY-10},{x:x+740,y:GY-10});
+  },
+  function pit(s,R,x,c){ /* spike pit with a mid platform */
+    addFloor(s,x,x+240); addFloor(s,x+600,x+SECW);
+    c.hazards.push({x:x+240,y:GY-16,w:360,h:16});
+    s.push({x:x+380,y:GY-90,w:110,h:18,type:'plat'});
+    c.coins.push({x:x+435,y:GY-130,taken:false});
+    c.torches.push({x:x+120,y:GY-10},{x:x+700,y:GY-10});
+  },
+  function balcony(s,R,x,c){ /* high balcony run above the floor */
+    addFloor(s,x,x+SECW);
+    s.push({x:x+150,y:GY-170,w:520,h:16,type:'plat'});
+    s.push({x:x+90,y:GY-85,w:70,h:16,type:'plat'});
+    for(let i=0;i<5;i++)c.coins.push({x:x+190+i*110,y:GY-210,taken:false});
+    c.torches.push({x:x+430,y:GY-180},{x:x+60,y:GY-10});
+  },
+  function gallery(s,R,x,c){ /* stepped gallery */
+    addFloor(s,x,x+SECW);
+    s.push({x:x+140,y:GY-80,w:140,h:16,type:'plat'});
+    s.push({x:x+520,y:GY-140,w:200,h:16,type:'plat'});
+    c.coins.push({x:x+210,y:GY-120,taken:false},{x:x+620,y:GY-180,taken:false});
+    c.torches.push({x:x+350,y:GY-10},{x:x+760,y:GY-10});
+  }
+];
+
+function makeLock(kind,drawX,runeX,level){
+  const q=makeQuestion(G.mode,level);
+  const n=q.chars.length, tw=28, gap=3;
+  const runes=q.chars.map((ch,i)=>({x:runeX+i*(tw+gap),y:GY-14,w:tw,h:14,ch,
+                                    used:false,glow:0,pressed:false,reveal:false,spikeT:0}));
+  return{x:drawX,kind,q,runes,idx:0,solved:false,w:56,h:kind==='door'?150:44};
+}
+
+function makeLevel(n){
+  G.solids=[];G.coinsArr=[];G.torches=[];G.slimes=[];G.locks=[];G.hazards=[];G.particles=[];G.boss=null;
+  G.trapCount=0;
+  const R=mulberry32(G.runSeed+n*7919);
+  if(n%4===0){ /* ── boss arena ── */
+    G.level_w=1300;
+    addFloor(G.solids,0,G.level_w);
+    G.torches.push({x:120,y:GY-10},{x:G.level_w-120,y:GY-10},{x:G.level_w/2,y:GY-10});
+    G.player=newPlayer(80,GY-40);
+    G.boss={x:G.level_w-260,y:GY-88,w:96,h:88,hp:3,maxhp:3,vy:0,hop:0,dir:-1,enrage:0,
+            q:null,runes:[],idx:0,timer:14,anim:0,deadT:0};
+    bossQuestion();
+    return;
+  }
+  const nsec=3+Math.min(2,Math.floor(n/3));       /* 3..5 sections, grows with depth */
+  const padStart=260+nsec*SECW;
+  const PAD=1300;                                  /* locked antechamber end pad */
+  G.level_w=padStart+PAD;
+  addFloor(G.solids,0,260);                        /* start ledge */
+  const c={coins:G.coinsArr,torches:G.torches,hazards:G.hazards};
+  const used=[];
+  for(let i=0;i<nsec;i++){
+    let t=Math.floor(R()*TEMPLATES.length);
+    let guard=0; while(used.includes(t)&&guard++<8)t=Math.floor(R()*TEMPLATES.length);
+    used.push(t);
+    TEMPLATES[t](G.solids,R,260+i*SECW,c);
+  }
+  addFloor(G.solids,padStart,G.level_w);           /* end pad */
+  G.torches.push({x:padStart+70,y:GY-10},{x:padStart+640,y:GY-10},{x:G.level_w-200,y:GY-10});
+  /* patrolling slimes */
+  const nsl=2+Math.min(3,Math.floor(n/2));
+  for(let i=0;i<nsl;i++){
+    const sx=380+R()*(G.level_w-1900);
+    G.slimes.push({x:sx,y:GY-30,w:34,h:28,dir:R()<.5?-1:1,x0:sx-120,x1:sx+120,dead:false,squash:0});
+  }
+  /* locked antechamber: chest lock, then the key door, then the exit */
+  G.locks.push(makeLock('chest',padStart+560,padStart+60,n));
+  G.locks.push(makeLock('door',padStart+1120,padStart+660,n));
+  /* exit door at the far right */
+  G.exit={x:G.level_w-110,y:GY-92,w:60,h:92};
+  G.player=newPlayer(60,GY-40);
+}
+function bossQuestion(){
+  const b=G.boss;
+  b.q=makeQuestion(G.mode,G.level);
+  b.idx=0;
+  const chars=b.q.chars,n=chars.length;
+  const total=Math.min(n*58,700);
+  const startX=(G.level_w-total)/2;
+  b.runes=chars.map((ch,i)=>({x:startX+i*(total/n),y:GY-14,w:total/n-6,h:14,ch,
+                              used:false,glow:0,pressed:false,reveal:false,spikeT:0}));
+  b.timer=14;
+}
+
+/* ═══════════ flow control ═══════════ */
+function startRun(mode){
+  G.mode=mode;G.level=1;G.hp=3;G.coins=0;G.keys=0;G.scrolls=1;
+  G.runSeed=(Math.random()*1e9)|0;
+  G.phase='play';
+  meta.runs++;saveMeta(meta);
+  makeLevel(1);
+}
+function bestKey(){return G.mode==='math'?'bestMath':'bestSpell';}
+function bankBest(){if(G.level>meta[bestKey()]){meta[bestKey()]=G.level;saveMeta(meta);}}
+function levelClear(){
+  bankBest();
+  G.phase='shop';
+}
+function nextLevel(){
+  G.level++;
+  G.phase='play';
+  makeLevel(G.level);
+}
+function die(){
+  if(G.phase!=='play')return;
+  G.player.dead=true;
+  AU.die();
+  bankBest();
+  G.phase='gameover';
+}
+function hurt(n){
+  const p=G.player;
+  if(!p||p.inv>0||G.phase!=='play')return false;
+  G.hp-=(n||1);p.inv=1.4;
+  AU.hurt();
+  for(let i=0;i<10;i++)G.particles.push({x:p.x+p.w/2,y:p.y+p.h/2,vx:(Math.random()-.5)*260,vy:-Math.random()*220,t:.6,c:'#c33'});
+  if(G.hp<=0)die();
+  return true;
+}
+
+/* ═══════════ rune logic (shared by locks and the boss) ═══════════ */
+function onRune(owner,rune){
+  if(rune.used||rune.spikeT>0)return;
+  const solved=owner.solved===true||(owner===G.boss&&owner.hp<=0);
+  if(solved)return;
+  const need=owner.q.answer[owner.idx];
+  if(need===undefined)return;
+  if(rune.ch===need){
+    rune.used=true;rune.glow=1;owner.idx++;
+    AU.good();
+    for(let i=0;i<6;i++)G.particles.push({x:rune.x+rune.w/2,y:rune.y,vx:(Math.random()-.5)*160,vy:-Math.random()*180,t:.5,c:'#7f7'});
+    if(owner.idx>=owner.q.answer.length)runeComplete(owner);
+    else if(owner.q.kind==='spell')owner.q.prompt=clueSentence(owner.q.word,owner.idx);
+  }else{
+    /* wrong rune: spike trap pops + teaching hint, sequence resets */
+    G.trapCount++;
+    rune.spikeT=1.2;
+    AU.bad();
+    toast(owner.q.hint||'look at the clue again');
+    owner.idx=0;
+    for(const r of owner.runes){r.used=false;r.glow=0;}
+    if(owner.q.kind==='spell')owner.q.prompt=clueSentence(owner.q.word,0);
+    if(owner===G.boss){owner.enrage=1.6;owner.timer=Math.max(6,owner.timer);}
+    else hurt(1);
+  }
+}
+function runeComplete(owner){
+  owner.idx=owner.q.answer.length;
+  if(owner===G.boss){bossHit();return;}
+  owner.solved=true;
+  AU.unlock();
+  if(owner.kind==='door'){
+    G.keys++;say('the door yields a KEY',2.5);
+  }else{
+    const gain=8+Math.floor(Math.random()*7);
+    G.coins+=gain;meta.coinsEarned+=gain;saveMeta(meta);
+    say('the chest spills '+gain+' coins',2.5);
+  }
+}
+function bossHit(){
+  const b=G.boss;
+  b.hp--;AU.unlock();
+  say('the king reels!',1.6);
+  if(b.hp<=0){
+    const gain=25;G.coins+=gain;meta.coinsEarned+=gain;saveMeta(meta);
+    G.bossWins++;
+    say('SLIME KING falls! +'+gain+' coins',3);
+    b.deadT=1.2;
+    for(let i=0;i<40;i++)G.particles.push({x:b.x+b.w/2,y:b.y+b.h/2,vx:(Math.random()-.5)*420,vy:-Math.random()*380,t:1.1,c:i%2?'#4c4':'#8c8'});
+  }else{
+    bossQuestion();
+  }
+}
+
+/* ═══════════ key presses ═══════════ */
+function onKeyPress(code){
+  if(G.phase==='menu'){
+    if(code==='Digit1'||code==='Numpad1')startRun('math');
+    else if(code==='Digit2'||code==='Numpad2')startRun('spell');
+    else if(code==='KeyH'||code==='KeyI')G.howto=!G.howto;
+    return;
+  }
+  if(G.phase==='gameover'){
+    if(code==='Enter'||code==='Space'||code==='KeyR')G.phase='menu';
+    return;
+  }
+  if(G.phase==='shop'){
+    if(code==='Digit1'||code==='Numpad1')buyItem('heart');
+    else if(code==='Digit2'||code==='Numpad2')buyItem('scroll');
+    else if(code==='Enter'||code==='Space'||code==='KeyE')nextLevel();
+    return;
+  }
+  if(G.phase==='play'&&code==='KeyH'&&G.scrolls>0){
+    const tgt=activeLock()||G.boss;
+    if(tgt&&tgt.idx<tgt.q.answer.length){
+      G.scrolls--;
+      const need=tgt.q.answer[tgt.idx];
+      for(const r of tgt.runes)if(r.ch===need&&!r.used)r.reveal=true;
+      say('hint scroll: the next rune glows',2);
+    }else say('no active lock to divine',1.5);
+  }
+}
+function activeLock(){
+  for(const L of G.locks)if(!L.solved)return L;
+  return null;
+}
+function buyItem(what){
+  if(what==='heart'&&G.coins>=12&&G.hp<5){G.coins-=12;G.hp++;say('bought a heart',1.6);AU.coin();}
+  else if(what==='scroll'&&G.coins>=6){G.coins-=6;G.scrolls++;say('bought a hint scroll',1.6);AU.coin();}
+  else AU.bad();
+}
+
+/* ═══════════ update ═══════════ */
+function physics(dt){
+  const p=G.player;
+  /* horizontal */
+  const dir=(rightDown()?1:0)-(leftDown()?1:0);
+  const target=dir*270;
+  p.vx+=(target-p.vx)*Math.min(1,dt*14);
+  if(dir!==0)p.face=dir;
+  /* jump + double jump (edge-triggered) */
+  const jp=jumpDown();
+  if(jp&&!prevJump){
+    if(p.onG){p.vy=-660;p.jumps=1;p.onG=false;AU.jump();}
+    else if(p.jumps<2){p.vy=-600;p.jumps=2;AU.djump();
+      for(let i=0;i<6;i++)G.particles.push({x:p.x+p.w/2,y:p.y+p.h,vx:(Math.random()-.5)*140,vy:60,t:.4,c:'#aab'});}
+  }
+  prevJump=jp;
+  p.vy+=1900*dt;if(p.vy>900)p.vy=900;
+  /* the door lock adds a solid wall while locked */
+  const walls=[...G.solids];
+  for(const L of G.locks)if(L.kind==='door'&&!L.solved)
+    walls.push({x:L.x,y:GY-150,w:L.w,h:150,type:'doorwall'});
+  /* move X */
+  p.x+=p.vx*dt;
+  for(const s of walls){
+    if(aabb(p,s)){
+      if(p.vx>0)p.x=s.x-p.w;else if(p.vx<0)p.x=s.x+s.w;
+      p.vx=0;
+    }
+  }
+  p.x=clamp(p.x,0,G.level_w-p.w);
+  /* move Y */
+  p.y+=p.vy*dt;
+  p.onG=false;
+  for(const s of walls){
+    if(aabb(p,s)){
+      if(p.vy>0){p.y=s.y-p.h;p.onG=true;p.jumps=0;p.vy=0;}
+      else if(p.vy<0){p.y=s.y+s.h;p.vy=0;}
+    }
+  }
+  /* fell off the world */
+  if(p.y>H+80){die();return;}
+  if(p.inv>0)p.inv-=dt;
+  p.anim+=dt*Math.abs(p.vx)*.05;
+
+  /* rune tiles: trigger once per contact */
+  const foot={x:p.x+4,y:p.y+p.h-2,w:p.w-8,h:8};
+  const owners=[...G.locks];
+  if(G.boss&&G.boss.hp>0)owners.push(G.boss);
+  for(const owner of owners){
+    if(owner!==G.boss&&owner.solved)continue;
+    for(const r of owner.runes){
+      const hit=aabb(foot,r);
+      if(hit&&!r.pressed){r.pressed=true;onRune(owner,r);}
+      else if(!hit&&r.pressed)r.pressed=false;
+      if(r.spikeT>0){
+        r.spikeT-=dt;
+        if(hit&&hurt(1))r.spikeT=0;   /* standing in the popped trap stings */
+      }
+      if(r.glow>0)r.glow-=dt*1.5;
+    }
+  }
+
+  /* static spikes */
+  for(const hz of G.hazards){
+    if(aabb(foot,hz)){if(hurt(1))p.vy=-420;}
+  }
+
+  /* coins */
+  for(const c of G.coinsArr){
+    if(!c.taken&&aabb(p,{x:c.x-10,y:c.y-10,w:20,h:20})){
+      c.taken=true;G.coins++;AU.coin();
+      for(let i=0;i<5;i++)G.particles.push({x:c.x,y:c.y,vx:(Math.random()-.5)*180,vy:-Math.random()*200,t:.5,c:'#fd4'});
+    }
+  }
+
+  /* slimes */
+  for(const s of G.slimes){
+    if(s.dead)continue;
+    s.x+=s.dir*46*dt;
+    if(s.x<s.x0){s.x=s.x0;s.dir=1;}
+    if(s.x+s.w>s.x1){s.x=s.x1-s.w;s.dir=-1;}
+    if(aabb(p,{x:s.x,y:s.y-2,w:s.w,h:s.h})){
+      if(p.vy>140&&p.y+p.h-s.y<26){   /* stomp from above */
+        s.dead=true;s.squash=.4;AU.stomp();
+        p.vy=-480;p.jumps=1;
+        for(let i=0;i<10;i++)G.particles.push({x:s.x+s.w/2,y:s.y,vx:(Math.random()-.5)*240,vy:-Math.random()*200,t:.6,c:'#4c4'});
+      }else hurt(1);
+    }
+  }
+
+  /* exit door */
+  if(G.exit&&aabb(p,G.exit)){
+    if(G.keys>0){G.keys=0;levelClear();}
+    else say('LOCKED — find the key beyond the rune door',1.4);
+  }
+
+  updateBoss(dt);
+}
+
+function updateBoss(dt){
+  const b=G.boss,p=G.player;
+  if(!b)return;
+  if(b.hp<=0){
+    if(b.deadT>0){
+      b.deadT-=dt;
+      if(b.deadT<=0)levelClear();
+    }
+    return;
+  }
+  b.anim+=dt;
+  /* the king hops toward you */
+  b.hop-=dt;
+  if(b.hop<=0){b.hop=b.enrage>0?.9:1.5;b.vy=-380;b.dir=p.x>b.x?1:-1;}
+  b.vy+=1500*dt;
+  b.x+=b.dir*(b.enrage>0?170:95)*dt;
+  b.y+=b.vy*dt;
+  if(b.y>GY-b.h){b.y=GY-b.h;b.vy=0;}
+  b.x=clamp(b.x,60,G.level_w-b.w-60);
+  if(b.enrage>0)b.enrage-=dt;
+  /* question timer */
+  b.timer-=dt;
+  if(b.timer<=0){
+    toast(b.q.hint||'too slow! the sequence resets');
+    b.idx=0;b.timer=14;
+    for(const r of b.runes){r.used=false;r.glow=0;}
+    if(b.q.kind==='spell')b.q.prompt=clueSentence(b.q.word,0);
+    b.enrage=1.2;
+  }
+  /* contact hurts */
+  if(aabb(p,b))hurt(1);
+}
+
+/* ═══════════ render ═══════════ */
+function txt(s,x,y,size,col,align,bold){
+  ctx.fillStyle=col;ctx.font=(bold?'bold ':'')+size+'px monospace';
+  ctx.textAlign=align||'left';ctx.textBaseline='middle';ctx.fillText(s,x,y);
+}
+function drawBricks(x,y,w,h,base){
+  ctx.fillStyle=base;ctx.fillRect(x,y,w,h);
+  ctx.strokeStyle='rgba(0,0,0,.35)';ctx.lineWidth=1;
+  const bw=40,bh=20;
+  ctx.beginPath();
+  for(let ry=1;ry<h/bh;ry++){
+    ctx.moveTo(x,y+ry*bh);ctx.lineTo(x+w,y+ry*bh);
+    const off=(ry%2)*bw/2;
+    for(let rx=0;rx<w/bw+1;rx++){
+      const bx=x+rx*bw-off;
+      ctx.moveTo(bx,y+ry*bh);ctx.lineTo(bx,y+ry*bh+bh);
+    }
+  }
+  ctx.stroke();
+}
+function drawTorch(t,tt){
+  const x=t.x-G.camX;
+  ctx.fillStyle='#543';ctx.fillRect(x-3,t.y-26,6,26);
+  const fl=Math.sin(tt*11+t.x)*3;
+  const g=ctx.createRadialGradient(x,t.y-32,2,x,t.y-32,90);
+  g.addColorStop(0,'rgba(255,180,80,.32)');g.addColorStop(1,'rgba(255,150,50,0)');
+  ctx.fillStyle=g;ctx.fillRect(x-90,t.y-120,180,170);
+  ctx.fillStyle='#f95';ctx.beginPath();
+  ctx.ellipse(x,t.y-32+fl*.4,5+fl,10-fl,0,0,7);ctx.fill();
+  ctx.fillStyle='#fd7';ctx.beginPath();
+  ctx.ellipse(x,t.y-31,3,5,0,0,7);ctx.fill();
+}
+function drawRune(r,need,tt){
+  const x=r.x-G.camX;
+  const active=r.used||r.glow>0;
+  const hot=r.reveal&&!r.used&&need&&r.ch===need;
+  ctx.fillStyle=r.spikeT>0?'#7a2':active?'#2a5a2a':'#3a3f4c';
+  ctx.fillRect(x,r.y,r.w,r.h);
+  ctx.strokeStyle=active?'#7f7':'#666';ctx.lineWidth=1.5;
+  if(hot)ctx.strokeStyle=`rgba(255,255,80,${.5+.5*Math.sin(tt*8)})`;
+  ctx.strokeRect(x+1,r.y+1,r.w-2,r.h-2);
+  ctx.fillStyle=active?'#9f9':'#dde';ctx.font='bold 15px monospace';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(r.ch,x+r.w/2,r.y-11);
+  if(r.spikeT>0){
+    ctx.fillStyle='#ccc';
+    for(let i=0;i<4;i++){
+      ctx.beginPath();
+      ctx.moveTo(x+6+i*(r.w-12)/3,r.y);
+      ctx.lineTo(x+10+i*(r.w-12)/3,r.y-22);
+      ctx.lineTo(x+14+i*(r.w-12)/3,r.y);
+      ctx.fill();
+    }
+  }
+}
+function bubble(cx,cy,line1,need){
+  ctx.font='15px monospace';
+  const w=ctx.measureText(line1).width+28;
+  const x=clamp(cx,w/2+6,W-w/2-6);
+  ctx.fillStyle='rgba(12,14,22,.92)';ctx.strokeStyle='#8899bb';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.roundRect(x-w/2,cy-26,w,52,8);ctx.fill();ctx.stroke();
+  txt(line1,x,cy-13,15,'#ffd27f','left');
+  if(need!==undefined)
+    txt('next rune needed: '+need,x,cy+8,12,'#7f7','left');
+}
+function drawLock(L,tt){
+  const x=L.x-G.camX;
+  if(L.kind==='door'){
+    if(L.solved){
+      ctx.fillStyle='rgba(60,50,30,.25)';ctx.fillRect(x,GY-150,L.w,150);
+      ctx.fillStyle='#543';ctx.fillRect(x-6,GY-158,8,158);ctx.fillRect(x+L.w-2,GY-158,8,158);
+    }else{
+      drawBricks(x,GY-150,L.w,150,'#4a3b2c');
+      ctx.fillStyle='#2c2418';ctx.fillRect(x+8,GY-120,L.w-16,80);
+      ctx.fillStyle='#c9a227';ctx.beginPath();ctx.arc(x+L.w/2,GY-108,7,0,7);ctx.fill();
+      ctx.fillStyle='#000';ctx.fillRect(x+L.w/2-2,GY-108,4,8);
+      txt('?',x+L.w/2,GY-40,26,'#c9a227','center',true);
+    }
+  }else{ /* chest */
+    const y=GY-L.h;
+    ctx.fillStyle=L.solved?'#6a5530':'#7a5a2e';ctx.fillRect(x,y,L.w,L.h);
+    ctx.fillStyle=L.solved?'#3a2f18':'#5a4020';ctx.fillRect(x,y,L.w,10);
+    ctx.strokeStyle='#c9a227';ctx.lineWidth=2;ctx.strokeRect(x+2,y+2,L.w-4,L.h-4);
+    if(!L.solved){ctx.fillStyle='#c9a227';ctx.fillRect(x+L.w/2-4,y+L.h/2-5,8,10);}
+  }
+  if(!L.solved){
+    const label=L.kind==='door'?'LOCKED DOOR — ':'LOCKED CHEST — ';
+    let q=L.q.prompt;
+    if(L.q.kind==='math')q+='  ['+L.q.answer.slice(0,L.idx)+'·'.repeat(L.q.answer.length-L.idx)+']';
+    bubble(x+L.w/2,GY-(L.kind==='door'?186:96),label+q,L.q.answer[L.idx]);
+  }
+  for(const r of L.runes)drawRune(r,L.q.answer[L.idx],tt);
+}
+function drawPlayer(p,tt){
+  const x=p.x-G.camX;
+  if(p.inv>0&&Math.floor(p.inv*12)%2)return;
+  ctx.fillStyle='#ccd3e0';ctx.fillRect(x,p.y,24,18);            /* tabard */
+  ctx.fillStyle='#8899cc';ctx.fillRect(x+2,p.y+2,20,6);
+  ctx.fillStyle='#e8e0d0';ctx.fillRect(x+(p.face>0?14:2),p.y+6,8,8); /* helm visor */
+  ctx.fillStyle='#a33';ctx.fillRect(x+10,p.y-6,4,8);            /* plume */
+  const lg=Math.sin(p.anim*8)*(p.onG&&Math.abs(p.vx)>20?4:0);
+  ctx.fillStyle='#223';
+  ctx.fillRect(x+3,p.y+18+Math.max(0,lg),8,16-Math.max(0,lg));
+  ctx.fillRect(x+13,p.y+18+Math.max(0,-lg),8,16-Math.max(0,-lg));
+  ctx.fillStyle='#543';ctx.fillRect(x+(p.face>0?24:-6),p.y+8,6,4); /* torch */
+}
+function drawSlime(s,tt){
+  if(s.dead)return;
+  const x=s.x-G.camX;
+  const sq=s.squash>0?s.squash:0;
+  const h=s.h*(1-sq),w=s.w*(1+sq);
+  const y=s.y+(s.h-h);
+  const wob=Math.sin(tt*6+s.x0)*2;
+  ctx.fillStyle='#3f9d3f';
+  ctx.beginPath();ctx.ellipse(x+w/2,y+h/2,w/2,h/2+wob*.1,0,0,7);ctx.fill();
+  ctx.fillStyle='#7fd77f';
+  ctx.beginPath();ctx.ellipse(x+w/2,y+h*.4,w/3,h/3,0,0,7);ctx.fill();
+  ctx.fillStyle='#111';
+  ctx.fillRect(x+w/2-7,y+h/2-3,4,5);ctx.fillRect(x+w/2+3,y+h/2-3,4,5);
+}
+function drawCoin(c,tt){
+  if(c.taken)return;
+  const x=c.x-G.camX;
+  const ph=Math.sin(tt*5+c.x*.05);
+  ctx.fillStyle='#c9a227';ctx.beginPath();ctx.ellipse(x,c.y+ph*2,7,9,0,0,7);ctx.fill();
+  ctx.fillStyle='#ffd75e';ctx.beginPath();ctx.ellipse(x-1,c.y-1+ph*2,4,6,0,0,7);ctx.fill();
+}
+function drawHazard(hz){
+  const x=hz.x-G.camX;
+  ctx.fillStyle='#99a';
+  for(let i=0;i<hz.w/16;i++){
+    ctx.beginPath();
+    ctx.moveTo(x+i*16,hz.y+hz.h);ctx.lineTo(x+i*16+8,hz.y-8);ctx.lineTo(x+i*16+16,hz.y+hz.h);
+    ctx.fill();
+  }
+}
+function drawExitDoor(tt){
+  const e=G.exit,x=e.x-G.camX;
+  drawBricks(x,e.y,e.w,e.h,'#3c2f52');
+  ctx.fillStyle='#241b38';ctx.beginPath();
+  ctx.moveTo(x+10,e.y+e.h);ctx.lineTo(x+10,e.y+14);
+  ctx.quadraticCurveTo(x+e.w/2,e.y-8,x+e.w-10,e.y+14);
+  ctx.lineTo(x+e.w-10,e.y+e.h);ctx.fill();
+  const has=G.keys>0;
+  ctx.strokeStyle=has?`rgba(255,220,90,${.4+.3*Math.sin(tt*6)})`:'rgba(120,120,140,.4)';
+  ctx.lineWidth=3;ctx.strokeRect(x+2,e.y+2,e.w-4,e.h-4);
+  txt(has?'EXIT — walk in':'EXIT (needs key)',x+e.w/2,e.y-16,13,has?'#ffd75e':'#99a','center');
+}
+function drawBoss(tt){
+  const b=G.boss;if(!b)return;
+  const x=b.x-G.camX;
+  if(b.hp<=0&&b.deadT<=0)return;
+  const shrink=b.hp<=0?Math.max(0,b.deadT/1.2):1;
+  const w=b.w*shrink,h=b.h*shrink;
+  const y=b.y+(b.h-h);
+  ctx.fillStyle=b.enrage>0?'#a33':'#2f7d2f';
+  ctx.beginPath();
+  ctx.moveTo(x,y+h);
+  ctx.quadraticCurveTo(x-6+w*.15,y+h*.2,x+w/2,y);
+  ctx.quadraticCurveTo(x+w+6-w*.15,y+h*.2,x+w,y+h);
+  ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.25)';
+  ctx.beginPath();ctx.ellipse(x+w*.38,y+h*.35,w*.14,h*.12,0,0,7);ctx.fill();
+  ctx.fillStyle='#c9a227';
+  ctx.beginPath();
+  ctx.moveTo(x+w*.3,y-2);ctx.lineTo(x+w*.38,y-16);ctx.lineTo(x+w*.46,y-2);
+  ctx.lineTo(x+w*.54,y-18);ctx.lineTo(x+w*.62,y-2);ctx.lineTo(x+w*.7,y-14);ctx.lineTo(x+w*.74,y-2);
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle='#ff5';
+  ctx.fillRect(x+w*.32,y+h*.3,8,10);ctx.fillRect(x+w*.58,y+h*.3,8,10);
+  ctx.fillStyle='#000';ctx.fillRect(x+w*.32+(b.dir>0?3:0),y+h*.33,4,6);ctx.fillRect(x+w*.58+(b.dir>0?3:0),y+h*.33,4,6);
+  for(let i=0;i<b.maxhp;i++){ctx.fillStyle=i<b.hp?'#f55':'#333';ctx.fillRect(x+w*.25+i*18,y-30,12,8);}
+  if(b.hp>0){
+    let q=b.q.prompt;
+    if(b.q.kind==='math')q+='  ['+b.q.answer.slice(0,b.idx)+'·'.repeat(b.q.answer.length-b.idx)+']';
+    bubble(x+w/2,y-72,'KING ASKS:  '+q,b.q.answer[b.idx]);
+    txt('time: '+Math.ceil(b.timer)+'s',x+w/2,y-46,13,b.timer<4?'#f66':'#99a','center');
+    for(const r of b.runes)drawRune(r,b.q.answer[b.idx],tt);
+  }
+}
+function drawHeart(x,y,full){
+  ctx.fillStyle=full?'#e33':'#412';
+  ctx.beginPath();
+  ctx.moveTo(x+7,y+10);
+  ctx.lineTo(x+1,y+4);
+  ctx.arc(x+4,y+1,3.5,.9*Math.PI,.1*Math.PI);
+  ctx.arc(x+10,y+1,3.5,.9*Math.PI,.1*Math.PI);
+  ctx.lineTo(x+13,y+10);
+  ctx.closePath();ctx.fill();
+}
+function drawHUD(){
+  for(let i=0;i<Math.max(3,G.hp);i++)drawHeart(16+i*22,20,i<G.hp);
+  txt('hearts '+G.hp,100,20,13,'#e33');
+  ctx.fillStyle='#c9a227';ctx.beginPath();ctx.ellipse(W-210,20,7,9,0,0,7);ctx.fill();
+  txt(String(G.coins),W-196,20,16,'#ffd75e');
+  txt('scrolls '+G.scrolls+' [H]',W-104,20,13,'#8ab');
+  txt((G.mode==='math'?'MATH':'SPELLING')+'  ·  DEPTH '+G.level+(G.level%4===0?' — BOSS':''),W/2,20,15,'#dde','center',true);
+  txt('best: '+meta[bestKey()],W/2,38,12,'#889');
+  if(G.keys>0)txt('KEY HELD',34,46,13,'#ffd75e','center',true);
+  if(G.hintT>0&&G.hintToast){
+    ctx.fillStyle='rgba(20,26,16,.94)';ctx.strokeStyle='#7f7';ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(W/2-330,H-90,660,54,10);ctx.fill();ctx.stroke();
+    txt('HINT — '+G.hintToast,W/2,H-63,15,'#af7','center');
+  }
+  if(G.msgT>0)txt(G.msg,W/2,70,17,'#ffd27f','center',true);
+}
+function drawMenu(tt){
+  ctx.fillStyle='#0b0d12';ctx.fillRect(0,0,W,H);
+  drawBricks(0,0,W,H,'#141824');
+  for(const t of [{x:140,y:470},{x:820,y:470}])drawTorch(t,tt);
+  const sc=1+Math.sin(tt*2)*.02;
+  ctx.save();ctx.translate(W/2,110);ctx.scale(sc,sc);
+  txt("THE KING'S LOCKS",0,0,56,'#ffd75e','center',true);
+  ctx.restore();
+  txt('doors and chests are locked by questions —',W/2,158,16,'#99a','center');
+  txt('jump the runes in the right order to open them',W/2,180,16,'#99a','center');
+  const card=(x,label,desc,best,key)=>{
+    ctx.fillStyle='#1b2130';ctx.strokeStyle='#4a5578';ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(x,230,220,150,12);ctx.fill();ctx.stroke();
+    txt(label,x+110,276,24,'#ffd75e','center',true);
+    txt(desc,x+110,312,13,'#99a','center');
+    txt('best depth: '+best,x+110,342,13,'#7f7','center');
+    txt('press '+key,x+110,366,13,'#dde','center');
+  };
+  card(200,'MATH','arithmetic runes + − × ÷',meta.bestMath,'1');
+  card(540,'SPELLING','rebuild the clue word',meta.bestSpell,'2');
+  if(G.howto){
+    ctx.fillStyle='rgba(10,12,18,.96)';ctx.strokeStyle='#8899bb';ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(140,70,680,410,12);ctx.fill();ctx.stroke();
+    const lines=['HOW TO PLAY',
+      '','A / D or arrows — move','W / SPACE — jump (press twice to double-jump)',
+      '','Locked doors + chests show a question.','Letter/number runes lie on the floor.',
+      'Jump on them IN ORDER to spell the answer.',
+      '','Wrong rune: a spike trap pops and you lose a heart —',
+      'but a teaching hint appears. The sequence resets.',
+      '','Stomp slimes from above. Dodge their sides.',
+      'Reach the EXIT door with the key to descend.',
+      'Every 4th depth: the SLIME KING asks 3 rapid questions.',
+      '','H — use a hint scroll (reveals the next rune)',
+      '1 / 2 in the shop — buy hearts + scrolls with coins'];
+    lines.forEach((l,i)=>txt(l,W/2,104+i*22,i===0?20:14,i===0?'#ffd75e':'#ccd','center',i===0));
+    txt('press H to close',W/2,466,12,'#889','center');
+  }else txt('H — how to play',W/2,420,14,'#889','center');
+  txt('runs: '+meta.runs+'   coins earned: '+meta.coinsEarned,W/2,508,12,'#667','center');
+}
+function drawShop(tt){
+  ctx.fillStyle='rgba(8,10,14,.85)';ctx.fillRect(0,0,W,H);
+  txt('DEPTH '+G.level+' CLEARED',W/2,80,30,'#ffd75e','center',true);
+  txt('a merchant carts his wares between the stones…',W/2,116,14,'#99a','center');
+  const row=(y,name,cost,note,key)=>{
+    ctx.fillStyle='#1b2130';ctx.strokeStyle='#4a5578';ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(230,y,500,64,10);ctx.fill();ctx.stroke();
+    txt(key+'.  '+name,260,y+24,18,'#dde');
+    txt(note,260,y+46,13,'#889');
+    txt(cost+' coins',700,y+32,16,G.coins>=cost?'#ffd75e':'#665','right',true);
+  };
+  row(160,'heart',12,'heal one heart (max 5)','1');
+  row(240,'hint scroll',6,'reveals the next rune of a lock [H]','2');
+  ctx.fillStyle='#1b2130';ctx.strokeStyle='#7f7';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(230,330,500,56,10);ctx.fill();ctx.stroke();
+  txt('ENTER — descend to depth '+(G.level+1)+((G.level+1)%4===0?'  (BOSS!)':''),W/2,358,17,'#af7','center',true);
+  txt('coins: '+G.coins+'   hearts: '+G.hp+'   scrolls: '+G.scrolls,W/2,430,15,'#ffd75e','center');
+}
+function drawGameOver(tt){
+  ctx.fillStyle='rgba(8,6,6,.86)';ctx.fillRect(0,0,W,H);
+  txt('YOU FELL',W/2,180,48,'#e55','center',true);
+  txt('the dungeon keeps depth '+G.level+' of you',W/2,236,16,'#99a','center');
+  txt('best '+G.mode+' depth: '+meta[bestKey()],W/2,272,16,'#7f7','center');
+  txt('ENTER — back to the gate',W/2,330,17,'#dde','center');
+}
+function render(tt){
+  if(G.phase==='menu'){drawMenu(tt);return;}
+  if(G.phase==='shop'){drawShop(tt);return;}
+  if(G.phase==='gameover'){drawGameOver(tt);return;}
+  ctx.fillStyle='#1a2030';ctx.fillRect(0,0,W,H);
+  drawBricks(-((G.camX*.4)%80),0,W+160,H,'#232b3f');
+  ctx.fillStyle='rgba(0,0,0,.14)';ctx.fillRect(0,0,W,H);
+  for(const s of G.solids){
+    const x=s.x-G.camX;
+    if(x+s.w<-40||x>W+40)continue;
+    drawBricks(x,s.y,s.w,s.h,s.type==='plat'?'#3d4a6b':'#46537a');
+  }
+  for(const hz of G.hazards){const x=hz.x-G.camX;if(x>-400&&x<W+40)drawHazard(hz);}
+  for(const t of G.torches){const x=t.x-G.camX;if(x>-100&&x<W+100)drawTorch(t,tt);}
+  for(const c of G.coinsArr){const x=c.x-G.camX;if(x>-30&&x<W+30)drawCoin(c,tt);}
+  for(const s of G.slimes){const x=s.x-G.camX;if(x>-60&&x<W+60)drawSlime(s,tt);}
+  drawExitDoor(tt);
+  for(const L of G.locks)drawLock(L,tt);
+  drawBoss(tt);
+  drawPlayer(G.player,tt);
+  for(const p of G.particles){
+    ctx.fillStyle=p.c;ctx.globalAlpha=Math.max(0,p.t);
+    ctx.fillRect(p.x-G.camX-2,p.y-2,4,4);ctx.globalAlpha=1;
+  }
+  drawHUD();
+}
+
+/* ═══════════ main loop ═══════════ */
+let last=performance.now(),fpsT=0,fpsN=0;
+function frame(now){
+  const dt=Math.min(.033,(now-last)/1000);last=now;
+  G.time+=dt;G.frames++;
+  fpsT+=dt;fpsN++;
+  if(fpsT>=1){G.fps=Math.round(fpsN/fpsT);fpsT=0;fpsN=0;}
+  if(G.phase==='play'){
+    physics(dt);
+    G.camX=clamp(G.player.x-W*.38,0,Math.max(0,G.level_w-W));
+  }
+  if(G.hintT>0)G.hintT-=dt;
+  if(G.msgT>0)G.msgT-=dt;
+  for(let i=G.particles.length-1;i>=0;i--){
+    const p=G.particles[i];p.t-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=700*dt;
+    if(p.t<=0)G.particles.splice(i,1);
+  }
+  for(const s of G.slimes)if(s.squash>0)s.squash-=dt;
+  render(G.time);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ═══════════ debug hook (drives tools/playtest.py) ═══════════ */
+window.__dungeon_debug={
+  wipe(){try{localStorage.removeItem(MKEY);}catch(e){}meta=loadMeta();},
+  start(mode){startRun(mode||'math');},
+  state(){
+    const p=G.player||{};
+    const lock=G.locks.find(l=>l.kind==='door')||null;
+    const chest=G.locks.find(l=>l.kind==='chest')||null;
+    const anyLock=activeLock()||(G.boss&&G.boss.hp>0?G.boss:null);
+    return{phase:G.phase,mode:G.mode,level:G.level,hp:G.hp,coins:G.coins,keys:G.keys,
+      scrolls:G.scrolls,px:p.x||0,py:p.y||0,vy:p.vy||0,onG:!!p.onG,jumps:p.jumps||0,
+      levelW:G.level_w,trapCount:G.trapCount,
+      hintToast:G.hintToast,hintT:G.hintT,
+      gate:{doorSolved:lock?lock.solved:null,chestSolved:chest?chest.solved:null,
+            prompt:anyLock?anyLock.q.prompt:null,answer:anyLock?anyLock.q.answer:null,
+            idx:anyLock?anyLock.idx:null,
+            runes:anyLock?anyLock.runes.map(r=>({ch:r.ch,used:r.used})):null},
+      boss:G.boss?{hp:G.boss.hp,prompt:G.boss.q?G.boss.q.prompt:null,
+                   answer:G.boss.q?G.boss.q.answer:null,idx:G.boss.idx,
+                   runes:G.boss.runes.map(r=>({ch:r.ch,used:r.used}))}:null,
+      slimesAlive:G.slimes.filter(s=>!s.dead).length,
+      coinsTaken:G.coinsArr.filter(c=>c.taken).length,
+      coinsTotal:G.coinsArr.length,fps:G.fps,time:G.time};
+  },
+  meta(){return{...meta};},
+  teleport(x,y){if(G.player){G.player.x=x;G.player.y=y;G.player.vy=0;}},
+  pressRune(i){
+    const owner=activeLock()||(G.boss&&G.boss.hp>0?G.boss:null);
+    if(!owner||!owner.runes[i])return false;
+    onRune(owner,owner.runes[i]);
+    return true;
+  },
+  hurt(n){hurt(n||1);},
+  slimePos(){const s=G.slimes.find(s=>!s.dead);return s?{x:s.x,y:s.y}:null;},
+  coinPos(){const c=G.coinsArr.find(c=>!c.taken);return c?{x:c.x,y:c.y}:null;},
+  goto(n){G.level=n;makeLevel(n);G.phase='play';},
+  buy(what){buyItem(what);},
+  nextLevel(){nextLevel();},
+  useScroll(){onKeyPress('KeyH');}
+};
+</script>
+</body>
+</html>
