@@ -10,7 +10,16 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#0b0e1a;color:#eef2ff;font-family:system-ui,Segoe UI,Arial,sans-serif;overflow:hidden}
 #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-canvas{background:#0b0e1a;display:block}
+canvas{background:#0b0e1a;display:block;touch-action:none}
+/* touch driving controls: coarse pointers only, so desktop is untouched */
+#pad{position:fixed;inset:0;display:none;z-index:8;pointer-events:none}
+body.touch #pad{display:block}
+#pad button{position:absolute;bottom:22px;width:82px;height:82px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.45);background:rgba(16,22,44,.62);color:#ffd257;
+  font-size:30px;font-weight:700;line-height:1;pointer-events:auto;
+  -webkit-tap-highlight-color:transparent;touch-action:none}
+#pad button:active,#pad button.on{background:rgba(255,210,87,.85);color:#141a2e}
+#padL{left:18px} #padR{left:112px} #padGas{right:18px} #padBrake{right:112px}
 .ovl{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,10,22,.82);z-index:10}
 .panel{background:#141a2e;border:2px solid #2c3a63;border-radius:14px;padding:26px 34px;max-width:680px;width:92%;text-align:center;box-shadow:0 12px 60px rgba(0,0,0,.6)}
 h1{font-size:44px;letter-spacing:3px;color:#ffd257;text-shadow:0 3px 0 #7a4b00,0 0 24px rgba(255,210,87,.35);margin-bottom:2px}
@@ -38,6 +47,12 @@ button.big:hover{background:#8f4cba}
 </head>
 <body>
 <div id="wrap"><canvas id="cv" width="960" height="600"></canvas></div>
+<div id="pad">
+  <button id="padL" aria-label="Steer left">&#9664;</button>
+  <button id="padR" aria-label="Steer right">&#9654;</button>
+  <button id="padBrake" aria-label="Brake">&#9660;</button>
+  <button id="padGas" aria-label="Accelerate">&#9650;</button>
+</div>
 
 <div id="menu" class="ovl">
   <div class="panel">
@@ -507,6 +522,27 @@ addEventListener('keydown',function(e){
 });
 addEventListener('keyup',function(e){keys[e.key.toLowerCase()]=false;});
 
+/* ---------- touch driving ---------- */
+const tIn={left:false,right:false,up:false,down:false};
+if(matchMedia('(pointer: coarse)').matches){
+  document.body.classList.add('touch');
+  /* each pad button captures its own pointer, so steering and throttle can be
+     held at the same time; without touch-action the browser would claim the
+     press as a pan and fire pointercancel */
+  [['padL','left'],['padR','right'],['padGas','up'],['padBrake','down']].forEach(function(pair){
+    const el=document.getElementById(pair[0]),k=pair[1];
+    const set=function(v){return function(e){
+      tIn[k]=v; el.classList.toggle('on',v);
+      if(v&&el.setPointerCapture)try{el.setPointerCapture(e.pointerId);}catch(_){}
+      e.preventDefault();
+    };};
+    el.addEventListener('pointerdown',set(true));
+    el.addEventListener('pointerup',set(false));
+    el.addEventListener('pointercancel',set(false));
+    el.addEventListener('pointerleave',set(false));
+  });
+}
+
 function updateKart(k,dt,accel,steer,isPlayer){
   const tr=G.tr;
   if(k.spinT>0){
@@ -583,10 +619,10 @@ function update(dt){
   if(G.aiSlowT>0)G.aiSlowT-=dt;
 
   /* player input */
-  const up=keys['arrowup']||keys['w'],down=keys['arrowdown']||keys['s'];
+  const up=keys['arrowup']||keys['w']||tIn.up,down=keys['arrowdown']||keys['s']||tIn.down;
   let steer=0;
-  if(keys['arrowleft']||keys['a'])steer-=1;
-  if(keys['arrowright']||keys['d'])steer+=1;
+  if(keys['arrowleft']||keys['a']||tIn.left)steer-=1;
+  if(keys['arrowright']||keys['d']||tIn.right)steer+=1;
   if(player.spinT<=0&&steer!==0&&player.speed>180&&Math.abs(player.latV)>60){
     const p=worldOf(G.tr,player.s,player.lat);
     G.trails.push({x:p.x,y:p.y,life:.9});
