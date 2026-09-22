@@ -377,6 +377,7 @@ function reseed(){ treeCache.clear(); bakeTextures(); initFlock(); initFireflies
 const HILL_MARGIN=384;
 const hillStrips=LAYERS.map(()=>null);   // {cv,P0,band,W,H,seed}
 let hillBakeBudget=0;
+let rayGrad={key:"",g:null,len:0};        // cached god-ray gradient (rebuilt only when sun color/strength shifts)
 function hillStrip(L, sky, sun, W, H, P, band){
   let s=hillStrips[L.i];
   if(s && s.W===W && s.H===H && s.band===band && s.seed===SEED && Math.abs(P-s.P0)<=HILL_MARGIN-8) return s;
@@ -650,13 +651,21 @@ function frame(now){
   // --- god rays (additive, from sun; strongest at golden hours) ---
   if(sun.elev>0.01){ ctx.save(); ctx.globalCompositeOperation="lighter";
     const rays=14, str=0.10*sun.elev*(0.5+0.9*(1-Math.abs(sun.elev-0.35)*2));
+    // gradient shape only depends on sun colour + strength (not rotation angle, which we apply
+    // via ctx.rotate below), so cache it and only rebuild when the lighting actually shifts.
+    const rk=Math.round(str*300)+":"+(sky.sun[0]|0)+","+(sky.sun[1]|0)+","+(sky.sun[2]|0);
+    if(rk!==rayGrad.key||rayGrad.len!==H){
+      const g=ctx.createLinearGradient(0,0,H,0);
+      g.addColorStop(0,rgba(sky.sun,str)); g.addColorStop(1,rgba(sky.sun,0));
+      rayGrad={key:rk,g:g,len:H};
+    }
+    ctx.fillStyle=rayGrad.g;
     for(let i=0;i<rays;i++){ const a=(i/rays)*TAU + ct*0.02;
-      const rg2=ctx.createLinearGradient(sun.x,sun.y,sun.x+Math.cos(a)*H,sun.y+Math.sin(a)*H);
-      rg2.addColorStop(0,rgba(sky.sun,str)); rg2.addColorStop(1,rgba(sky.sun,0));
-      ctx.fillStyle=rg2; ctx.beginPath(); ctx.moveTo(sun.x,sun.y);
-      ctx.lineTo(sun.x+Math.cos(a-0.04)*H*1.4, sun.y+Math.sin(a-0.04)*H*1.4);
-      ctx.lineTo(sun.x+Math.cos(a+0.04)*H*1.4, sun.y+Math.sin(a+0.04)*H*1.4);
-      ctx.closePath(); ctx.fill(); }
+      ctx.save(); ctx.translate(sun.x,sun.y); ctx.rotate(a);
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.lineTo(Math.cos(-0.04)*H*1.4, Math.sin(-0.04)*H*1.4);
+      ctx.lineTo(Math.cos(0.04)*H*1.4, Math.sin(0.04)*H*1.4);
+      ctx.closePath(); ctx.fill(); ctx.restore(); }
     ctx.restore(); }
 
   // --- birds (boids) ---

@@ -322,8 +322,8 @@ function tick(ts){
   const dtp=state.paused?0:dt;
 
   if(run){
-    if(keys.l)setX(state.curX-260*dt);
-    if(keys.r)setX(state.curX+260*dt);
+    if(keys.l&&state.cur)setX(state.curX-260*dt);
+    if(keys.r&&state.cur)setX(state.curX+260*dt);
     state.dropLock=Math.max(0,state.dropLock-dt);
     if(state.chainT>0){state.chainT-=dt;if(state.chainT<=0)state.chain=0;}
     /* fixed substeps for stable stacking */

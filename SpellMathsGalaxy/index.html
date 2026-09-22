@@ -4895,7 +4895,8 @@ addEventListener('touchmove',e=>{if(state.running&&!state.paused&&e.touches[0]){
 addEventListener('keydown',e=>{if(e.target===typer)return; input.keys[e.key]=true;
   if(e.key==='1')useKit('drift'); if(e.key==='2')useKit('clear'); if(e.key==='3')useKit('patch');
   if(e.key==='m'||e.key==='M')toggleSnd();
-  if((e.key==='Escape'||e.key===' ')&&state.running)hold();});
+  const qActive=state.question&&!state.question.done;
+  if((e.key==='Escape'||(e.key===' '&&!qActive))&&state.running)hold();});
 addEventListener('keyup',e=>input.keys[e.key]=false);
 
 /* ═══ typed answers — spell the whole word from the cockpit ═══

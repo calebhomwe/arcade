@@ -34,7 +34,7 @@
   }
   h1,h2,.btn,.tab,.pill,.hn,.qq,.big,#startBtn,.gbtn{font-family:var(--display);}
   #fit{position:relative; width:var(--stageW); height:var(--stageH); transform-origin:center center;
-    filter:drop-shadow(0 24px 50px rgba(120,60,110,.35));}
+    border-radius:34px; box-shadow:0 24px 50px rgba(120,60,110,.35);}
   #stage{
     position:absolute; inset:0; width:var(--stageW); height:var(--stageH);
     border-radius:34px; overflow:hidden;
@@ -84,10 +84,11 @@
   .cloudy .sun{opacity:.55;}
   .skystars{position:absolute; inset:0; z-index:1; opacity:0; transition:opacity 1.5s; pointer-events:none;}
   .night .skystars{opacity:1;}
-  .skystars i{position:absolute; width:3px; height:3px; border-radius:50%; background:#fff; box-shadow:0 0 4px 1px rgba(255,255,255,.8); animation:twinkle 3s infinite;}
+  .skystars i{position:absolute; width:3px; height:3px; border-radius:50%; background:#fff; box-shadow:0 0 4px 1px rgba(255,255,255,.8);}
+  .night .skystars i{animation:twinkle 3s infinite;}
   @keyframes twinkle{0%,100%{opacity:.3;}50%{opacity:1;}}
 
-  .cloud{position:absolute; background:#fff; border-radius:50px; opacity:.9; filter:drop-shadow(0 4px 6px rgba(120,90,130,.12)); animation:cloudDrift linear infinite; z-index:2;}
+  .cloud{position:absolute; background:#fff; border-radius:50px; opacity:.9; animation:cloudDrift linear infinite; z-index:2;}
   .cloud::before,.cloud::after{content:""; position:absolute; background:#fff; border-radius:50%;}
   .cloud.c1{top:90px; left:-90px; width:90px; height:30px; animation-duration:46s;}
   .cloud.c1::before{width:38px; height:38px; top:-16px; left:14px;}
@@ -105,7 +106,8 @@
 
   .rain{position:absolute; inset:0; z-index:4; pointer-events:none; opacity:0; transition:opacity 1s;}
   .rainy .rain{opacity:1;}
-  .rain i{position:absolute; top:-20px; width:2px; height:16px; border-radius:2px; background:linear-gradient(#cfeaff,#9cc7e8); opacity:.7; animation:rainFall linear infinite;}
+  .rain i{position:absolute; top:-20px; width:2px; height:16px; border-radius:2px; background:linear-gradient(#cfeaff,#9cc7e8); opacity:.7;}
+  .rainy .rain i{animation:rainFall linear infinite;}
   @keyframes rainFall{to{transform:translateY(800px);}}
   .reduce .rain i{display:none;}
 
@@ -142,8 +144,7 @@
   .yard{position:absolute; left:0; right:0; bottom:0; height:38%; z-index:6;}
   .shadow-el{position:absolute; bottom:80px; width:90px; height:18px; border-radius:50%; background:radial-gradient(ellipse, rgba(70,40,60,.22), rgba(70,40,60,0) 72%); filter:blur(1px); z-index:2;}
 
-  .claire{position:absolute; left:64px; bottom:84px; width:120px; height:210px; transform-origin:bottom center; z-index:3;
-    filter:drop-shadow(1.4px 0 0 #5f4258) drop-shadow(-1.4px 0 0 #5f4258) drop-shadow(0 1.4px 0 #5f4258) drop-shadow(0 -1.4px 0 #5f4258) drop-shadow(1px 1px 0 #5f4258) drop-shadow(-1px 1px 0 #5f4258) drop-shadow(1px -1px 0 #5f4258) drop-shadow(-1px -1px 0 #5f4258) drop-shadow(0 9px 8px rgba(90,50,80,.22));}
+  .claire{position:absolute; left:64px; bottom:84px; width:120px; height:210px; transform-origin:bottom center; z-index:3;}
   .claire .head{position:absolute; left:50%; top:14px; width:62px; height:62px; margin-left:-31px; background:radial-gradient(circle at 38% 32%, #ffffff55, transparent 42%), radial-gradient(circle at 65% 78%, rgba(0,0,0,.06), transparent 55%), var(--skin,#ffd9bd); border-radius:50%; z-index:3;}
   .claire .hair-back{position:absolute; left:50%; top:6px; width:84px; height:96px; margin-left:-42px; background:radial-gradient(circle at 32% 24%, #ffffff40, transparent 46%), var(--hair,#6b4a2f); border-radius:46% 46% 40% 40%; z-index:1;}
   .claire .hair-front{position:absolute; left:50%; top:8px; width:74px; height:40px; margin-left:-37px; background:radial-gradient(circle at 30% 26%, #ffffff55, transparent 50%), var(--hair,#6b4a2f); border-radius:46% 46% 50% 50%/60% 60% 40% 40%; z-index:4;}
@@ -166,8 +167,7 @@
   @keyframes wave{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(-46deg);}}
 
   /* Pet (dog/cat/bunny) */
-  .pet{position:absolute; right:46px; bottom:88px; width:96px; height:92px; z-index:3; transform-origin:bottom center; animation:dogBounce 2.4s ease-in-out infinite;
-    filter:drop-shadow(1.4px 0 0 #5f4258) drop-shadow(-1.4px 0 0 #5f4258) drop-shadow(0 1.4px 0 #5f4258) drop-shadow(0 -1.4px 0 #5f4258) drop-shadow(1px 1px 0 #5f4258) drop-shadow(-1px 1px 0 #5f4258) drop-shadow(1px -1px 0 #5f4258) drop-shadow(-1px -1px 0 #5f4258) drop-shadow(0 9px 7px rgba(90,50,80,.22));}
+  .pet{position:absolute; right:46px; bottom:88px; width:96px; height:92px; z-index:3; transform-origin:bottom center; animation:dogBounce 2.4s ease-in-out infinite;}
   .reduce .pet{animation:none;}
   @keyframes dogBounce{0%,100%{transform:translateY(0) rotate(0);}25%{transform:translateY(-10px) rotate(-2deg);}50%{transform:translateY(0) rotate(0);}75%{transform:translateY(-5px) rotate(2deg);}}
   .pet .pbody{position:absolute; left:8px; bottom:6px; width:80px; height:54px; background:radial-gradient(circle at 38% 28%, color-mix(in srgb, var(--fur,#e7a86b) 70%, #fff), var(--fur,#e7a86b) 70%); border-radius:40px 40px 36px 36px;}
@@ -374,14 +374,14 @@
   #intro{position:absolute; inset:0; z-index:90; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:13px; text-align:center; padding:28px 26px; overflow:hidden;
     background:radial-gradient(120% 80% at 50% 0%, #ffe3f1 0%, #ffd0ea 38%, #c9b3f2 100%);}
   #intro.gone{display:none;}
-  #intro .bg-blob{position:absolute; border-radius:50%; filter:blur(8px); opacity:.5; z-index:0; animation:blobFloat 9s ease-in-out infinite;}
+  #intro .bg-blob{position:absolute; border-radius:50%; opacity:.5; z-index:0; animation:blobFloat 9s ease-in-out infinite;}
   #intro .bg-blob.b1{width:160px; height:160px; top:6%; left:-30px; background:radial-gradient(circle,#fff6,#fff0);}
   #intro .bg-blob.b2{width:120px; height:120px; bottom:14%; right:-20px; background:radial-gradient(circle,#ffd86688,#fff0); animation-delay:-3s;}
   #intro .bg-blob.b3{width:90px; height:90px; top:40%; right:30px; background:radial-gradient(circle,#b78bff66,#fff0); animation-delay:-6s;}
   @keyframes blobFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
   .reduce #intro .bg-blob{animation:none;}
   #intro .sparkle{position:absolute; z-index:0; font-size:16px; opacity:.8; animation:twinkle 2.6s ease-in-out infinite;}
-  #intro .hero{position:relative; z-index:1; font-size:74px; line-height:1; filter:drop-shadow(0 10px 16px rgba(120,60,110,.3)); animation:heroBob 3.2s ease-in-out infinite;}
+  #intro .hero{position:relative; z-index:1; font-size:74px; line-height:1; animation:heroBob 3.2s ease-in-out infinite;}
   @keyframes heroBob{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-10px) rotate(1deg);}}
   .reduce #intro .hero{animation:none;}
   #intro .subtitle{position:relative; z-index:1; margin:-2px 0 2px; font-weight:700; font-size:13px; letter-spacing:1px; color:#fff; text-shadow:0 2px 6px rgba(160,70,130,.5);}
@@ -391,7 +391,7 @@
     filter:drop-shadow(0 4px 0 #e85d97) drop-shadow(0 8px 14px rgba(120,60,100,.35));}
   #intro p{position:relative; z-index:1; margin:0; max-width:280px; font-size:14px; color:#7a4a66; line-height:1.6; font-weight:500;}
   #intro .card-glass{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:4px;
-    background:rgba(255,255,255,.55); border:1.5px solid rgba(255,255,255,.7); backdrop-filter:blur(8px);
+    background:rgba(255,255,255,.88); border:1.5px solid rgba(255,255,255,.7);
     border-radius:24px; padding:18px 20px; box-shadow:0 14px 36px rgba(120,50,100,.22);}
   #startBtn{border:none; cursor:pointer; font-family:inherit; font-weight:800; font-size:20px; padding:14px 44px; border-radius:999px; margin-top:2px; background:linear-gradient(180deg,#ffe08a,#ffbe34); color:#8a4e12; box-shadow:0 8px 20px rgba(247,150,40,.45), inset 0 1px 0 rgba(255,255,255,.6); transition:transform .12s;}
   #startBtn:not(:disabled){animation:startPulse 2s ease-in-out infinite;}

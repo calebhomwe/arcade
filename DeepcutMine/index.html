@@ -20,7 +20,9 @@
   #fuelBar i{background:var(--gold)} #hullBar i{background:var(--good)} #cargoBar i{background:#8fb0d8}
   #cash{font-size:20px;color:var(--gold);font-weight:800}
   #depth{font-size:12px;color:var(--muted)}
-  #shop{right:10px;top:10px;width:216px;padding:11px;z-index:6;max-height:calc(100vh - 20px);overflow:auto}
+  #shop{right:10px;top:10px;width:216px;padding:11px;z-index:6;max-height:calc(100vh - 20px);overflow:auto;
+    transition:transform .18s ease,opacity .18s ease}
+  #shop.away{transform:translateX(240px);opacity:0;pointer-events:none}
   #shop h3{margin:0 0 8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
   .up{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#231a13;
     border:1px solid rgba(243,231,211,.12);border-radius:9px;padding:8px;margin-bottom:6px;cursor:pointer;
@@ -406,8 +408,14 @@ function renderShop(){
    render loop never forces a style/layout pass on an unchanged frame. */
 var elCash = document.getElementById('cash'), elDepth = document.getElementById('depth'),
     elFuel = document.getElementById('fuelBar').firstChild, elHull = document.getElementById('hullBar').firstChild,
-    elCargo = document.getElementById('cargoBar').firstChild, elCombo = document.getElementById('comboTxt');
+    elCargo = document.getElementById('cargoBar').firstChild, elCombo = document.getElementById('comboTxt'),
+    elShop = document.getElementById('shop');
 var hudLast = { cash:'', depth:'', combo:'' };
+var shopAway = false;
+function syncShopVisibility(){
+  var away = !atSurface();
+  if(away !== shopAway){ shopAway = away; elShop.classList.toggle('away', away); }
+}
 function streakPct(){ return Math.round(5 * Math.min(S.combo, 12)); }
 function setTxt(el, key, v){ if(hudLast[key] !== v){ hudLast[key] = v; el.textContent = v; } }
 function renderHUD(){
@@ -627,6 +635,7 @@ function frame(now){
     if(S.p.y > 850){ S.fuel = Math.max(0, S.fuel - dt*0.35); }
     if(S.comboT > 0){ S.comboT -= dt; if(S.comboT <= 0) S.combo = 0; }
     surfaceTick();
+    syncShopVisibility();
     hudAcc += raw; if(hudAcc >= 0.1){ hudAcc = 0; renderHUD(); }
   }
   stepJuice(dt);

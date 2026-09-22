@@ -97,7 +97,8 @@
         const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 500);
         camera.position.set(0, 5, 26);
         camera.lookAt(0, 3, 0);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: false });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -110,8 +111,8 @@
         const sunLight = new THREE.DirectionalLight(0xfff5e0, 1.5);
         sunLight.position.set(10, 30, 20);
         sunLight.castShadow = true;
-        sunLight.shadow.mapSize.width = 2048;
-        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.mapSize.width = 1024;
+        sunLight.shadow.mapSize.height = 1024;
         sunLight.shadow.camera.near = 1;
         sunLight.shadow.camera.far = 200;
         sunLight.shadow.camera.left = -60;
@@ -1333,20 +1334,26 @@
                 return;
             }
 
-            [...particleGroup.children].forEach(p => {
+            // Iterate backwards over the live children array (no per-frame array-copy
+            // allocation from a spread) and use addScaledVector (in-place) instead of
+            // clone().multiplyScalar() (which allocated a new Vector3 per particle per
+            // frame) - removing during a backward loop is safe without a copy.
+            for (let i = particleGroup.children.length - 1; i >= 0; i--) {
+                const p = particleGroup.children[i];
                 p.userData.life -= dt;
                 if (p.userData.vel) {
-                    p.position.add(p.userData.vel.clone().multiplyScalar(dt));
+                    p.position.addScaledVector(p.userData.vel, dt);
                     p.userData.vel.y -= 9.8 * dt;
                 }
                 if (p.userData.life <= 0) particleGroup.remove(p);
-            });
+            }
 
-            [...projectileGroup.children].forEach(proj => {
-                if (proj.userData.vel) proj.position.add(proj.userData.vel.clone().multiplyScalar(dt));
+            for (let i = projectileGroup.children.length - 1; i >= 0; i--) {
+                const proj = projectileGroup.children[i];
+                if (proj.userData.vel) proj.position.addScaledVector(proj.userData.vel, dt);
                 if (proj.position.x > TRACK_LENGTH + 5 || proj.position.x < -5) {
                     projectileGroup.remove(proj);
-                    return;
+                    continue;
                 }
                 racers.forEach(r => {
                     if (r.finished || r.invulnTimer > 0) return;
@@ -1377,7 +1384,7 @@
                         }
                     }
                 });
-            });
+            }
 
             // Rolling boulders
             obstacleGroup.children.forEach(obs => {

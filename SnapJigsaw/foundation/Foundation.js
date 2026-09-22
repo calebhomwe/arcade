@@ -179,6 +179,7 @@ const Foundation = (() => {
 
         state: {
             isDown: false,
+            dragged: false,
             startX: 0, startY: 0,
             currentX: 0, currentY: 0,
             lastTap: 0,
@@ -202,6 +203,7 @@ const Foundation = (() => {
             canvas.addEventListener('mousedown', (e) => {
                 const pos = getPos(e);
                 this.state.isDown = true;
+                this.state.dragged = false;
                 this.state.startX = pos.x;
                 this.state.startY = pos.y;
                 this.state.currentX = pos.x;
@@ -216,6 +218,14 @@ const Foundation = (() => {
                 const pos = getPos(e);
                 this.state.currentX = pos.x;
                 this.state.currentY = pos.y;
+                if (Math.hypot(pos.x - this.state.startX, pos.y - this.state.startY) >= this.config.tapThreshold) {
+                    this.state.dragged = true;
+                }
+                this.trigger('drag', {
+                    x: pos.x, y: pos.y,
+                    deltaX: pos.x - this.state.startX,
+                    deltaY: pos.y - this.state.startY
+                });
             });
 
             canvas.addEventListener('mouseup', (e) => {
@@ -242,8 +252,8 @@ const Foundation = (() => {
                     const index = Math.round(((angle + Math.PI/4) % (Math.PI*2)) / (Math.PI/2));
                     this.trigger('swipe', { ...pos, direction: directions[(index+4)%4] });
                 }
-                
-                this.trigger('release', pos);
+
+                if (this.state.dragged) this.trigger('release', pos);
             });
 
             // Touch events
@@ -251,6 +261,7 @@ const Foundation = (() => {
                 e.preventDefault();
                 const pos = getPos(e);
                 this.state.isDown = true;
+                this.state.dragged = false;
                 this.state.startX = pos.x;
                 this.state.startY = pos.y;
                 this.state.currentX = pos.x;
@@ -266,7 +277,10 @@ const Foundation = (() => {
                 const pos = getPos(e);
                 this.state.currentX = pos.x;
                 this.state.currentY = pos.y;
-                this.trigger('drag', { 
+                if (Math.hypot(pos.x - this.state.startX, pos.y - this.state.startY) >= this.config.tapThreshold) {
+                    this.state.dragged = true;
+                }
+                this.trigger('drag', {
                     x: pos.x, y: pos.y,
                     deltaX: pos.x - this.state.startX,
                     deltaY: pos.y - this.state.startY
@@ -297,8 +311,8 @@ const Foundation = (() => {
                     const index = Math.round(((angle + Math.PI/4) % (Math.PI*2)) / (Math.PI/2));
                     this.trigger('swipe', { ...pos, direction: directions[(index+4)%4] });
                 }
-                
-                this.trigger('release', pos);
+
+                if (this.state.dragged) this.trigger('release', pos);
             });
 
             this.listeners = {};
