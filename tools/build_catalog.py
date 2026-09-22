@@ -147,4 +147,15 @@ out += 'const CATS = %s;\n' % json.dumps([{'id':i,'name':n} for i,n in CATS])
 out += 'const CATALOG = %s;\n' % json.dumps(G, ensure_ascii=False, indent=0).replace('\n',' ')
 open(os.path.join(ROOT,'catalog.js'),'w',encoding='utf-8').write(out)
 print('catalog.js: %d games (%d local, %d external), %d categories' % (len(G), sum(not g['ext'] for g in G), sum(g['ext'] for g in G), len(CATS)))
+
+# ---------- sitemap + robots (one play URL per game) ----------
+SITE = 'https://calebhomwe.github.io/arcade/'
+sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+      '  <url><loc>%s</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>' % SITE]
+for c,_ in CATS: sm.append('  <url><loc>%s?cat=%s</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>' % (SITE, c))
+for g in G: sm.append('  <url><loc>%splay.html?g=%s</loc><changefreq>monthly</changefreq><priority>%s</priority></url>' % (SITE, g['id'], '0.8' if g['featured'] else '0.5'))
+sm.append('</urlset>')
+open(os.path.join(ROOT,'sitemap.xml'),'w',encoding='utf-8').write('\n'.join(sm)+'\n')
+open(os.path.join(ROOT,'robots.txt'),'w',encoding='utf-8').write('User-agent: *\nAllow: /\nDisallow: /arcade/tools/\n\nSitemap: %ssitemap.xml\n' % SITE)
+print('sitemap.xml: %d urls; robots.txt written' % (len(sm)-3))
 if missing: print('MISSING THUMBS (%d):' % len(missing)); [print('  ',m) for m in missing]

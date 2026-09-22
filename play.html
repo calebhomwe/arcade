@@ -6,7 +6,7 @@
 <title>Play — Caleb's Arcade</title>
 <meta name="description" content="Play free in your browser at Caleb's Arcade.">
 <meta name="theme-color" content="#0a0e18">
-<meta name="robots" content="noindex">
+<script>(function(){try{var s=JSON.parse(localStorage.getItem('ca_settings')||'{}'),h=document.documentElement;h.dataset.theme=s.theme||'dark';h.dataset.accent=s.accent||'amber';h.dataset.size=s.size||'comfy';h.dataset.motion=s.motion||'auto';h.dataset.labels=s.labels===false?'0':'1'}catch(e){}})()</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -19,6 +19,10 @@
     <nav class="nav" aria-label="Categories" style="margin-left:auto">
       <a href="index.html#all">All games</a>
     </nav>
+    <div class="tools">
+      <button class="ico" id="rnd" type="button" title="Surprise me (S)" aria-label="Play a random game"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></button>
+      <button class="ico" id="prefs-btn" type="button" title="Settings (,)" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    </div>
   </div>
 </header>
 
@@ -32,14 +36,17 @@
   <div class="stage" id="stage">
     <div class="load" id="load">Loading…</div>
     <iframe id="frame" title="Game" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope" allowfullscreen loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    <button class="btn sm exit" id="exit" type="button">Exit theatre <kbd style="opacity:.7;font:inherit">Esc</kbd></button>
   </div>
 
   <div class="ctl">
-    <button class="btn prime" id="fs" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg> Fullscreen <kbd style="opacity:.7;font:inherit">F</kbd></button>
+    <button class="btn prime" id="fs" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg> <span>Fullscreen</span> <kbd style="opacity:.7;font:inherit">F</kbd></button>
     <button class="btn" id="favb" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.2-4.6-9.6-9A5.4 5.4 0 0 1 12 6.2 5.4 5.4 0 0 1 21.6 12c-2.4 4.4-9.6 9-9.6 9z"/></svg> <span>Favourite</span></button>
     <button class="btn" id="reload" type="button">Restart</button>
     <button class="btn" id="share" type="button">Share</button>
     <a class="btn" id="open" href="#" target="_blank" rel="noopener">Open in new tab</a>
+    <a class="btn" id="next" href="#" title="Next game">Next <kbd style="opacity:.7;font:inherit">N</kbd></a>
+    <div id="modes"></div>
   </div>
 
   <section class="about">
@@ -59,7 +66,7 @@
 <footer class="foot">
   <div class="wrap">
     <div><strong>Caleb's Arcade</strong> — no ads, no accounts, no tracking. Your bests and favourites stay on this device.</div>
-    <div><a href="index.html">All games</a></div>
+    <div class="links"><button type="button" data-open-prefs>Settings</button><a href="play.html?g=random">Random game</a><a href="index.html">All games</a></div>
   </div>
 </footer>
 

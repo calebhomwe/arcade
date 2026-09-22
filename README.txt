@@ -16,6 +16,23 @@ WHAT IS HERE
   assets/og.png         the link-preview card
   <GameFolder>/         the 14 cabinets that live in this repo
   manifest.webmanifest  + sw.js: installable, and the shell works offline
+  sitemap.xml, robots.txt  generated with the catalogue (one URL per game)
+
+WHAT THE VISITOR CAN CHANGE (gear button, or press ,)
+  Theme dark / light / system, accent colour (amber, cyan, pink, lime,
+  violet), card size, motion on/off, whether cards say where a game lives,
+  the default stage size on the play page (Fit / 16:9 / 4:3 / Tall / Fill --
+  each game also remembers its own), and whether other-site games open in a
+  new tab behind a launch button. "Your data" exports and imports favourites,
+  play history, bests and settings as one JSON file, or clears them.
+  Everything is localStorage under ca_*; nothing leaves the browser.
+
+  Shortcuts: / search, Esc clear, S random game, , settings; on a play page
+  F fullscreen (Theatre mode where the browser has no fullscreen API),
+  R restart, N next game like this one.
+
+  Shareable views: index.html?cat=learning&q=maths&fav=1&sort=az
+  Random game:     play.html?g=random
 
 WHERE THE OTHER GAMES LIVE
   The other 73 games are catalogued here but hosted on Caleb's other
@@ -26,7 +43,8 @@ TO ADD A GAME
   1. Put it in this repo (a folder with index.html), or note its live URL.
   2. Add one line to tools/build_catalog.py.
   3. Capture a 480x300 frame of it playing into assets/thumbs/<id>.webp.
-  4. python3 tools/build_catalog.py   (it refuses if the thumb is missing)
+  4. python3 tools/build_catalog.py   (it refuses if the thumb is missing;
+     also rewrites sitemap.xml and robots.txt)
 
 TO RUN LOCALLY
   Any static server from this folder, e.g.  python3 -m http.server 8800
