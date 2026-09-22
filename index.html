@@ -3,259 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2b2117">
+<title>Caleb's Arcade — 87 free browser games, no ads, no accounts</title>
+<meta name="description" content="Play 87 free games in your browser: arcade, puzzle, hyper-casual, learning, sims and idle. No ads, no accounts, no installs — every game runs offline.">
+<meta name="theme-color" content="#0a0e18">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Caleb's Arcade — 87 free browser games">
+<meta property="og:description" content="Arcade, puzzle, hyper-casual, learning, sims and idle. No ads, no accounts, no installs.">
+<meta property="og:image" content="https://calebhomwe.github.io/arcade/assets/og.png">
+<meta property="og:url" content="https://calebhomwe.github.io/arcade/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://calebhomwe.github.io/arcade/">
 <link rel="manifest" href="manifest.webmanifest">
-<title>CALEB'S ARCADE</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%232b2117'/%3E%3Crect x='2' y='2' width='12' height='12' fill='%23f4ead8'/%3E%3Ctext x='8' y='12' font-family='Arial Black,Arial' font-size='8' font-weight='900' fill='%23c1543a' text-anchor='middle'%3ECA%3C/text%3E%3C/svg%3E">
-<style>
-  :root{
-    --paper:#f4ead8; --ink:#2b2117; --bone:#cbb99b; --rust:#c1543a;
-    --ochre:#d99a3c; --sage:#7d9470; --dust:#a8846b; --cream:#f8f1df;
-    --shadow:4px 4px 0 rgba(43,33,23,.35);
-    --disp:'Arial Black','Arial Bold',Arial,sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--paper);color:var(--ink);font-family:Georgia,'Times New Roman',serif;
-       line-height:1.45;min-height:100vh}
-  .wrap{max-width:1100px;margin:0 auto;padding:26px 22px 46px}
-  .kicker{font:700 .68rem/1 Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;
-          color:var(--rust)}
-  h1{font-family:var(--disp);font-size:clamp(2.1rem,7vw,3.4rem);line-height:.95;
-     letter-spacing:-.02em;text-transform:uppercase;margin-top:8px}
-  .rule{height:2px;background:var(--rust);width:64px;margin:14px 0}
-  .lede{color:#6b5a52;max-width:44em}
-
-  /* stats strip */
-  #stats{display:flex;border:2px solid var(--ink);background:var(--cream);
-         box-shadow:var(--shadow);margin:18px 0 8px;width:max-content;max-width:100%}
-  #stats .cell{padding:8px 16px;border-right:2px solid var(--ink);text-align:center}
-  #stats .cell:last-child{border-right:none}
-  #stats .lab{font:700 .56rem/1 Arial,sans-serif;letter-spacing:.16em;color:var(--dust);
-              text-transform:uppercase}
-  #stats .val{font-family:var(--disp);font-size:1.2rem}
-
-  /* controls row */
-  #controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 6px}
-  .chip{cursor:pointer;font:700 .68rem/1 Arial,sans-serif;letter-spacing:.14em;
-        text-transform:uppercase;padding:9px 14px;border:2px solid var(--ink);
-        background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 rgba(43,33,23,.35)}
-  .chip:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(43,33,23,.35)}
-  .chip.on{background:var(--ink);color:var(--paper)}
-  #q{font:600 .95rem Georgia,serif;padding:9px 12px;border:2px solid var(--ink);
-     background:var(--cream);color:var(--ink);min-width:200px;box-shadow:var(--shadow)}
-  #q:focus{outline:2px solid var(--rust);outline-offset:1px}
-  #count{font:700 .66rem/1 Arial,sans-serif;letter-spacing:.14em;color:var(--dust);
-         text-transform:uppercase}
-
-  /* recent strip */
-  #recent{margin:12px 0 4px;font:700 .66rem/1.9 Arial,sans-serif;letter-spacing:.12em;
-          text-transform:uppercase;color:var(--dust)}
-  #recent a{color:var(--rust);text-decoration:none;border-bottom:2px solid var(--ochre);
-            margin-right:14px}
-
-  /* the grid */
-  #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-        gap:16px;margin-top:16px}
-  .card{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:var(--ink);
-        background:var(--cream);border:2px solid var(--ink);box-shadow:var(--shadow);
-        padding:14px;position:relative;transition:transform .06s}
-  .card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(43,33,23,.35)}
-  .card:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(43,33,23,.35)}
-  .card .tile{width:56px;height:56px;display:grid;place-items:center;
-              font-family:var(--disp);font-size:1.15rem;color:var(--paper);
-              border:2px solid var(--ink)}
-  .card .tt{font-family:var(--disp);font-size:1.02rem;text-transform:uppercase;
-            letter-spacing:-.01em;line-height:1.1;padding-right:64px}
-  .card .genre{position:absolute;top:12px;right:12px;font:700 .56rem/1 Arial,sans-serif;
-               letter-spacing:.16em;color:var(--dust);text-transform:uppercase;
-               border:1px solid var(--dust);padding:3px 6px}
-  .card .best{font:700 .68rem/1 Arial,sans-serif;letter-spacing:.12em;color:var(--rust);
-              text-transform:uppercase;min-height:1em}
-  .card .blurb{font-size:.86rem;color:#6b5a52;font-style:italic}
-
-  /* trophy case */
-  #trophies{margin-top:34px;border:2px solid var(--ink);background:var(--cream);
-            box-shadow:var(--shadow);max-width:560px}
-  #trophies h2{font:700 .68rem/1 Arial,sans-serif;letter-spacing:.3em;color:var(--rust);
-               text-transform:uppercase;padding:12px 16px;border-bottom:2px solid var(--ink)}
-  .trow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
-        padding:10px 16px;border-bottom:2px solid rgba(203,185,155,.5)}
-  .trow:last-child{border-bottom:none}
-  .trow .n{font-weight:700;font-size:.92rem}
-  .trow .v{font-family:var(--disp);font-size:1.15rem;color:var(--ochre)}
-
-  footer{margin-top:34px;font:700 .62rem/1.8 Arial,sans-serif;letter-spacing:.2em;
-         text-transform:uppercase;color:var(--dust);text-align:center}
-  @media (max-width:560px){ #stats .cell{padding:6px 10px} }
-</style>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preload" href="catalog.js" as="script">
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-<div class="wrap">
-  <div class="kicker">One machine · every game · fully offline</div>
-  <h1>Caleb's Arcade</h1>
-  <div class="rule"></div>
-  <p class="lede">Every game on this shelf runs in the browser with zero servers, zero
-     ads and zero accounts. Pick a cabinet. Your bests are kept right here.</p>
-
-  <div id="stats" aria-label="arcade totals">
-    <div class="cell"><div class="lab">Cabinets</div><div class="val" id="n-games">0</div></div>
-    <div class="cell"><div class="lab">Bests on file</div><div class="val" id="n-bests">0</div></div>
-    <div class="cell"><div class="lab">Launches</div><div class="val" id="n-launches">0</div></div>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Caleb's Arcade home"><span class="mark">CA</span><span>Caleb's Arcade</span><small>no ads · no accounts</small></a>
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Search games" autocomplete="off" aria-label="Search games">
+      <kbd>/</kbd>
+    </label>
+    <nav class="nav" aria-label="Categories">
+      <a href="#all" data-cat="all" class="on">All</a>
+      <a href="#all" data-cat="arcade">Arcade</a>
+      <a href="#all" data-cat="hyper">Hyper-Casual</a>
+      <a href="#all" data-cat="puzzle">Puzzle</a>
+      <a href="#all" data-cat="classic">Classic</a>
+      <a href="#all" data-cat="learning">Learning</a>
+      <a href="#all" data-cat="sim">Sim &amp; Worlds</a>
+      <a href="#all" data-cat="idle">Idle</a>
+    </nav>
   </div>
+  <nav class="cats" aria-label="Categories">
+    <a href="#all" data-cat="all" class="on">All</a>
+    <a href="#all" data-cat="arcade">Arcade</a>
+    <a href="#all" data-cat="hyper">Hyper-Casual</a>
+    <a href="#all" data-cat="puzzle">Puzzle</a>
+    <a href="#all" data-cat="classic">Classic</a>
+    <a href="#all" data-cat="learning">Learning</a>
+    <a href="#all" data-cat="sim">Sim &amp; Worlds</a>
+    <a href="#all" data-cat="idle">Idle</a>
+  </nav>
+</header>
 
-  <div id="recent" hidden>RECENT:
-    <span id="recent-list"></span>
-  </div>
+<noscript><p class="wrap" style="padding:24px 0;color:#ffb703;font-weight:700">JavaScript is off, so the shelf can't be drawn. Every game still opens directly from its own folder.</p></noscript>
+<main class="wrap" id="home">
+  <section class="hero" id="hero" aria-label="Featured games"></section>
 
-  <div id="controls">
-    <button class="chip on" data-genre="ALL">All</button>
-    <button class="chip" data-genre="arcade">Arcade</button>
-    <button class="chip" data-genre="learning">Learning</button>
-    <button class="chip" data-genre="sim">Sim</button>
-    <button class="chip" data-genre="rhythm">Rhythm</button>
-    <input id="q" type="search" placeholder="find a game…" autocomplete="off">
-    <span id="count"></span>
-  </div>
+  <div id="rails"></div>
 
-  <main id="grid" aria-label="game grid"></main>
-
-  <section id="trophies">
-    <h2>Trophy case — bests on this machine</h2>
-    <div class="trow"><span class="n">HIGH NEST — tallest treehouse</span><span class="v" id="t-nest">—</span></div>
-    <div class="trow"><span class="n">MARKET MERGE — biggest haul</span><span class="v" id="t-merge">—</span></div>
-    <div class="trow"><span class="n">LONG WAY HOME — richest log</span><span class="v" id="t-tlwh">—</span></div>
+  <section class="sec" id="all">
+    <div class="sechead"><h2>All games<span id="n-games"></span></h2></div>
+    <div class="filters">
+      <div id="chips" role="group" aria-label="Filter by category"></div>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty" hidden>Nothing matches that. Try a shorter word.</p>
   </section>
+</main>
 
-  <footer>every game runs offline · no ads · no accounts · made with the machine swarm</footer>
-</div>
+<footer class="foot">
+  <div class="wrap">
+    <div><strong>Caleb's Arcade</strong> — every game runs in the browser. No ads, no accounts, no tracking. Your bests and favourites stay on this device.</div>
+    <div><a href="#hero">Back to top</a></div>
+  </div>
+</footer>
 
-<script>
-(()=>{
-'use strict';
-/* ═══ CALEB'S ARCADE — the front door of the offline game shelf ═══
-   Sits at the index of C:\Games\Web. All links are relative, so this works
-   from any static server AND from file://. Bests are read from the same-origin
-   localStorage each game already writes. */
-const GAMES=[
- {folder:'HighNest',           file:'index.html',          title:'High Nest',          genre:'arcade',  rec:'hn_rec',   bestLabel:'BEST PLANKS', blurb:'stack the treehouse into the stars',  col:'#c1543a'},
- {folder:'MarketMerge',        file:'index.html',          title:'Market Merge',       genre:'arcade',  rec:'mm_rec',   bestLabel:'BEST SCORE',  blurb:'merge the crate up to watermelons',   col:'#d99a3c'},
- {folder:'SpellMathsGalaxy',   file:'index.html',          title:'The Long Way Home',  genre:'learning',rec:'tlwh_rec', bestLabel:'BEST LOG',    blurb:'fly 11,000 ly on correct answers',    col:'#7d9470'},
- {folder:'SurvivorWave',       file:'index.html',  title:'Survivor Wave',      genre:'arcade',  rec:null,       bestLabel:'',            blurb:'horde survival, wave after wave',     col:'#8a5a7a'},
- {folder:'SurvivIO',           file:'index.html',          title:'Surviv Royale',      genre:'arcade',  rec:null,       bestLabel:'',            blurb:'battle royale against the bots',      col:'#a8846b'},
- {folder:'HoleGrind',          file:'index.html',          title:'Hole Grind',         genre:'arcade',  rec:null,       bestLabel:'',            blurb:'swallow the level whole',             col:'#4a3550'},
- {folder:'MathsKart',          file:'index.html',          title:'Maths Kart GP',      genre:'learning',rec:null,       bestLabel:'',            blurb:'arithmetic puts you in the lead',     col:'#c1543a'},
- {folder:'WordDungeon',        file:'index.html',          title:'Word Dungeon',       genre:'learning',rec:null,       bestLabel:'',            blurb:'spell the runes to advance',          col:'#7d4550'},
- {folder:'BalloonBust',        file:'index.html',          title:'Balloon Bust',       genre:'learning',rec:null,       bestLabel:'',            blurb:'pop the balloon with the answer',     col:'#d99a3c'},
- {folder:'QuizTower',          file:'index.html',          title:'Quiz Tower',         genre:'learning',rec:null,       bestLabel:'',            blurb:'defend the tower with knowledge',     col:'#7d9470'},
- {folder:'WordFishing',        file:'index.html',          title:'Fishing for Words',  genre:'learning',rec:null,       bestLabel:'',            blurb:'cozy fishing for letters and sums',   col:'#5f7a8a'},
- {folder:'MathMiner',          file:'index.html',          title:'Math Miner',         genre:'learning',rec:null,       bestLabel:'',            blurb:'dig deep by getting sums right',      col:'#8a6a42'},
- {folder:'MiniMart',           file:'index.html',          title:'MiniMart',           genre:'sim',     rec:null,       bestLabel:'',            blurb:'run the little shop yourself',        col:'#a03d54'},
- {folder:'FieldStation',       file:'index.html',          title:'Field Station',      genre:'sim',     rec:null,       bestLabel:'',            blurb:'circuits, particles, food webs',      col:'#6b7a4a'},
-];
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
-             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const launches=()=>{const v=store.get('arcade_rec',[]);return Array.isArray(v)?v:(v&&v.launches)||[]};
-
-/* ── build the grid ── */
-const grid=$('#grid');
-for(const g of GAMES){
-  const a=document.createElement('a');
-  a.className='card';a.dataset.folder=g.folder;a.dataset.genre=g.genre;
-  a.dataset.title=g.title;a.href=g.folder+'/'+g.file;
-  const mono=g.title.split(' ').map(w=>w[0]).join('').slice(0,3).toUpperCase();
-  a.innerHTML=
-    '<span class="tile" style="background:'+g.col+'">'+mono+'</span>'+
-    '<span class="genre">'+g.genre+'</span>'+
-    '<span class="tt">'+g.title+'</span>'+
-    '<span class="best" data-rec="'+(g.rec||'')+'" data-label="'+g.bestLabel+'">—</span>'+
-    '<span class="blurb">'+g.blurb+'</span>';
-  a.addEventListener('click',()=>{recordLaunch(g);});
-  grid.appendChild(a);
-}
-$('#n-games').textContent=GAMES.length;
-
-/* ── bests + trophies ── */
-function refreshBests(){
-  let known=0;
-  $$('.card .best').forEach(el=>{
-    const key=el.dataset.rec;
-    if(!key){el.textContent='';return;}
-    const r=store.get(key,null);
-    if(r&&typeof r.best==='number'){
-      el.textContent=el.dataset.label+' '+r.best;known++;
-    } else el.textContent='—';
-  });
-  $('#n-bests').textContent=known;
-  const nest=store.get('hn_rec',null), merge=store.get('mm_rec',null),
-        tlwh=store.get('tlwh_rec',null);
-  $('#t-nest').textContent =nest&&nest.best?nest.best+' planks':'—';
-  $('#t-merge').textContent=merge&&merge.best?merge.best+' pts':'—';
-  $('#t-tlwh').textContent =tlwh&&tlwh.best?tlwh.best+' log':'—';
-  $('#n-launches').textContent=launches().length;
-}
-function refreshRecent(){
-  const L=launches().slice(-3).reverse();
-  if(!L.length){$('#recent').hidden=true;return;}
-  $('#recent').hidden=false;
-  $('#recent-list').innerHTML=L.map(l=>
-    '<a href="'+l.folder+'/'+(l.file||'index.html')+'">'+l.title+'</a>').join('');
-}
-function recordLaunch(g){
-  const L=launches().filter(x=>x.folder!==g.folder);
-  L.push({folder:g.folder,file:g.file,title:g.title,ts:Date.now()});
-  store.set('arcade_rec',L.slice(-20));
-}
-
-/* ── filters ── */
-let filter='ALL';
-function applyFilter(){
-  const q=$('#q').value.trim().toLowerCase();
-  let visible=0;
-  $$('#grid .card').forEach(c=>{
-    const okG=filter==='ALL'||c.dataset.genre===filter;
-    const okQ=!q||c.dataset.title.toLowerCase().includes(q);
-    const on=okG&&okQ; c.style.display=on?'':'none'; if(on)visible++;
-  });
-  $('#count').textContent=visible+' of '+GAMES.length;
-}
-$$('.chip').forEach(ch=>ch.addEventListener('click',()=>{
-  filter=ch.dataset.genre;
-  $$('.chip').forEach(c=>c.classList.toggle('on',c===ch));
-  applyFilter();
-}));
-$('#q').addEventListener('input',applyFilter);
-addEventListener('keydown',e=>{
-  if(e.key==='/'&&document.activeElement!==$('#q')){e.preventDefault();$('#q').focus();return;}
-  const n=parseInt(e.key,10);
-  if(n>=1&&n<=9&&document.activeElement!==$('#q')){
-    const vis=$$('#grid .card').filter(c=>c.style.display!=='none');
-    if(vis[n-1])vis[n-1].click();
-  }
-});
-
-refreshBests();refreshRecent();applyFilter();
-/* PWA: installable + offline after first visit (http(s) only, never file://) */
-if('serviceWorker' in navigator&&(location.protocol==='https:'||
-   ['localhost','127.0.0.1'].includes(location.hostname))){
-  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
-
-/* ═══ test hook — read-mostly, used by Arcade/tools/playtest.py ═══
-   seed/wipe only mutate + refresh in place; the test harness reloads itself. */
-window.__arcade_debug={
-  state:()=>({games:GAMES.length,
-    visible:$$('#grid .card').filter(c=>c.style.display!=='none').length,
-    filter,query:$('#q').value,launches:launches().length,
-    trophies:{nest:(store.get('hn_rec',{})||{}).best??null,
-              merge:(store.get('mm_rec',{})||{}).best??null,
-              tlwh:(store.get('tlwh_rec',{})||{}).best??null}}),
-  seed(recs){for(const k in recs)store.set(k,recs[k]);
-    refreshBests();refreshRecent();},
-  wipe(){['arcade_rec','hn_rec','mm_rec','tlwh_rec'].forEach(k=>{
-    try{localStorage.removeItem(k)}catch(e){}});
-    refreshBests();refreshRecent();}
-};
-})();
-</script>
+<script src="catalog.js"></script>
+<script src="assets/site.js"></script>
 </body>
 </html>

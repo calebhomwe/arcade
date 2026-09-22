@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Play — Caleb's Arcade</title>
+<meta name="description" content="Play free in your browser at Caleb's Arcade.">
+<meta name="theme-color" content="#0a0e18">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Caleb's Arcade home"><span class="mark">CA</span><span>Caleb's Arcade</span><small>no ads · no accounts</small></a>
+    <nav class="nav" aria-label="Categories" style="margin-left:auto">
+      <a href="index.html#all">All games</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="play">
+  <div class="playtop">
+    <a class="back" href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg> Arcade</a>
+    <h1 id="title">…</h1>
+    <span class="cat" id="cat"></span>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="load" id="load">Loading…</div>
+    <iframe id="frame" title="Game" allow="fullscreen; autoplay; gamepad; accelerometer; gyroscope" allowfullscreen loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+
+  <div class="ctl">
+    <button class="btn prime" id="fs" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg> Fullscreen <kbd style="opacity:.7;font:inherit">F</kbd></button>
+    <button class="btn" id="favb" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.2-4.6-9.6-9A5.4 5.4 0 0 1 12 6.2 5.4 5.4 0 0 1 21.6 12c-2.4 4.4-9.6 9-9.6 9z"/></svg> <span>Favourite</span></button>
+    <button class="btn" id="reload" type="button">Restart</button>
+    <button class="btn" id="share" type="button">Share</button>
+    <a class="btn" id="open" href="#" target="_blank" rel="noopener">Open in new tab</a>
+  </div>
+
+  <section class="about">
+    <div>
+      <p class="blurb" id="blurb"></p>
+      <p class="tip" id="ext" hidden>This game lives on one of Caleb's other sites and is playing here inside the arcade. If it looks cramped, use Fullscreen or open it in a new tab.</p>
+    </div>
+    <div class="kv" id="tags"></div>
+  </section>
+
+  <section class="sec" id="relsec">
+    <div class="sechead"><h2>More like this</h2><a href="index.html#all">All games</a></div>
+    <div class="railwrap"><button class="arrow prev" type="button" aria-label="Scroll back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><div class="rail" id="related"></div><button class="arrow next" type="button" aria-label="Scroll forward"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div><strong>Caleb's Arcade</strong> — no ads, no accounts, no tracking. Your bests and favourites stay on this device.</div>
+    <div><a href="index.html">All games</a></div>
+  </div>
+</footer>
+
+<script src="catalog.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

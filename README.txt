@@ -1,18 +1,33 @@
-ARCADE PORTFOLIO - OFFLINE DISTRIBUTION PACK
-=============================================
+CALEB'S ARCADE
+==============
 
-A portal plus 14 self-contained offline games. Every game is a
-single HTML file (or folder with its own index.html) - no build
-step, no server-side code, no internet required to play.
+The front door for every browser game Caleb has shipped: 87 games,
+no ads, no accounts, no installs. Live at https://calebhomwe.github.io/arcade/
 
-Open index.html in any browser for the portal, or open any
-<GameFolder>/index.html directly.
+WHAT IS HERE
+  index.html            the portal: featured hero, category rails, search,
+                        favourites, "continue playing", the full grid
+  play.html?g=<id>      the play page: the game in a stage with fullscreen,
+                        restart, share, and "more like this"
+  catalog.js            the single source of truth for every game
+                        (generated -- do not hand-edit)
+  tools/build_catalog.py  regenerates catalog.js. Add or edit a game there.
+  assets/thumbs/        one real captured frame per game, 480x300 webp
+  assets/og.png         the link-preview card
+  <GameFolder>/         the 14 cabinets that live in this repo
+  manifest.webmanifest  + sw.js: installable, and the shell works offline
 
-To serve the whole pack: use any static server, e.g.
-    python -m http.server 8800
-from this folder, then visit http://localhost:8800
+WHERE THE OTHER GAMES LIVE
+  The other 73 games are catalogued here but hosted on Caleb's other
+  live GitHub Pages sites (arcade-hub, neon-game-arcade, playables).
+  The play page opens them in place; nothing is copied.
 
-Games in this pack: 14
-Total size: 8.7 MB (103 files)
+TO ADD A GAME
+  1. Put it in this repo (a folder with index.html), or note its live URL.
+  2. Add one line to tools/build_catalog.py.
+  3. Capture a 480x300 frame of it playing into assets/thumbs/<id>.webp.
+  4. python3 tools/build_catalog.py   (it refuses if the thumb is missing)
 
-Built by Arcade/tools/make_dist.py
+TO RUN LOCALLY
+  Any static server from this folder, e.g.  python3 -m http.server 8800
+  then open http://localhost:8800/
