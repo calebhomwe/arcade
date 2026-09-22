@@ -4,7 +4,7 @@
    GETs are cache-first with a background refresh. Games on the other live
    sites are cross-origin and are left to the network (their own sites cache
    them if they choose to). */
-const VERSION = 'arcade-v3';
+const VERSION = 'arcade-v4';
 const SHELL = ['./', 'index.html', 'play.html', 'catalog.js', 'assets/site.css', 'assets/site.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

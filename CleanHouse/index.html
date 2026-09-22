@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Clean House</title>
+<style>
+  :root{
+    --cream:#f6f1e7; --paper:#fffdf8; --wood:#c9a227; --sage:#8fae8b; --coral:#e2725b;
+    --slate:#3c4a54; --ink:#2b2117; --muted:#7b8792; --gold:#e0a83c;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:#10161c;color:var(--ink);
+    font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;-webkit-user-select:none;user-select:none;
+    touch-action:none}
+  canvas{display:block}
+  #gl{position:fixed;inset:0;width:100vw;height:100vh}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(120% 90% at 50% 42%,rgba(96,120,140,.16),rgba(8,12,16,.62) 78%)}
+.panel{position:fixed;background:rgba(255,253,248,.94);border:1px solid rgba(43,33,23,.14);
+    border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.28);backdrop-filter:blur(6px)}
+  /* ---------- HUD ---------- */
+  #hud{left:12px;top:12px;padding:10px 14px;display:flex;gap:18px;align-items:center;z-index:6}
+  #hud b{font-size:20px;font-variant-numeric:tabular-nums}
+  #hud .lbl{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:block}
+  #cleanWrap{width:190px;height:10px;background:#e4dccd;border-radius:6px;overflow:hidden;margin-top:4px}
+  #cleanBar{height:100%;width:0%;background:linear-gradient(90deg,var(--wood),var(--sage));transition:width .18s}
+  /* streak readout: the combo used to be toast-only every 22 scrubs */
+  #comboChip{opacity:.35;transition:opacity .15s;min-width:52px}
+  #comboChip.on{opacity:1}
+  #comboChip b{font-size:16px;color:var(--muted)}
+  #comboChip.on b{font-size:20px;color:var(--coral)}
+  #comboBar{display:block;height:4px;width:100%;margin-top:4px;border-radius:3px;background:#e4dccd;overflow:hidden}
+  #comboBar i{display:block;height:100%;width:0%;background:var(--coral)}
+  /* ---------- tools ---------- */
+  #tools{left:50%;bottom:14px;transform:translateX(-50%);padding:8px;display:flex;gap:8px;z-index:6}
+  .tool{width:60px;min-height:56px;height:60px;border-radius:12px;border:1px solid rgba(43,33,23,.16);background:var(--paper);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;
+    font-size:9px;letter-spacing:.06em;color:var(--slate);font-weight:700}
+  .tool .ic{font-size:22px;line-height:1}
+  .tool.sel{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .tool.locked{opacity:.6}
+  .tool .cost{font-size:9px;color:var(--coral);font-weight:800}
+  .tool.sel .cost{color:var(--gold)}
+  .tool:active{transform:scale(.96)}
+  /* ---------- right rail ---------- */
+  #rail{right:12px;top:12px;width:210px;padding:12px;z-index:6;max-height:calc(100vh - 24px);overflow:auto}
+  #rail h3{margin:0 0 8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .btn{width:100%;min-height:44px;padding:11px;border-radius:10px;border:1px solid rgba(43,33,23,.16);background:var(--paper);
+    font-weight:800;font-size:13px;cursor:pointer;color:var(--ink)}
+  .btn.go{background:var(--coral);color:#fff;border-color:var(--coral)}
+  .btn.ghost{background:transparent}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px;border-radius:9px;
+    border:1px solid rgba(43,33,23,.12);margin-bottom:6px;background:var(--paper);cursor:pointer;font-size:12px}
+  .item.sel{outline:2px solid var(--coral)}
+  .item.locked{opacity:.62;cursor:not-allowed;background:#f1ece1}
+  .item.locked .short{display:block;font-size:10px;color:var(--coral);font-weight:800}
+  .job.start{border-color:var(--coral);box-shadow:0 0 0 2px rgba(226,114,91,.22)}
+  .item small{color:var(--muted);display:block;font-size:10px}
+  /* ---------- overlays ---------- */
+  /* NOTE: a flex item taller than its scroll container overflows BOTH ways when centred,
+     and the top overflow is unreachable (scrollTop cannot go negative). Using
+     align-items:flex-start + margin:auto on the card centres it when it fits and still
+     allows the top to be scrolled to when it does not. */
+  .layer{position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;z-index:20;
+    background:rgba(12,17,22,.82);backdrop-filter:blur(5px);overflow:auto;padding:20px}
+  .layer.on{display:flex}
+  .card{width:min(860px,94vw);background:var(--cream);border-radius:20px;padding:24px;margin:auto;
+    box-shadow:0 24px 70px rgba(0,0,0,.5)}
+  #mapCta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    margin-top:14px;padding:10px 12px;border-radius:10px;background:rgba(226,114,91,.12);
+    border:1px solid rgba(226,114,91,.35);font-size:13px;font-weight:700;color:var(--ink)}
+  .card h1{margin:0 0 4px;font-size:38px;letter-spacing:.02em}
+  .card h2{margin:18px 0 8px;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .kicker{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--coral);font-weight:800}
+  .jobs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .job{background:var(--paper);border:1px solid rgba(43,33,23,.14);border-radius:14px;padding:14px;cursor:pointer}
+  .job:hover{border-color:var(--coral)}
+  .job h4{margin:0 0 4px;font-size:17px}
+  .job p{margin:0;font-size:12px;color:var(--muted);line-height:1.5}
+  .job .pay{margin-top:8px;font-weight:800;color:var(--sage)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .stat{flex:1 1 110px;background:var(--paper);border:1px solid rgba(43,33,23,.12);border-radius:10px;padding:10px}
+  .stat b{display:block;font-size:22px}
+  .stat span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .stars{font-size:30px;letter-spacing:6px;color:var(--gold)}
+  #toast{position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:30;pointer-events:none;
+    font-weight:900;font-size:20px;color:#fff;text-shadow:0 3px 14px rgba(0,0,0,.6);opacity:0;transition:opacity .2s}
+  #toast.on{opacity:1}
+  #hint{left:50%;bottom:92px;transform:translateX(-50%);padding:8px 14px;font-size:12px;color:var(--slate);z-index:6}
+  @media (max-width:760px){
+    #rail{width:160px;padding:9px}
+    #hud{gap:10px;padding:8px 10px}
+    #cleanWrap{width:120px}
+    .tool{width:50px;height:50px}
+    .card h1{font-size:26px}
+  }
+  /* Phone: #rail is a DESKTOP SIDE PANEL. At phone width a 160px rail still covered ~41% of a 390px
+     screen, hiding the room you are supposed to be cleaning (the canvas is fixed full-screen, so the rail
+     sits ON TOP of it). Re-lay it as a bottom sheet spanning the width, capped low enough that most of the
+     room stays visible, and lift the instruction strip above it so they cannot overlap. */
+  @media (max-width:640px){
+    #rail{left:8px;right:8px;top:auto;bottom:78px;width:auto;max-height:32vh;padding:9px}
+    #hint{top:76px;bottom:auto}
+  }
+
+  /* the entry card must not need a scroll: everything below is spacing only */
+  @media (max-height:860px){
+    .layer{padding:12px}
+    .card{padding:16px}
+    .card h1{font-size:30px}
+    .card h2{margin:12px 0 6px}
+    .kicker{font-size:10px}
+    .card p{font-size:13px;line-height:1.45}
+    .jobs{gap:9px}
+    .job{padding:11px}
+    .job h4{font-size:15px}
+    .job p{font-size:11px;line-height:1.35}
+    .job .pay{margin-top:6px;font-size:13px}
+    .row{margin-top:11px}
+    .stat{padding:8px}
+    .stat b{font-size:18px}
+  }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<div class="panel" id="hud">
+  <div><span class="lbl">Cash</span><b id="cash">$0</b></div>
+  <div><span class="lbl">Clean</span><b id="cleanPct">0%</b>
+    <div id="cleanWrap"><div id="cleanBar"></div></div></div>
+  <div><span class="lbl">Job</span><b id="jobName" style="font-size:14px">-</b></div>
+  <div><span class="lbl">Rubbish</span><b id="bagCount" style="font-size:14px">0/0</b></div>
+  <div id="comboChip"><span class="lbl">Streak</span><b id="comboVal">x1</b><span id="comboBar"><i></i></span></div>
+</div>
+
+<div class="panel" id="hint">Drag to look &nbsp;·&nbsp; click or drag surfaces to clean &nbsp;·&nbsp; wheel to zoom</div>
+
+<div class="panel" id="tools"></div>
+
+<div class="panel" id="rail">
+  <h3>Toolbox</h3>
+  <div id="shop"></div>
+  <h3 style="margin-top:14px">Furnish</h3>
+  <div id="catalog"></div>
+  <div class="row" style="margin-top:12px">
+    <button class="btn go" id="btnList">LIST THE HOUSE</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <button class="btn ghost" id="btnMap">CITY MAP</button>
+  </div>
+</div>
+
+<div class="layer on" id="map"><div class="card">
+  <div class="kicker">Home flipping</div>
+  <h1>CLEAN HOUSE</h1>
+  <p style="margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.6">
+    Travel the city, clean up messy houses, decorate them with style and sell them on for a profit.
+    Better tools clean faster. Better taste sells higher.</p>
+  <div id="mapCta"><span>Tap a job card to load the house and start cleaning.</span><span style="color:var(--coral)">Start here &darr;</span></div>
+  <h2>Available jobs &mdash; click one to start</h2>
+  <div class="jobs" id="jobList"></div>
+  <h2>Your kit</h2>
+  <div class="row" id="kitRow"></div>
+</div></div>
+
+<div class="layer" id="result"><div class="card">
+  <div class="kicker" id="resKicker">Sold</div>
+  <h1 id="resTitle">Nice flip!</h1>
+  <div class="stars" id="resStars"></div>
+  <div class="row" id="resStats"></div>
+  <p id="resNote" style="margin-top:14px;color:var(--muted);font-size:13px;line-height:1.6"></p>
+  <div class="row"><button class="btn go" id="btnAgain">BACK TO THE CITY</button>
+  <button class="btn ghost" id="btnShare">SAVE A SCORE CARD</button></div>
+</div></div>
+
+<div id="toast"></div>
+
+<script src="vendor/three.classic.js"></script>
+<script>
+(function(){
+'use strict';
+var T = window.THREE;
+if(!T){ document.body.innerHTML = '<p style="color:#fff;font:16px system-ui;padding:40px">three.js failed to load from vendor/three.classic.js</p>'; return; }
+
+/* =====================================================================
+   CLEAN HOUSE - 3D home-flipping game.
+   Offline, single page, no build step, no network. Uses the CLASSIC
+   (non-module) three.js build in vendor/ so it runs from file:// too.
+   ===================================================================== */
+
+var ROOM = { w: 9, d: 9, h: 3.2 };
+var SAVE_KEY = 'cleanhouse_save_v1';
+
+/* ---------------------------------------------------------------- save */
+var save = { cash: 250, tools: { sponge:1, mop:1, vacuum:1 }, done: [], best: {} };
+function loadSave(){
+  try{ var r = localStorage.getItem(SAVE_KEY); if(r){ var o = JSON.parse(r); if(o && o.cash!=null) save = o; } }catch(e){}
+}
+function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} }
+
+/* ---------------------------------------------------------------- audio */
+var AU = (function(){
+  var files = {
+    scrub:'audio/scrub.mp3', sparkle:'audio/sparkle.mp3', pickup:'audio/pickup.mp3',
+    place:'audio/place.mp3', sale:'audio/sale.mp3', coin:'audio/coin.mp3',
+    click:'audio/click.mp3', ambience:'audio/ambience.mp3'
+  };
+  var pool = {}, unlocked = false, primed = false;
+  // Lazy: build voices on first use so a missing clip cannot spam 404s at boot.
+  function voices(k){
+    if(!pool[k]){ var els=[];
+      for(var i=0;i<3;i++){ var a=new Audio(); a.preload='none'; a.src=files[k]; a.volume=.001; els.push(a); }
+      pool[k]={els:els,i:0};
+    }
+    return pool[k];
+  }
+  function unlock(){ if(unlocked) return; unlocked=true; }   // first gesture unlocks the output
+  ['pointerdown','keydown','touchstart'].forEach(function(ev){ window.addEventListener(ev, unlock, {passive:true}); });
+  function play(k, vol, rate){ if(!files[k]) return; var p=voices(k); if(!p) return;
+    var a=p.els[p.i]; p.i=(p.i+1)%p.els.length;
+    try{ a.pause(); a.currentTime=0; a.volume=Math.min(1,(vol==null?.7:vol)); a.playbackRate=rate||1;
+      var pr=a.play(); if(pr&&pr.catch) pr.catch(function(){}); }catch(e){} }
+  return { play: play };
+})();
+
+/* ---------------------------------------------------------------- scene */
+var canvas = document.getElementById('gl');
+var renderer = new T.WebGLRenderer({ canvas: canvas, antialias:true });
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = T.PCFSoftShadowMap;
+
+var scene = new T.Scene();
+scene.background = new T.Color(0x101820);
+scene.fog = new T.Fog(0x101820, 26, 46);
+
+var camera = new T.PerspectiveCamera(48, innerWidth/innerHeight, 0.1, 200);
+var cam = { az: Math.PI*0.25, el: 0.72, dist: 15.5, target: new T.Vector3(0, ROOM.h*0.4, 0) };
+function applyCam(){
+  camera.position.set(
+    cam.target.x + cam.dist*Math.sin(cam.el)*Math.sin(cam.az),
+    cam.target.y + cam.dist*Math.cos(cam.el),
+    cam.target.z + cam.dist*Math.sin(cam.el)*Math.cos(cam.az));
+  camera.lookAt(cam.target);
+}
+applyCam();
+
+scene.add(new T.AmbientLight(0xffffff, 0.55));
+var hemi = new T.HemisphereLight(0xfff4e0, 0x39424d, 0.55); scene.add(hemi);
+var sun = new T.DirectionalLight(0xfff2dc, 1.15);
+sun.position.set(6, 12, 7); sun.castShadow = true;
+sun.shadow.mapSize.set(1024,1024);
+sun.shadow.camera.left=-12; sun.shadow.camera.right=12; sun.shadow.camera.top=12; sun.shadow.camera.bottom=-12;
+scene.add(sun);
+var lamp = new T.PointLight(0xffd9a0, 0.5, 18); lamp.position.set(0, ROOM.h-0.3, 0); scene.add(lamp);
+
+/* ------------------------------------------------------- dirt surfaces */
+var DIRT_COLORS = [ [0.42,0.33,0.24], [0.32,0.26,0.20], [0.50,0.40,0.28], [0.28,0.30,0.24] ];
+var surfaces = [];   // cleanable surfaces
+var trash = [];      // pickable objects
+
+function makeSurfaceMesh(w, h, opts){
+  var CW = opts.cw || 512, CH = opts.ch || 512;
+  var cv = document.createElement('canvas'); cv.width=CW; cv.height=CH;
+  var ctx = cv.getContext('2d');
+  // base surface texture (subtle grain)
+  ctx.fillStyle = opts.base || '#d8cdbc'; ctx.fillRect(0,0,CW,CH);
+  for(var i=0;i<900;i++){
+    ctx.fillStyle = 'rgba(0,0,0,' + (Math.random()*0.035).toFixed(3) + ')';
+    ctx.fillRect(Math.random()*CW, Math.random()*CH, 2, 2);
+  }
+  // Snapshot the CLEAN surface. Scrubbing repaints from this instead of
+  // erasing, because erasing sets alpha=0 and an opaque material then renders black.
+  var baseCv = document.createElement('canvas'); baseCv.width=CW; baseCv.height=CH;
+  baseCv.getContext('2d').drawImage(cv, 0, 0);
+  var tex = new T.CanvasTexture(cv);
+  tex.anisotropy = 4;
+  var mat = new T.MeshStandardMaterial({ map: tex, roughness: 0.92, metalness: 0.0 });
+  var geo = new T.PlaneGeometry(w, h);
+  var mesh = new T.Mesh(geo, mat);
+  var s = { mesh: mesh, cv: cv, ctx: ctx, tex: tex, base: baseCv, cw: CW, ch: CH,
+            world: { w: w, h: h }, gridW: opts.gw||128, gridH: opts.gh||128, cells:null, cleared:0, total:0,
+            kind: opts.kind || 'floor', wet: false };
+  s.cells = new Uint8Array(s.gridW * s.gridH);
+  return s;
+}
+
+var DENSITY = { floor: 0.30, wall: 0.18 };
+
+/* Grime profiles. Every property picks one so a sooty attic, a greasy cellar and
+   a dusty studio never look like the same faint smear. cols = RGB 0..1, dens
+   scales stain count, size scales stain radius, alpha controls how black the core
+   is. The critique's "one faint smear" was mostly an alpha/contrast problem. */
+var DIRT_PROFILES = {
+  dust:  { dens:1.00, size:1.00, alpha:0.86, cols:[[0.50,0.40,0.28],[0.40,0.32,0.22],[0.58,0.48,0.34]] },
+  grime: { dens:1.10, size:1.12, alpha:0.94, cols:[[0.34,0.25,0.16],[0.22,0.17,0.12],[0.44,0.34,0.22]] },
+  soot:  { dens:1.25, size:1.25, alpha:0.97, cols:[[0.12,0.11,0.10],[0.22,0.19,0.16],[0.08,0.08,0.08]] },
+  grease:{ dens:1.18, size:1.22, alpha:0.95, cols:[[0.36,0.26,0.10],[0.20,0.15,0.09],[0.46,0.34,0.14]] },
+  moss:  { dens:1.05, size:1.05, alpha:0.90, cols:[[0.24,0.34,0.18],[0.32,0.29,0.14],[0.18,0.26,0.16]] },
+  light: { dens:0.78, size:0.82, alpha:0.80, cols:[[0.54,0.46,0.34],[0.46,0.39,0.28]] }
+};
+
+function dirtrgb(c,a){ return 'rgba(' + (c[0]*255|0) + ',' + (c[1]*255|0) + ',' + (c[2]*255|0) + ',' + a.toFixed(2) + ')'; }
+
+/* Tag the grid cells under a stain so clean% always matches what the eye sees. */
+function markDisc(s, cx, cy, r, add){
+  var gw=s.gridW, gh=s.gridH, CW=s.cw, CH=s.ch, n=0;
+  var gx0=Math.max(0,Math.floor((cx-r)/CW*gw)), gx1=Math.min(gw-1,Math.ceil((cx+r)/CW*gw));
+  var gy0=Math.max(0,Math.floor((cy-r)/CH*gh)), gy1=Math.min(gh-1,Math.ceil((cy+r)/CH*gh));
+  for(var gy=gy0;gy<=gy1;gy++) for(var gx=gx0;gx<=gx1;gx++){
+    var ux=(gx+0.5)/gw*CW, uy=(gy+0.5)/gh*CH;
+    if((ux-cx)*(ux-cx)+(uy-cy)*(uy-cy) <= r*r){
+      if(add){ var idx=gy*gw+gx; if(!s.cells[idx]){ s.cells[idx]=1; n++; } }  // unique cells only
+      else n++;
+    }
+  }
+  return n;
+}
+
+function paintDirt(s, messiness, profName){
+  var ctx = s.ctx, CW=s.cw, CH=s.ch;
+  var p = DIRT_PROFILES[profName] || DIRT_PROFILES.grime;
+  var m = Math.max(0.4, messiness||1);
+  // Bound total stain AREA so even a filthy room stays sweepable, then spend it
+  // on fewer, bigger, near-opaque stains instead of dozens of pale ones.
+  var rAvg = 0.105 * CW * p.size;
+  var coverage = Math.min(2.1, (0.30 + m*0.72) * p.dens);
+  var n = Math.max(6, Math.min(46, Math.round(coverage * (CW*CH) / (Math.PI*rAvg*rAvg))));
+  var totalCells = 0;
+  for(var i=0;i<n;i++){
+    var cx = Math.random()*CW, cy = Math.random()*CH;
+    var r  = (0.06 + Math.random()*0.10) * CW * p.size;
+    var c  = p.cols[(Math.random()*p.cols.length)|0];
+    var a  = Math.min(1, p.alpha * (0.82 + Math.random()*0.18));
+    // soft body
+    var g = ctx.createRadialGradient(cx,cy,r*0.05,cx,cy,r);
+    g.addColorStop(0, dirtrgb(c, a));
+    g.addColorStop(0.62, dirtrgb(c, a*0.82));
+    g.addColorStop(1, dirtrgb(c, 0));
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+    // dark core + a hard-ish rim: a fresh stain has an edge you can aim at
+    var c2 = [c[0]*0.5, c[1]*0.5, c[2]*0.5];
+    var g2 = ctx.createRadialGradient(cx,cy,0,cx,cy,r*0.55);
+    g2.addColorStop(0, dirtrgb(c2, Math.min(1,a+0.05)));
+    g2.addColorStop(1, dirtrgb(c2, 0));
+    ctx.fillStyle = g2;
+    ctx.beginPath(); ctx.arc(cx,cy,r*0.55,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle = dirtrgb(c2, Math.min(1, a*0.8));
+    ctx.lineWidth = Math.max(1, r*0.04);
+    var a0 = Math.random()*Math.PI*2;
+    ctx.beginPath(); ctx.arc(cx,cy,r*0.9,a0,a0+2.4); ctx.stroke();
+    // splatter specks
+    for(var k=0;k<16;k++){
+      var ang = Math.random()*Math.PI*2, dd = Math.random()*r*1.3;
+      var sr = (1 + Math.random()*3.4) * p.size;
+      ctx.fillStyle = dirtrgb(c, 0.30+Math.random()*0.5);
+      ctx.beginPath(); ctx.arc(cx+Math.cos(ang)*dd, cy+Math.sin(ang)*dd, sr, 0, Math.PI*2); ctx.fill();
+    }
+    totalCells += markDisc(s, cx, cy, r, true);
+  }
+  s.total = totalCells;
+  s.cleared = 0;
+  s.tex.needsUpdate = true;
+  return totalCells;
+}
+
+function scrub(s, u, v, radiusPx, strength){
+  var ctx=s.ctx, CW=s.cw, CH=s.ch;
+  var x=u*CW, y=v*CH;
+  // Decide what is actually being removed FIRST: we only repaint when the sweep
+  // clears something, so a shiny patch cannot build up on already-clean floor.
+  var gw=s.gridW, gh=s.gridH, done=0;
+  var gx0=Math.max(0,Math.floor((x-radiusPx)/CW*gw)), gx1=Math.min(gw-1,Math.ceil((x+radiusPx)/CW*gw));
+  var gy0=Math.max(0,Math.floor((y-radiusPx)/CH*gh)), gy1=Math.min(gh-1,Math.ceil((y+radiusPx)/CH*gh));
+  var r2=radiusPx*radiusPx;   // NOTE: compare in canvas px - ux/uy below are canvas px too
+  for(var gy=gy0;gy<=gy1;gy++) for(var gx=gx0;gx<=gx1;gx++){
+    var idx=gy*gw+gx; if(!s.cells[idx]) continue;
+    var ux=(gx+0.5)/gw*CW, uy=(gy+0.5)/gh*CH;
+    if((ux-x)*(ux-x)+(uy-y)*(uy-y)<=r2){ s.cells[idx]=0; s.cleared++; done++; }
+  }
+  if(done){
+    // Repaint the CLEAN surface through a soft-edged clip - never erase.
+    ctx.save();
+    ctx.beginPath(); ctx.arc(x, y, radiusPx, 0, Math.PI*2); ctx.clip();
+    ctx.globalAlpha = 1;
+    ctx.drawImage(s.base, 0, 0);
+    // a faint "just wiped" sheen: the swept trail reads instantly on any colour
+    var gg = ctx.createRadialGradient(x,y,radiusPx*0.08,x,y,radiusPx);
+    gg.addColorStop(0,'rgba(255,255,255,0.32)');
+    gg.addColorStop(0.65,'rgba(255,255,255,0.13)');
+    gg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle = gg;
+    ctx.beginPath(); ctx.arc(x,y,radiusPx,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    s.tex.needsUpdate=true;
+  }
+  return done;
+}
+
+/* ------------------------------------------------------------ room build */
+var roomGroup = new T.Group(); scene.add(roomGroup);
+function clearRoom(){
+  while(roomGroup.children.length){ var c=roomGroup.children.pop(); roomGroup.remove(c);
+    if(c.geometry) c.geometry.dispose(); }
+  surfaces.length=0; trash.length=0;
+}
+
+function buildRoom(job){
+  clearRoom();
+  // Each job can bring its own footprint and ceiling height - a bedsit and a
+  // penthouse should not be the same box. ROOM is updated in place so placement,
+  // the camera and the fog all follow whatever house we just loaded.
+  var R = job.room || {};
+  ROOM.w = R.w || 9; ROOM.d = R.d || 9; ROOM.h = R.h || 3.2;
+  scene.fog.near = 16 + Math.max(ROOM.w, ROOM.d);
+  scene.fog.far  = scene.fog.near + 24;
+  var W=ROOM.w, D=ROOM.d, H=ROOM.h;
+  var floorMat, wallMat, ceilMat;
+  // shell (visual, non-cleanable)
+  var shell = new T.Mesh(new T.BoxGeometry(W, H, D),
+    new T.MeshStandardMaterial({ color: job.wallColor||0xeae0cf, roughness:.95, side:T.BackSide }));
+  shell.position.y = H/2; shell.receiveShadow = true; roomGroup.add(shell);
+  // ceiling
+  var ceil = new T.Mesh(new T.PlaneGeometry(W,D), new T.MeshStandardMaterial({color:0xfaf6ee, roughness:1}));
+  ceil.rotation.x = Math.PI/2; ceil.position.y = H-0.01; roomGroup.add(ceil);
+
+  // FLOOR surface
+  var floor = makeSurfaceMesh(W, D, { base:'#c8a878', cw:1024, ch:1024, gw:160, gh:160, kind:'floor' });
+  floor.mesh.rotation.x = -Math.PI/2; floor.mesh.position.y = 0.02;  // keep clear of the shell (z-fighting)
+  floor.mesh.receiveShadow = true;
+  floor.mesh.userData.surface = floor; roomGroup.add(floor.mesh); surfaces.push(floor);
+
+  // 4 WALLS (inward facing)
+  // Inset 3 cm from the shell box: coplanar faces z-fight, and against dark grime
+  // that read as blocky vertical bands instead of dirt.
+  var E = 0.03;
+  var defs = [
+    { pos:[0, H/2, -D/2+E], rot:[0,0,0],             w:W, base:'#e6dcc9' },
+    { pos:[0, H/2,  D/2-E], rot:[0,Math.PI,0],       w:W, base:'#e6dcc9' },
+    { pos:[-W/2+E, H/2, 0], rot:[0,Math.PI/2,0],     w:D, base:'#e3d8c4' },
+    { pos:[ W/2-E, H/2, 0], rot:[0,-Math.PI/2,0],    w:D, base:'#e3d8c4' }
+  ];
+  defs.forEach(function(d){
+    var s = makeSurfaceMesh(d.w, H, { base:d.base, cw:1024, ch:512, gw:160, gh:80, kind:'wall' });
+    s.mesh.position.set(d.pos[0], d.pos[1], d.pos[2]);
+    s.mesh.rotation.set(d.rot[0], d.rot[1], d.rot[2]);
+    s.mesh.receiveShadow = true;
+    s.mesh.userData.surface = s;
+    roomGroup.add(s.mesh); surfaces.push(s);
+  });
+
+  // window (decor, on the back wall)
+  var win = new T.Mesh(new T.PlaneGeometry(2.2,1.4), new T.MeshStandardMaterial({color:0xbfe3f5, emissive:0x9cc7dd, emissiveIntensity:.5, roughness:.2}));
+  var winY = Math.min(1.8, H-0.8), winX = Math.min(2.4, W/2-0.3);
+  win.position.set(-W/2+winX, winY, -D/2+0.06); roomGroup.add(win);
+  var frame = new T.Mesh(new T.BoxGeometry(2.4,1.6,0.08), new T.MeshStandardMaterial({color:0xffffff, roughness:.7}));
+  frame.position.set(-W/2+winX, winY, -D/2+0.04); roomGroup.add(frame);
+
+  // trash
+  var kinds = ['box','can','bag','bottle','paper'];
+  var n = job.trash;
+  for(var i=0;i<n;i++){
+    var k = kinds[(Math.random()*kinds.length)|0];
+    var m;
+    if(k==='box')    m = new T.Mesh(new T.BoxGeometry(.5,.5,.5), new T.MeshStandardMaterial({color:0xb08a5a, roughness:.9}));
+    else if(k==='can') m = new T.Mesh(new T.CylinderGeometry(.14,.14,.34,12), new T.MeshStandardMaterial({color:0xd74b3a, metalness:.35, roughness:.45}));
+    else if(k==='bag') m = new T.Mesh(new T.SphereGeometry(.34,10,8), new T.MeshStandardMaterial({color:0x2f3438, roughness:.95}));
+    else if(k==='bottle') m = new T.Mesh(new T.CylinderGeometry(.09,.11,.42,10), new T.MeshStandardMaterial({color:0x6fae7a, roughness:.25, metalness:.1}));
+    else m = new T.Mesh(new T.PlaneGeometry(.4,.4), new T.MeshStandardMaterial({color:0xf2ead6, roughness:1, side:T.DoubleSide}));
+    m.castShadow = true;
+    m.position.set((Math.random()-0.5)*(W-2.2), (k==='paper'?0.02:0.25), (Math.random()-0.5)*(D-2.2));
+    m.rotation.set(k==='paper'?-Math.PI/2:0, Math.random()*Math.PI*2, 0);
+    m.userData.trash = true;
+    roomGroup.add(m); trash.push(m);
+  }
+
+  buildSlots();   // furnishings drop into this room's own floor plan
+  // paint dirt after meshes exist, using this property's grime profile
+  surfaces.forEach(function(s){ paintDirt(s, job.mess, job.dirt); });
+  computeClean();
+}
+
+/* ------------------------------------------------------------- economy */
+var TOOLS = {
+  sponge:  { name:'Sponge',  ic:'🧽', r:0.74, pow:1.35, cost:0,   what:'walls + floor' },
+  mop:     { name:'Mop',     ic:'🧹', r:1.05, pow:1.15, cost:0,   what:'floor, wide' },
+  vacuum:  { name:'Vacuum',  ic:'🌀', r:1.35, pow:0.95, cost:0,   what:'everything, widest' },
+  scrubber:{ name:'Scrubber',ic:'⚡', r:0.95, pow:2.30, cost:200, what:'fast, all surfaces' }
+};
+var current = 'sponge';
+
+/* --------------------------------------------------------------- jobs */
+function makeJobs(){
+  var names = ['Sunset Terrace','Maple Row','Harbour View','Old Mill Lane','Cedar Heights',
+               'Rosewood Park','Kestrel Court','Granite Bay','Willow Bend','Aurora Plaza'];
+  var list = [];
+  // The original ten keep identical pay / mess / rubbish / walls; they just gain a
+  // grime character and a label. Save data stays valid (ids are unchanged).
+  for(var i=0;i<10;i++){
+    list.push({
+      id:i, name:names[i],
+      mess:  0.55 + i*0.16,
+      trash: 4 + Math.round(i*1.7),
+      pay:   420 + i*260,
+      wallColor: [0xeae0cf,0xe7d9d2,0xdde6dc,0xe9e2f0,0xf0e6d0][i%5],
+      dirt: ['dust','grime','moss','grease','light'][i%5],
+      tag: 'Classic flip'
+    });
+  }
+  // Six new properties with their own footprint, ceiling height and mess profile.
+  // Pay tracks AREA and FILTH, so the list is no longer one straight line: the
+  // wide airy Gallery Hall is cheap for its size while the tiny Attic Room is grim
+  // and pays well.
+  var extra = [
+    { id:10, name:'Studio Nook',    tag:'Tiny bedsit',   room:{w:6.2, d:7.4, h:2.8},  mess:0.85, trash:5,  pay:820,  wallColor:0xe7efe6, dirt:'dust'  },
+    { id:11, name:'Garden Cottage', tag:'Wide + mossy',  room:{w:8.4, d:10.5,h:3.0},  mess:1.15, trash:14, pay:1650, wallColor:0xdfe8d8, dirt:'moss'  },
+    { id:12, name:'Gallery Hall',   tag:'Huge + airy',   room:{w:13.5,d:6.0, h:3.7},  mess:0.70, trash:9,  pay:1900, wallColor:0xf2ede2, dirt:'light' },
+    { id:13, name:'Cellar Flat',    tag:'Low + greasy',  room:{w:7.2, d:7.2, h:2.55}, mess:1.75, trash:12, pay:2750, wallColor:0xcfc6b4, dirt:'grease'},
+    { id:14, name:'Attic Room',     tag:'Small + sooty', room:{w:6.6, d:5.8, h:2.35}, mess:2.05, trash:7,  pay:2500, wallColor:0xded2c0, dirt:'soot'  },
+    { id:15, name:'Penthouse Loft', tag:'Showcase',      room:{w:12.5,d:8.0, h:3.9},  mess:1.45, trash:20, pay:3900, wallColor:0xe9e2f0, dirt:'grime' }
+  ];
+  for(var k=0;k<extra.length;k++) list.push(extra[k]);
+  return list;
+}
+var JOBS = makeJobs();
+var job = null;
+
+/* ------------------------------------------------------------- picking */
+var ray = new T.Raycaster();
+function pickAt(clientX, clientY){
+  var r = canvas.getBoundingClientRect();
+  var m = new T.Vector2(((clientX-r.left)/r.width)*2-1, -((clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(m, camera);
+  var hits = ray.intersectObjects(roomGroup.children, true);
+  for(var i=0;i<hits.length;i++){
+    var o = hits[i].object;
+    if(o.userData && o.userData.trash) return { trash:o, point:hits[i].point };
+    if(o.userData && o.userData.surface) return { surface:o.userData.surface, uv:hits[i].uv, point:hits[i].point };
+  }
+  return null;
+}
+
+/* ------------------------------------------------------------ particles */
+var parts = [];
+var partGeo = new T.SphereGeometry(0.05, 6, 5);
+function spawnDust(p, color){
+  for(var i=0;i<5;i++){
+    var m = new T.Mesh(partGeo, new T.MeshBasicMaterial({ color: color||0xcdbba0, transparent:true, opacity:.85 }));
+    m.position.copy(p);
+    m.position.x += (Math.random()-.5)*.25;
+    m.position.y += (Math.random()-.5)*.25;
+    m.position.z += (Math.random()-.5)*.25;
+    var vel = new T.Vector3((Math.random()-.5)*.9, .5+Math.random()*.9, (Math.random()-.5)*.9);
+    roomGroup.add(m);
+    parts.push({ m:m, vel:vel, life:0.75 });
+  }
+}
+function spawnSparkle(p){
+  for(var i=0;i<12;i++){
+    var m = new T.Mesh(partGeo, new T.MeshBasicMaterial({ color:0xffe9a8, transparent:true, opacity:1 }));
+    m.scale.setScalar(0.7 + Math.random());
+    m.position.copy(p);
+    var vel = new T.Vector3((Math.random()-.5)*2.2, 1+Math.random()*1.6, (Math.random()-.5)*2.2);
+    roomGroup.add(m);
+    parts.push({ m:m, vel:vel, life:0.95, spark:true });
+  }
+}
+function stepParts(dt){
+  for(var i=parts.length-1;i>=0;i--){
+    var q = parts[i];
+    q.life -= dt;
+    if(q.life<=0){ roomGroup.remove(q.m); q.m.material.dispose(); parts.splice(i,1); continue; }
+    q.vel.y -= 3.4*dt;
+    q.m.position.addScaledVector(q.vel, dt);
+    q.m.material.opacity = Math.max(0, q.life);
+  }
+}
+
+/* ------------------------------------------------------------------ UI */
+var el = function(id){ return document.getElementById(id); };
+function toast(msg, color){
+  var t = el('toast'); t.textContent = msg; t.style.color = color||'#fff'; t.classList.add('on');
+  clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('on'); }, 900);
+}
+function fmt(n){ return '$' + Math.round(n).toLocaleString(); }
+
+function computeClean(){
+  var tot=0, cl=0;
+  surfaces.forEach(function(s){ tot += s.total; cl += s.cleared; });
+  var pct = tot>0 ? Math.min(1, cl/tot) : 1;
+  state.clean = pct;
+  el('cleanPct').textContent = Math.round(pct*100) + '%';
+  el('cleanBar').style.width = (pct*100) + '%';
+  return pct;
+}
+
+var placed = [];
+/* 14 pieces, ordered by price. `decor` is what the buyer believes the piece is
+   worth; the sale pays 0.85 x decor, so decor-vs-cost is a real profit dial:
+   the Armchair / Mirror / Art are efficient small buys while the Grand Piano is
+   an expensive statement that still returns less per dollar. One of each per
+   house, which is what turns the catalogue into a decision instead of a spam loop. */
+var CATALOG = [
+  { id:'rug',    name:'Rug',        cost:60,   decor:60,   build:function(){ var g=new T.Group();
+      var r=new T.Mesh(new T.PlaneGeometry(2.6,1.9), new T.MeshStandardMaterial({color:0xc46a5a, roughness:1}));
+      r.rotation.x=-Math.PI/2; r.position.y=.012; g.add(r); return g; } },
+  { id:'plant',  name:'Plant',      cost:70,   decor:70,   build:function(){ var g=new T.Group();
+      var pot=new T.Mesh(new T.CylinderGeometry(.2,.16,.3,10), new T.MeshStandardMaterial({color:0xc07a52})); pot.position.y=.15; g.add(pot);
+      var leaf=new T.Mesh(new T.SphereGeometry(.34,9,7), new T.MeshStandardMaterial({color:0x5f8f5c, roughness:1})); leaf.position.y=.62; g.add(leaf);
+      return g; } },
+  { id:'lamp',   name:'Lamp',       cost:90,   decor:90,   build:function(){ var g=new T.Group();
+      var base=new T.Mesh(new T.CylinderGeometry(.22,.26,.06,12), new T.MeshStandardMaterial({color:0x39424d})); base.position.y=.03; g.add(base);
+      var pole=new T.Mesh(new T.CylinderGeometry(.035,.035,1.2,8), new T.MeshStandardMaterial({color:0x39424d})); pole.position.y=.63; g.add(pole);
+      var shade=new T.Mesh(new T.CylinderGeometry(.26,.34,.3,14,1,true), new T.MeshStandardMaterial({color:0xf3e6c8, side:T.DoubleSide, emissive:0xffe6b0, emissiveIntensity:.35}));
+      shade.position.y=1.36; g.add(shade); return g; } },
+  { id:'chair',  name:'Armchair',   cost:95,   decor:140,  build:function(){ var g=new T.Group();
+      var m=new T.MeshStandardMaterial({color:0xc46a5a, roughness:.95});
+      var seat=new T.Mesh(new T.BoxGeometry(.8,.4,.75), m); seat.position.y=.42; g.add(seat);
+      var bk=new T.Mesh(new T.BoxGeometry(.8,.7,.18), m); bk.position.set(0,.82,-.28); g.add(bk);
+      [[-.36,0],[.36,0]].forEach(function(p){ var a=new T.Mesh(new T.BoxGeometry(.12,.3,.7), m); a.position.set(p[0],.68,.03); g.add(a); });
+      return g; } },
+  { id:'table',  name:'Table',      cost:140,  decor:140,  build:function(){ var g=new T.Group();
+      var m=new T.MeshStandardMaterial({color:0xb98a52, roughness:.8});
+      var top=new T.Mesh(new T.BoxGeometry(1.3,.09,.8), m); top.position.y=.62; g.add(top);
+      [[-.55,-.3],[.55,-.3],[-.55,.3],[.55,.3]].forEach(function(p){
+        var l=new T.Mesh(new T.BoxGeometry(.08,.62,.08), m); l.position.set(p[0],.31,p[1]); g.add(l); });
+      return g; } },
+  { id:'shelf',  name:'Bookshelf',  cost:150,  decor:150,  build:function(){ var g=new T.Group();
+      var m=new T.MeshStandardMaterial({color:0x8a6a48, roughness:.85});
+      var s=new T.Mesh(new T.BoxGeometry(1.1,1.6,.32), m); s.position.y=.8; g.add(s);
+      for(var i=0;i<3;i++){ var b=new T.Mesh(new T.BoxGeometry(.9,.1,.34), new T.MeshStandardMaterial({color:0xdea})); b.position.set(0,.35+i*.5,.01); g.add(b); }
+      return g; } },
+  { id:'sofa',   name:'Sofa',       cost:180,  decor:180,  build:function(){ var g=new T.Group();
+      var m=new T.MeshStandardMaterial({color:0x7f9e86, roughness:.95});
+      var b=new T.Mesh(new T.BoxGeometry(2.0,.45,.85), m); b.position.y=.35; g.add(b);
+      var bk=new T.Mesh(new T.BoxGeometry(2.0,.7,.22), m); bk.position.set(0,.75,-.32); g.add(bk);
+      return g; } },
+  { id:'mirror', name:'Wall Mirror',cost:210,  decor:300,  build:function(){ var g=new T.Group();
+      var fr=new T.Mesh(new T.BoxGeometry(.9,1.65,.08), new T.MeshStandardMaterial({color:0xcaa25a, metalness:.5, roughness:.35})); fr.position.y=.85; g.add(fr);
+      var glass=new T.Mesh(new T.PlaneGeometry(.72,1.45), new T.MeshStandardMaterial({color:0xbfe3f5, metalness:.85, roughness:.08}));
+      glass.position.set(0,.85,.05); g.add(glass);
+      g.rotation.x=-0.06; return g; } },
+  { id:'art',    name:'Framed Art', cost:260,  decor:360,  build:function(){ var g=new T.Group();
+      var fr=new T.Mesh(new T.BoxGeometry(1.15,.95,.07), new T.MeshStandardMaterial({color:0x5b4630, roughness:.7})); fr.position.y=1.15; g.add(fr);
+      var cv=new T.Mesh(new T.PlaneGeometry(.98,.78), new T.MeshStandardMaterial({color:0xe0a83c, roughness:.9})); cv.position.set(0,1.15,.045); g.add(cv);
+      var st=new T.Mesh(new T.BoxGeometry(.06,.7,.06), new T.MeshStandardMaterial({color:0x5b4630})); st.position.y=.34; g.add(st);
+      return g; } },
+  { id:'desk',   name:'Writing Desk',cost:340, decor:430,  build:function(){ var g=new T.Group();
+      var m=new T.MeshStandardMaterial({color:0x8a6a48, roughness:.8});
+      var top=new T.Mesh(new T.BoxGeometry(1.6,.08,.8), m); top.position.y=.72; g.add(top);
+      var dr=new T.Mesh(new T.BoxGeometry(.55,.3,.72), m); dr.position.set(.4,.53,0); g.add(dr);
+      [[-.72,-.33],[.72,-.33],[-.72,.33],[.72,.33]].forEach(function(p){ var l=new T.Mesh(new T.BoxGeometry(.07,.72,.07), m); l.position.set(p[0],.36,p[1]); g.add(l); });
+      return g; } },
+  { id:'bed',    name:'Bed',        cost:480,  decor:560,  build:function(){ var g=new T.Group();
+      var frame=new T.Mesh(new T.BoxGeometry(1.5,.28,2.05), new T.MeshStandardMaterial({color:0x6f5137, roughness:.85})); frame.position.y=.2; g.add(frame);
+      var mat=new T.Mesh(new T.BoxGeometry(1.42,.28,1.92), new T.MeshStandardMaterial({color:0xf3ece0, roughness:1})); mat.position.y=.5; g.add(mat);
+      var quilt=new T.Mesh(new T.BoxGeometry(1.44,.12,1.2), new T.MeshStandardMaterial({color:0x7f9e86, roughness:1})); quilt.position.set(0,.68,.35); g.add(quilt);
+      var pil=new T.Mesh(new T.BoxGeometry(.62,.16,.4), new T.MeshStandardMaterial({color:0xfffdf8})); pil.position.set(0,.72,-.72); g.add(pil);
+      var hb=new T.Mesh(new T.BoxGeometry(1.55,.75,.1), new T.MeshStandardMaterial({color:0x6f5137})); hb.position.set(0,.6,-1.0); g.add(hb);
+      return g; } },
+  { id:'tv',     name:'Television', cost:620,  decor:760,  build:function(){ var g=new T.Group();
+      var stand=new T.Mesh(new T.BoxGeometry(1.5,.4,.4), new T.MeshStandardMaterial({color:0x39424d, roughness:.6})); stand.position.y=.2; g.add(stand);
+      var body=new T.Mesh(new T.BoxGeometry(1.45,.85,.07), new T.MeshStandardMaterial({color:0x14181c, roughness:.4})); body.position.y=1.05; g.add(body);
+      var scr=new T.Mesh(new T.PlaneGeometry(1.35,.75), new T.MeshStandardMaterial({color:0x2b4a63, emissive:0x2e6ea0, emissiveIntensity:.6})); scr.position.set(0,1.05,.04); g.add(scr);
+      return g; } },
+  { id:'aquarium',name:'Aquarium',  cost:900,  decor:1020, build:function(){ var g=new T.Group();
+      var base=new T.Mesh(new T.BoxGeometry(1.2,.5,.6), new T.MeshStandardMaterial({color:0x39424d})); base.position.y=.25; g.add(base);
+      var water=new T.Mesh(new T.BoxGeometry(1.1,.6,.5), new T.MeshStandardMaterial({color:0x2f7fa8, transparent:true, opacity:.7, roughness:.15})); water.position.y=.8; g.add(water);
+      var glow=new T.Mesh(new T.BoxGeometry(1.06,.06,.46), new T.MeshStandardMaterial({color:0xbfe3f5, emissive:0x9cc7dd, emissiveIntensity:.7})); glow.position.y=1.02; g.add(glow);
+      return g; } },
+  { id:'piano',  name:'Grand Piano',cost:1400, decor:1560, build:function(){ var g=new T.Group();
+      var body=new T.Mesh(new T.BoxGeometry(1.5,.22,1.9), new T.MeshStandardMaterial({color:0x14110f, roughness:.35, metalness:.15})); body.position.y=.85; g.add(body);
+      var lid=new T.Mesh(new T.BoxGeometry(1.45,.05,1.85), new T.MeshStandardMaterial({color:0x201b18, roughness:.3})); lid.position.set(0,1.02,.05); lid.rotation.x=-0.08; g.add(lid);
+      var keys=new T.Mesh(new T.BoxGeometry(1.35,.08,.28), new T.MeshStandardMaterial({color:0xfffdf8})); keys.position.set(0,.88,.85); g.add(keys);
+      [[-.6,-.7],[.6,-.7],[-.6,.7],[.6,.7]].forEach(function(p){ var l=new T.Mesh(new T.BoxGeometry(.12,.75,.12), new T.MeshStandardMaterial({color:0x14110f})); l.position.set(p[0],.37,p[1]); g.add(l); });
+      return g; } }
+];
+
+/* ----------------------------------------------------------- game loop */
+var state = { clean:0, running:false, scrubbing:false, lastUV:null, comboT:0, combo:0, spent:0, started:0 };
+var last = performance.now();
+
+function frame(now){
+  requestAnimationFrame(frame);
+  var dt = Math.min(0.05, (now-last)/1000); last = now;
+  stepParts(dt);
+  if(state.comboT>0){ state.comboT -= dt; if(state.comboT<=0) state.combo=0; }
+  paintCombo();
+  if(mode==='play'){ renderer.render(scene, camera); }
+  else { renderer.render(scene, camera); }
+}
+requestAnimationFrame(frame);
+
+/* ------------------------------------------------------------- input */
+var dragging=false, orbiting=false, lastPt=null, moved=0;
+canvas.addEventListener('pointerdown', function(e){
+  canvas.setPointerCapture(e.pointerId);
+  lastPt = { x:e.clientX, y:e.clientY }; moved=0;
+  if(mode!=='play') return;
+  if(e.button===2 || e.shiftKey){ orbiting=true; return; }
+  var h = pickAt(e.clientX, e.clientY);
+  if(h && h.trash){ removeTrash(h.trash, h.point); return; }
+  if(h && h.surface){ state.scrubbing=true; state.lastUV=null; doScrub(h); return; }
+  orbiting=true;
+});
+canvas.addEventListener('pointermove', function(e){
+  if(!lastPt) return;
+  var dx=e.clientX-lastPt.x, dy=e.clientY-lastPt.y;
+  moved += Math.abs(dx)+Math.abs(dy);
+  if(state.scrubbing && mode==='play'){
+    var h = pickAt(e.clientX, e.clientY);
+    if(h && h.surface) doScrub(h);
+  } else if(orbiting){
+    cam.az -= dx*0.006; cam.el = Math.max(0.28, Math.min(1.45, cam.el - dy*0.005)); applyCam();
+  }
+  lastPt={x:e.clientX,y:e.clientY};
+});
+function endPtr(){ state.scrubbing=false; state.lastUV=null; orbiting=false; lastPt=null; }
+canvas.addEventListener('pointerup', endPtr);
+canvas.addEventListener('pointercancel', endPtr);
+canvas.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+canvas.addEventListener('wheel', function(e){
+  e.preventDefault(); cam.dist = Math.max(7, Math.min(26, cam.dist + Math.sign(e.deltaY)*0.9)); applyCam();
+}, { passive:false });
+
+var comboShown = -1, comboOn = null;
+function paintCombo(){
+  var chip = el('comboChip'); if(!chip) return;
+  var on = state.comboT>0 && state.combo>0;
+  if(on!==comboOn){ comboOn=on; chip.classList.toggle('on',on); }
+  if(!on) return;
+  var bar = el('comboBar').firstChild;
+  bar.style.width = Math.round(Math.max(0, Math.min(1, state.comboT/1.6))*100) + '%';
+  if(state.combo!==comboShown){ comboShown=state.combo;
+    el('comboVal').textContent = 'x' + Math.max(1, Math.floor(state.combo/4)); }
+}
+
+function doScrub(h){
+  if(!h.uv) return;
+  var s = h.surface, tool = TOOLS[current];
+  // wall tools shouldn't mop the ceiling etc - everything here is a wall or floor
+  var radiusPx = (tool.r / s.world.w) * s.cw;   // world radius -> px
+  var n = scrub(s, h.uv.x, 1-h.uv.y, radiusPx, tool.pow);
+  if(n>0){
+    spawnDust(h.point, s.kind==='floor' ? 0xb99a6a : 0xd6cbb4);
+    AU.play('scrub', 0.20 + Math.random()*0.08, 0.92 + Math.random()*0.16);
+    state.combo++; state.comboT = 1.6;
+    if(state.combo>0 && state.combo%22===0){ spawnSparkle(h.point); AU.play('sparkle',0.5); toast('CLEAN STREAK x' + Math.floor(state.combo/22), '#ffe9a8'); }
+    computeClean();
+  }
+}
+
+function removeTrash(obj, point){
+  var i = trash.indexOf(obj); if(i<0) return;
+  trash.splice(i,1); roomGroup.remove(obj);
+  if(obj.geometry) obj.geometry.dispose();
+  spawnDust(point, 0x8f9aa6); spawnSparkle(point);
+  AU.play('pickup', 0.6);
+  bagged++; updateBag();
+  computeClean();
+}
+
+/* --------------------------------------------------------- UI wiring */
+function renderTools(){
+  var box = el('tools'); box.innerHTML='';
+  Object.keys(TOOLS).forEach(function(k){
+    var t=TOOLS[k];
+    if(t.cost>0 && !save.tools[k]) return;   // locked until bought (shown in the toolbox list)
+    var d=document.createElement('div');
+    var afford = t.cost===0 || save.cash>=t.cost;
+    d.className='tool'+(current===k?' sel':'')+(afford?'':' locked');
+    d.title = t.cost>0 ? (t.name+' - '+fmt(t.cost)+(afford?'':' (not affordable yet)')) : t.name+' - '+t.what;
+    d.innerHTML='<span class="ic">'+t.ic+'</span><span>'+t.name.toUpperCase()+'</span>'+
+      (t.cost>0 ? '<span class="cost">'+fmt(t.cost)+'</span>' : '');
+    d.onclick=function(){ current=k; renderTools(); AU.play('click',0.4); };
+    box.appendChild(d);
+  });
+}
+function renderShop(){
+  var box=el('shop'); box.innerHTML='';
+  Object.keys(TOOLS).forEach(function(k){
+    var t=TOOLS[k];
+    if(t.cost>0 && !save.tools[k]){
+      var afford = save.cash >= t.cost;
+      var d=document.createElement('div'); d.className='item'+(afford?'':' locked');
+      d.innerHTML='<div><b>'+t.name+'</b><small>'+t.what+'</small>'+(afford?'':'<span class="short">need '+fmt(t.cost-save.cash)+' more</span>')+'</div><div>'+fmt(t.cost)+'</div>';
+      d.onclick=function(){
+        if(save.cash < t.cost){ toast('Not enough cash - '+fmt(t.cost-save.cash)+' to go','#ff9a8a'); return; }
+        save.cash -= t.cost; save.tools[k]=1; persist(); renderHUD(); renderShop(); renderTools(); AU.play('coin',0.6);
+        toast('Bought '+t.name, '#b6e3a8');
+      };
+      box.appendChild(d);
+    }
+  });
+  if(!box.children.length) box.innerHTML='<div style="font-size:11px;color:var(--muted)">All tools owned.</div>';
+}
+function renderCatalog(){
+  var box=el('catalog'); box.innerHTML='';
+  CATALOG.forEach(function(c){
+    var owned = placed.some(function(p){ return p.item.id===c.id; });
+    var val = c.decor||c.cost;
+    var net = Math.round(val*0.85 - c.cost);
+    var d=document.createElement('div'); d.className='item'+(owned?' locked':' lockable');
+    d.innerHTML='<div><b>'+c.name+'</b><small>'+(owned
+        ? 'placed - one per house'
+        : ('value '+fmt(val)+' &middot; net '+(net>=0?'+':'-')+'$'+Math.abs(net)))+
+      '</small></div><div>'+fmt(c.cost)+'</div>';
+    d.onclick=function(){ if(owned) toast('One of each per house','#ff9a8a'); else placeItem(c); };
+    box.appendChild(d);
+  });
+}
+function renderHUD(){
+  el('cash').textContent = fmt(save.cash);
+  if(job) el('jobName').textContent = job.name;
+}
+var bagged=0, bagTotal=0;
+function updateBag(){
+  var el2 = document.getElementById('bagCount');
+  if(el2) el2.textContent = bagged + '/' + bagTotal;
+}
+
+/* Furnishings drop onto a shuffled grid sized to the CURRENT room, so a bedsit
+   gets a cosy cluster and a loft fills up. One of each item, or the efficient
+   cheap pieces would just become a spam button. */
+var slots = [], slotIndex = 0;
+function buildSlots(){
+  slots = []; slotIndex = 0;
+  var W=ROOM.w, D=ROOM.d, x0=-W/2+1.3, x1=W/2-1.3, z0=-D/2+1.3, z1=D/2-1.3;
+  for(var x=x0;x<=x1+0.01;x+=1.7) for(var z=z0;z<=z1+0.01;z+=1.7) slots.push([x,z]);
+  for(var i=slots.length-1;i>0;i--){ var j=(Math.random()*(i+1))|0, t=slots[i]; slots[i]=slots[j]; slots[j]=t; }
+}
+function placeItem(c){
+  if(placed.some(function(p){ return p.item.id===c.id; })){ toast('One of each per house','#ff9a8a'); return; }
+  if(save.cash < c.cost){ toast('Not enough cash','#ff9a8a'); return; }
+  var g = c.build();
+  var sp = (slots && slots.length) ? slots[slotIndex % slots.length] : [0,0]; slotIndex++;
+  g.position.set(sp[0] + (Math.random()-.5)*.25, 0, sp[1] + (Math.random()-.5)*.25);
+  g.position.x = Math.max(-ROOM.w/2+1, Math.min(ROOM.w/2-1, g.position.x));
+  g.position.z = Math.max(-ROOM.d/2+1, Math.min(ROOM.d/2-1, g.position.z));
+  g.traverse(function(o){ if(o.isMesh){ o.castShadow=true; o.receiveShadow=true; } });
+  roomGroup.add(g);
+  placed.push({ obj:g, item:c });
+  save.cash -= c.cost; state.spent += c.cost;
+  persist(); renderHUD(); renderCatalog();
+  AU.play('place',0.55);
+  toast('Placed '+c.name+' (value '+fmt(c.decor||c.cost)+')', '#cfe6ff');
+}
+
+/* ------------------------------------------------------------- flow */
+var mode = 'map';
+function showLayer(id, on){ el(id).classList.toggle('on', !!on); }
+
+function renderJobs(){
+  var box=el('jobList'); box.innerHTML='';
+  // the first job that has not been flipped is the suggested entry point
+  var suggest = null;
+  JOBS.forEach(function(j){ if(suggest===null && save.done.indexOf(j.id)<0) suggest=j.id; });
+  JOBS.forEach(function(j){
+    var done = save.done.indexOf(j.id)>=0;
+    var d=document.createElement('div'); d.className='job'+(j.id===suggest?' start':'');
+    var stars = save.best[j.id] || 0;
+    var area = j.room ? (j.room.w + '&times;' + j.room.d + ' m') : '9&times;9 m';
+    d.innerHTML='<h4>'+j.name+(j.tag?' <span style="font-size:11px;color:var(--muted);font-weight:600">'+j.tag+'</span>':'')+'</h4>' +
+      '<p>'+area+' &middot; mess ' + Math.round(j.mess*100) + '% &middot; ' + j.trash + ' rubbish</p>' +
+      '<div class="pay">' + fmt(j.pay) + ' asking price</div>' +
+      '<div style="font-size:11px;color:var(--muted);margin-top:6px">' +
+        (done ? ('best ' + '★'.repeat(stars) + '&#9734;'.repeat(3-stars)) : (j.id===suggest ? 'START HERE &middot; not flipped yet' : 'not flipped yet')) + '</div>';
+    d.onclick=function(){ startJob(j); };
+    box.appendChild(d);
+  });
+  var kit=el('kitRow'); kit.innerHTML='';
+  [['Cash', fmt(save.cash)], ['Flips', String(save.done.length)]].forEach(function(p){
+    var s=document.createElement('div'); s.className='stat';
+    s.innerHTML='<b>'+p[1]+'</b><span>'+p[0]+'</span>'; kit.appendChild(s);
+  });
+}
+
+function startJob(j){
+  job = Object.assign({}, j);
+  // per-run variance: the same address is never exactly the same mess twice
+  job.mess  = Math.max(0.45, job.mess * (0.90 + Math.random()*0.20));
+  job.trash = Math.max(3, job.trash + ((Math.random()*5)|0) - 2);
+  placed.forEach(function(p){ roomGroup.remove(p.obj); });
+  placed = []; bagged=0; bagTotal=job.trash; state.spent=0; state.combo=0;
+  buildRoom(job);
+  updateBag();
+  renderTools(); renderShop(); renderCatalog(); renderHUD();
+  computeClean();
+  mode='play';
+  showLayer('map', false); showLayer('result', false);
+  el('hint').style.display='block';
+  // frame whatever footprint this job has (and pull back a touch on phones)
+  cam.el=0.72; cam.az=Math.PI*0.25;
+  cam.dist = Math.max(11, Math.min(26, 5 + Math.max(ROOM.w, ROOM.d)*1.15));
+  if(innerWidth < 760) cam.dist = Math.min(30, cam.dist*1.25);
+  cam.target.set(0, ROOM.h*0.4, 0);
+  applyCam();
+  state.started = performance.now();
+  AU.play('click',0.4);
+}
+
+function listHouse(){
+  var clean = state.clean;
+  var decorValue = placed.reduce(function(a,p){ return a + (p.item.decor||p.item.cost); }, 0);
+  var target = job.pay;
+  var cleanBonus = Math.round(target * 0.55 * clean);
+  var decorBonus = Math.round(decorValue * 0.85);
+  var total = target + cleanBonus + decorBonus - state.spent;
+  var stars = 1;
+  if(clean > 0.75 && decorValue > 200) stars = 2;
+  if(clean > 0.93 && decorValue > 420) stars = 3;
+
+  save.cash += total;
+  if(save.done.indexOf(job.id)<0) save.done.push(job.id);
+  save.best[job.id] = Math.max(save.best[job.id]||0, stars);
+  persist();
+
+  el('resTitle').textContent = stars===3 ? 'Dream home!' : (stars===2 ? 'Sold well' : 'Flipped');
+  el('resStars').textContent = '★'.repeat(stars) + '☆'.repeat(3-stars);
+  el('resStats').innerHTML =
+    '<div class="stat"><b>'+Math.round(clean*100)+'%</b><span>Clean</span></div>' +
+    '<div class="stat"><b>'+fmt(decorValue)+'</b><span>Furnished</span></div>' +
+    '<div class="stat"><b>'+fmt(state.spent)+'</b><span>Spent</span></div>' +
+    '<div class="stat"><b>'+fmt(total)+'</b><span>Profit</span></div>';
+  el('resNote').textContent = clean<0.8
+    ? 'Left some grime behind - the buyer knocked the price down. Try a wider tool or a full sweep of every surface.'
+    : (decorValue<420 ? 'Spotless, but a bit bare. Furniture lifts the sale price far more than it costs.'
+                      : 'Clean and furnished. That is how you build a reputation in this city.');
+  mode='result';
+  showLayer('result', true);
+  AU.play('sale',0.85);
+}
+
+/* ------------------------------------------------------- share card
+   The critique scored SHARE 3/10: stars and profit were the only artefact and there was no way to
+   show anyone. This renders a plain PNG brag card with no libraries and no network. */
+function shareCard(){
+  try{
+    var W=880, H=520, c=document.createElement('canvas'); c.width=W; c.height=H;
+    var g=c.getContext('2d');
+    g.fillStyle='#f6f1e7'; g.fillRect(0,0,W,H);
+    g.fillStyle='#2b2117'; g.fillRect(0,0,W,96);
+    g.fillStyle='#e2725b'; g.font='700 22px system-ui,Segoe UI,Arial'; g.fillText('CLEAN HOUSE', 40, 58);
+    g.fillStyle='#f6f1e7'; g.font='600 15px system-ui,Segoe UI,Arial';
+    g.fillText(job ? job.name : '', 40, 80);
+    g.fillStyle='#2b2117'; g.font='800 52px system-ui,Segoe UI,Arial';
+    g.fillText(el('resTitle').textContent, 40, 190);
+    g.font='700 40px system-ui,Segoe UI,Arial'; g.fillStyle='#e0a83c';
+    g.fillText(el('resStars').textContent, 40, 250);
+    var rows = [['CLEAN', Math.round(state.clean*100)+'%'],
+                ['FURNISHED', fmt(placed.reduce(function(a,q){return a+(q.item.decor||q.item.cost);},0))],
+                ['SPENT', fmt(state.spent)],
+                ['PROFIT', el('resStats').children[3] ? el('resStats').children[3].querySelector('b').textContent : '-']];
+    g.font='600 16px ui-monospace,Consolas,monospace';
+    rows.forEach(function(r,i){
+      var y=320+i*42;
+      g.fillStyle='#7b8792'; g.fillText(r[0], 40, y);
+      g.fillStyle='#2b2117'; g.font='800 22px ui-monospace,Consolas,monospace';
+      g.fillText(r[1], 240, y);
+      g.font='600 16px ui-monospace,Consolas,monospace';
+    });
+    g.fillStyle='#7b8792'; g.font='500 13px system-ui'; g.fillText(new Date().toLocaleDateString(), 40, H-24);
+    c.toBlob(function(blob){
+      if(!blob){ toast('Could not build the card', '#e2725b'); return; }
+      var u=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=u; a.download='cleanhouse-'+(job?job.name.replace(/\s+/g,'-'):'flip')+'.png';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+      toast('Score card saved', '#8fbf6b');
+    }, 'image/png');
+  }catch(e){ toast('Could not build the card', '#e2725b'); }
+}
+
+/* ------------------------------------------------------------- resize */
+addEventListener('resize', function(){
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+});
+
+/* --------------------------------------------------------------- boot */
+el('btnList').onclick = function(){ if(mode==='play') listHouse(); };
+el('btnMap').onclick  = function(){ mode='map'; showLayer('result',false); showLayer('map',true); renderJobs(); };
+el('btnShare').onclick= shareCard;
+el('btnAgain').onclick= function(){ mode='map'; showLayer('result',false); showLayer('map',true); renderJobs(); };
+
+loadSave(); renderHUD(); renderJobs(); renderTools(); renderShop(); renderCatalog();
+buildRoom(JOBS[0]);   // a room behind the map so it is not empty
+mode='map';
+
+// debug hook (same convention as the rest of the shelf)
+window.__clean_debug = {
+  state: function(){ return { mode:mode, clean:state.clean, cash:save.cash, placed:placed.length,
+                              trash:trash.length, job: job?job.name:null, dirt: job?job.dirt:null,
+                              room: { w:ROOM.w, d:ROOM.d, h:ROOM.h } }; },
+  jobs: function(){ return JOBS.map(function(j){ return { id:j.id, name:j.name, mess:j.mess,
+                              trash:j.trash, pay:j.pay, dirt:j.dirt, room:j.room||null }; }); },
+  catalog: function(){ return CATALOG.map(function(c){ return { id:c.id, name:c.name,
+                              cost:c.cost, decor:c.decor||c.cost }; }); },
+  start: function(i){ startJob(JOBS[i||0]); },
+  startId: function(id){ var j=null; JOBS.forEach(function(x){ if(x.id===id) j=x; }); if(j) startJob(j); return j?j.name:null; },
+  scrubAt: function(u,v,rr){ var n=0; surfaces.forEach(function(s){ n += scrub(s,u,v,rr||80,1); }); computeClean(); return n; },
+  scrubFrac: function(frac){   // sweep until roughly `frac` of the grime is gone
+    var target = 0; surfaces.forEach(function(s){ target += s.total*(frac==null?0.5:frac); });
+    var guard = 0;
+    while(guard++ < 6000){
+      var cl = 0; surfaces.forEach(function(s){ cl += s.cleared; });
+      if(cl >= target) break;
+      scrub(surfaces[(Math.random()*surfaces.length)|0], Math.random(), Math.random(), 70, 1);
+    }
+    computeClean(); return state.clean;
+  },
+  scrubAll: function(){ surfaces.forEach(function(s){
+      for(var i=0;i<400;i++) scrub(s, Math.random(), Math.random(), 60, 1); });
+    computeClean(); return state.clean; },
+  cash: function(n){ save.cash=n; persist(); renderHUD(); },
+  place: function(id){ var c=null; CATALOG.forEach(function(x){ if(x.id===id) c=x; }); if(c) placeItem(c); return placed.length; },
+  dump: function(i){ return surfaces[i||0].cv.toDataURL('image/png'); },
+  shadow: function(on){ renderer.shadowMap.enabled = !!on;
+    scene.traverse(function(o){ if(o.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(function(m){ m.needsUpdate=true; }); } });
+    return renderer.shadowMap.enabled; },
+  list: function(){ listHouse(); }
+};
+
+})();
+</script>
+</body>
+</html>

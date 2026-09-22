@@ -57,6 +57,17 @@
     <div class="kv" id="tags"></div>
   </section>
 
+  <section class="tester" id="tester" aria-label="Tester feedback">
+    <div class="th"><h2>How was it?</h2><small>Your answer stays on this device. Settings → Your data → Copy tester report gathers every answer to send to Caleb.</small></div>
+    <div class="seg" id="rate" role="radiogroup" aria-label="Rating">
+      <button type="button" role="radio" data-v="fun" aria-checked="false">😍 Fun</button>
+      <button type="button" role="radio" data-v="ok" aria-checked="false">🙂 OK</button>
+      <button type="button" role="radio" data-v="broken" aria-checked="false">😕 Broken</button>
+    </div>
+    <textarea id="note" rows="2" maxlength="500" placeholder="What happened? What would make it better?"></textarea>
+    <div class="tfoot"><span id="notesaved" class="tip" aria-live="polite"></span></div>
+  </section>
+
   <section class="sec" id="relsec">
     <div class="sechead"><h2>More like this</h2><a href="index.html#all">All games</a></div>
     <div class="railwrap"><button class="arrow prev" type="button" aria-label="Scroll back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><div class="rail" id="related"></div><button class="arrow next" type="button" aria-label="Scroll forward"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>

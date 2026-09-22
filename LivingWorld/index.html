@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>DOMINION — Living World</title>
+<style>
+  html,body{margin:0;height:100%;background:#0b1026;overflow:hidden;
+    font-family:ui-monospace,Menlo,Consolas,monospace;color:#cfe;}
+  #c{display:block;width:100vw;height:100vh;}
+  #hud{position:fixed;left:12px;top:10px;font-size:12px;line-height:1.5;
+    text-shadow:0 1px 2px #000a;pointer-events:none;opacity:.82;}
+  #hud b{color:#ffeab0;}
+  #hint{position:fixed;right:12px;bottom:10px;font-size:11px;opacity:.5;
+    text-shadow:0 1px 2px #000a;pointer-events:none;text-align:right;max-width:52vw;}
+  /* SHARE CARD — a labelled DOM button, never a key, so it cannot swallow a control. */
+  #btnShare{position:fixed;right:12px;top:10px;z-index:6;font:600 11px ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.06em;color:#e6f7ea;background:rgba(6,10,18,.6);border:1px solid #ffffff2e;
+    border-radius:6px;padding:6px 10px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-shadow:0 1px 2px #000c}
+  #btnShare:hover{background:rgba(16,26,42,.88);border-color:#9fe8b066}
+  /* FIELD LOG — the observation layer (not a game). Its own dark panel so the
+     checklist stays readable over a bright sky. */
+  #log{position:fixed;left:12px;bottom:10px;font-size:11px;line-height:1.45;
+    background:rgba(6,10,18,.58);border:1px solid #ffffff1f;border-radius:6px;
+    padding:6px 9px;text-shadow:0 1px 2px #000c;pointer-events:none;
+    max-width:min(330px,64vw);}
+  #log h4{margin:0 0 3px;font-size:11px;letter-spacing:.04em;color:#ffeab0;font-weight:700}
+  #log .n{color:#9fe8b0}
+  #log .row{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #log .row .t{display:inline-block;width:1.15em;color:#7f8ca0}
+  #log .row.on{color:#e6f7ea}
+  #log .row.off{color:#8b96a8}
+  #log .row.new{color:#bff0c8;font-weight:700}
+  #toast{position:fixed;left:50%;top:12px;transform:translateX(-50%);
+    font-size:12px;padding:4px 11px;border-radius:20px;background:rgba(6,10,18,.72);
+    border:1px solid #ffffff26;color:#dff3e4;text-shadow:0 1px 2px #000c;
+    opacity:0;transition:opacity .35s;pointer-events:none;white-space:nowrap}
+  #toast.show{opacity:1}
+  @media (max-width:560px){
+    #log{left:8px;right:8px;bottom:8px;max-width:none}
+    #hint{display:none}
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud"></div>
+<div id="log"></div>
+<div id="toast"></div>
+<button id="btnShare" type="button">SAVE FIELD LOG CARD</button>
+<div id="hint">A / D or ← → pan · W speed · SPACE pause · [ ] scrub · , . day speed · L log · R reseed · click/tap pause</div>
+<script>
+"use strict";
+/* ===========================================================================
+   DOMINION — LIVING WORLD.  One canvas, six seeded systems, zero external assets.
+   AXIOM's Constitution is enforced inline (see INVARIANTS I1..I7).
+   =========================================================================== */
+
+/* ---- AXIOM: constants ---------------------------------------------------- */
+const U = 16;                      // grid unit
+let   SEED = 0x5EED1E55;           // world seed (R reseeds)
+const CHUNK = 512;                 // px of world-X per deterministic chunk
+const TAU = Math.PI * 2;
+const GOLD = 2.399963229728653;    // golden angle (rad)
+
+// Day/night keyframes: [top, horizon, sun, landTint]  (I4: colors are pure fn of t)
+const SKYK = [
+  {t:0.00, top:[0x0B,0x10,0x26], hor:[0x1E,0x2A,0x44], sun:[0xAF,0xC7,0xFF], land:[0x2C,0x3A,0x34], amb:0.16}, // night
+  {t:0.20, top:[0x24,0x30,0x4A], hor:[0xE9,0xA1,0x7C], sun:[0xFF,0xD9,0xA0], land:[0x5A,0x6A,0x55], amb:0.55}, // dawn
+  {t:0.50, top:[0x2E,0x6B,0xB0], hor:[0xBF,0xE0,0xF0], sun:[0xFF,0xF4,0xC2], land:[0x6A,0x99,0x4E], amb:1.00}, // day
+  {t:0.80, top:[0x3A,0x23,0x50], hor:[0xE8,0x6A,0x5C], sun:[0xFF,0x9E,0x5E], land:[0x4E,0x5A,0x46], amb:0.50}, // dusk
+  {t:1.00, top:[0x0B,0x10,0x26], hor:[0x1E,0x2A,0x44], sun:[0xAF,0xC7,0xFF], land:[0x2C,0x3A,0x34], amb:0.16}, // wrap→night
+];
+const FLOWER = [[0xE8,0xA0,0xBF],[0xF2,0xC1,0x4E],[0xE6,0x6E,0x7A],[0xC9,0xB4,0xF0]];
+
+/* ---- PRNG: mulberry32 + coordinate hashing (I1) -------------------------- */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+// deterministic per-integer-coordinate hash → seed
+function hash2(x, y){
+  let h = Math.imul(x | 0, 0x27d4eb2d) ^ Math.imul(y | 0, 0x165667b1) ^ SEED;
+  h = Math.imul(h ^ (h >>> 15), 0x2c1b3c6d);
+  h = Math.imul(h ^ (h >>> 12), 0x297a2d39);
+  return (h ^ (h >>> 15)) >>> 0;
+}
+const lerp = (a,b,t)=>a+(b-a)*t;
+const clamp = (v,a,b)=>v<a?a:v>b?b:v;
+const smooth = t=>t*t*(3-2*t);
+function lerp3(a,b,t){ return [lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)]; }
+const rgb = c=>`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
+const rgba = (c,a)=>`rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`;
+
+/* value-noise (1D & 2D) used by FORGE hills and GRIT textures --------------- */
+function vnoise1(x, seed){
+  const xi = Math.floor(x), xf = x - xi;
+  const r = i => (mulberry32(hash2(i, seed))());
+  return lerp(r(xi), r(xi+1), smooth(xf));
+}
+function fbm1(x, seed, oct){
+  let a=0.5, f=1, s=0, n=0;
+  for(let i=0;i<oct;i++){ s += a*vnoise1(x*f, seed+i*101); n+=a; a*=0.5; f*=2; }
+  return s/n;
+}
+function vnoise2(x,y,seed){
+  const xi=Math.floor(x), yi=Math.floor(y), xf=x-xi, yf=y-yi;
+  const r=(a,b)=>mulberry32(hash2(a*1013+b*57, seed))();
+  const u=smooth(xf), v=smooth(yf);
+  return lerp(lerp(r(xi,yi),r(xi+1,yi),u), lerp(r(xi,yi+1),r(xi+1,yi+1),u), v);
+}
+function fbm2(x,y,seed,oct){
+  let a=0.5,f=1,s=0,n=0;
+  for(let i=0;i<oct;i++){ s+=a*vnoise2(x*f,y*f,seed+i*71); n+=a; a*=0.5; f*=2; }
+  return s/n;
+}
+
+/* ===========================================================================
+   FORGE — geometry.  Hills (summed sines + fbm), L-system trees, bird boids.
+   =========================================================================== */
+// 6 depth layers: 0=far mountains ... 5=foreground grass. parallax rate ↑ with idx (I3).
+const LAYERS = [
+  {i:0, par:0.06, base:0.34, amp:0.10, freq:0.00090, oct:2, hue:[0x6C,0x7A,0x89], trees:0,  fog:0.72},
+  {i:1, par:0.12, base:0.44, amp:0.09, freq:0.00140, oct:3, hue:[0x53,0x6B,0x62], trees:0,  fog:0.52},
+  {i:2, par:0.24, base:0.55, amp:0.10, freq:0.00220, oct:3, hue:[0x45,0x6A,0x45], trees:10, fog:0.34},
+  {i:3, par:0.42, base:0.66, amp:0.11, freq:0.00320, oct:4, hue:[0x3C,0x60,0x3A], trees:14, fog:0.18},
+  {i:4, par:0.68, base:0.78, amp:0.12, freq:0.00450, oct:4, hue:[0x35,0x55,0x33], trees:16, fog:0.07},
+  {i:5, par:1.00, base:0.90, amp:0.10, freq:0.00650, oct:4, hue:[0x2E,0x49,0x2C], trees:0,  fog:0.00},
+];
+// hill surface height (screen y) for a layer at world-x  (I2's source of truth)
+function hillY(layer, wx, H){
+  const L = layer;
+  let s = 0;
+  // three summed sines (seeded per layer) + fbm detail
+  const sd = SEED ^ (L.i*2654435761);
+  const r = mulberry32(sd);
+  for(let k=0;k<3;k++){
+    const amp = L.amp*(1-k*0.28)*(0.7+0.6*r());
+    const fr  = L.freq*(1+k*1.7)*(0.7+0.6*r());
+    const ph  = r()*TAU;
+    s += amp*Math.sin(wx*fr + ph);
+  }
+  s += (fbm1(wx*L.freq*90, sd, L.oct)-0.5)*L.amp*1.1;
+  return (L.base + s) * H;
+}
+// L-system tree skeleton: array of {x1,y1,x2,y2,w,leaf} in LOCAL space (root at 0,0)
+function buildTree(seed, scale){
+  const r = mulberry32(seed);
+  const segs = [];
+  const axiom = "F";
+  const rule = () => (r()<0.5 ? "FF[+FL][-FL][F]" : "F[+FL][-F[+FL]L][-FL]");
+  let s = axiom;
+  const iters = 2 + (r()<0.5?0:1);
+  for(let i=0;i<iters;i++){ let o=""; for(const ch of s){ o += ch==="F"?rule():ch; } s=o; }
+  const len = scale*(0.9+0.4*r());
+  const dAng = (16+r()*20)*Math.PI/180;
+  const stack=[]; let x=0,y=0,ang=-Math.PI/2, w=Math.max(1.8, scale*0.13), depth=0;
+  for(const ch of s){
+    if(ch==="F"){
+      const nx=x+Math.cos(ang)*len*Math.pow(0.72,depth), ny=y+Math.sin(ang)*len*Math.pow(0.72,depth);
+      segs.push({x1:x,y1:y,x2:nx,y2:ny,w:Math.max(1,w*Math.pow(0.74,depth)),leaf:false});
+      x=nx; y=ny;
+    } else if(ch==="L"){ segs.push({x1:x,y1:y,x2:x,y2:y,w:0,leaf:true,r:scale*(0.24+0.14*r())}); }
+    else if(ch==="+"){ ang+=dAng*(0.8+0.4*r()); }
+    else if(ch==="-"){ ang-=dAng*(0.8+0.4*r()); }
+    else if(ch==="["){ stack.push([x,y,ang,depth]); depth++; }
+    else if(ch==="]"){ const p=stack.pop(); if(p){ x=p[0];y=p[1];ang=p[2];depth=p[3]; } }
+  }
+  return segs;
+}
+// Poisson-ish tree placement per chunk for a layer (I6: min spacing enforced)
+const treeCache = new Map();          // key: layer.i+"@"+chunk  → [{wx, segs, scale, phase, kind}]
+function chunkTrees(layer, chunk, H){
+  const key = layer.i+"@"+chunk;
+  let arr = treeCache.get(key);
+  if(arr) return arr;
+  arr = [];
+  if(layer.trees>0){
+    const base = chunk*CHUNK;
+    const r = mulberry32(hash2(chunk*13+layer.i, 0xA11CE));
+    const minGap = 3*U * (1.6 - layer.par); // I6 radius, wider on far layers
+    let lastX = -1e9;
+    const n = layer.trees;
+    for(let k=0;k<n;k++){
+      const wx = base + (k+0.5)/n*CHUNK + (r()-0.5)*CHUNK/n*0.8;
+      if(wx-lastX < minGap) continue;    // I6
+      lastX = wx;
+      const scale = (U*1.1 + r()*U*2.2) * (0.5+layer.par*0.9);
+      const segs = buildTree(hash2(Math.round(wx), layer.i*7+3), scale);
+      arr.push({wx, segs, scale, phase:r()*TAU, sway:0.35+r()*0.5});
+    }
+  }
+  treeCache.set(key, arr);
+  if(treeCache.size>220){ treeCache.delete(treeCache.keys().next().value); } // bound memory
+  return arr;
+}
+// Local-space bounds of a tree skeleton (for the cached sprite)
+function treeBounds(tr){
+  if(tr.b) return tr.b;
+  let minX=0,maxX=0,minY=0,maxY=0;
+  for(const s of tr.segs){
+    if(s.leaf){ const rr=s.r*2.6*0.5;
+      minX=Math.min(minX,s.x1-rr); maxX=Math.max(maxX,s.x1+rr);
+      minY=Math.min(minY,s.y1-rr); maxY=Math.max(maxY,s.y1+rr); }
+    else { minX=Math.min(minX,s.x1,s.x2); maxX=Math.max(maxX,s.x1,s.x2);
+      minY=Math.min(minY,s.y1,s.y2); maxY=Math.max(maxY,s.y1,s.y2); }
+  }
+  const pad=8;
+  tr.b={minX:minX-pad,maxX:maxX+pad,minY:minY-pad,maxY:maxY+pad};
+  return tr.b;
+}
+/* PERF: a tree's segments never change; only the bark tint follows the day. Bake the
+   whole tree (branches + leaf sprites) into one canvas and blit it under a shear, so the
+   ~180 on-screen trees stop costing thousands of draw calls per frame. Re-bake is spread
+   over a few trees per frame so a time-of-day band change never hitches. */
+let treeBakeBudget=0;
+function treeSprite(tr, band, amb){
+  if(tr.sprite && tr.spriteBand===band) return tr.sprite;
+  if(tr.sprite && treeBakeBudget<=0) return tr.sprite;   // keep the stale tint a few frames
+  const b=treeBounds(tr), W=Math.ceil(b.maxX-b.minX), H=Math.ceil(b.maxY-b.minY), SS=0.75;
+  const cv=makeCanvas(Math.max(1,Math.ceil(W*SS)),Math.max(1,Math.ceil(H*SS))), c=cv.getContext("2d");
+  c.scale(SS,SS); c.translate(-b.minX,-b.minY);
+  const barkShade=0.35+0.5*amb;
+  for(const s of tr.segs){
+    if(s.leaf){ const lv=(Math.abs((s.x1*7+s.y1)|0)%3), r=s.r*2.6;
+      c.drawImage(TEX.leaf[lv], s.x1-r/2, s.y1-r/2, r, r); }
+    else { c.strokeStyle=`rgb(${(58*barkShade)|0},${(42*barkShade)|0},${(30*barkShade)|0})`;
+      c.lineWidth=s.w; c.lineCap="round"; c.beginPath(); c.moveTo(s.x1,s.y1); c.lineTo(s.x2,s.y2); c.stroke(); }
+  }
+  tr.sprite=cv; tr.spriteBand=band;
+  treeBakeBudget--;
+  return cv;
+}
+// PULSE: bird boids (a flock crossing the sky)
+const flock = [];
+function initFlock(){
+  flock.length=0;
+  const r = mulberry32(SEED^0xB1D5);
+  const n = 22;
+  for(let i=0;i<n;i++){
+    flock.push({x:r()*innerWidth, y:innerHeight*(0.12+0.28*r()),
+      vx:20+r()*20, vy:(r()-0.5)*10, ph:r()*TAU});
+  }
+}
+
+/* ===========================================================================
+   GRIT — textures.  Everything baked ONCE into offscreen canvases (I5).
+   =========================================================================== */
+const TEX = {};
+function makeCanvas(w,h){ const cv=document.createElement("canvas"); cv.width=w; cv.height=h; return cv; }
+function bakeTextures(){
+  // ground band per layer: tinted fbm/worley strip, tileable across CHUNK width
+  TEX.hill = LAYERS.map(L=>{
+    const w=CHUNK, h=260, cv=makeCanvas(w,h), g=cv.getContext("2d");
+    const img=g.createImageData(w,h), d=img.data, sd=SEED^(L.i*99991);
+    const worX = (x,y)=>{ // worley speckle for texture grain
+      let m=1; for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++){
+        const cx=Math.floor(x/22)+ox, cy=Math.floor(y/22)+oy;
+        const rr=mulberry32(hash2(cx*7+cy*131, sd));
+        const px=(cx+rr())*22, py=(cy+rr())*22, dx=x-px, dy=y-py;
+        m=Math.min(m, Math.sqrt(dx*dx+dy*dy)/22);
+      } return m; };
+    for(let y=0;y<h;y++){ for(let x=0;x<w;x++){
+      const n = fbm2(x/40, y/40, sd, 4);
+      const grain = 0.78+0.42*worX(x,y);
+      const shade = (0.5 + 0.75*n) * grain - y/h*0.30; // darken downward, more contrast
+      const base = L.hue;
+      const i=(y*w+x)*4;
+      // wraparound seam blend (tileable): fade last 40px toward x=0 sample
+      let R=base[0]*shade, Gc=base[1]*shade, B=base[2]*shade;
+      d[i]=clamp(R,0,255); d[i+1]=clamp(Gc,0,255); d[i+2]=clamp(B,0,255); d[i+3]=255;
+    }}
+    // seam fix: average left/right edges for tiling
+    for(let y=0;y<h;y++){ for(let x=0;x<40;x++){
+      const iL=(y*w+x)*4, iR=(y*w+(w-40+x))*4, a=x/40;
+      for(let k=0;k<3;k++){ const v=lerp(d[iR+k],d[iL+k],0.5); if(x<8){d[iL+k]=v;d[iR+k]=v;} }
+    }}
+    g.putImageData(img,0,0);
+    return cv;
+  });
+  // foliage blob sprite (radial soft, speckled) — one per a few hue variants
+  TEX.leaf = [0,1,2].map(v=>{
+    const s=64, cv=makeCanvas(s,s), g=cv.getContext("2d"), sd=SEED^(v*7333+1);
+    const img=g.createImageData(s,s), d=img.data, cxp=s/2, cyp=s/2;
+    const tint=[[0x3f,0x6b,0x33],[0x57,0x86,0x40],[0x74,0x9a,0x4a]][v];
+    for(let y=0;y<s;y++)for(let x=0;x<s;x++){
+      const dx=x-cxp,dy=y-cyp, r=Math.sqrt(dx*dx+dy*dy)/(s/2);
+      const n=fbm2(x/9,y/9,sd,3);
+      let a= clamp(1-r,0,1); a=Math.pow(a,1.4)*(0.55+0.7*n);
+      const sh=0.7+0.55*n;
+      const i=(y*s+x)*4;
+      d[i]=tint[0]*sh; d[i+1]=tint[1]*sh; d[i+2]=tint[2]*sh; d[i+3]=clamp(a*255,0,255);
+    }
+    g.putImageData(img,0,0); return cv;
+  });
+  // cloud sprite (fbm alpha puff)
+  TEX.cloud = (()=>{ const w=220,h=110,cv=makeCanvas(w,h),g=cv.getContext("2d");
+    const img=g.createImageData(w,h),d=img.data,sd=SEED^0xC10D;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const dx=(x-w/2)/(w/2),dy=(y-h/2)/(h/2), r=Math.sqrt(dx*dx+dy*dy*2.2);
+      const n=fbm2(x/26,y/26,sd,4); let a=clamp(1-r,0,1); a=Math.pow(a,1.5)*n*1.7;
+      const i=(y*w+x)*4; d[i]=255;d[i+1]=255;d[i+2]=255;d[i+3]=clamp(a*255,0,190);
+    } g.putImageData(img,0,0); return cv; })();
+  // starfield positions (baked list)
+  TEX.stars=[]; const sr=mulberry32(SEED^0x57A25);
+  for(let i=0;i<220;i++) TEX.stars.push({x:sr(), y:sr()*0.6, s:0.5+sr()*1.6, tw:sr()*TAU});
+  // cloud instances (parallax) — deterministic
+  TEX.clouds=[]; const cr=mulberry32(SEED^0xC10005);
+  for(let i=0;i<9;i++) TEX.clouds.push({x:cr()*3000, y:cr()*0.34, sc:0.6+cr()*1.4, par:0.05+cr()*0.14, sp:6+cr()*10});
+}
+
+/* ===========================================================================
+   LUMEN — light.  Sky gradient, sun arc, god rays, fog, rim, vignette, stars.
+   =========================================================================== */
+function skyAt(t){ // returns interpolated keyframe (I4)
+  let a=SKYK[0], b=SKYK[1];
+  for(let i=0;i<SKYK.length-1;i++){ if(t>=SKYK[i].t && t<=SKYK[i+1].t){ a=SKYK[i]; b=SKYK[i+1]; break; } }
+  const k=smooth((t-a.t)/(b.t-a.t||1));
+  return { top:lerp3(a.top,b.top,k), hor:lerp3(a.hor,b.hor,k), sun:lerp3(a.sun,b.sun,k),
+           land:lerp3(a.land,b.land,k), amb:lerp(a.amb,b.amb,k) };
+}
+// Phase word derived from the SAME keyframes the sky interpolates (dawn=0.20, day=0.50,
+// dusk=0.80). The old hardcoded cutoffs said "DAWN" until t=0.30 while the art had already
+// crossed the dawn keyframe at 0.20, so the label and the sky disagreed by ~0.1 of a day.
+const PHASES=[[0.10,"NIGHT"],[0.25,"DAWN"],[0.65,"DAY"],[0.90,"DUSK"],[1.01,"NIGHT"]];
+function phaseName(t){ for(const p of PHASES){ if(t<p[0]) return p[1]; } return "NIGHT"; }
+// sun screen position: arcs left→right, elevation by sin (I4)
+function sunPos(t,W,H){
+  const day = (t-0.20+1)%1;                 // 0 at dawn
+  const ang = day*TAU;                       // full circle over the day
+  const x = W*(0.08+0.84*((day)%1));
+  const y = H*(0.86) - Math.sin(clamp((t-0.2)/0.6,0,1)*Math.PI)*H*0.78;
+  const elev = Math.sin(clamp((t-0.2)/0.6,0,1)*Math.PI); // 0..1 daylight
+  return {x,y,elev};
+}
+
+/* ===========================================================================
+   PULSE — motion state (time, camera, springs) + input.
+   =========================================================================== */
+const state = { t:0.28, tRate:1/90, tSpeed:1, tPaused:false, camX:0, camV:36, camTarget:36,
+                fireflies:[], last:0, W:0, H:0 };
+const DAYSPEEDS=[0.25,0.5,1,2,4];   // gentle control over the day cycle (not a game mechanic)
+function initFireflies(){
+  state.fireflies.length=0; const r=mulberry32(SEED^0xF1F1);
+  for(let i=0;i<60;i++) state.fireflies.push({x:r(),y:0.5+r()*0.45,ph:r()*TAU,sp:0.3+r()*0.7});
+}
+const keys={};
+addEventListener("keydown",e=>{ keys[e.code]=true;
+  if(e.code==="Space"){ state.tPaused=!state.tPaused; e.preventDefault(); }
+  if(e.code==="BracketLeft") state.t=(state.t-0.03+1)%1;
+  if(e.code==="BracketRight") state.t=(state.t+0.03)%1;
+  if(e.code==="Comma"||e.code==="Minus"){ state.tSpeed=DAYSPEEDS[Math.max(0,DAYSPEEDS.indexOf(state.tSpeed)-1)]; }
+  if(e.code==="Period"||e.code==="Equal"){ state.tSpeed=DAYSPEEDS[Math.min(DAYSPEEDS.length-1,DAYSPEEDS.indexOf(state.tSpeed)+1)]; }
+  if(e.code==="KeyL") toggleLog();
+  if(e.code==="KeyR"){ SEED=(hash2(Date.now()&0xffff, (state.camX|0))>>>0); reseed(); }
+});
+addEventListener("keyup",e=>{ keys[e.code]=false; });
+
+/* ===========================================================================
+   MAIN — compose layers back→front (I3), dt-based loop (I7).
+   =========================================================================== */
+const cv=document.getElementById("c"), ctx=cv.getContext("2d");
+const hud=document.getElementById("hud");
+function resize(){ state.W=cv.width=innerWidth; state.H=cv.height=innerHeight; }
+addEventListener("resize",()=>{ resize(); });
+function reseed(){ treeCache.clear(); bakeTextures(); initFlock(); initFireflies(); }
+
+/* PERF: a hill layer is a pure horizontal translation of itself (the ridge samples
+   wx = camX+x and the tile scrolls by the same camX), so it is baked ONCE into an
+   offscreen strip and blitted until the camera or the day band moves past the margin.
+   The old version rebuilt the ridge (3 sines + fbm per step) and re-tinted six full
+   bands every frame. */
+const HILL_MARGIN=384;
+const hillStrips=LAYERS.map(()=>null);   // {cv,P0,band,W,H,seed}
+let hillBakeBudget=0;
+function hillStrip(L, sky, sun, W, H, P, band){
+  let s=hillStrips[L.i];
+  if(s && s.W===W && s.H===H && s.band===band && s.seed===SEED && Math.abs(P-s.P0)<=HILL_MARGIN-8) return s;
+  if(s && hillBakeBudget<=0) return s;   // keep the stale band for a frame or two: no hitch
+  const GW=W+HILL_MARGIN*2, step=Math.max(6,U*0.5), SS=0.5;  // PERF: hills sit under fog; bake at half res
+  const cv=makeCanvas(Math.ceil(GW*SS),Math.ceil(H*SS)), c=cv.getContext("2d");
+  c.scale(SS,SS);
+  // strip pixel u == screen x (u-HILL_MARGIN) for camera offset P
+  const surf=[]; c.beginPath();
+  for(let u=-step;u<=GW+step;u+=step){
+    const y=hillY(L, P+(u-HILL_MARGIN), H);
+    surf.push([u,y]); if(u===-step) c.moveTo(u,y); else c.lineTo(u,y);
+  }
+  c.lineTo(GW+step,H); c.lineTo(0,H); c.closePath();
+  const tex=TEX.hill[L.i];
+  c.save(); c.clip();
+  const ox=((-P)%CHUNK+CHUNK)%CHUNK;
+  let topY=H; for(const p of surf){ if(p[1]<topY) topY=p[1]; } topY-=4;
+  for(let sx=-ox-CHUNK; sx<GW+CHUNK; sx+=CHUNK) c.drawImage(tex, sx, topY);
+  c.globalCompositeOperation="multiply";
+  c.fillStyle=rgba(sky.land, 0.55*sky.amb+0.25); c.fillRect(0,topY,GW,H-topY);
+  c.globalCompositeOperation="source-over";
+  c.fillStyle=rgba(sky.hor, L.fog*(0.45+0.4*(1-sky.amb))); c.fillRect(0,topY,GW,H-topY);
+  c.restore();
+  // rim light on crest (sun-tinted) — I: only lit side
+  c.lineWidth=Math.max(1.2,2.5-L.i*0.3);
+  c.strokeStyle=rgba(sky.sun, 0.10+0.22*sun.elev*(1-L.fog));
+  c.beginPath(); surf.forEach((p,i)=> i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1])); c.stroke();
+  s={cv,P0:P,band,W,H,seed:SEED}; hillStrips[L.i]=s;
+  hillBakeBudget--;
+  return s;
+}
+function drawHillLayer(L, sky, sun){
+  const W=state.W, H=state.H, P=state.camX*L.par;
+  const band=Math.min(15,Math.max(0,(state.t*16)|0));   // day tint quantised, not per-frame
+  const s=hillStrip(L,sky,sun,W,H,P,band);
+  // blit only the on-screen window of the half-res strip (the 384px margins are for scrolling)
+  const SS=0.5, srcX=Math.max(0,Math.min(s.cv.width-W*SS,((P-s.P0)+HILL_MARGIN)*SS));
+  ctx.drawImage(s.cv, srcX, 0, W*SS, H*SS, 0, 0, W, H);
+}
+function drawTrees(L, sky, sun){
+  const W=state.W,H=state.H, camX=state.camX*L.par;
+  const c0=Math.floor(camX/CHUNK)-1, c1=Math.floor((camX+W)/CHUNK)+1;
+  const time=performance.now()/1000;
+  const band=Math.min(7,Math.max(0,(sky.amb*8)|0));   // day tint is quantised, not per-frame
+  treeBakeBudget=6;                                    // refresh at most 6 tree sprites/frame
+  for(let c=c0;c<=c1;c++){
+    for(const tr of chunkTrees(L,c,H)){
+      const sx=tr.wx-camX; if(sx<-60||sx>W+60) continue;
+      if(tr.syH!==H){ tr.syH=H; tr.sy=hillY(L,tr.wx,H); }   // I2: root on the surface
+      const sy=tr.sy;
+      const sway=Math.sin(time*tr.sway+tr.phase)*0.05*(1+L.par);
+      const spr=treeSprite(tr,band,sky.amb);
+      const b=tr.b;
+      ctx.save(); ctx.translate(sx,sy);
+      ctx.transform(1,0,sway,1,0,0);          // wind shear == the old per-segment offset
+      ctx.drawImage(spr, b.minX, b.minY, b.maxX-b.minX, b.maxY-b.minY);
+      ctx.restore();
+    }
+  }
+}
+/* PERF: the blade/PRNG rebuild was the named waste. The ground is now baked ONCE into an
+   offscreen canvas and only rebuilt when the seed, the time-of-day band, the canvas size or
+   the world-anchored bake origin changes — never per frame. */
+const GROUND_MARGIN=384;
+let groundCache=null;                          // {cv,camX0,band,W,H,seed}
+function groundBake(L,W,H,band,amb,camX0){
+  const GW=W+GROUND_MARGIN*2;
+  const cv=makeCanvas(GW,H), c=cv.getContext("2d");
+  const step=U*0.6;
+  const c0=Math.floor((camX0-GROUND_MARGIN)/step), n=Math.ceil(GW/step)+2;
+  const gcol=`rgba(${(40*amb+18)|0},${(70*amb+30)|0},${(36*amb+16)|0},.9)`;
+  for(let i=0;i<n;i++){
+    const gx=(c0+i)*step, sx=(gx-camX0)+GROUND_MARGIN, sy=hillY(L,gx,H);
+    const r=mulberry32(hash2(Math.round(gx), 0x6215));
+    const bl=3+((r()*3)|0);
+    for(let b=0;b<bl;b++){
+      const bx=sx+(b-bl/2)*3, h=U*(0.5+r()*0.9), sway=Math.sin(gx*0.1+b)*4*(0.4+0.6*(1-amb+0.4));
+      c.strokeStyle=gcol; c.lineWidth=1.6; c.beginPath();
+      c.moveTo(bx,sy); c.quadraticCurveTo(bx+sway*0.5,sy-h*0.6,bx+sway,sy-h); c.stroke();
+    }
+    if(r()<0.10){ const fc=FLOWER[(r()*FLOWER.length)|0], fx=sx,fy=sy-U*0.8;
+      c.fillStyle=rgba(fc,0.7+0.3*amb);
+      for(let p=0;p<5;p++){ const a=p*GOLD; c.beginPath(); c.arc(fx+Math.cos(a)*3,fy+Math.sin(a)*3,2.2,0,TAU); c.fill(); }
+      c.fillStyle=rgba([255,230,120],0.9); c.beginPath(); c.arc(fx,fy,1.8,0,TAU); c.fill();
+    }
+  }
+  return {cv,camX0,band,W,H,seed:SEED};
+}
+function drawGround(L, sky){ /* foreground grass blades + flowers on nearest layer */
+  const W=state.W,H=state.H,camX=state.camX*L.par;
+  const band=Math.min(7,Math.max(0,(sky.amb*8)|0));
+  let g=groundCache;
+  if(!g || g.W!==W || g.H!==H || g.band!==band || g.seed!==SEED || Math.abs(camX-g.camX0)>GROUND_MARGIN-8){
+    g=groundCache=groundBake(L,W,H,band,sky.amb,camX);
+  }
+  const srcX=Math.max(0,Math.min(g.cv.width-W,(camX-g.camX0)+GROUND_MARGIN));
+  ctx.drawImage(g.cv, srcX, 0, W, H, 0, 0, W, H);
+}
+
+/* ===========================================================================
+   FIELD LOG — the observation layer.  Not a game: no score, no timer, no fail.
+   A species is credited only while it is actually IN VIEW (a pan past it is not
+   enough — it must stay visible for a moment), and the life-list persists.
+   Evaluation is throttled to ~5 Hz and never runs per frame, so the render cost
+   the last pass won is untouched.  ADDITIVE: new localStorage key only.
+   =========================================================================== */
+const LOG_KEY="lw.fieldlog.v1";          // NEW key; nothing renamed
+const SPECIES=[
+  {id:"ridge",  kind:"tree",     name:"Ridge tree",   test:v=>v.trees[2]},
+  {id:"slope",  kind:"tree",     name:"Slope tree",   test:v=>v.trees[3]},
+  {id:"valley", kind:"tree",     name:"Valley tree",  test:v=>v.trees[4]},
+  {id:"pink",   kind:"bloom",    name:"Pink bloom",   test:v=>v.flowers[0]},
+  {id:"gold",   kind:"bloom",    name:"Gold bloom",   test:v=>v.flowers[1]},
+  {id:"coral",  kind:"bloom",    name:"Coral bloom",  test:v=>v.flowers[2]},
+  {id:"lilac",  kind:"bloom",    name:"Lilac bloom",  test:v=>v.flowers[3]},
+  {id:"flock",  kind:"creature", name:"Bird flock",   test:v=>v.flock},
+  {id:"firefly",kind:"creature", name:"Fireflies",    test:v=>v.fireflies},
+  {id:"stars",  kind:"sky",      name:"Starfield",    test:v=>v.stars},
+  {id:"moon",   kind:"sky",      name:"Moon",         test:v=>v.moon},
+  {id:"rays",   kind:"sky",      name:"God-rays",     test:v=>v.rays},
+  {id:"sunrise",kind:"sky",      name:"Sunrise",      test:v=>v.sunrise},
+  {id:"dusk",   kind:"sky",      name:"Dusk",         test:v=>v.dusk},
+];
+const fieldLog=(()=>{ let seen={},first={};
+  try{ const raw=localStorage.getItem(LOG_KEY); if(raw){ const o=JSON.parse(raw);
+    if(o&&o.seen&&typeof o.seen==="object"){ seen=o.seen; first=o.first||{}; } } }catch(e){}
+  return {seen,first};                              // try/catch: file:// must still work
+})();
+const dwell={}; let logVisible=true, obsAcc=0, newId=null;
+function loggedCount(){ let n=0; for(const s of SPECIES) if(fieldLog.seen[s.id]) n++; return n; }
+function saveLog(){ try{ localStorage.setItem(LOG_KEY, JSON.stringify({v:1,seen:fieldLog.seen,first:fieldLog.first,updated:Date.now()})); }catch(e){} }
+function renderLog(){
+  const el=document.getElementById("log"); if(!el) return;
+  if(!logVisible){ el.style.display="none"; return; } el.style.display="";
+  let h='<h4>FIELD LOG \u00b7 <span class="n">'+loggedCount()+" of "+SPECIES.length+'</span> logged</h4>';
+  for(const s of SPECIES){ const on=!!fieldLog.seen[s.id];
+    h+='<div class="row '+(on?"on":"off")+(s.id===newId?" new":"")+'"><span class="t">'+(on?"\u2713":"\u00b7")+"</span>"+(on?s.name:"? "+s.kind)+"</div>"; }
+  el.innerHTML=h;
+}
+function toast(msg){
+  const el=document.getElementById("toast"); if(!el) return;
+  el.textContent=msg; el.className="show";
+  clearTimeout(toast._t); toast._t=setTimeout(()=>{ el.className=""; },2600);
+}
+function toggleLog(){ logVisible=!logVisible; renderLog(); }
+// which tree layers have a trunk inside the current viewport
+function visibleTrees(){
+  const W=state.W,H=state.H,camX=state.camX,on={};
+  for(const li of LAYER_TREE_IDS){ const L=LAYERS[li];
+    const c0=Math.floor(camX*L.par/CHUNK)-1, c1=Math.floor((camX*L.par+W)/CHUNK)+1;
+    for(let c=c0;c<=c1&&!on[li];c++){ for(const tr of chunkTrees(L,c,H)){
+      const sx=tr.wx-camX*L.par; if(sx>-50&&sx<W+50){ on[li]=true; break; } } } }
+  return on;
+}
+const LAYER_TREE_IDS=[2,3,4];
+// which bloom colours are baked into the on-screen window of the ground layer.
+// Mirrors groundBake()'s exact PRNG sequence so the log never credits a bloom
+// that is not actually drawn.
+function visibleFlowers(){
+  const out={}, g=groundCache; if(!g) return out;
+  const step=U*0.6, W=g.W;
+  const c0=Math.floor((g.camX0-GROUND_MARGIN)/step), n=Math.ceil((W+GROUND_MARGIN*2)/step)+2;
+  for(let i=0;i<n;i++){
+    const gx=(c0+i)*step, sx=(gx-g.camX0)+GROUND_MARGIN;
+    if(sx<0||sx>W) continue;
+    const r=mulberry32(hash2(Math.round(gx),0x6215)), bl=3+((r()*3)|0);
+    for(let b=0;b<bl;b++) r();
+    if(r()<0.10) out[(r()*FLOWER.length)|0]=true;
+  }
+  return out;
+}
+function viewState(){
+  const W=state.W,H=state.H,sky=skyAt(state.t),sun=sunPos(state.t,W,H);
+  const v={trees:visibleTrees(),flowers:visibleFlowers()};
+  v.flock=flock.some(b=>b.x>-10&&b.x<W+10&&b.y>0&&b.y<H);
+  v.fireflies=sky.amb<0.55&&state.fireflies.length>0;   // same gate the draw uses
+  v.stars=sky.amb<0.5;
+  v.moon=sun.elev<=0.02&&sky.amb<0.5;                   // disk is the moon at night
+  v.rays=sun.elev>0.15;
+  v.sunrise=state.t>=0.14&&state.t<0.26&&sun.elev>0.02;
+  v.dusk=state.t>=0.66&&state.t<0.84&&sun.elev>0.02;
+  return v;
+}
+function observe(dt){
+  obsAcc+=dt; if(obsAcc<0.2) return; obsAcc=0;
+  if(!state.W) return;
+  const v=viewState();
+  let changed=false;
+  for(const s of SPECIES){
+    if(fieldLog.seen[s.id]) continue;
+    let hit=false; try{ hit=!!s.test(v); }catch(e){ hit=false; }
+    dwell[s.id]=hit?(dwell[s.id]||0)+0.2:0;            // must LOOK, not just pass by
+    if(dwell[s.id]>=0.6){ fieldLog.seen[s.id]=true; fieldLog.first[s.id]=Date.now();
+      newId=s.id; saveLog(); changed=true; toast("NEW SIGHTING \u00b7 "+s.name); }
+  }
+  if(changed) renderLog();
+}
+// static world fingerprint: a pure function of SEED (never of t or the camera)
+function worldHash(){
+  let h=0x9e3779b9>>>0;
+  const mix=v=>{ h=(h^((v|0)>>>0))>>>0; h=Math.imul(h,0x85ebca6b)>>>0; h=(h^(h>>>13))>>>0; };
+  mix(SEED);
+  for(const L of LAYERS){ for(let c=-2;c<=2;c++){ const arr=chunkTrees(L,c,720);
+    mix(arr.length);
+    for(const tr of arr){ mix(Math.round(tr.wx*100)); mix(Math.round(tr.scale*1000)); mix(tr.segs.length); } } }
+  for(let i=0;i<96;i++) mix(Math.round(hillY(LAYERS[i%6], i*97.3, 720)*100));
+  for(let i=0;i<256;i++){ const gx=i*U*0.6;
+    const r=mulberry32(hash2(Math.round(gx),0x6215)), bl=3+((r()*3)|0);
+    for(let b=0;b<bl;b++) r();
+    if(r()<0.10) mix((r()*FLOWER.length)|0); }
+  return h.toString(16).padStart(8,"0");
+}
+
+/* PERF: the full-screen sky gradient, the full-screen sun/moon glow and the vignette are
+   rebuilt only when the day band or the canvas size changes; each frame they are blits. */
+let dayArt={band:-1,W:0,H:0};
+function bakeDayArt(sky,sun,W,H,band){
+  const bg=makeCanvas(W,H), b=bg.getContext("2d");
+  const g=b.createLinearGradient(0,0,0,H*0.9);
+  g.addColorStop(0,rgb(sky.top)); g.addColorStop(1,rgb(sky.hor));
+  b.fillStyle=g; b.fillRect(0,0,W,H);
+  const isDay=sun.elev>0.02, disk=isDay?sky.sun:[220,230,255], R=Math.ceil(H*0.5);
+  const sc=makeCanvas(R*2,R*2), s=sc.getContext("2d");
+  const rg=s.createRadialGradient(R,R,2,R,R,R);
+  rg.addColorStop(0,rgba(disk,0.9)); rg.addColorStop(0.08,rgba(disk,0.5*(0.4+sun.elev)));
+  rg.addColorStop(0.4,rgba(disk,0.06*(0.4+sun.elev))); rg.addColorStop(1,rgba(disk,0));
+  s.fillStyle=rg; s.fillRect(0,0,R*2,R*2);
+  s.fillStyle=rgba(disk,0.95); s.beginPath(); s.arc(R,R,isDay?20:14,0,TAU); s.fill();
+  const vc=makeCanvas(W,H), v=vc.getContext("2d");
+  const vg2=v.createRadialGradient(W/2,H*0.5,H*0.3,W/2,H*0.55,H*0.95);
+  vg2.addColorStop(0,"rgba(0,0,0,0)"); vg2.addColorStop(1,"rgba(0,0,0,"+(0.28+0.24*(1-sky.amb))+")");
+  v.fillStyle=vg2; v.fillRect(0,0,W,H);
+  dayArt={band,W,H,bg,sun:sc,sunR:R,vig:vc};
+}
+
+function frame(now){
+  const dt=Math.min(0.05,(now-(state.last||now))/1000); state.last=now;
+  const W=state.W,H=state.H;
+  // PULSE: time + camera springs (I7)
+  if(!state.tPaused) state.t=(state.t+dt*state.tRate*state.tSpeed)%1;
+  state.camTarget = keys.KeyW||keys.ShiftLeft?150:36;
+  let dir=0; if(keys.KeyA||keys.ArrowLeft)dir-=1; if(keys.KeyD||keys.ArrowRight)dir+=1;
+  const desired = dir!==0 ? dir*Math.abs(state.camTarget)*2.4 : state.camTarget;
+  state.camV += (desired-state.camV)*Math.min(1,dt*3);   // spring to target vel
+  state.camX += state.camV*dt;
+  const sky=skyAt(state.t), sun=sunPos(state.t,W,H);
+
+  // --- L0: sky gradient + sun glow (PERF: baked per day band, blitted each frame) ---
+  const band=Math.min(15,Math.max(0,(state.t*16)|0));
+  if(dayArt.band!==band || dayArt.W!==W || dayArt.H!==H) bakeDayArt(sky,sun,W,H,band);
+  ctx.drawImage(dayArt.bg,0,0);
+  // stars (night)
+  if(sky.amb<0.5){ const sa=(0.5-sky.amb)/0.5; const tt=now/1000;
+    for(const st of TEX.stars){ const a=sa*(0.4+0.6*Math.abs(Math.sin(tt*0.8+st.tw)));
+      ctx.fillStyle=`rgba(230,240,255,${a})`; ctx.fillRect(st.x*W, st.y*H, st.s, st.s); } }
+  // --- sun / moon disk + glow: blit the baked glow sprite (was a full-screen radial fill) ---
+  ctx.drawImage(dayArt.sun, sun.x-dayArt.sunR, sun.y-dayArt.sunR);
+
+  // --- clouds (parallax, behind mountains) ---
+  const ct=now/1000;
+  for(const cl of TEX.clouds){ const cx=((cl.x + ct*cl.sp - state.camX*cl.par)% (W+600))-300;
+    const cy=cl.y*H; ctx.globalAlpha=0.5*sky.amb+0.15;
+    ctx.drawImage(TEX.cloud, cx, cy, 220*cl.sc, 110*cl.sc); ctx.globalAlpha=1; }
+
+  // --- L0..L5 hills + trees (strict back→front, I3) ---
+  hillBakeBudget=2;                      // at most 2 hill strips re-baked per frame
+  for(const L of LAYERS){ drawHillLayer(L,sky,sun); if(L.trees) drawTrees(L,sky,sun); }
+  drawGround(LAYERS[5],sky);
+
+  // --- god rays (additive, from sun; strongest at golden hours) ---
+  if(sun.elev>0.01){ ctx.save(); ctx.globalCompositeOperation="lighter";
+    const rays=14, str=0.10*sun.elev*(0.5+0.9*(1-Math.abs(sun.elev-0.35)*2));
+    for(let i=0;i<rays;i++){ const a=(i/rays)*TAU + ct*0.02;
+      const rg2=ctx.createLinearGradient(sun.x,sun.y,sun.x+Math.cos(a)*H,sun.y+Math.sin(a)*H);
+      rg2.addColorStop(0,rgba(sky.sun,str)); rg2.addColorStop(1,rgba(sky.sun,0));
+      ctx.fillStyle=rg2; ctx.beginPath(); ctx.moveTo(sun.x,sun.y);
+      ctx.lineTo(sun.x+Math.cos(a-0.04)*H*1.4, sun.y+Math.sin(a-0.04)*H*1.4);
+      ctx.lineTo(sun.x+Math.cos(a+0.04)*H*1.4, sun.y+Math.sin(a+0.04)*H*1.4);
+      ctx.closePath(); ctx.fill(); }
+    ctx.restore(); }
+
+  // --- birds (boids) ---
+  updateBoids(dt); ctx.fillStyle=rgba([20,24,32],0.8+0.2*sky.amb);
+  for(const b of flock){ const wing=Math.sin(now/90+b.ph)*4;
+    ctx.beginPath(); ctx.moveTo(b.x-6,b.y); ctx.quadraticCurveTo(b.x,b.y-wing,b.x+0,b.y-2);
+    ctx.quadraticCurveTo(b.x,b.y-wing,b.x+6,b.y); ctx.lineWidth=1.8; ctx.strokeStyle=ctx.fillStyle; ctx.stroke(); }
+
+  // --- fireflies (night accent) ---
+  if(sky.amb<0.55){ const fa=(0.55-sky.amb)/0.55; ctx.save(); ctx.globalCompositeOperation="lighter";
+    for(const f of state.fireflies){ f.ph+=dt*f.sp;
+      const x=((f.x*W + Math.sin(f.ph)*30 - state.camX*0.9)%W+W)%W, y=f.y*H+Math.cos(f.ph*1.3)*16;
+      const gl=(0.4+0.6*Math.abs(Math.sin(f.ph*2)))*fa;
+      ctx.fillStyle=rgba([199,240,187],gl*0.9); ctx.beginPath(); ctx.arc(x,y,2.1,0,TAU); ctx.fill();
+      ctx.fillStyle=rgba([199,240,187],gl*0.25); ctx.beginPath(); ctx.arc(x,y,6,0,TAU); ctx.fill(); }
+    ctx.restore(); }
+
+  // --- LUMEN: vignette + overall grade (baked per day band) ---
+  ctx.drawImage(dayArt.vig,0,0);
+
+  // FIELD LOG — observation layer, throttled to ~5 Hz (no per-frame scan)
+  observe(dt);
+
+  // HUD — honest ambient self-description; internal cache/flock counters removed.
+  const phase = phaseName(state.t);
+  hud.innerHTML=`<b>LIVING WORLD</b> — ambient landscape · no objective, just watch<br>`
+    +`seed <b>0x${(SEED>>>0).toString(16).toUpperCase()}</b> · ${phase} · t=${state.t.toFixed(2)} · x=${(state.camX|0)}`
+    +` · day ×${state.tSpeed}${state.tPaused?" (paused)":""} · <b>${loggedCount()}/${SPECIES.length}</b> logged`;
+
+  requestAnimationFrame(frame);
+}
+function updateBoids(dt){
+  const W=state.W,H=state.H;
+  for(const b of flock){
+    let sx=0,sy=0,ax=0,ay=0,cx=0,cy=0,nn=0;
+    for(const o of flock){ if(o===b)continue; const dx=o.x-b.x,dy=o.y-b.y,d=Math.hypot(dx,dy);
+      if(d<80&&d>0){ nn++; cx+=o.x; cy+=o.y; ax+=o.vx; ay+=o.vy; if(d<34){ sx-=dx/d; sy-=dy/d; } } }
+    if(nn){ cx=cx/nn-b.x; cy=cy/nn-b.y; ax=ax/nn-b.vx; ay=ay/nn-b.vy;
+      b.vx+=(cx*0.010+ax*0.05+sx*10)*dt*4; b.vy+=(cy*0.010+ay*0.05+sy*10)*dt*4; }
+    b.vy+=Math.sin(performance.now()/1000+b.ph)*2*dt;   // gentle wander
+    const sp=Math.hypot(b.vx,b.vy), mx=46; if(sp>mx){ b.vx*=mx/sp; b.vy*=mx/sp; }
+    b.vx=Math.max(12,b.vx);                              // keep drifting right
+    b.x+=b.vx*dt; b.y+=b.vy*dt;
+    if(b.x>W+40){ b.x=-40; b.y=H*(0.12+0.28*mulberry32(hash2(b.ph*1000|0,SEED))()); }
+    b.y=clamp(b.y,H*0.06,H*0.5);
+  }
+}
+
+/* ---- boot ---------------------------------------------------------------- */
+const _q=new URLSearchParams(location.search);
+if(_q.has('seed')){ const v=parseInt(_q.get('seed'),16); if(!isNaN(v)) SEED=v>>>0; }
+if(_q.has('t')){ const v=parseFloat(_q.get('t')); if(!isNaN(v)) state.t=clamp(v,0,0.999); }
+cv.addEventListener("pointerdown",()=>{ state.tPaused=!state.tPaused; }); // tap/click pause (touch parity)
+resize(); bakeTextures(); initFlock(); initFireflies(); renderLog();
+requestAnimationFrame(t=>{ state.last=t; requestAnimationFrame(frame); });
+// expose for the headless seed / observation gates (additive, read-only)
+window.__DEBUG={ worldHash, seedInfo:()=>({seed:SEED}),
+  fieldLog:()=>({count:loggedCount(),total:SPECIES.length,seen:Object.keys(fieldLog.seen),dwell:Object.assign({},dwell)}),
+  view:()=>({t:state.t,x:Math.round(state.camX),tSpeed:state.tSpeed,paused:state.tPaused}) };
+
+/* ── FIELD LOG share card ────────────────────────────────────────────────
+   Additive: composites a plain 880x520 PNG from the SAME live field log the
+   panel shows, so the checklist on the card cannot disagree with the record.
+   Canvas 2D + toBlob only — no library, no network, no external font, no new
+   localStorage key, and no per-frame work. */
+function shareCard(){
+  try{
+    var W=880,H=520,c=document.createElement('canvas');c.width=W;c.height=H;
+    var g=c.getContext('2d');
+    var BG='#0b1026',PANEL='#141d38',GOLD='#ffeab0',GREEN='#9fe8b0',
+        INK='#e6f7ea',DIM='#8b96a8',MUTE='#7f8ca0',BRIGHT='#bff0c8';
+    var MONO="ui-monospace,Menlo,Consolas,'Courier New',monospace";
+    function fit(weight,size,text,maxW){
+      g.font=weight+' '+size+'px '+MONO;
+      while(size>9&&g.measureText(text).width>maxW) size--;
+      g.font=weight+' '+size+'px '+MONO; return size;
+    }
+    var n=loggedCount(),total=SPECIES.length;
+
+    g.fillStyle=BG;g.fillRect(0,0,W,H);
+    g.fillStyle=PANEL;g.fillRect(0,0,W,104);
+    g.fillStyle=GREEN;g.fillRect(0,0,10,H);
+    g.fillStyle=GREEN;g.fillRect(0,104,W,4);
+
+    fit(800,34,'FIELD LOG',300);
+    g.fillStyle=GOLD;g.fillText('FIELD LOG',42,54);
+    g.font='500 14px '+MONO;g.fillStyle=DIM;
+    g.fillText('DOMINION \u00b7 LIVING WORLD \u2014 ambient, no objective, just watch',42,84);
+
+    g.textAlign='right';
+    g.font='800 40px '+MONO;g.fillStyle=GREEN;g.fillText(n+' of '+total,W-42,56);
+    g.font='600 12px '+MONO;g.fillStyle=DIM;g.fillText('logged',W-42,84);
+    g.textAlign='left';
+
+    for(var i=0;i<SPECIES.length;i++){
+      var s=SPECIES[i],on=!!fieldLog.seen[s.id];
+      var col=i%2,rw=(i-col)/2,x=42+col*418,y=168+rw*46;
+      g.font='700 15px '+MONO;g.fillStyle=on?GREEN:MUTE;
+      g.fillText(on?'\u2713':'\u003f',x,y);
+      var label=on?s.name:s.kind;
+      fit(600,16,label,352);
+      g.fillStyle=on?(s.id===newId?BRIGHT:INK):DIM;
+      g.fillText(label,x+28,y);
+    }
+
+    g.fillStyle=PANEL;g.fillRect(0,H-44,W,44);
+    g.fillStyle=GREEN;g.fillRect(0,H-44,W,3);
+    g.font='600 13px '+MONO;g.fillStyle=DIM;
+    g.fillText('seed 0x'+(SEED>>>0).toString(16).toUpperCase()+' \u00b7 '+new Date().toLocaleDateString(),42,H-16);
+    g.textAlign='right';g.font='700 13px '+MONO;g.fillStyle=GOLD;
+    g.fillText('PROSTON WORKS - LIVING WORLD',W-42,H-16);
+    g.textAlign='left';
+
+    c.toBlob(function(b){
+      if(!b)return;
+      var u=URL.createObjectURL(b),a=document.createElement('a');
+      a.href=u;a.download='livingworld-fieldlog-card.png';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(u);},2000);
+    },'image/png');
+  }catch(e){}
+}
+window.__shareCard=shareCard;
+(function(){var b=document.getElementById('btnShare');
+  if(b)b.addEventListener('click',function(){shareCard();b.blur();});})();
+</script>
+</body>
+</html>

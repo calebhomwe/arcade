@@ -1,7 +1,7 @@
 CALEB'S ARCADE
 ==============
 
-The front door for every browser game Caleb has shipped: 87 games,
+The front door for every browser game Caleb has shipped: 104 games,
 no ads, no accounts, no installs. Live at https://calebhomwe.github.io/arcade/
 
 WHAT IS HERE
@@ -34,9 +34,28 @@ WHAT THE VISITOR CAN CHANGE (gear button, or press ,)
   Shareable views: index.html?cat=learning&q=maths&fav=1&sort=az
   Random game:     play.html?g=random
 
+  Godot/                the Godot 4 games as HTML5 builds. Godot/_engine/ holds
+                        ONE copy of the engine (godot.wasm + loader, ~38 MB);
+                        every Godot/<game>/ folder is just index.html + its
+                        .pck, with the loader config pointed at ../_engine.
+                        Rebuild a game: godot --headless --export-release Web
+                        (web_nothreads template; GitHub Pages sends no COOP/COEP
+                        headers, so the threaded template will not run there).
+  ClairePip/ SneakerDrop/ DeepcutMine/ CookRush/ TyphoonMine/ CleanHouse/
+  TicTacToe/ SnapJigsaw/ NeonDash/ Dominion/ LivingWorld/ CritterRush/
+  CritterRush2D/        more cabinets, copied from their source repos so the
+                        shelf carries the newest build of each
+
+TESTER MODE (for whoever is play-testing)
+  Every play page ends with "How was it?": Fun / OK / Broken plus a note.
+  Answers stay on the device; Settings -> Your data -> "Copy tester report"
+  puts every rating and note on the clipboard as plain text to paste to
+  Caleb, and "Export backup" includes them in the JSON too.
+
 WHERE THE OTHER GAMES LIVE
-  The other 73 games are catalogued here but hosted on Caleb's other
-  live GitHub Pages sites (arcade-hub, neon-game-arcade, playables).
+  The remaining games are catalogued here but hosted on Caleb's other
+  live GitHub Pages sites (arcade-hub, neon-game-arcade, playables,
+  bloxburg-town).
   The play page opens them in place; nothing is copied.
 
 TO ADD A GAME

@@ -1,0 +1,1567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DOMINION — Seeded Biome World</title>
+<style>
+  html,body{margin:0;height:100%;background:#0a0f1c;overflow:hidden}
+  #stage{position:fixed;inset:0;overflow:hidden;display:grid;place-items:center}
+  canvas{image-rendering:auto;box-shadow:0 0 80px #000 inset}
+  #hud{position:fixed;left:12px;right:12px;bottom:10px;font:clamp(10px,2.6vw,12px)/1.4 ui-monospace,Menlo,monospace;
+       color:#ffe9b0cc;text-shadow:0 1px 2px #000;pointer-events:none}
+  /* CHRONICLE - the observation layer. Own dark panel so it stays readable over the scene. */
+  #chron{position:fixed;left:12px;bottom:36px;max-width:min(380px,86vw);
+       font:11px/1.45 ui-monospace,Menlo,monospace;color:#eadfc4cc;
+       background:rgba(6,10,18,.55);border:1px solid #ffffff1f;border-radius:6px;
+       padding:6px 9px;text-shadow:0 1px 2px #000;pointer-events:none}
+  #chron h4{margin:0 0 3px;font-size:11px;letter-spacing:.04em;color:#ffe9b0;font-weight:700}
+  #chron .ts{color:#8fa0b8}
+  #chron .new{color:#bff0c8;font-weight:700}
+  #chron .e{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* SHARE CARD — a labelled DOM button, never a key, so it cannot swallow a control. */
+  #btnShare{position:fixed;right:12px;top:10px;z-index:6;font:600 11px ui-monospace,Menlo,Consolas,monospace;
+       letter-spacing:.06em;color:#ffe9b0;background:rgba(6,10,18,.6);border:1px solid #ffffff2e;
+       border-radius:6px;padding:6px 10px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-shadow:0 1px 2px #000}
+  #btnShare:hover{background:rgba(16,26,42,.88);border-color:#ffd27a66}
+  @media (max-width:560px){ #chron{left:8px;right:8px;bottom:52px;max-width:none} }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+<div id="hud"></div>
+<div id="chron"></div>
+<button id="btnShare" type="button">SAVE CHRONICLE CARD</button>
+<script>
+"use strict";
+/* ============================ DOMINION — Seeded Biome World ============================
+   AXIOM constants come straight from CONSTITUTION.md. FORGE computes all geometry, GRIT
+   bakes all textures, LUMEN owns light/atmosphere, PULSE animates. Deterministic: SEED
+   drives every stream. No Math.random, no external assets. ==================================*/
+
+/* ---- AXIOM: Constitution ---- */
+let SEED = 1337; const U = 16;
+/* Shared daily seed (?seed=<decimal> or 0x<hex>) - ADDITIVE. With no param the world is
+   still exactly seed 1337, so the shipped cabinet is unchanged. Parsed here, before any
+   texture or geometry bake, so every seeded stream follows it. */
+(function(){ try{ const q=new URLSearchParams(location.search);
+  if(q.has("seed")){ const s=(q.get("seed")||"").trim();
+    const v=(/[a-fA-F]/.test(s)&&/^[0-9a-fA-Fx]+$/.test(s))?parseInt(s,16):parseInt(s,10);
+    if(Number.isFinite(v)) SEED=v>>>0; } }catch(e){} })();
+const VW = 1280, VH = 720, HORIZON = 470;
+const PAL = {
+  skyZenith:'#16233f', skyMid:'#3a5f86', skyHorizon:'#e6a86b',
+  hills:['#41618a','#38635f','#2f5b46','#274d37'],
+  canopyDeep:'#2e6b3e', canopyMid:'#3f8a4e', canopyLite:'#58a863',
+  bark:'#4a3524', groundDeep:'#20301f', groundLite:'#34462a',
+  sunCore:'#ffe9b0', godray:'#ffd27a', floraGold:'#f4c04a', floraRose:'#e8749e',
+  fog:'#c9b39a'
+};
+
+/* ---- FORGE core: seeded PRNG + value-noise/fBm ---- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+function stream(salt){return mulberry32((SEED^salt)>>>0);}
+const hx = h => {h=h.replace('#','');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
+const rgb = a => `rgb(${a[0]|0},${a[1]|0},${a[2]|0})`;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const mix=(c1,c2,t)=>{const a=hx(c1),b=hx(c2);return rgb([lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)]);};
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const smooth=t=>t*t*(3-2*t);
+const TAU=Math.PI*2, GOLDEN=2.399963229728653; // golden angle in radians (137.507°)
+
+// value noise on an integer lattice, seeded
+function makeNoise(salt){
+  const r=stream(salt), G=256, grid=new Float32Array(G*G);
+  for(let i=0;i<grid.length;i++) grid[i]=r();
+  const at=(x,y)=>grid[((y&255)*G)+(x&255)];
+  return (x,y)=>{const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi;
+    const u=smooth(xf),v=smooth(yf);
+    const a=at(xi,yi),b=at(xi+1,yi),c=at(xi,yi+1),d=at(xi+1,yi+1);
+    return lerp(lerp(a,b,u),lerp(c,d,u),v);};
+}
+function fbm(noise,x,y,oct,lac,gain){let f=1,amp=1,sum=0,norm=0;
+  for(let i=0;i<oct;i++){sum+=amp*noise(x*f,y*f);norm+=amp;f*=lac;amp*=gain;}return sum/norm;}
+
+/* ---- GRIT: bake tileable textures into offscreen canvases (no flat world surfaces) ---- */
+function baked(w,h,draw){const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  draw(cv.getContext('2d'),w,h);return cv;}
+
+function bakeGround(){ // 256x256 tileable earth via fBm + speckle + ordered dither
+  const n1=makeNoise(0x11), n2=makeNoise(0x12), r=stream(0x13), S=256;
+  return baked(S,S,(g)=>{const img=g.createImageData(S,S),d=img.data;
+    const deep=hx(PAL.groundDeep), lite=hx(PAL.groundLite);
+    for(let y=0;y<S;y++)for(let x=0;x<S;x++){
+      // wraparound sampling for tiling
+      const a=fbm((u,v)=>n1(u,v),x/34,y/34,5,2,0.55);
+      const b=fbm((u,v)=>n2(u,v),(x+S)/12,(y+S)/12,3,2,0.6);
+      let t=clamp(a*0.75+b*0.35,0,1);
+      const dither=((x&1)^(y&1))?0.03:-0.03; t=clamp(t+dither,0,1);
+      const i=(y*S+x)*4;
+      d[i]=lerp(deep[0],lite[0],t); d[i+1]=lerp(deep[1],lite[1],t); d[i+2]=lerp(deep[2],lite[2],t);
+      d[i+3]=255;
+      if(r()<0.06){const s=r()<0.5?20:-16; d[i]+=s;d[i+1]+=s;d[i+2]+=s;} // seeded speckle
+    }
+    g.putImageData(img,0,0);
+  });
+}
+function bakeHill(color,S){ // textured hill band via Worley-ish + fBm shading, tileable in x
+  const n=makeNoise(0x21^(S*7)), w=stream(0x22^S), pts=[];
+  for(let i=0;i<14;i++) pts.push([w()*S,w()*S]);
+  return baked(S,S,(g)=>{const img=g.createImageData(S,S),d=img.data,base=hx(color);
+    for(let y=0;y<S;y++)for(let x=0;x<S;x++){
+      let md=1e9; for(const p of pts){let dx=Math.min(Math.abs(x-p[0]),S-Math.abs(x-p[0]));
+        let dy=y-p[1]; const dd=dx*dx+dy*dy; if(dd<md)md=dd;}
+      const worl=clamp(Math.sqrt(md)/90,0,1);
+      const f=fbm((u,v)=>n(u,v),x/40,y/40,4,2,0.55);
+      const shade=clamp(0.72+f*0.5-worl*0.18,0.45,1.15);
+      const i=(y*S+x)*4;
+      d[i]=clamp(base[0]*shade,0,255); d[i+1]=clamp(base[1]*shade,0,255); d[i+2]=clamp(base[2]*shade,0,255); d[i+3]=255;
+    }
+    g.putImageData(img,0,0);
+  });
+}
+
+/* ---- FORGE: L-system-ish tree baked to a sprite (foliage via golden-angle blobs) ---- */
+function bakeTree(salt){
+  const r=stream(salt), W=320, H=380; // generous bounds so the crown never clips
+  const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  const g=cv.getContext('2d'); g.translate(W/2,H-18); // trunk base near bottom, headroom on top
+  const bark=hx(PAL.bark);
+  function branch(len,ang,wd,depth){
+    if(depth<=0||len<7){ // leaf cluster: solid green crown + golden-angle detail (FORGE)
+      g.save(); g.rotate(ang); g.translate(0,-len);
+      g.globalAlpha=1; g.fillStyle=PAL.canopyDeep; // solid crown mass -> reads as full foliage
+      g.beginPath(); g.ellipse(0,0,len*1.5+10,len*1.3+9,0,0,TAU); g.fill();
+      const n=18+Math.floor(len*1.5);
+      for(let i=0;i<n;i++){const rad=Math.sqrt(i/n)*len*1.75, a=i*GOLDEN;
+        const lx=Math.cos(a)*rad, ly=Math.sin(a)*rad;
+        const t=Math.min(1,rad/(len*1.75)); // lighter toward the rim
+        g.fillStyle=mix(PAL.canopyMid,PAL.canopyLite,r()*t);
+        g.beginPath(); g.ellipse(lx,ly,5+r()*6,4+r()*5,a,0,TAU); g.fill();
+      }
+      g.restore(); return;
+    }
+    g.save(); g.rotate(ang);
+    const grd=g.createLinearGradient(0,0,0,-len);
+    grd.addColorStop(0,rgb([bark[0]*0.7,bark[1]*0.7,bark[2]*0.7]));
+    grd.addColorStop(1,rgb(bark));
+    g.strokeStyle=grd; g.lineWidth=wd; g.lineCap='round';
+    g.beginPath(); g.moveTo(0,0); g.lineTo(0,-len); g.stroke();
+    g.translate(0,-len);
+    const spread=0.45+r()*0.25, k=r()<0.5?2:3;
+    for(let i=0;i<k;i++){const off=(i/(k-1)-0.5)*2*spread + (r()-0.5)*0.2;
+      branch(len*(0.68+r()*0.12), off, Math.max(1.4,wd*0.68), depth-1);}
+    g.restore();
+  }
+  branch(70+r()*16, 0, 13+r()*4, 6);
+  return {cv,H,W};
+}
+
+/* ---- FORGE/GRIT enrichment (swarm-generated, watcher-reviewed) ---- */
+function makeFlora(salt) {
+  const r = stream(salt);
+  const flowers = [];
+  const grassTufts = [];
+  
+  // Jittered grid for flowers across ground band
+  const gridSize = 48;
+  const cols = Math.ceil(WORLDW / gridSize) + 2;
+  const rows = 4;
+  
+  for (let col = 0; col < cols; col++) {
+    for (let row = 0; row < rows; row++) {
+      const baseX = col * gridSize + r() * gridSize * 0.6;
+      const baseY = HORIZON + 20 + row * 60 + r() * 30;
+      if (baseY > VH - 20) continue;
+      
+      const species = (r() * 3) | 0;
+      const stemHeight = 20 + r() * 35;
+      const petalCount = 5 + (r() * 4) | 0;
+      const petalSize = 4 + r() * 5;
+      const color = r() < 0.5 ? PAL.floraGold : PAL.floraRose;
+      const phase = r() * TAU;
+      const swayFreq = 0.8 + r() * 0.6;
+      const swayAmp = 0.03 + r() * 0.04;
+      const depth = 1 - (baseY - HORIZON) / (VH - HORIZON);
+      
+      flowers.push({
+        x: baseX,
+        y: baseY,
+        stemHeight,
+        petalCount,
+        petalSize,
+        color,
+        phase,
+        swayFreq,
+        swayAmp,
+        depth,
+        springVel: 0,
+        springPos: 0,
+        centerColor: mix(PAL.floraGold, PAL.floraRose, 0.5)
+      });
+    }
+  }
+  
+  // Foreground grass tufts near bottom
+  const grassSpacing = 24;
+  const grassCols = Math.ceil(WORLDW / grassSpacing) + 2;
+  for (let col = 0; col < grassCols; col++) {
+    const baseX = col * grassSpacing + r() * 12;
+    const baseY = VH - 30 - r() * 40;
+    const height = 20 + r() * 30;
+    const phase = r() * TAU;
+    const swayFreq = 1.0 + r() * 0.5;
+    const swayAmp = 0.04 + r() * 0.03;
+    
+    grassTufts.push({
+      x: baseX,
+      y: baseY,
+      height,
+      phase,
+      swayFreq,
+      swayAmp,
+      depth: 1.2,
+      colors: Array.from({length:7},(_,i)=>mix(PAL.canopyDeep,PAL.groundLite,0.3+i*0.1))
+    });
+  }
+  
+  return { flowers, grassTufts };
+}
+
+function drawFlora(g, state, cam, t) {
+  const { flowers, grassTufts } = state;
+  
+  // Draw grass tufts first (behind flowers)
+  for (const tuft of grassTufts) {
+    let sx = tuft.x - cam * 0.8;
+    sx = ((sx % WORLDW) + WORLDW) % WORLDW;
+    if (sx > VW + 40 || sx < -40) continue;
+    
+    const sway = Math.sin(t * tuft.swayFreq + tuft.phase + sx * 0.01) * tuft.swayAmp;
+    
+    g.save();
+    g.translate(sx, tuft.y);
+    g.transform(1, 0, sway, 1, 0, 0);
+    
+    // Draw grass blades
+    const bladeCount = 5 + (tuft.x * 7 + tuft.y * 13) % 3;
+    for (let i = 0; i < bladeCount; i++) {
+      const bx = (i / bladeCount - 0.5) * 12;
+      const bh = tuft.height * (0.6 + (i * 0.1));
+      const alpha = 0.5 + (i / bladeCount) * 0.4;
+      
+      g.strokeStyle = tuft.colors[i];
+      g.globalAlpha = alpha;
+      g.lineWidth = 1.5;
+      g.beginPath();
+      g.moveTo(bx, 0);
+      g.quadraticCurveTo(bx + sway * 8, -bh * 0.5, bx + sway * 12, -bh);
+      g.stroke();
+    }
+    g.globalAlpha = 1;
+    g.restore();
+  }
+  
+  // Draw flowers
+  for (const flower of flowers) {
+    let sx = flower.x - cam * 0.6;
+    sx = ((sx % WORLDW) + WORLDW) % WORLDW;
+    if (sx > VW + 60 || sx < -60) continue;
+    
+    // Spring wobble
+    const windForce = Math.sin(t * flower.swayFreq + flower.phase + sx * 0.01) * flower.swayAmp;
+    flower.springVel += (windForce - flower.springPos * 0.1 - flower.springVel * 0.3) * 0.1;
+    flower.springPos += flower.springVel;
+    
+    const totalSway = windForce + flower.springPos * 0.5;
+    
+    g.save();
+    g.translate(sx, flower.y);
+    g.transform(1, 0, totalSway, 1, 0, 0);
+    
+    // Stem
+    g.strokeStyle = mix(PAL.canopyDeep, PAL.groundLite, 0.5);
+    g.lineWidth = 1.5;
+    g.beginPath();
+    g.moveTo(0, 0);
+    g.lineTo(0, -flower.stemHeight);
+    g.stroke();
+    
+    // Petal ring
+    const cx = 0;
+    const cy = -flower.stemHeight;
+    const petalAngle = t * 0.1 + flower.phase;
+    
+    for (let i = 0; i < flower.petalCount; i++) {
+      const angle = (i / flower.petalCount) * TAU + petalAngle;
+      const px = cx + Math.cos(angle) * flower.petalSize * 0.8;
+      const py = cy + Math.sin(angle) * flower.petalSize * 0.6;
+      
+      g.fillStyle = flower.color;
+      g.globalAlpha = 0.9;
+      g.beginPath();
+      g.ellipse(px, py, flower.petalSize * 0.5, flower.petalSize * 0.35, angle, 0, TAU);
+      g.fill();
+    }
+    
+    // Center dot
+    g.fillStyle = flower.centerColor;
+    g.globalAlpha = 1;
+    g.beginPath();
+    g.arc(cx, cy, 2.5, 0, TAU);
+    g.fill();
+    
+    g.restore();
+  }
+}
+function makeWater(salt) {
+  const rng = stream(salt);
+  const cx = 640 + (rng() - 0.5) * 200; // center x
+  const cy = HORIZON + 90 + (rng() - 0.5) * 40; // center y
+  const rx = 190 + rng() * 40; // horizontal radius
+  const ry = 60 + rng() * 20; // vertical radius
+
+  // Bake ripple normal/height texture (tileable)
+  const TEX = 128;
+  const noise = makeNoise(salt ^ 0xDEAD);
+  const rippleTex = document.createElement('canvas');
+  rippleTex.width = TEX;
+  rippleTex.height = TEX;
+  const rg = rippleTex.getContext('2d');
+  const img = rg.createImageData(TEX, TEX);
+  const d = img.data;
+  for (let y = 0; y < TEX; y++) {
+    for (let x = 0; x < TEX; x++) {
+      const u = x / TEX, v = y / TEX;
+      // fBm height
+      const h = fbm((u, v) => noise(u, v), x * 0.15, y * 0.15, 4, 2.0, 0.55);
+      // encode as normal-ish: store height in R, G/B for normal hint
+      const val = Math.floor(clamp(h * 255, 0, 255));
+      const i = (y * TEX + x) * 4;
+      d[i] = val;     // height
+      d[i+1] = 128;   // placeholder normal x
+      d[i+2] = 128;   // placeholder normal y
+      d[i+3] = 255;
+    }
+  }
+  rg.putImageData(img, 0, 0);
+
+  return {
+    cx, cy, rx, ry,
+    rippleTex,
+    phase: rng() * TAU,
+    speed: 0.8 + rng() * 0.4,
+    amp: 0.3 + rng() * 0.2,
+    freq: 0.02 + rng() * 0.01,
+    glintPhase: rng() * TAU
+  };
+}
+
+function drawWater(g, state, cam, t) {
+  const { cx, cy, rx, ry, rippleTex, phase, speed, amp, freq, glintPhase } = state;
+  const sx = ((cx - cam * 0.6) % WORLDW + WORLDW) % WORLDW;
+
+  // Clip to pond ellipse
+  g.save();
+  g.beginPath();
+  g.ellipse(sx, cy, rx, ry, 0, 0, TAU);
+  g.clip();
+
+  // Base gradient: sky reflection
+  const grad = g.createLinearGradient(sx, cy - ry, sx, cy + ry);
+  grad.addColorStop(0, PAL.skyMid);
+  grad.addColorStop(0.5, mix(PAL.skyMid, PAL.hills[3], 0.4));
+  grad.addColorStop(1, PAL.hills[3]);
+  g.fillStyle = grad;
+  g.fillRect(sx - rx, cy - ry, rx * 2, ry * 2);
+
+  // Ripple lines (summed sines)
+  g.globalAlpha = 0.3;
+  g.strokeStyle = 'rgba(255,255,255,0.15)';
+  g.lineWidth = 1.5;
+  const numLines = 12;
+  for (let i = 0; i < numLines; i++) {
+    const yOff = (i / numLines) * ry * 2 - ry;
+    g.beginPath();
+    for (let x = -rx; x <= rx; x += 4) {
+      const nx = x / rx;
+      const ny = yOff / ry;
+      const dist = Math.sqrt(nx * nx + ny * ny);
+      if (dist > 1) continue;
+      const ripple = Math.sin(x * freq + t * speed + phase + i * 0.8) * amp
+                   + Math.sin(x * freq * 1.7 + t * speed * 0.6 + phase * 1.3 + i * 1.2) * amp * 0.5;
+      const yy = cy + yOff + ripple * 6;
+      if (x === -rx) g.moveTo(sx + x, yy);
+      else g.lineTo(sx + x, yy);
+    }
+    g.stroke();
+  }
+  g.globalAlpha = 1;
+
+  // Specular glints near sun side
+  const sunX = VW * 0.72;
+  const sunY = HORIZON * 0.42;
+  const dx = sunX - sx;
+  const dy = sunY - cy;
+  const angle = Math.atan2(dy, dx);
+  const glintDist = rx * 0.6;
+  const glintX = sx + Math.cos(angle) * glintDist;
+  const glintY = cy + Math.sin(angle) * glintDist * 0.5;
+
+  const glintAlpha = 0.3 + 0.4 * Math.sin(t * 1.2 + glintPhase);
+  g.globalAlpha = glintAlpha;
+  g.fillStyle = PAL.sunCore;
+  for (let i = 0; i < 5; i++) {
+    const offX = Math.cos(t * 0.7 + i * 1.3) * 8;
+    const offY = Math.sin(t * 0.9 + i * 1.7) * 4;
+    g.beginPath();
+    g.ellipse(glintX + offX, glintY + offY, 3 + Math.sin(t + i) * 2, 1.5, angle, 0, TAU);
+    g.fill();
+  }
+  g.globalAlpha = 1;
+
+  // Soft fog rim where water meets land
+  const fogGrad = g.createRadialGradient(sx, cy, ry * 0.7, sx, cy, ry);
+  fogGrad.addColorStop(0, 'rgba(201,179,154,0)');
+  fogGrad.addColorStop(1, 'rgba(201,179,154,0.35)');
+  g.fillStyle = fogGrad;
+  g.fillRect(sx - rx, cy - ry, rx * 2, ry * 2);
+
+  g.restore();
+}
+
+"use strict";
+
+function makeFireflies(salt) {
+  const r = stream(salt);
+  const count = 55;
+  const motes = [];
+  for (let i = 0; i < count; i++) {
+    const homeX = r() * VW;
+    const homeY = HORIZON - 40 + r() * (VH - HORIZON - 40);
+    const driftRadius = 12 + r() * 28;
+    const orbitPhase = r() * TAU;
+    const orbitSpeed = 0.3 + r() * 0.5;
+    const blinkRate = 1.5 + r() * 2.5;
+    const blinkPhase = r() * TAU;
+    const size = 2.5 + r() * 3.5;
+    const depth = 0.3 + r() * 0.5;
+    motes.push({
+      homeX, homeY,
+      driftRadius, orbitPhase, orbitSpeed,
+      blinkRate, blinkPhase,
+      size, depth
+    });
+  }
+
+  // Bake glow sprite: radial gradient canvas (sunCore center -> transparent)
+  const spriteSize = 64;
+  const glowCanvas = document.createElement('canvas');
+  glowCanvas.width = spriteSize;
+  glowCanvas.height = spriteSize;
+  const g = glowCanvas.getContext('2d');
+  const cx = spriteSize / 2, cy = spriteSize / 2;
+  const grad = g.createRadialGradient(cx, cy, 0, cx, cy, spriteSize / 2);
+  grad.addColorStop(0, PAL.sunCore);
+  grad.addColorStop(0.15, PAL.floraGold);
+  grad.addColorStop(0.5, 'rgba(244,192,74,0.3)');
+  grad.addColorStop(1, 'rgba(244,192,74,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, spriteSize, spriteSize);
+
+  return { motes, glowCanvas, spriteSize };
+}
+
+function drawFireflies(g, state, cam, t) {
+  const { motes, glowCanvas, spriteSize } = state;
+  const half = spriteSize / 2;
+
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+
+  for (const mote of motes) {
+    // Lissajous wander
+    const easedT = t * mote.orbitSpeed + mote.orbitPhase;
+    const dx = Math.cos(easedT) * mote.driftRadius;
+    const dy = Math.sin(easedT * 0.7 + 0.5) * mote.driftRadius * 0.6;
+    const sx = mote.homeX + dx - cam * mote.depth;
+    const sy = mote.homeY + dy;
+
+    // Wrap horizontally
+    const wrappedX = ((sx % VW) + VW) % VW;
+    if (wrappedX < -half || wrappedX > VW + half) continue;
+
+    // Blink alpha
+    const blink = 0.5 + 0.5 * Math.sin(t * mote.blinkRate + mote.blinkPhase);
+    const alpha = 0.3 + 0.7 * blink;
+
+    g.globalAlpha = alpha;
+    const scale = mote.size / half;
+    g.drawImage(glowCanvas, wrappedX - half * scale, sy - half * scale, spriteSize * scale, spriteSize * scale);
+  }
+
+  g.globalAlpha = 1;
+  g.globalCompositeOperation = 'source-over';
+  g.restore();
+}
+function makeForeground(salt) {
+  const r = stream(salt);
+  const blades = [];
+  const spacing = 14; // dense coverage
+  const cols = Math.ceil(WORLDW / spacing) + 4;
+  
+  for (let col = 0; col < cols; col++) {
+    const baseX = col * spacing + (r() - 0.5) * spacing * 0.6;
+    const height = 80 + r() * 110; // 80-190px
+    const width = 3 + r() * 5;
+    const curve = (r() - 0.5) * 0.6; // quadratic bend factor
+    const colorT = r(); // lerp between groundDeep and canopyDeep
+    const phase = r() * TAU;
+    const swayRate = 0.7 + r() * 0.5;
+    const swayAmp = 0.04 + r() * 0.04;
+    
+    blades.push({
+      x: baseX,
+      height,
+      width,
+      curve,
+      colorT,
+      color: mix(PAL.groundDeep, PAL.canopyDeep, colorT), // PERF: baked, not mix()'d per frame
+      phase,
+      swayRate,
+      swayAmp
+    });
+  }
+  
+  return { blades };
+}
+
+function drawForeground(g, state, cam, t) {
+  const { blades } = state;
+  const parallax = 1.15;
+  
+  g.lineCap = 'round';
+  for (const blade of blades) {
+    // Parallax wrap. PERF: world-X maps 1:1 to screen-X like every other system; the old
+    // (sx/WORLDW)*VW squeezed all 258 blades onto screen and defeated the cull below, so
+    // every blade was stroked twice every frame and read as a picket fence.
+    let screenX = blade.x - cam * parallax;
+    screenX = ((screenX % WORLDW) + WORLDW) % WORLDW;
+    if (screenX < -20 || screenX > VW + 20) continue;
+    
+    // Sway at tip
+    const sway = Math.sin(t * blade.swayRate + blade.phase + blade.x * 0.01) * blade.swayAmp;
+    
+    g.fillStyle = blade.color;
+    g.strokeStyle = blade.color;
+    g.lineWidth = blade.width;
+    
+    // Draw blade as quadratic curve from base to tip
+    const baseY = VH;
+    const tipY = VH - blade.height;
+    const midY = VH - blade.height * 0.5;
+    const midX = screenX + blade.curve * blade.height * 0.3 + sway * blade.height * 0.15;
+    
+    g.beginPath();
+    g.moveTo(screenX, baseY);
+    g.quadraticCurveTo(midX, midY, screenX + sway * blade.height * 0.2, tipY);
+    g.stroke();
+    
+    // Add slight thickness variation by drawing a second thinner line offset
+    g.lineWidth = blade.width * 0.4;
+    g.globalAlpha = 0.6;
+    g.beginPath();
+    g.moveTo(screenX + 1, baseY);
+    g.quadraticCurveTo(midX + 1, midY + 2, screenX + sway * blade.height * 0.2 + 1, tipY + 1);
+    g.stroke();
+    g.globalAlpha = 1;
+  }
+}
+
+function makeRocks(salt) {
+  const r = stream(salt);
+  const rocks = [];
+  const minGap = 80;
+  const maxGap = 200;
+  const count = 14;
+  let x = 40 + r() * 60;
+  for (let i = 0; i < count; i++) {
+    const y = HORIZON + 30 + r() * (VH - 120 - HORIZON - 30);
+    const depth = 1 - (y - HORIZON) / (VH - HORIZON);
+    const baseRadius = 18 + depth * 32 + r() * 12;
+    const verts = 8 + (r() * 5) | 0;
+    const poly = [];
+    for (let j = 0; j < verts; j++) {
+      const angle = (j / verts) * TAU + r() * 0.3;
+      const rad = baseRadius * (0.7 + r() * 0.6);
+      poly.push({ x: Math.cos(angle) * rad, y: Math.sin(angle) * rad });
+    }
+    // Bake texture
+    const texSize = Math.ceil(baseRadius * 2.4);
+    const texCanvas = document.createElement('canvas');
+    texCanvas.width = texSize;
+    texCanvas.height = texSize;
+    const tg = texCanvas.getContext('2d');
+    const noise = makeNoise(salt ^ (i * 0x1337 + 0xBEEF));
+    const img = tg.createImageData(texSize, texSize);
+    const d = img.data;
+    const deep = hx(PAL.groundDeep);
+    const lite = hx(PAL.hills[3]);
+    const cx = texSize / 2, cy = texSize / 2;
+    for (let py = 0; py < texSize; py++) {
+      for (let px = 0; px < texSize; px++) {
+        const dx = px - cx, dy = py - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > baseRadius * 1.1) {
+          const idx = (py * texSize + px) * 4;
+          d[idx] = 0; d[idx+1] = 0; d[idx+2] = 0; d[idx+3] = 0;
+          continue;
+        }
+        const u = px / texSize, v = py / texSize;
+        const f = fbm((u, v) => noise(u, v), px * 0.12, py * 0.12, 4, 2.0, 0.55);
+        const shade = 0.6 + f * 0.5;
+        const topFactor = 1 - (py / texSize);
+        const bottomFactor = py / texSize;
+        const t = 0.3 + 0.4 * topFactor + 0.1 * f;
+        const rCol = lerp(deep[0], lite[0], t) * shade;
+        const gCol = lerp(deep[1], lite[1], t) * shade;
+        const bCol = lerp(deep[2], lite[2], t) * shade;
+        const idx = (py * texSize + px) * 4;
+        d[idx] = clamp(rCol, 0, 255);
+        d[idx+1] = clamp(gCol, 0, 255);
+        d[idx+2] = clamp(bCol, 0, 255);
+        d[idx+3] = 255;
+      }
+    }
+    tg.putImageData(img, 0, 0);
+    rocks.push({
+      x, y, poly, texCanvas, texSize,
+      baseRadius, depth,
+      shadowAlpha: 0.25
+    });
+    x += minGap + r() * (maxGap - minGap);
+    if (x > WORLDW - 60) break;
+  }
+  return { rocks };
+}
+
+function drawRocks(g, state, cam, t) {
+  const { rocks } = state;
+  for (const rock of rocks) {
+    let sx = rock.x - cam * 0.6;
+    sx = ((sx % WORLDW) + WORLDW) % WORLDW;
+    if (sx > VW + 100 || sx < -100) continue;
+    // Contact shadow
+    g.save();
+    g.globalAlpha = rock.shadowAlpha;
+    g.fillStyle = '#000';
+    g.beginPath();
+    g.ellipse(sx, rock.y + rock.baseRadius * 0.3, rock.baseRadius * 0.9, rock.baseRadius * 0.25, 0, 0, TAU);
+    g.fill();
+    g.globalAlpha = 1;
+    // Draw boulder
+    const half = rock.texSize / 2;
+    g.drawImage(rock.texCanvas, sx - half, rock.y - half);
+    g.restore();
+  }
+}
+function makeFlock(salt) {
+  const r = stream(salt);
+  const count = 11;
+  const birds = [];
+  
+  // Lead bird
+  const leadX = r() * VW;
+  const leadY = 80 + r() * 100; // y in [40,180] range
+  const leadPhase = r() * TAU;
+  const flapRate = 3.5 + r() * 1.5;
+  const speed = 25 + r() * 15;
+  
+  birds.push({
+    x: leadX,
+    y: leadY,
+    vx: speed,
+    vy: 0,
+    phase: leadPhase,
+    flapRate: flapRate,
+    isLeader: true,
+    slotX: 0,
+    slotY: 0,
+    springX: 0,
+    springY: 0,
+    springVX: 0,
+    springVY: 0
+  });
+  
+  // Followers in V-formation
+  const wingSpread = 35 + r() * 15; // horizontal spread per rank
+  const depthStep = 28 + r() * 8;   // how far back each rank sits
+  const vertSpread = 12 + r() * 6;  // vertical offset per rank
+  
+  let birdIndex = 1;
+  for (let rank = 1; rank <= 5; rank++) {
+    for (let side = -1; side <= 1; side += 2) {
+      if (birdIndex >= count) break;
+      
+      const slotX = -rank * depthStep;
+      const slotY = side * (rank * vertSpread * 0.5 + wingSpread * 0.3);
+      
+      birds.push({
+        x: leadX + slotX,
+        y: leadY + slotY,
+        vx: speed * 0.95,
+        vy: 0,
+        phase: r() * TAU,
+        flapRate: flapRate * (0.85 + r() * 0.3),
+        isLeader: false,
+        slotX: slotX,
+        slotY: slotY,
+        springX: 0,
+        springY: 0,
+        springVX: 0,
+        springVY: 0
+      });
+      birdIndex++;
+    }
+  }
+  
+  return { birds, speed, flapRate };
+}
+
+function drawFlock(g, state, cam, t) {
+  const { birds, speed, flapRate } = state;
+  
+  // Update leader position
+  const leader = birds[0];
+  leader.x += leader.vx * 0.016 * TIME_SCALE;   // PULSE: frozen when the world clock is paused
+  leader.y += Math.sin(t * 0.3 + leader.phase * 0.5) * 0.3;
+  
+  // Wrap leader horizontally
+  if (leader.x > VW + 100) leader.x = -100;
+  if (leader.x < -100) leader.x = VW + 100;
+  
+  // Update followers with spring-lerp toward their V-slot behind leader
+  for (let i = 1; i < birds.length; i++) {
+    const bird = birds[i];
+    const targetX = leader.x + bird.slotX;
+    const targetY = leader.y + bird.slotY;
+    
+    // Spring force toward target
+    const dx = targetX - bird.x;
+    const dy = targetY - bird.y;
+    const springK = 0.04;
+    const damping = 0.85;
+    
+    bird.springVX += dx * springK;
+    bird.springVY += dy * springK;
+    bird.springVX *= damping;
+    bird.springVY *= damping;
+    
+    bird.x += bird.springVX;
+    bird.y += bird.springVY;
+    
+    // Add slight wander
+    bird.y += Math.sin(t * 0.2 + bird.phase * 0.7 + i) * 0.15;
+    
+    // Wrap followers with leader
+    if (bird.x > VW + 150) bird.x -= VW + 300;
+    if (bird.x < -150) bird.x += VW + 300;
+  }
+  
+  // Draw birds (back to front for depth)
+  g.save();
+  g.globalAlpha = 0.85;
+  
+  // Sort by y for depth ordering
+  const sorted = [...birds].sort((a, b) => a.y - b.y);
+  
+  for (const bird of sorted) {
+    const wingAngle = Math.sin(t * bird.flapRate + bird.phase) * 0.4 + 0.3;
+    const wingLength = 6 + Math.sin(t * bird.flapRate * 0.7 + bird.phase) * 1.5;
+    
+    g.strokeStyle = mix(PAL.skyZenith, '#000000', 0.6);
+    g.lineWidth = 1.2;
+    g.lineCap = 'round';
+    
+    // Left wing
+    g.beginPath();
+    g.moveTo(bird.x, bird.y);
+    g.quadraticCurveTo(
+      bird.x - wingLength * Math.cos(wingAngle),
+      bird.y - wingLength * Math.sin(wingAngle) * 0.5,
+      bird.x - wingLength * 1.3,
+      bird.y - wingLength * 0.2
+    );
+    g.stroke();
+    
+    // Right wing
+    g.beginPath();
+    g.moveTo(bird.x, bird.y);
+    g.quadraticCurveTo(
+      bird.x + wingLength * Math.cos(wingAngle),
+      bird.y - wingLength * Math.sin(wingAngle) * 0.5,
+      bird.x + wingLength * 1.3,
+      bird.y - wingLength * 0.2
+    );
+    g.stroke();
+    
+    // Body hint (tiny dot)
+    g.fillStyle = mix(PAL.skyZenith, '#000000', 0.7);
+    g.beginPath();
+    g.arc(bird.x, bird.y, 0.8, 0, TAU);
+    g.fill();
+  }
+  
+  g.globalAlpha = 1;
+  g.restore();
+}
+function makeMist(salt) {
+  const r = stream(salt);
+  const layers = [];
+  const count = 3 + (r() * 2) | 0; // 3-4 layers
+
+  for (let i = 0; i < count; i++) {
+    const width = 800 + r() * 600;
+    const height = 60 + r() * 80;
+    const yBase = HORIZON - 30 + r() * 60;
+    const scrollSpeed = 4 + r() * 12;
+    const bobAmp = 2 + r() * 6;
+    const bobFreq = 0.3 + r() * 0.5;
+    const alpha = 0.12 + r() * 0.13;
+    const phase = r() * TAU;
+
+    // Bake ribbon texture
+    const tex = document.createElement('canvas');
+    tex.width = width;
+    tex.height = height;
+    const g = tex.getContext('2d');
+    const noise = makeNoise(salt ^ (i * 0x100));
+    const img = g.createImageData(width, height);
+    const d = img.data;
+    const fog = hx(PAL.fog);
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const u = x / width;
+        const v = y / height;
+        // fBm for organic shape
+        const f = fbm((u, v) => noise(u, v), x * 0.03, y * 0.08, 4, 2.0, 0.55);
+        // Vertical fade: soft top/bottom
+        const fade = Math.sin(v * Math.PI) * 0.8 + 0.2;
+        // Horizontal variation
+        const hFade = Math.sin(u * Math.PI * 0.5) * 0.3 + 0.7;
+        let a = clamp(f * fade * hFade, 0, 1);
+        // Soften edges
+        a = smooth(a);
+        const idx = (y * width + x) * 4;
+        d[idx] = fog[0];
+        d[idx + 1] = fog[1];
+        d[idx + 2] = fog[2];
+        d[idx + 3] = clamp(a * 255, 0, 255);
+      }
+    }
+    g.putImageData(img, 0, 0);
+
+    layers.push({
+      tex,
+      width,
+      height,
+      yBase,
+      scrollSpeed,
+      bobAmp,
+      bobFreq,
+      alpha,
+      phase,
+      xOff: r() * WORLDW
+    });
+  }
+
+  return { layers };
+}
+
+function drawMist(g, state, cam, t) {
+  const { layers } = state;
+
+  g.save();
+  g.globalCompositeOperation = 'source-over';
+
+  for (const layer of layers) {
+    const scroll = (cam * 0.15 + t * layer.scrollSpeed + layer.xOff) % WORLDW;
+    const bobY = Math.sin(t * layer.bobFreq + layer.phase) * layer.bobAmp;
+    const y = layer.yBase + bobY;
+
+    g.globalAlpha = layer.alpha;
+
+    // Draw multiple copies to wrap horizontally
+    const step = layer.width;
+    const startX = -scroll % step;
+    for (let x = startX - step; x < VW + step; x += step) {
+      g.drawImage(layer.tex, x, y);
+    }
+  }
+
+  g.globalAlpha = 1;
+  g.restore();
+}
+
+function makeGodshafts(salt) {
+  const r = stream(salt);
+  const count = 6;
+  const beams = [];
+  const sunX = 0.72 * VW;
+  const sunY = 0.42 * HORIZON;
+  
+  for (let i = 0; i < count; i++) {
+    // Seeded angle: fan down-left from sun, range roughly -0.6 to -1.2 radians (down-left)
+    const angle = -0.6 - r() * 0.6;
+    // Width: 30-80 px
+    const width = 30 + r() * 50;
+    // Length: 200-500 px
+    const length = 200 + r() * 300;
+    // Phase for breathing
+    const phase = r() * TAU;
+    // Base alpha between 0.05 and 0.12
+    const baseAlpha = 0.05 + r() * 0.07;
+    // Sway amplitude (radians)
+    const swayAmp = 0.02 + r() * 0.03;
+    // Slow rate for breathing
+    const slowRate = 0.3 + r() * 0.4;
+    
+    // Bake gradient canvas for this beam. PERF: size it to the rotated bounding box
+    // instead of max(width,length)*1.2, which was ~90% transparent pixels per blit.
+    const texSize = Math.ceil(Math.abs(width*Math.cos(angle)) + Math.abs(length*Math.sin(angle)));
+    const texH = Math.ceil(Math.abs(width*Math.sin(angle)) + Math.abs(length*Math.cos(angle)));
+    const cv = document.createElement('canvas');
+    cv.width = texSize;
+    cv.height = texH;
+    const g = cv.getContext('2d');
+    
+    // Draw beam as a long thin quadrilateral: from origin (center-left) to length direction
+    // We'll draw a rotated rectangle with gradient
+    const cx = texSize / 2;
+    const cy = texH / 2;
+    
+    // Create linear gradient along the beam direction (from origin outward)
+    // Beam direction: angle points down-left, so gradient from top-right to bottom-left
+    const gradAngle = angle + Math.PI; // reverse direction for gradient
+    const gx = Math.cos(gradAngle) * length * 0.5;
+    const gy = Math.sin(gradAngle) * length * 0.5;
+    
+    const grad = g.createLinearGradient(cx - gx, cy - gy, cx + gx, cy + gy);
+    grad.addColorStop(0, PAL.sunCore);
+    grad.addColorStop(0.3, PAL.godray);
+    grad.addColorStop(1, 'rgba(255,210,122,0)');
+    
+    g.fillStyle = grad;
+    g.save();
+    g.translate(cx, cy);
+    g.rotate(angle);
+    // Draw rectangle: width along perpendicular, length along angle
+    g.fillRect(-width / 2, -length / 2, width, length);
+    g.restore();
+    
+    beams.push({
+      angle,
+      width,
+      length,
+      phase,
+      baseAlpha,
+      swayAmp,
+      slowRate,
+      canvas: cv,
+      texW: texSize,
+      texH
+    });
+  }
+  
+  return {
+    beams,
+    sunX,
+    sunY
+  };
+}
+
+function drawGodshafts(g, state, cam, t) {
+  const { beams, sunX, sunY } = state;
+  
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  
+  for (const beam of beams) {
+    // Breathing alpha
+    const breath = 0.5 + 0.5 * Math.sin(t * beam.slowRate + beam.phase);
+    const alpha = beam.baseAlpha * (0.7 + 0.3 * breath);
+    
+    // Angle sway
+    const sway = Math.sin(t * beam.slowRate * 0.5 + beam.phase * 1.3) * beam.swayAmp;
+    const currentAngle = beam.angle + sway;
+    
+    g.globalAlpha = alpha;
+    
+    // Position: origin at sun, then offset along beam direction
+    const halfLen = beam.length * 0.5;
+    const dx = Math.cos(currentAngle) * halfLen;
+    const dy = Math.sin(currentAngle) * halfLen;
+    
+    // Draw beam centered at sun + half-length offset (so it extends from sun outward)
+    const px = sunX + dx;
+    const py = sunY + dy;
+    
+    g.save();
+    g.translate(px, py);
+    g.rotate(currentAngle);
+    g.drawImage(beam.canvas, -beam.texW / 2, -beam.texH / 2);
+    g.restore();
+  }
+  
+  g.globalAlpha = 1;
+  g.globalCompositeOperation = 'source-over';
+  g.restore();
+}
+function makeButterflies(salt) {
+  const r = stream(salt);
+  const count = 9;
+  const butterflies = [];
+
+  for (let i = 0; i < count; i++) {
+    // Base position in flower band
+    const baseX = r() * WORLDW;
+    const baseY = HORIZON + 30 + r() * (VH - 60 - HORIZON - 30);
+
+    // Lissajous drift parameters
+    const driftAmpX = 20 + r() * 40;
+    const driftAmpY = 10 + r() * 25;
+    const freqX = 0.3 + r() * 0.5;
+    const freqY = 0.4 + r() * 0.6;
+    const phaseX = r() * TAU;
+    const phaseY = r() * TAU;
+
+    // Wing flap
+    const flapRate = 3 + r() * 4;
+    const flapPhase = r() * TAU;
+
+    // Size and color
+    const size = 12 + r() * 8;
+    const color = r() < 0.5 ? PAL.floraRose : (r() < 0.5 ? PAL.floraGold : PAL.sunCore);
+
+    // Depth for parallax (closer to horizon = further back)
+    const depth = 0.4 + r() * 0.3;
+
+    // Bake wing sprite (two elliptical petals)
+    const wingSize = Math.ceil(size * 1.2);
+    const wingCanvas = document.createElement('canvas');
+    wingCanvas.width = wingSize * 2;
+    wingCanvas.height = wingSize;
+    const wg = wingCanvas.getContext('2d');
+
+    // Left wing
+    wg.fillStyle = color;
+    wg.globalAlpha = 0.85;
+    wg.beginPath();
+    wg.ellipse(wingSize * 0.4, wingSize * 0.5, wingSize * 0.45, wingSize * 0.3, -0.3, 0, TAU);
+    wg.fill();
+
+    // Right wing
+    wg.beginPath();
+    wg.ellipse(wingSize * 1.6, wingSize * 0.5, wingSize * 0.45, wingSize * 0.3, 0.3, 0, TAU);
+    wg.fill();
+
+    // Wing vein detail (subtle lines)
+    wg.strokeStyle = 'rgba(0,0,0,0.15)';
+    wg.lineWidth = 0.8;
+    for (let side = 0; side < 2; side++) {
+      const cx = side === 0 ? wingSize * 0.4 : wingSize * 1.6;
+      const angle = side === 0 ? -0.3 : 0.3;
+      wg.save();
+      wg.translate(cx, wingSize * 0.5);
+      wg.rotate(angle);
+      for (let j = 0; j < 3; j++) {
+        const vx = (j - 1) * wingSize * 0.15;
+        const vy = -wingSize * 0.2;
+        wg.beginPath();
+        wg.moveTo(0, 0);
+        wg.lineTo(vx, vy);
+        wg.stroke();
+      }
+      wg.restore();
+    }
+
+    butterflies.push({
+      baseX, baseY,
+      driftAmpX, driftAmpY,
+      freqX, freqY,
+      phaseX, phaseY,
+      flapRate, flapPhase,
+      size, color, depth,
+      wingCanvas, wingSize
+    });
+  }
+
+  return { butterflies };
+}
+
+function drawButterflies(g, state, cam, t) {
+  const { butterflies } = state;
+
+  for (const b of butterflies) {
+    // Lissajous drift
+    const dx = Math.sin(t * b.freqX + b.phaseX) * b.driftAmpX;
+    const dy = Math.sin(t * b.freqY + b.phaseY) * b.driftAmpY;
+
+    // World position with parallax
+    let wx = b.baseX + dx - cam * b.depth;
+    wx = ((wx % WORLDW) + WORLDW) % WORLDW;
+
+    const wy = b.baseY + dy;
+
+    // Screen bounds check
+    if (wx < -b.size * 2 || wx > VW + b.size * 2) continue;
+    if (wy < -b.size * 2 || wy > VH + b.size * 2) continue;
+
+    // Wing flap factor (0..1)
+    const flap = Math.abs(Math.sin(t * b.flapRate + b.flapPhase));
+
+    // Y-bob for organic feel
+    const bob = Math.sin(t * 1.2 + b.flapPhase * 0.7) * 2;
+
+    g.save();
+    g.translate(wx, wy + bob);
+
+    // Draw body (small dark line)
+    g.strokeStyle = '#2a1f14';
+    g.lineWidth = 1.5;
+    g.beginPath();
+    g.moveTo(0, -b.size * 0.1);
+    g.lineTo(0, b.size * 0.15);
+    g.stroke();
+
+    // Draw wings scaled by flap
+    const wingScale = 0.3 + 0.7 * flap;
+    const halfW = b.wingSize;
+    const halfH = b.wingSize * 0.5;
+
+    // Left wing
+    g.save();
+    g.translate(-b.size * 0.15, 0);
+    g.scale(wingScale, 1);
+    g.drawImage(b.wingCanvas, -halfW, -halfH, b.wingSize * 2, b.wingSize);
+    g.restore();
+
+    // Right wing (mirrored)
+    g.save();
+    g.translate(b.size * 0.15, 0);
+    g.scale(wingScale, 1);
+    g.scale(-1, 1);
+    g.drawImage(b.wingCanvas, -halfW, -halfH, b.wingSize * 2, b.wingSize);
+    g.restore();
+
+    g.restore();
+  }
+}
+
+/* ---- world state ---- */
+let DPR=1, cv, ctx;
+const groundTex=bakeGround();
+const hillTex=PAL.hills.map((c,i)=>bakeHill(c,512));
+const treeVariants=[bakeTree(0x501),bakeTree(0x502),bakeTree(0x503),bakeTree(0x504),bakeTree(0x505)];
+
+// FORGE distributions
+const WORLDW=3600; // wrap width
+const __water=makeWater(0x77A7E7), __flora=makeFlora(0x0F10A);
+const __fireflies=makeFireflies(0xF17E), __foreground=makeForeground(0xF6D0);
+const __rocks=makeRocks(0x70CC), __flock=makeFlock(0xF10C), __mist=makeMist(0x175);
+const __shafts=makeGodshafts(0x5A4F), __flutter=makeButterflies(0xB177);
+const trees=(()=>{const r=stream(0x900),arr=[];const lane=8*U; // jittered lane spacing (invariant #1)
+  for(let x=0;x<WORLDW;x+=lane){const jx=x+(r()-0.5)*lane*0.5;
+    const v=treeVariants[(r()*treeVariants.length)|0];
+    const depth=0.86+r()*0.22; // near-ground scale
+    arr.push({x:jx,v,depth,phase:r()*TAU,sway:0.5+r()*0.8,
+      base:HORIZON+18+r()*40, scale:(0.6+r()*0.7)});}
+  return arr;})();
+
+const clouds=(()=>{const r=stream(0xA00),arr=[];for(let i=0;i<9;i++)
+  arr.push({x:r()*WORLDW,y:60+r()*220,s:0.6+r()*1.4,spd:6+r()*10,puff:0.6+r()*0.8,seed:0x1000+i});
+  return arr;})();
+// bake cloud sprites (GRIT: soft fBm blobs, not flat)
+const cloudTex=clouds.map(c=>{const n=makeNoise(c.seed),S=192,cvs=baked(S*1.6|0,S,(g,w,h)=>{
+  const img=g.createImageData(w,h),d=img.data;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const dx=(x-w/2)/(w/2),dy=(y-h/2)/(h/2);
+    const rr=Math.sqrt(dx*dx+dy*dy*2.2);
+    const f=fbm((u,v)=>n(u,v),x/24,y/24,4,2,0.6);
+    const a=clamp((1-rr)*1.4*(0.5+f*0.9),0,1);
+    const i=(y*w+x)*4; d[i]=245;d[i+1]=238;d[i+2]=228; d[i+3]=clamp(a*a*230,0,230);
+  } g.putImageData(img,0,0);}); return cvs;});
+
+// PULSE: boids (birds)
+const birds=(()=>{const r=stream(0xB00),arr=[];for(let i=0;i<14;i++)
+  arr.push({x:r()*VW,y:80+r()*160,vx:(r()*2-1)*30+40,vy:(r()*2-1)*14,ph:r()*TAU});return arr;})();
+// PULSE: pollen particles
+const pollen=(()=>{const r=stream(0xC00),arr=[];for(let i=0;i<90;i++)
+  arr.push({x:r()*VW,y:r()*VH,z:0.3+r()*0.7,ph:r()*TAU,sp:6+r()*10});return arr;})();
+
+/* ---- LUMEN: sky + god rays + fog + vignette ---- */
+let skyGrad=null, skyBase=null, sunSprite=null, raySprite=null; // PERF: sky art baked once, then blitted
+function drawSky(g,t){
+  if(!skyGrad){skyGrad=g.createLinearGradient(0,0,0,HORIZON+40);
+    skyGrad.addColorStop(0,PAL.skyZenith); skyGrad.addColorStop(0.55,PAL.skyMid); skyGrad.addColorStop(1,PAL.skyHorizon);}
+  if(!sunSprite){const R=330,cv=document.createElement('canvas');cv.width=cv.height=R*2;
+    const s=cv.getContext('2d'); const gl=s.createRadialGradient(R,R,0,R,R,300);
+    gl.addColorStop(0,PAL.sunCore); gl.addColorStop(0.15,PAL.godray+'');
+    gl.addColorStop(0.4,'rgba(255,210,122,0.35)'); gl.addColorStop(1,'rgba(255,210,122,0)');
+    s.fillStyle=gl; s.beginPath(); s.arc(R,R,300,0,TAU); s.fill(); sunSprite=cv;}
+  if(!raySprite){const H=HORIZON+40,cv=document.createElement('canvas');cv.width=VW;cv.height=H;
+    const s=cv.getContext('2d'); s.translate(VW*0.72,HORIZON*0.42);
+    for(let i=0;i<14;i++){s.rotate(TAU/14);
+      const ray=s.createLinearGradient(0,0,0,-620);
+      ray.addColorStop(0,'rgba(255,220,150,0.10)'); ray.addColorStop(1,'rgba(255,220,150,0)');
+      s.fillStyle=ray; s.beginPath(); s.moveTo(-16,0); s.lineTo(16,0); s.lineTo(60,-620); s.lineTo(-60,-620); s.closePath(); s.fill();}
+    raySprite=cv;}
+  if(!skyBase){const cv=document.createElement('canvas'); cv.width=VW; cv.height=HORIZON+40;
+    const s=cv.getContext('2d'); s.fillStyle=skyGrad; s.fillRect(0,0,VW,HORIZON+40); skyBase=cv;}
+  g.drawImage(skyBase,0,0);                        // baked gradient, not re-evaluated each frame
+  const sx=VW*0.72, sy=HORIZON*0.42, pulse=0.5+0.5*Math.sin(t*0.5);
+  g.save(); g.globalCompositeOperation='lighter';
+  g.save(); g.translate(sx,sy); g.rotate(t*0.02); g.translate(-sx,-sy);
+  g.drawImage(raySprite,0,0); g.restore();          // one blit replaces 14 gradient fills
+  const R=260+pulse*30;                             // glow pulse preserved by scaling the sprite
+  g.drawImage(sunSprite, sx-R, sy-R, R*2, R*2);
+  g.restore(); g.globalAlpha=1;
+}
+function fogAmount(depth){return clamp(depth,0,1);} // 0 near ..1 far
+
+/* ---- draw hills (parallax + fog by depth) : LUMEN + FORGE ----
+   PERF: each hill layer is a pure horizontal translation of itself — the ridge samples
+   wx = x + cam*par and the tile pattern shifts by the same amount. So a layer is baked
+   ONCE into an offscreen strip and blitted until the camera has scrolled past the strip
+   margin. Previously every frame re-clipped the silhouette, re-created a full-screen
+   pattern and re-tiled all four layers (measured at ~56% of the frame). */
+const HILL_MARGIN = 512;                       // bake margin each side (multiple of the 512 tile)
+const hillStrips = hillTex.map(()=>null);      // [{cv,P0}] baked strip per layer
+function hillStrip(i,par,P){
+  let s=hillStrips[i];
+  if(s && Math.abs(P-s.P0) <= HILL_MARGIN-8) return s;
+  const N=hillTex.length, W=VW+HILL_MARGIN*2, SS=0.5;  // PERF: fogged layers bake at half res
+  const cv=document.createElement('canvas'); cv.width=Math.ceil(W*SS); cv.height=Math.ceil(VH*SS);
+  const g=cv.getContext('2d'); g.scale(SS,SS);
+  const baseY=HORIZON-(N-1-i)*46-20, amp=26+i*10;
+  // strip pixel u == screen x (u - HILL_MARGIN) for camera offset P
+  let top=VH;
+  g.beginPath(); g.moveTo(0,VH);
+  for(let u=0;u<=W;u+=8){const wx=(u-HILL_MARGIN)+P;
+    const ridge=baseY - (Math.sin(wx*0.004+i)*amp + Math.sin(wx*0.013+i*2)*amp*0.4);
+    if(ridge<top)top=ridge; g.lineTo(u,ridge);} g.lineTo(W,VH); g.closePath(); g.clip();
+  const tx=(((-P)%512)+512)%512;               // texture phase (HILL_MARGIN is a whole tile)
+  const pat=g.createPattern(hillTex[i],'repeat');
+  g.save(); g.translate(tx,baseY-140); g.fillStyle=pat;
+  g.fillRect(-tx,-(baseY-140),W,VH); g.restore();
+  g.globalAlpha=clamp((N-1-i)/N*0.72,0,0.8); g.fillStyle=PAL.fog; g.fillRect(0,0,W,VH); g.globalAlpha=1;
+  s={cv,P0:P,top:Math.max(0,Math.floor(top)-4)}; hillStrips[i]=s; return s;
+}
+function drawHills(g,cam,t){
+  const N=hillTex.length, W=VW+HILL_MARGIN*2;
+  for(let i=0;i<N;i++){
+    const par=0.12+i*0.16, P=cam*par;
+    const s=hillStrip(i,par,P);                // no-op unless the camera moved past the margin
+    // blit only the on-screen window and the band above the lowest ridge (3x less than full strip)
+    const SS=0.5, srcX=Math.max(0,Math.min(s.cv.width-VW*SS,((P-s.P0)+HILL_MARGIN)*SS));
+    g.drawImage(s.cv, srcX, s.top*SS, VW*SS, (VH-s.top)*SS, 0, s.top, VW, VH-s.top);
+  }
+}
+
+/* ---- ground ---- */
+let groundPat=null;                             // PERF: pattern was rebuilt every frame
+function drawGround(g,cam){
+  const pat=groundPat||(groundPat=g.createPattern(groundTex,'repeat'));
+  g.save(); g.beginPath(); g.rect(0,HORIZON,VW,VH-HORIZON); g.clip();
+  g.translate((-cam*0.6)%256,HORIZON); g.fillStyle=pat; g.fillRect((cam*0.6)%256-256,0,VW+512,VH-HORIZON+40);
+  g.restore();
+  // ground fog line at horizon (LUMEN)
+  const fg=g.createLinearGradient(0,HORIZON-30,0,HORIZON+60);
+  fg.addColorStop(0,'rgba(201,179,154,0.55)'); fg.addColorStop(1,'rgba(201,179,154,0)');
+  g.fillStyle=fg; g.fillRect(0,HORIZON-30,VW,90);
+}
+
+/* ---- trees (PULSE sway via shear = summed sines) ---- */
+function drawTrees(g,cam,t){
+  for(const tr of trees){
+    let sx=tr.x - cam*0.6; sx=((sx%WORLDW)+WORLDW)%WORLDW; if(sx>VW+120)continue; if(sx< -120)sx+=WORLDW;
+    if(sx>VW+120)continue;
+    const s=tr.scale; const h=tr.v.H*s, w=tr.v.W*s;
+    const sway=(Math.sin(t*tr.sway+tr.phase)*0.04+Math.sin(t*tr.sway*0.5+tr.phase)*0.02);
+    g.save(); g.translate(sx,tr.base);
+    g.transform(1,0,sway,1,0,0); // horizontal shear ∝ height => wind
+    // soft contact shadow
+    g.globalAlpha=0.28; g.fillStyle='#0c1410'; g.beginPath(); g.ellipse(0,4,w*0.32,10*s,0,0,TAU); g.fill(); g.globalAlpha=1;
+    g.drawImage(tr.v.cv,-w/2,-h,w,h);
+    g.restore();
+  }
+}
+
+/* ---- clouds, birds, pollen (PULSE) ---- */
+function drawClouds(g,t){
+  // PERF: cull sprites fully off the stage (every cloud used to be blitted every frame).
+  for(let i=0;i<clouds.length;i++){
+    const c=clouds[i];
+    const px=((c.x - t*c.spd)%WORLDW+WORLDW)%WORLDW; const sx=(px/WORLDW)*VW*1.4-120;
+    const tex=cloudTex[i]; const w=tex.width*c.s, h=tex.height*c.s;
+    if(sx>VW||sx+w<0) continue;
+    g.globalAlpha=0.9; g.drawImage(tex,sx,c.y - Math.sin(t*0.2+i)*4,w,h); g.globalAlpha=1;
+  }
+}
+function updBirds(dt,t){ // boids-lite: cohesion+separation toward flock center + sine flap
+  let cx=0,cy=0; birds.forEach(b=>{cx+=b.x;cy+=b.y;}); cx/=birds.length; cy/=birds.length;
+  birds.forEach((b,i)=>{
+    b.vx+=(cx-b.x)*0.02*dt*0 + 0; // gentle
+    b.x+=b.vx*dt; b.y+=b.vy*dt + Math.sin(t*4+b.ph)*6*dt;
+    if(b.x>VW+40){b.x=-40;} if(b.x<-40){b.x=VW+40;}
+    b.y=clamp(b.y,50,HORIZON-120);
+  });
+}
+function drawBirds(g,t){g.strokeStyle='#20242e';g.lineWidth=2;
+  birds.forEach(b=>{const flap=Math.sin(t*8+b.ph)*7; g.beginPath();
+    g.moveTo(b.x-7,b.y); g.quadraticCurveTo(b.x,b.y-flap,b.x+0,b.y-2);
+    g.quadraticCurveTo(b.x,b.y-flap,b.x+7,b.y); g.stroke();});}
+function drawPollen(g,cam,t){g.globalCompositeOperation='lighter';
+  pollen.forEach(p=>{const x=((p.x - t*p.sp*p.z - cam*0.2)%VW+VW)%VW;
+    const y=p.y+Math.sin(t*0.6+p.ph)*18*p.z;
+    g.globalAlpha=0.15+0.25*p.z; g.fillStyle=PAL.floraGold;
+    g.beginPath(); g.arc(x,y,1.6*p.z+0.5,0,TAU); g.fill();});
+  g.globalAlpha=1; g.globalCompositeOperation='source-over';}
+
+/* ---- LUMEN: vignette ---- */
+let vignetteTex=null;                            // PERF: baked once — a blit beats a per-frame radial fill
+function drawVignette(g){
+  if(!vignetteTex){const cv=document.createElement('canvas'); cv.width=VW; cv.height=VH;
+    const s=cv.getContext('2d');
+    const v=s.createRadialGradient(VW/2,VH*0.55,VH*0.3,VW/2,VH*0.55,VH*0.85);
+    v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(6,10,20,0.55)');
+    s.fillStyle=v; s.fillRect(0,0,VW,VH); vignetteTex=cv;}
+  g.drawImage(vignetteTex,0,0);
+}
+
+/* ---- resize ---- */
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);
+  // Cover the viewport so a fixed 16:9 stage never letterboxes to a strip on phones
+  // (was Math.min -> 390x219 inside an 844px screen). Overflows evenly and is clipped.
+  const scale=Math.max(window.innerWidth/VW,window.innerHeight/VH);
+  cv.width=VW*DPR; cv.height=VH*DPR; cv.style.width=VW*scale+'px'; cv.style.height=VH*scale+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);}
+
+/* ===========================================================================
+   PULSE control + CHRONICLE - the observation layer. Not a game: no score, no
+   fail state, no timer. The world clock can be paused, sped up or scrubbed and
+   the notable things this world actually does are written to a timestamped,
+   persisted history. ADDITIVE: one new localStorage key; the seed-1337 world is
+   untouched. All detection is O(1)-ish per frame and the DOM updates only when
+   an event fires, so the render budget the perf pass won is not spent again.
+   =========================================================================== */
+const CHRON_KEY="dom.chronicle.v1";   // NEW key; nothing renamed or re-schema'd
+const CHRON_MAX=60;
+const TIME_STEPS=[0.25,0.5,1,2,4];
+let worldT=0, timeRate=1, paused=false, camNudge=0, timeIdx=2, TIME_SCALE=1;
+let chron=[], chronVisible=true, chronFired={}, chronPond=null, chronLap=null, chronPrevLead=null;
+(function(){ try{ const raw=localStorage.getItem(CHRON_KEY); if(raw){ const o=JSON.parse(raw);
+  if(o&&Array.isArray(o.entries)) chron=o.entries.slice(-CHRON_MAX); } }catch(e){} })();
+function saveChron(){ try{ localStorage.setItem(CHRON_KEY, JSON.stringify({v:1,seed:SEED,entries:chron.slice(-CHRON_MAX)})); }catch(e){} }
+function clk(s){ s=Math.max(0,Math.floor(s)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+function renderChron(newest){
+  const el=document.getElementById("chron"); if(!el) return;
+  if(!chronVisible){ el.style.display="none"; return; } el.style.display="";
+  const rows=chron.slice(-7).reverse().map(e=>
+    '<div class="e'+(e.m===newest?" new":"")+'"><span class="ts">'+clk(e.w)+"</span> "+e.m+"</div>").join("");
+  el.innerHTML='<h4>CHRONICLE \u00b7 seed '+SEED+" \u00b7 "+chron.length+" noted</h4>"+(rows||'<div class="e">watching\u2026</div>');
+}
+function chronAdd(k,msg){
+  chron.push({w:Math.round(worldT*10)/10, iso:Date.now(), k, m:msg});
+  if(chron.length>CHRON_MAX) chron.splice(0,chron.length-CHRON_MAX);
+  saveChron(); renderChron(msg);
+}
+function fire(k,gap,msg){
+  const last=chronFired[k]; if(last!==undefined && worldT-last<gap) return false;
+  chronFired[k]=worldT; chronAdd(k,msg); return true;
+}
+/* Every predicate below reads the same state the draw passes use, so the
+   chronicle records things that genuinely happened on screen - not invented lore. */
+function chronicleTick(t){
+  const cam=worldT*38+camNudge;
+  // 1. the pond drifting into / out of the pan (~95 s per lap of the world)
+  const psx=((__water.cx - cam*0.6)%WORLDW+WORLDW)%WORLDW;
+  const pond=(psx+__water.rx>0)&&(psx-__water.rx<VW);
+  if(chronPond===null) chronPond=pond;
+  else if(pond!==chronPond){ fire(pond?"pond-in":"pond-out",6,pond?"pond drifted into view":"pond passed out of view"); chronPond=pond; }
+  // 2. the pond surface: specular glint / dead calm (the water module's own terms)
+  const glint=0.3+0.4*Math.sin(t*1.2+__water.glintPhase);
+  if(glint>0.62) fire("glint",24,"pond glint flared");
+  if(glint<0.005) fire("calm",24,"pond surface went still");
+  // 3. the V-formation flock crossing the valley (leader wrap)
+  const lead=__flock.birds[0].x;
+  if(chronPrevLead!==null && lead < chronPrevLead - VW*0.5) fire("flock",28,"V-flock crossed the valley");
+  chronPrevLead=lead;
+  // 4. god-ray breath peak (the shafts module swings alpha on a slow sine)
+  let mb=0; for(const b of __shafts.beams) mb=Math.max(mb,Math.sin(t*b.slowRate+b.phase)*0.5+0.5);
+  if(mb>0.97) fire("rays",28,"god-rays at their brightest");
+  // 5. a cloud crossing the sun disk
+  const sunX=VW*0.72; let crossed=false;
+  for(let i=0;i<clouds.length;i++){ const c=clouds[i];
+    const px=((c.x - t*c.spd)%WORLDW+WORLDW)%WORLDW; const sx=(px/WORLDW)*VW*1.4-120;
+    if(sx<sunX && sx+cloudTex[i].width*c.s>sunX){ crossed=true; break; } }
+  if(crossed) fire("cloud",40,"a cloud crossed the sun");
+  // 6. firefly swarm: enough motes simultaneously at the top of their blink
+  let ff=0; for(const m of __fireflies.motes){ if(0.3+0.7*(0.5+0.5*Math.sin(t*m.blinkRate+m.blinkPhase))>0.9) ff++; }
+  if(ff>=6) fire("swarm",26,"fireflies swarmed");
+  // 7. two butterflies meeting
+  const pos=[]; for(const b of __flutter.butterflies){
+    const wx=((b.baseX+Math.sin(t*b.freqX+b.phaseX)*b.driftAmpX - cam*b.depth)%WORLDW+WORLDW)%WORLDW;
+    pos.push([wx, b.baseY+Math.sin(t*b.freqY+b.phaseY)*b.driftAmpY]); }
+  let met=false;
+  for(let i=0;i<pos.length&&!met;i++) for(let j=i+1;j<pos.length;j++){
+    const dx=pos[i][0]-pos[j][0], dy=pos[i][1]-pos[j][1]; if(dx*dx+dy*dy<46*46){ met=true; break; } }
+  if(met) fire("flutter",36,"two butterflies crossed");
+  // 8. a full lap of the slow pan
+  const lap=Math.floor(cam/WORLDW);
+  if(chronLap===null) chronLap=lap; else if(lap!==chronLap){ chronLap=lap; fire("lap",60,"the pan completed a full lap of the world"); }
+}
+// gentle controls: pause / speed / scrub the world clock, nudge the pan, toggle the panel
+addEventListener("keydown",e=>{
+  if(e.code==="Space"){ paused=!paused; e.preventDefault(); }
+  else if(e.code==="Comma"||e.code==="Minus"){ timeIdx=Math.max(0,timeIdx-1); timeRate=TIME_STEPS[timeIdx]; }
+  else if(e.code==="Period"||e.code==="Equal"){ timeIdx=Math.min(TIME_STEPS.length-1,timeIdx+1); timeRate=TIME_STEPS[timeIdx]; }
+  else if(e.code==="BracketLeft"){ worldT=Math.max(0,worldT-2); }
+  else if(e.code==="BracketRight"){ worldT+=2; }
+  else if(e.code==="ArrowLeft"){ camNudge-=80; e.preventDefault(); }
+  else if(e.code==="ArrowRight"){ camNudge+=80; e.preventDefault(); }
+  else if(e.code==="KeyC"){ chronVisible=!chronVisible; renderChron(null); }
+});
+// static world fingerprint: a pure function of SEED (never of the clock or camera)
+function worldHash(){
+  let h=0x811c9dc5>>>0;
+  const mix=v=>{ h=(h^((v|0)>>>0))>>>0; h=Math.imul(h,0x01000193)>>>0; };
+  mix(SEED);
+  for(const tr of trees){ mix(Math.round(tr.x*100)); mix(Math.round(tr.scale*1000));
+    mix(Math.round(tr.base*10)); mix(treeVariants.indexOf(tr.v)); mix(Math.round(tr.phase*1000)); }
+  for(const r of __rocks.rocks){ mix(Math.round(r.x*10)); mix(r.poly.length); mix(Math.round(r.baseRadius*10)); }
+  mix(Math.round(__water.cx*10)); mix(Math.round(__water.cy*10)); mix(Math.round(__water.rx*10));
+  for(const c of clouds) mix(Math.round(c.x*10));
+  for(const q of pollen){ mix(Math.round(q.z*1000)); mix(Math.round(q.ph*1000)); }
+  for(const b of birds){ mix(Math.round(b.vx*100)); mix(Math.round(b.vy*100)); mix(Math.round(b.ph*1000)); } // static seeded fields only: b.y/b.x mutate every frame
+  mix(hillTex.length); mix(pollen.length);
+  return h.toString(16).padStart(8,"0");
+}
+/* ---- main loop ---- */
+let t0=0, frames=0, fps=0, acc=0;
+function frame(ms){
+  const t=ms/1000; const raw=t-t0||0; t0=t;
+  // FPS uses UNCLAMPED frame time; the world step stays clamped for stability.
+  frames++; acc+=raw; if(acc>0.5){fps=Math.round(frames/acc);frames=0;acc=0;}
+  const step=Math.min(0.05,raw);
+  if(!paused) worldT += step*timeRate;
+  TIME_SCALE = paused?0:timeRate;              // drawFlock reads this for its own step
+  const wt=worldT;
+  const cam=wt*38+camNudge; // slow auto-pan reveals parallax (PULSE), now player-controllable
+  ctx.clearRect(0,0,VW,VH);
+  drawSky(ctx,wt);
+  drawClouds(ctx,wt);
+  drawFlock(ctx,__flock,cam,wt);
+  drawHills(ctx,cam,wt);
+  drawMist(ctx,__mist,cam,wt);
+  drawGround(ctx,cam);
+  drawRocks(ctx,__rocks,cam,wt);
+  drawWater(ctx,__water,cam,wt);
+  drawFlora(ctx,__flora,cam,wt);
+  drawTrees(ctx,cam,wt);
+  drawGodshafts(ctx,__shafts,cam,wt);
+  drawButterflies(ctx,__flutter,cam,wt);
+  updBirds(paused?0:step*timeRate,wt); drawBirds(ctx,wt);
+  drawPollen(ctx,cam,wt);
+  drawFireflies(ctx,__fireflies,cam,wt);
+  drawForeground(ctx,__foreground,cam,wt);
+  drawVignette(ctx);
+  chronicleTick(wt);
+  document.getElementById("hud").textContent=
+    "DOMINION — ambient seeded world · no objective, just watch · seed "+SEED+" · "+fps+"fps"
+    +" · time "+(paused?"paused":timeRate+"x")+" · SPACE pause  , . speed  [ ] scrub  C chronicle";
+  requestAnimationFrame(frame);
+}
+window.addEventListener("resize",resize);
+window.addEventListener("load",()=>{cv=document.getElementById("c");ctx=cv.getContext("2d");resize();
+  renderChron(null);
+  const lastC=chron[chron.length-1];
+  if(!(lastC && lastC.k==="boot" && Date.now()-lastC.iso<3600000)) chronAdd("boot","chronicle opened");
+  requestAnimationFrame(frame);});
+// expose for headless VERDICT / seed gate (additive)
+window.__DOMINION={SEED,trees:trees.length,hills:hillTex.length,birds:birds.length,pollen:pollen.length,worldHash};
+window.__DEBUG={ worldHash, seedInfo:()=>({seed:SEED}),
+  chronicle:()=>({count:chron.length,visible:chronVisible,last:chron.slice(-6)}),
+  time:()=>({worldT:Math.round(worldT*100)/100,rate:timeRate,paused}) };
+
+/* ── CHRONICLE share card ────────────────────────────────────────────────
+   Additive: composites a plain 880x520 PNG from the SAME chronicle the panel
+   shows, so the history on the card cannot disagree with the record. Canvas
+   2D + toBlob only — no library, no network, no external font, no new
+   localStorage key, and no per-frame work. */
+function shareCard(){
+  try{
+    var W=880,H=520,c=document.createElement('canvas');c.width=W;c.height=H;
+    var g=c.getContext('2d');
+    var BG='#0a0f1c',PANEL='#121b30',GOLD='#ffe9b0',AMBER='#ffd27a',
+        CREAM='#eadfc4',DIM='#8fa0b8',GREEN='#bff0c8';
+    var MONO="ui-monospace,Menlo,Consolas,'Courier New',monospace";
+    function fit(weight,size,text,maxW){
+      g.font=weight+' '+size+'px '+MONO;
+      while(size>9&&g.measureText(text).width>maxW) size--;
+      g.font=weight+' '+size+'px '+MONO; return size;
+    }
+    var recent=chron.slice(-7).reverse();
+
+    g.fillStyle=BG;g.fillRect(0,0,W,H);
+    g.fillStyle=PANEL;g.fillRect(0,0,W,104);
+    g.fillStyle=AMBER;g.fillRect(0,0,10,H);
+    g.fillStyle=AMBER;g.fillRect(0,104,W,4);
+
+    fit(800,34,'CHRONICLE',300);
+    g.fillStyle=GOLD;g.fillText('CHRONICLE',42,54);
+    g.font='500 14px '+MONO;g.fillStyle=DIM;
+    g.fillText('DOMINION \u2014 seeded biome world \u00b7 ambient, no objective',42,84);
+
+    g.textAlign='right';
+    g.font='800 34px '+MONO;g.fillStyle=AMBER;g.fillText('seed '+SEED,W-42,54);
+    g.font='600 12px '+MONO;g.fillStyle=DIM;g.fillText(chron.length+' noted',W-42,84);
+    g.textAlign='left';
+
+    if(!recent.length){
+      g.font='600 16px '+MONO;g.fillStyle=DIM;g.fillText('watching\u2026',42,188);
+    }
+    for(var i=0;i<recent.length;i++){
+      var e=recent[i],y=176+i*44;
+      g.font='700 14px '+MONO;g.fillStyle=DIM;
+      g.fillText(clk(e.w),42,y);
+      fit(600,15,e.m,W-180);
+      g.fillStyle=(i===0?GREEN:CREAM);
+      g.fillText(e.m,132,y);
+    }
+
+    g.fillStyle=PANEL;g.fillRect(0,H-44,W,44);
+    g.fillStyle=AMBER;g.fillRect(0,H-44,W,3);
+    g.font='600 13px '+MONO;g.fillStyle=DIM;
+    g.fillText('DOMINION \u00b7 '+new Date().toLocaleDateString(),42,H-16);
+    g.textAlign='right';g.font='700 13px '+MONO;g.fillStyle=GOLD;
+    g.fillText('PROSTON WORKS - DOMINION',W-42,H-16);
+    g.textAlign='left';
+
+    c.toBlob(function(b){
+      if(!b)return;
+      var u=URL.createObjectURL(b),a=document.createElement('a');
+      a.href=u;a.download='dominion-chronicle-card.png';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(u);},2000);
+    },'image/png');
+  }catch(e){}
+}
+window.__shareCard=shareCard;
+(function(){var b=document.getElementById('btnShare');
+  if(b)b.addEventListener('click',function(){shareCard();b.blur();});})();
+</script>
+</body>
+</html>

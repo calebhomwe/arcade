@@ -24,9 +24,9 @@ CATS = [  # order = nav order
 ]
 
 G = []
-def add(id, title, cat, blurb, src, thumb, ext=False, rec=None, label=None, tags=(), featured=False, new=False, players=1, frm='', note=''):
+def add(id, title, cat, blurb, src, thumb, ext=False, rec=None, label=None, tags=(), featured=False, new=False, players=1, frm='', note='', stage=''):
     G.append({'id':id, 'title':title, 'cat':cat, 'blurb':blurb, 'src':src, 'thumb':'assets/thumbs/'+thumb, 'ext':ext,
-              'rec':rec, 'label':label, 'tags':list(tags), 'featured':featured, 'new':new, 'players':players, 'from':frm, 'note':note})
+              'rec':rec, 'label':label, 'tags':list(tags), 'featured':featured, 'new':new, 'players':players, 'from':frm, 'note':note, 'stage':stage})
 
 # ---------- local cabinets (this repo) ----------
 L = [
@@ -113,17 +113,45 @@ for f,(t,c,b,tags) in H.items():
     add('hub-'+f,t,c,b,HUB+f+'.html','hub-'+f+'.webp',ext=True,tags=tags,featured=(f in ('chess','isle-of-bells')),frm='Pocket Arcade')
 
 # ---------- Neon Game Arcade (the bigger builds) ----------
+# The five that have their own source repos ship from this repo now (newer builds than the copies on the Neon site).
+add('neon-dash','Neon Dash','arcade','Dodge · Slide · Collect. Three-lane neon endless runner.','NeonDash/index.html','neon-dash.webp',tags=('runner','3d'),featured=True,frm='Cabinet')
+add('critter-rush','Critter Rush 3D','arcade','Race to the finish! Use weapons to slow rivals.','CritterRush/index.html','critter-rush.webp',tags=('racing','3d'),frm='Cabinet')
+add('critter-rush-2d','Critter Rush 2D','arcade','The Fun-Run style rewrite: flatter, faster, far more readable.','CritterRush2D/index.html','critter-rush-2d.webp',tags=('racing','sprites'),frm='Cabinet')
+add('dominion','Dominion','sim','Seeded biome world generated fresh every run.','Dominion/index.html','dominion.webp',tags=('world','procedural'),frm='Cabinet')
+add('living-world','Dominion: Living World','sim','The same world, now with agents that keep moving without you.','LivingWorld/index.html','living-world.webp',tags=('world','agents'),frm='Cabinet')
 N = [
- ('neon-dash','Neon Dash','arcade','Dodge · Slide · Collect. Three-lane neon endless runner.','neon-dash/index.html','neon-neon-dash.webp',('runner','3d'),True),
- ('critter-rush','Critter Rush 3D','arcade','Race to the finish! Use weapons to slow rivals.','critter-rush/index.html','neon-critter-rush.webp',('racing','3d'),False),
- ('critter-rush-2d','Critter Rush 2D','arcade','The Fun-Run style rewrite: flatter, faster, far more readable.','critter-rush-2d/index.html','neon-critter-rush-2d.webp',('racing','sprites'),False),
- ('dominion','Dominion','sim','Seeded biome world generated fresh every run.','dominion/index.html','neon-dominion.webp',('world','procedural'),False),
- ('living-world','Dominion: Living World','sim','The same world, now with agents that keep moving without you.','living-world/index.html','neon-living-world.webp',('world','agents'),False),
  ('mini-life-sim','Mini Life Sim','sim','Click an object to choose an interaction, click the floor to move. Keep needs healthy, earn money, survive the week.','mini-life-sim/index.html','neon-mini-life-sim.webp',('life','sims'),False),
  ('bridge-race-classic','Bridge Race','hyper','Run, collect planks and build across the gaps.','bridge-race-classic.html','neon-bridge-race-classic.webp',('bridge','runner'),False),
+ ('game-arcade-7','Game Arcade — Bridge Race & Fashion Princess','arcade','Seven games in one page: Bridge Race, Fashion Princess dress-up, Tetris, Snake, Breakout, Flappy and a shooter, with touch controls.','neon-arcade.html','neon-game-arcade-7.webp',('7-in-1','dress-up','classic'),False),
 ]
 for id,t,c,b,src,thumb,tags,feat in N:
     add(id,t,c,b,NEON+src,thumb,ext=True,tags=tags,featured=feat,frm='Neon Arcade')
+
+# ---------- more cabinets (this repo) ----------
+add('claire-pip',"Claire's Big Life",'sim',"Live · Play · Explore. Care for your pet, play fun activities, collect treasures, decorate your world, and dress Claire up in style!",'ClairePip/index.html','claire-pip.webp',tags=('pet','dress-up','kids','bible'),featured=True,frm='Cabinet',stage='tall',
+    note='Pick an age band on the first screen and the activities adjust to it. Everything saves on this device.')
+add('sneaker-drop','SneakerDrop — Hype Market Tycoon','sim','Bid on drops, snipe the resale market, cash out before the hype cools.','SneakerDrop/index.html','sneaker-drop.webp',tags=('tycoon','market'),frm='Cabinet')
+add('deepcut-mine','DEEPCUT','arcade','Dig down, dodge the lava, haul the rare ore back up before the shaft closes.','DeepcutMine/index.html','deepcut-mine.webp',tags=('mining','dig'),frm='Cabinet')
+add('cook-rush','Cook Rush','arcade','Day 1, opening shift. Tap the station each ticket needs, take food off the pan before it burns, then plate it.','CookRush/index.html','cook-rush.webp',tags=('cooking','time management'),frm='Cabinet')
+add('typhoon-mine','TYPHOON MINE','arcade','Mine through the storm. Grab ore, brace for the gusts, get out.','TyphoonMine/index.html','typhoon-mine.webp',tags=('mining','storm'),frm='Cabinet')
+add('clean-house','Clean House','sim','Tap a job card to load the house and start cleaning. Drag to look, click or drag surfaces to clean, wheel to zoom.','CleanHouse/index.html','clean-house.webp',tags=('cleaning','3d','satisfying'),frm='Cabinet')
+add('tic-tac-toe','Tic Tac Toe — Beat the Bot','classic','Three in a row against a bot that does not blunder.','TicTacToe/index.html','tic-tac-toe.webp',tags=('board','vs-ai'),frm='Cabinet')
+add('snap-jigsaw','Snap Jigsaw — Daily Puzzle Challenge','puzzle','Drag the patterned tiles into the grid. A fresh puzzle every day.','SnapJigsaw/index.html','snap-jigsaw.webp',tags=('jigsaw','daily'),frm='Cabinet')
+
+# ---------- Godot 4 web builds (this repo, one shared engine in Godot/_engine) ----------
+GODOT_NOTE='Godot web build: the first game you open downloads the shared 38 MB engine once, then every Godot game starts fast. Desktop browsers are happiest; Chrome or Safari on a phone also work.'
+GD = [
+ ('godot-claire-big-life',"Claire's Big Life Adventure",'sim',"Claire's little meadow: plant, water, gather, craft, build cottages for new neighbours, open the daily gift and level up. The Godot rebuild of the big game.",'claire-big-life',('farm','life sim','kids','township'),True,'WASD or arrows to walk, E to interact, tap or click anything that glows.'),
+ ('godot-heat-firm','Heat Firm','sim','Cozy business idle: grow a single greenhouse from a leaky shed to a five-branch empire, switching between chilli, coffee, flowers, potions and lollies at will. Your staff keep working while you are away.','heat-firm',('idle','tycoon','greenhouse'),False,'Water: W · Harvest: E · Select plots: 1-6.'),
+ ('godot-city-builder','City Builder 2000','sim','Place roads, houses, trees and cars on a grid, rotate objects, and watch citizen cars drive around your town.','city-builder',('city','builder','grid'),False,'1 Road · 2 House · 3 Tree · 4 Car · ? for help.'),
+ ('godot-tidebreak','TIDEBREAK','arcade','Asset-free 3D arcade surfing: carve the face, pump for speed, land tricks in the barrel.','tidebreak',('surf','3d','tricks'),False,''),
+ ('godot-tidebreak-world-tour','TIDEBREAK World Tour','sim','Season 1, Elite Division. Seven stops from Pipeline to the Tidebreak Finals: climb the rankings, earn tour points, unlock sponsors.','tidebreak-world-tour',('surf','career','menu'),False,'D-pad or mouse to select · A/Enter confirm · B/Esc back.'),
+ ('godot-la-city','LA City','arcade','Deliver packages across a blocky downtown against the clock. Build rep, climb the rank board, survive the traffic.','la-city',('driving','delivery','3d'),False,'WASD to drive.'),
+ ('godot-chef-chloe','Chef Chloe','sim','Run the kitchen for a full shift: chop, sizzle, plate, and toss the finished dishes to waiting customers.','chef-chloe',('cooking','shift','mini-games'),False,''),
+]
+GD.append(('godot-heavens-grace',"Heaven's Grace",'arcade','Godot rhythm prototype: 300 notes at 144 BPM across four lanes, four difficulties from Easy to Tapmaster.','heavens-grace',('rhythm','music','bible'),False,'Lanes: D F J K or arrows · Space start · R retry · P pause · tap lanes on mobile.'))
+for id,t,c,b,folder,tags,feat,ctl in GD:
+    add(id,t,c,b,'Godot/'+folder+'/index.html',id+'.webp',tags=tags,featured=feat,frm='Godot',note=(ctl+' ' if ctl else '')+GODOT_NOTE,stage='tall' if id=='godot-heavens-grace' else '')
 
 # ---------- Skywalker mini-arcade (22 quick plays) ----------
 S = {
@@ -147,6 +175,10 @@ out += 'const CATS = %s;\n' % json.dumps([{'id':i,'name':n} for i,n in CATS])
 out += 'const CATALOG = %s;\n' % json.dumps(G, ensure_ascii=False, indent=0).replace('\n',' ')
 open(os.path.join(ROOT,'catalog.js'),'w',encoding='utf-8').write(out)
 print('catalog.js: %d games (%d local, %d external), %d categories' % (len(G), sum(not g['ext'] for g in G), sum(g['ext'] for g in G), len(CATS)))
+for fn in ('index.html','manifest.webmanifest','README.txt'):
+    fp=os.path.join(ROOT,fn); t=open(fp,encoding='utf-8').read()
+    t2=re.sub(r'\b\d+ (free browser games|free games|games,)', lambda m: '%d %s' % (len(G), m.group(1)), t)
+    if t2!=t: open(fp,'w',encoding='utf-8').write(t2); print('  count updated in', fn)
 
 # ---------- sitemap + robots (one play URL per game) ----------
 SITE = 'https://calebhomwe.github.io/arcade/'

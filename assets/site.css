@@ -228,6 +228,17 @@ body.theatre .stage .exit{display:inline-flex}
 .toast{position:fixed;left:50%;bottom:calc(20px + var(--safe-b));transform:translate(-50%,20px);background:var(--panel-2);border:1px solid var(--line-2);color:var(--ink);padding:10px 16px;border-radius:999px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;z-index:300}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
+/* ---------- tester feedback ---------- */
+.tester{margin-top:22px;padding:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);display:grid;gap:10px}
+.tester .th{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.tester h2{margin:0;font-size:16px;font-weight:900;letter-spacing:-.02em}
+.tester small{color:var(--ink-3);font-size:12px}
+.tester textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line-2);border-radius:var(--r-s);padding:10px 12px;resize:vertical;min-height:44px;width:100%}
+.tester textarea::placeholder{color:var(--ink-3)}
+.tester .tfoot{min-height:18px}
+.card .rate{position:absolute;bottom:52px;left:8px;z-index:2;font-size:14px;line-height:1;background:rgba(10,14,24,.65);border-radius:999px;padding:4px 6px;backdrop-filter:blur(6px)}
+:root[data-size=compact] .card .rate{bottom:46px}
+
 /* ---------- segmented control ---------- */
 .seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--panel);border:1px solid var(--line-2);flex-wrap:wrap}
 .seg button{padding:6px 12px;border-radius:999px;font-weight:700;font-size:13px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
@@ -247,7 +258,8 @@ body.theatre .stage .exit{display:inline-flex}
 .sheet .row>.lbl{font-weight:800;font-size:14px;flex:1 1 200px}
 .sheet .row small{display:block;color:var(--ink-3);font-weight:500;font-size:12px}
 .sheet h3{margin:18px 0 4px;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
-.sheet .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 4px}
+.sheet .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 4px}
+@media(max-width:420px){.sheet .stats{grid-template-columns:repeat(2,1fr)}}
 .sheet .stats div{background:var(--panel-2);border-radius:var(--r-s);padding:10px;text-align:center}
 .sheet .stats b{display:block;font-size:20px;font-weight:900;color:var(--accent)}
 .sheet .stats span{font-size:11px;color:var(--ink-3);font-weight:600}

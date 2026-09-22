@@ -18,6 +18,15 @@ const favs = () => new Set(store.get('ca_favs', []));
 const plays = () => store.get('ca_plays', {});
 const isFav = id => favs().has(id);
 function toggleFav(id) { const f = favs(); f.has(id) ? f.delete(id) : f.add(id); store.set('ca_favs', [...f]); document.dispatchEvent(new CustomEvent('favchange', { detail: id })); return f.has(id); }
+const notes = () => store.get('ca_notes', {});          // id -> {r, note, ts}
+const RATE = { fun: '😍', ok: '🙂', broken: '😕' };
+function setNote(id, patch) { const n = notes(); n[id] = Object.assign(n[id] || {}, patch, { ts: Date.now() }); if (!n[id].r && !n[id].note) delete n[id]; store.set('ca_notes', n); }
+function testerReport() {
+  const n = notes(), p = plays(); const ids = Object.keys(n).filter(id => byId[id]).sort((a, b) => (n[b].ts || 0) - (n[a].ts || 0));
+  const line = id => { const e = n[id], g = byId[id]; return '- ' + g.title + ' [' + (g.from || '') + '] ' + (e.r ? RATE[e.r] + ' ' + e.r : '(no rating)') + ((p[id] || {}).n ? ', played ' + p[id].n + 'x' : '') + (e.note ? '\n    "' + e.note.replace(/\s+/g, ' ').trim() + '"' : ''); };
+  const counts = ['fun', 'ok', 'broken'].map(r => ids.filter(id => n[id].r === r).length);
+  return "Caleb's Arcade tester report — " + new Date().toLocaleString() + '\n' + ids.length + ' games rated: ' + counts[0] + ' fun, ' + counts[1] + ' ok, ' + counts[2] + ' broken. ' + Object.keys(p).length + ' games played in total.\n\n' + (ids.length ? ids.map(line).join('\n') : '(nothing rated yet — open a game and use "How was it?")') + '\n';
+}
 function recordPlay(id) { const p = plays(); const e = p[id] || { n: 0 }; e.n++; e.ts = Date.now(); p[id] = e; store.set('ca_plays', p); }
 /* Bests: each local cabinet writes its own record to localStorage; we only read it. */
 function bestOf(g) { if (!g.rec) return null; const r = store.get(g.rec, null); if (!r) return null; const v = typeof r === 'number' ? r : r.best; return (typeof v === 'number' && v > 0) ? v : null; }
@@ -72,6 +81,7 @@ function card(g) {
   a.innerHTML =
     '<div class="art"><img alt="" data-src="' + g.thumb + '" width="480" height="300"><div class="play"><b>' + playIco + '</b></div></div>' +
     (g.new ? '<span class="badge">New</span>' : '') +
+    ((notes()[g.id] || {}).r ? '<span class="rate" title="Your rating">' + RATE[notes()[g.id].r] + '</span>' : '') +
     '<button class="fav' + (isFav(g.id) ? ' on' : '') + '" type="button" aria-label="Favourite ' + esc(g.title) + '" aria-pressed="' + isFav(g.id) + '">' + heart + '</button>' +
     '<div class="body"><h3>' + esc(g.title) + '</h3><div class="meta"><span class="cat">' + esc(catName(g.cat)) + '</span>' +
     (g.from ? '<span class="from">' + esc(g.from) + '</span>' : '') +
@@ -90,7 +100,7 @@ function sw(key, on, label, sub) {
   return '<div class="row"><div class="lbl">' + label + (sub ? '<small>' + sub + '</small>' : '') + '</div><button type="button" class="switch" role="switch" data-key="' + key + '" aria-checked="' + on + '" aria-label="' + label + '"></button></div>';
 }
 function exportData() {
-  const data = { app: 'calebs-arcade', v: 1, at: new Date().toISOString(), settings: S, favs: [...favs()], plays: plays(), stage: store.get('ca_stage', {}), records: {} };
+  const data = { app: 'calebs-arcade', v: 1, at: new Date().toISOString(), settings: S, favs: [...favs()], plays: plays(), stage: store.get('ca_stage', {}), notes: notes(), report: testerReport(), records: {} };
   for (const g of CATALOG) if (g.rec) { const r = store.get(g.rec, null); if (r != null) data.records[g.rec] = r; }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'calebs-arcade-' + new Date().toISOString().slice(0, 10) + '.json'; document.body.appendChild(a); a.click(); a.remove();
@@ -104,6 +114,7 @@ function importData(file, done) {
       if (d.favs) store.set('ca_favs', [...new Set([...favs(), ...d.favs.filter(id => byId[id])])]);
       if (d.plays) { const p = plays(); for (const [id, e] of Object.entries(d.plays)) if (byId[id]) { const c = p[id] || { n: 0, ts: 0 }; p[id] = { n: Math.max(c.n, e.n | 0), ts: Math.max(c.ts, e.ts | 0) }; } store.set('ca_plays', p); }
       if (d.stage) store.set('ca_stage', Object.assign(store.get('ca_stage', {}), d.stage));
+      if (d.notes) { const n = notes(); for (const [id, e] of Object.entries(d.notes)) if (byId[id] && (!n[id] || (e.ts || 0) > (n[id].ts || 0))) n[id] = e; store.set('ca_notes', n); }
       if (d.records) for (const g of CATALOG) if (g.rec && d.records[g.rec] != null) { const cur = store.get(g.rec, null), inc = d.records[g.rec]; const cv = typeof cur === 'number' ? cur : (cur && cur.best) || 0, iv = typeof inc === 'number' ? inc : (inc && inc.best) || 0; if (iv > cv) store.set(g.rec, inc); }
       if (d.settings) { Object.assign(S, DEF, d.settings); saveSettings(); }
       toast('Imported — favourites, history and bests merged'); done && done(true);
@@ -117,7 +128,7 @@ function openPrefs() {
     d = document.createElement('dialog'); d.id = 'prefs'; d.className = 'sheet'; d.setAttribute('aria-label', 'Settings'); document.body.appendChild(d);
     d.addEventListener('click', e => { if (e.target === d) d.close(); });
   }
-  const p = plays(), played = Object.keys(p).length, total = Object.values(p).reduce((a, e) => a + e.n, 0);
+  const p = plays(), played = Object.keys(p).length, total = Object.values(p).reduce((a, e) => a + e.n, 0), rated = Object.keys(notes()).length;
   const onPlay = !!$('#play');
   d.innerHTML = '<form method="dialog"><header><h2>Settings</h2><button class="ico" type="submit" aria-label="Close">' +
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header><div class="body">' +
@@ -131,8 +142,8 @@ function openPrefs() {
     '<div class="row"><div class="lbl">Default stage<small>How big the game is on the play page. Each game remembers its own choice too.</small></div>' + seg('stage', OPTS.stage, S.stage) + '</div>' +
     sw('extnew', S.extnew, 'Open other-site games in a new tab', 'The 73 games hosted on Caleb\'s other sites get a launch button instead of loading inside the page') +
     '<h3>Your data</h3><small style="color:var(--ink-3)">Everything stays in this browser. Nothing is sent anywhere.</small>' +
-    '<div class="stats"><div><b>' + played + '</b><span>games played</span></div><div><b>' + total + '</b><span>total plays</span></div><div><b>' + favs().size + '</b><span>favourites</span></div></div>' +
-    '<div class="btns"><button type="button" class="btn sm" data-act="export">Export backup</button><label class="btn sm">Import backup<input type="file" accept="application/json,.json" hidden data-act="import"></label>' +
+    '<div class="stats"><div><b>' + played + '</b><span>games played</span></div><div><b>' + total + '</b><span>total plays</span></div><div><b>' + favs().size + '</b><span>favourites</span></div><div><b>' + rated + '</b><span>games rated</span></div></div>' +
+    '<div class="btns"><button type="button" class="btn sm prime" data-act="report">Copy tester report</button><button type="button" class="btn sm" data-act="export">Export backup</button><label class="btn sm">Import backup<input type="file" accept="application/json,.json" hidden data-act="import"></label>' +
     '<button type="button" class="btn sm" data-act="clear-hist">Clear history</button><button type="button" class="btn sm" data-act="clear-favs">Clear favourites</button>' +
     '<button type="button" class="btn sm" data-act="install" hidden>Install app</button><button type="button" class="btn sm" data-act="reset">Reset settings</button></div>' +
     '<h3>Keyboard</h3><div class="keys">' +
@@ -152,6 +163,7 @@ function onSheetClick(e) {
   const b = e.target.closest('[data-act]'); if (!b) return;
   switch (b.dataset.act) {
     case 'export': exportData(); break;
+    case 'report': { const txt = testerReport(); (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => toast('Report copied — paste it to Caleb'), () => { const blob = new Blob([txt], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'arcade-tester-report.txt'; a.click(); }); break; }
     case 'clear-hist': if (confirm('Forget which games you have played here?')) { store.del('ca_plays'); toast('History cleared'); d.close(); location.reload(); } break;
     case 'clear-favs': if (confirm('Remove all favourites?')) { store.del('ca_favs'); toast('Favourites cleared'); d.close(); location.reload(); } break;
     case 'reset': Object.assign(S, DEF); saveSettings(); d.close(); openPrefs(); toast('Settings reset'); break;
@@ -299,11 +311,13 @@ function play() {
   $('#open').href = g.src;
   // stage size: per-game memory, falling back to the settings default
   const modes = store.get('ca_stage', {});
-  const modeSeg = $('#modes'); modeSeg.innerHTML = seg('mode', OPTS.stage, modes[g.id] || S.stage); $('.seg', modeSeg).setAttribute('aria-label', 'Stage size');
+  // per-game memory > the visitor's chosen default > the game's own preferred shape > Fit
+  const startMode = modes[g.id] || (S.stage !== DEF.stage ? S.stage : (g.stage || S.stage));
+  const modeSeg = $('#modes'); modeSeg.innerHTML = seg('mode', OPTS.stage, startMode); $('.seg', modeSeg).setAttribute('aria-label', 'Stage size');
   const setMode = m => { stage.dataset.mode = m; $$('#modes button').forEach(b => { const on = b.dataset.v === m; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); }); };
-  setMode(modes[g.id] || S.stage);
+  setMode(startMode);
   modeSeg.addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; setMode(b.dataset.v); const m = store.get('ca_stage', {}); m[g.id] = b.dataset.v; store.set('ca_stage', m); });
-  document.addEventListener('settings', () => { if (!store.get('ca_stage', {})[g.id]) setMode(S.stage); });
+  document.addEventListener('settings', () => { if (!store.get('ca_stage', {})[g.id]) setMode(S.stage !== DEF.stage ? S.stage : (g.stage || S.stage)); });
   // fullscreen, with a theatre-mode fallback for browsers that have no fullscreen API (iPhone Safari)
   const fs = $('#fs'), exit = $('#exit');
   const canFs = !!(stage.requestFullscreen || stage.webkitRequestFullscreen);
@@ -321,6 +335,12 @@ function play() {
   $('#share').addEventListener('click', async () => { const url = location.origin + location.pathname + '?g=' + encodeURIComponent(g.id); try { if (navigator.share) await navigator.share({ title: g.title + ' — Caleb\'s Arcade', text: g.blurb, url }); else { await navigator.clipboard.writeText(url); toast('Link copied'); } } catch (e) {} });
   const restart = () => { if (!started) { loadEl.classList.remove('off'); start(); return; } loadEl.classList.remove('off'); frame.src = 'about:blank'; setTimeout(() => { frame.src = g.src; }, 30); };
   $('#reload').addEventListener('click', restart);
+  // tester feedback
+  const rate = $('#rate'), note = $('#note'), saved = $('#notesaved');
+  const paintRate = () => { const r = (notes()[g.id] || {}).r; $$('button', rate).forEach(b => { const on = b.dataset.v === r; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); }); };
+  note.value = (notes()[g.id] || {}).note || ''; paintRate();
+  rate.addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; const cur = (notes()[g.id] || {}).r; setNote(g.id, { r: cur === b.dataset.v ? '' : b.dataset.v }); paintRate(); saved.textContent = cur === b.dataset.v ? '' : 'Saved — ' + RATE[b.dataset.v] + ' ' + g.title; });
+  let noteT; note.addEventListener('input', () => { clearTimeout(noteT); noteT = setTimeout(() => { setNote(g.id, { note: note.value.trim() }); saved.textContent = note.value.trim() ? 'Note saved' : ''; }, 400); });
   const rel = CATALOG.filter(x => x.id !== g.id).map(x => [x, (x.cat === g.cat ? 2 : 0) + x.tags.filter(t => g.tags.includes(t)).length]).filter(([, s]) => s > 0).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([x]) => x);
   const r = $('#related'); rel.forEach(x => r.appendChild(card(x))); arrows($('#relsec'));
   if (!rel.length) $('#relsec').hidden = true;
