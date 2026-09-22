@@ -42,6 +42,7 @@ function card(g) {
     (g.new ? '<span class="badge">New</span>' : '') +
     '<button class="fav' + (isFav(g.id) ? ' on' : '') + '" type="button" aria-label="Favourite ' + g.title + '" aria-pressed="' + isFav(g.id) + '">' + heart + '</button>' +
     '<div class="body"><h3>' + esc(g.title) + '</h3><div class="meta"><span class="cat">' + esc(catName(g.cat)) + '</span>' +
+    (g.from ? '<span class="from">' + esc(g.from) + '</span>' : '') +
     (g.players > 1 ? '<span>' + g.players + 'P</span>' : '') +
     (best != null ? '<span class="best" title="Your best on this machine">' + esc(g.label || 'best') + ' ' + best + '</span>' : '') + '</div></div>';
   lazy($('img', a));
@@ -124,7 +125,8 @@ function play() {
   $('meta[name=description]').content = g.blurb;
   $('#title').textContent = g.title; $('#cat').textContent = catName(g.cat);
   $('#blurb').textContent = g.blurb;
-  $('#tags').innerHTML = g.tags.map(t => '<span>' + esc(t) + '</span>').join('') + (g.players > 1 ? '<span><b>' + g.players + '</b> players</span>' : '');
+  $('#tags').innerHTML = (g.from ? '<span>from <b>' + esc(g.from) + '</b></span>' : '') + g.tags.map(t => '<span>' + esc(t) + '</span>').join('') + (g.players > 1 ? '<span><b>' + g.players + '</b> players</span>' : '');
+  if (g.note) $('#ext').insertAdjacentHTML('beforebegin', '<p class="tip">' + esc(g.note) + '</p>');
   const best = bestOf(g); if (best != null) $('#tags').insertAdjacentHTML('beforeend', '<span>your ' + esc(g.label || 'best') + ' <b>' + best + '</b></span>');
   $('#ext').hidden = !g.ext;
   const frame = $('#frame'), stage = $('#stage'), loadEl = $('#load');
