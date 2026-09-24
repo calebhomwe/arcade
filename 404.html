@@ -1,19 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="system">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Not found — Caleb's Arcade</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="/arcade/icon.svg" type="image/svg+xml">
+<script>(function(){try{var s=JSON.parse(localStorage.getItem('ca_settings')||'{}'),h=document.documentElement;h.dataset.theme=s.theme||'system';h.dataset.accent=s.accent||'violet'}catch(e){}})()</script>
 <link rel="stylesheet" href="/arcade/assets/site.css">
+<style>
+.lost{min-height:100vh;display:grid;place-items:center;padding:24px}
+.lost .empty{max-width:520px;padding:44px 28px}
+.lost img{width:84px;height:84px;filter:drop-shadow(0 12px 20px rgba(109,74,255,.35))}
+.lost .code{font:700 72px/1 var(--display);background:linear-gradient(135deg,#ffb000,#ff3d8b,#6d4aff);-webkit-background-clip:text;background-clip:text;color:transparent;margin:6px 0 0}
+.lost .row3{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px}
+</style>
 </head>
 <body>
-<main class="wrap" style="padding:80px 0;text-align:center">
-  <p style="font-size:84px;margin:0;font-weight:900;color:var(--accent)">404</p>
-  <h1 style="margin:8px 0 12px;font-size:28px">That cabinet isn't on the shelf.</h1>
-  <p style="color:var(--ink-2);margin:0 0 24px">The link may be old. Every game is one tap from the front door.</p>
-  <a class="btn prime" href="/arcade/">Back to the arcade</a>
+<main class="lost">
+  <div class="empty">
+    <img src="/arcade/icon.svg" alt="Caleb's Arcade" width="84" height="84">
+    <p class="code">404</p>
+    <h1 style="font-size:26px">That game isn't on the shelf.</h1>
+    <p>The link may be old or mistyped. Every game is one tap from the front door.</p>
+    <div class="row3"><a class="btn prime" href="/arcade/">Back to the arcade</a><a class="btn" href="/arcade/play.html?g=random">Surprise me</a></div>
+  </div>
 </main>
 </body>
 </html>
