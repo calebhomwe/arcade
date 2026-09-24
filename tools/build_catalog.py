@@ -184,6 +184,8 @@ for g in G:
     g['pop'] = POPULAR.index(g['id'])+1 if g['id'] in POPULAR else 0
     pv = 'assets/previews/%s.webp' % g['id']      # optional hover preview, picked up automatically
     g['preview'] = pv if os.path.exists(os.path.join(ROOT,pv)) else ''
+    t2 = 'assets/thumbs/2x/' + os.path.basename(g['thumb'])     # 960x600 key art from tools/keyart.py, used by big tiles
+    g['thumb2x'] = t2 if os.path.exists(os.path.join(ROOT,t2)) else ''
     g['mb'] = 0   # download size of a local game's own folder (the shared Godot engine is counted separately)
     if not g['ext']:
         d = os.path.dirname(os.path.join(ROOT, g['src']))

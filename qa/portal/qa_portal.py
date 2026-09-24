@@ -28,7 +28,7 @@ async def main():
                     pg.on('console',lambda m: errs.append('console.'+m.type+': '+m.text[:200]) if m.type in ('error','warning') else None)
                     pg.on('response',lambda r: errs.append('HTTP %d %s'%(r.status,r.url)) if r.status>=400 else None)
                     pg.on('requestfailed',lambda r: errs.append('failed %s %s'%(r.url,r.failure)) if 'about:blank' not in r.url else None)
-                    await pg.goto(B+url,wait_until='load'); await pg.wait_for_timeout(1200)
+                    await pg.goto(B+url,wait_until='load'); await pg.wait_for_timeout(2500)
                     perf=await pg.evaluate(PERF)
                     for a in acts:
                         if a[0]=='search': await pg.click('#q') if not mob else await pg.click('#srch-btn'); await pg.keyboard.type(a[1],delay=50); await pg.wait_for_timeout(700)

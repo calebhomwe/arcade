@@ -22,7 +22,11 @@ WHAT IS HERE
   tools/portal_shell.py   called by build_catalog.py: writes the side rail,
                         phone chips, footer and icon sprite into index.html and
                         play.html between <!--@...--> markers
-  assets/thumbs/        one real captured frame per game, 480x300 webp
+  assets/thumbs/        one key-art tile per game, 480x300 webp (+ 2x/ at 960x600)
+  tools/keyart.py       renders those tiles from real frames in tools/keyart/src/
+                        using per-game recipes in tools/keyart/spec.json:
+                          python3 tools/keyart.py import <id> <frame.png>
+                          python3 tools/keyart.py render [id ...]
   assets/previews/      optional short hover loops, <id>.webp (picked up
                         automatically by build_catalog.py)
   assets/fonts/         Fredoka + Nunito (SIL OFL, see LICENSE.txt there)
@@ -75,7 +79,9 @@ WHERE THE OTHER GAMES LIVE
 TO ADD A GAME
   1. Put it in this repo (a folder with index.html), or note its live URL.
   2. Add one line to tools/build_catalog.py.
-  3. Capture a 480x300 frame of it playing into assets/thumbs/<id>.webp
+  3. Capture a frame of it playing, then  python3 tools/keyart.py import <id> <frame>,
+     add a recipe to tools/keyart/spec.json and  python3 tools/keyart.py render <id>
+     (or drop a plain 480x300 frame into assets/thumbs/<thumb>.webp)
      (optionally a short loop into assets/previews/<id>.webp).
   4. python3 tools/build_catalog.py   (it refuses if the thumb is missing;
      also rewrites sitemap.xml and robots.txt)

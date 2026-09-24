@@ -240,9 +240,10 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .mosaic .tile:not(.big):not(.huge) .fav{width:26px;height:26px;top:4px;right:4px}
 .mosaic .tile:not(.big):not(.huge) .fav .i{width:14px;height:14px}
 .mosaic .tile:not(.big):not(.huge) .best{display:none}
-.mosaic .tile.big .cap,.mosaic .tile.huge .cap{opacity:1;transform:none}
+/* the key art carries the title, so big tiles show no caption strip */
+.mosaic .tile.big .cap,.mosaic .tile.huge .cap{display:none}
 @media (hover:none){.mosaic .tile:not(.big):not(.huge) .fav:not(.on){display:none}}
-@container (max-width:519px){.mosaic .tile.big .cap,.mosaic .tile.huge .cap{font-size:17px;padding:34px 10px 9px}}
+
 
 /* horizontal rows */
 .row{display:grid;grid-auto-flow:column;grid-auto-columns:var(--rail-tile);gap:14px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding:0 4px;padding:6px 4px 14px;margin:-6px -4px -8px;scrollbar-width:none}
@@ -376,7 +377,7 @@ body.theatre .player .exit{display:inline-flex}
 .side-grid .tile .cap{font-size:12.5px;padding:18px 7px 6px}
 .side-grid .tile .cap small{display:none}
 .side-grid .tile:first-child{grid-column:span 2}
-.side-grid .tile:first-child .cap{font-size:16px;opacity:1;transform:none}
+.side-grid .tile:first-child .cap{font-size:16px}
 .fb{margin-top:18px}
 .fb summary{cursor:pointer;font-weight:800;list-style:none;display:flex;align-items:center;gap:10px}
 .fb summary::-webkit-details-marker{display:none}

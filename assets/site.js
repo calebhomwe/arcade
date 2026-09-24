@@ -58,7 +58,7 @@ function saveSettings() { store.set('ca_settings', S); applySettings(); document
 function applySettings() {
   const h = document.documentElement;
   h.dataset.theme = S.theme; h.dataset.accent = S.accent; h.dataset.size = S.size; h.dataset.motion = S.motion;
-  h.dataset.labels = (S.labels === true || (S.labels !== false && touch.matches)) ? '1' : '0';
+  h.dataset.labels = S.labels === true ? '1' : '0';
   const tb = $('#theme-btn'); if (tb) { const d = isDark(); tb.innerHTML = ico(d ? 'sun' : 'moon'); tb.setAttribute('aria-label', d ? 'Switch to day theme' : 'Switch to night theme'); tb.title = tb.getAttribute('aria-label'); }
 }
 applySettings();
@@ -117,7 +117,7 @@ function tile(g, o = {}) {
   d.dataset.id = g.id;
   const best = bestOf(g), f = isFav(g.id);
   const flag = o.rank ? '<span class="flag hot">' + ico('flame') + '#' + o.rank + '</span>' : g.new ? '<span class="flag">New</span>' : (o.hot && g.pop && g.pop <= 8) ? '<span class="flag hot">' + ico('flame') + 'Hot</span>' : '';
-  d.innerHTML = '<a href="' + playHref(g) + '"><div class="art"><img alt="' + esc(g.title) + '" src="' + g.thumb + '" width="480" height="300" decoding="async"' + (o.hi ? ' fetchpriority="high"' : o.eager ? '' : ' loading="lazy"') + '>' +
+  d.innerHTML = '<a href="' + playHref(g) + '"><div class="art"><img alt="' + esc(g.title) + '" src="' + ((o.size && g.thumb2x) ? g.thumb2x : g.thumb) + '"' + (!o.size && g.thumb2x ? ' srcset="' + g.thumb + ' 480w, ' + g.thumb2x + ' 960w" sizes="(min-width:761px) 240px, 50vw"' : '') + ' width="480" height="300" decoding="async"' + (o.hi ? ' fetchpriority="high"' : o.eager ? '' : ' loading="lazy"') + '>' +
     '<div class="cap" aria-hidden="true">' + esc(g.title) + '<small>' + esc(catName(g.cat)) + '</small></div></div>' +
     '<div class="under" aria-hidden="true">' + esc(g.title) + '<small>' + esc(catName(g.cat)) + (best != null ? ' · ' + esc(g.label || 'best') + ' ' + best : '') + '</small></div></a>' + flag +
     (best != null && !o.caption && !o.labeled ? '<span class="best" aria-hidden="true">' + esc(g.label || 'best') + ' ' + best + '</span>' : '') +
@@ -157,7 +157,7 @@ function rowSection(title, list, o = {}) {
   r.addEventListener('scroll', paint, { passive: true }); requestAnimationFrame(paint);
   return s;
 }
-function gridOf(list, o = {}) { const g = document.createElement('div'); g.className = 'grid'; list.forEach((x, i) => g.appendChild(tile(x, { caption: true, labeled: true, hot: true, eager: i < 8, rank: o.ranked ? i + 1 : 0 }))); return g; }
+function gridOf(list, o = {}) { const g = document.createElement('div'); g.className = 'grid'; list.forEach((x, i) => g.appendChild(tile(x, { caption: true, hot: true, eager: i < 8, rank: o.ranked ? i + 1 : 0 }))); return g; }
 
 /* Mosaic: big tiles among small ones. `items` = [{g, size}], filled so the last row is complete when `fill` is given. */
 function mosaic(items, fill) {
@@ -178,7 +178,7 @@ function mosaic(items, fill) {
       while ((a < target || a % cols) && pool.length) { list.push({ g: pool.shift(), size: '' }); a++; }
     }
     m.innerHTML = '';
-    list.forEach((it, i) => m.appendChild(tile(it.g, { size: it.size, eager: i < 12, hi: i < 3, rank: it.rank })));
+    list.forEach((it, i) => m.appendChild(tile(it.g, { size: it.size, eager: i < 12, hi: i < 3 || !!it.size, rank: it.rank })));
   };
   requestAnimationFrame(draw);
   new ResizeObserver(() => draw()).observe(wrap);
@@ -277,7 +277,7 @@ function openPrefs(focus) {
     '<div class="row2"><div class="lbl">Accent colour</div>' + seg('accent', OPTS.accent, S.accent, true) + '</div>' +
     '<div class="row2"><div class="lbl">Tile size<small>How big the game tiles are in rows and lists</small></div>' + seg('size', OPTS.size, S.size) + '</div>' +
     '<div class="row2"><div class="lbl">Motion<small>Hover lifts, previews and smooth scrolling</small></div>' + seg('motion', OPTS.motion, S.motion) + '</div>' +
-    swRow('labels', labelsOn, 'Show game names under tiles', 'Otherwise names appear when you hover') +
+    swRow('labels', labelsOn, 'Show game names under tiles', 'Every tile already carries its title; this adds the category underneath') +
     '<h3>Playing</h3>' +
     '<div class="row2"><div class="lbl">Default screen size<small>Each game also remembers its own choice</small></div>' + seg('stage', OPTS.stage, S.stage) + '</div>' +
     swRow('extnew', S.extnew, 'Open other-site games in a new tab', 'The ' + ext + ' games hosted on Caleb\'s other sites offer a new-tab launch first') +
@@ -457,7 +457,7 @@ function play() {
   markNav({ cat: g.cat });
   $('#crumb-cat').textContent = c.name; $('#crumb-cat').href = './?cat=' + c.id; $('#crumb-t').textContent = g.title;
   $('#backdrop').style.backgroundImage = 'url("' + g.thumb + '")';
-  const shot = $('#shot'); shot.src = g.thumb; shot.alt = g.title;
+  const shot = $('#shot'); shot.src = g.thumb2x || g.thumb; shot.alt = g.title;
   $('#title').textContent = g.title;
   const mic = (g.tags || []).includes('mic');
   $('#meta').innerHTML = '<span>' + esc(c.name) + '</span>' + (g.stage === 'tall' ? '<span>Portrait</span>' : '') + (mic ? '<span>Uses the mic</span>' : '') + (g.new ? '<span>New</span>' : '') + (g.pop && g.pop <= 10 ? '<span>Popular</span>' : '');

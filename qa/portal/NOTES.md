@@ -16,34 +16,38 @@ Builder's self-assessment. An independent critic re-scores this; self-certificat
 overflow, across all 21 captures (service worker enabled). axe-core: 0 violations on all 8 page/theme runs
 (after fixing contrast on flags and the night accent, names on the collapsed rail, footer heading order).
 
+## Round 2: key art (tools/keyart.py)
+Every tile except Chili Firm (being rebuilt; left for the lead) is now rendered by `tools/keyart.py` from a
+real frame of that game kept in `tools/keyart/src/`, with a per-game recipe in `tools/keyart/spec.json`:
+a HUD-free crop, one shared grade (saturation 1.3, contrast 1.1, vignette), and a Fredoka logotype with a
+heavy outline and drop shadow in the category colour. Minimal or dark games use "hero" mode: the key element
+(board, coin, character, playfield card) enlarged over a sunburst gradient built from the same frame. The 22
+portrait Skywalker games show two real phone-screen frames fanned out. Output: 480x300 plus 960x600
+(`assets/thumbs/2x/`) used by the big mosaic tiles, the splash and 2x screens.
+Before and after: `tiles_before.jpg`, `tiles_after.jpg`. Kingdom Defense was recaptured in play with the DOM
+UI hidden, so its hero tile no longer shows the red "UNPASSABLE TERRAIN" ring or the side panel.
+
 ## Page weight and first paint (Lighthouse-style note)
-Measured with Chromium on a heavily shared 4-core box (load average above 20 during the runs), served by
+Measured with Chromium on a heavily shared 4-core box (load average above 20), served by
 `python3 -m http.server` with no compression, so these numbers are pessimistic.
-- Home: 40 requests, about 570–620 KB transferred (images about 340 KB, fonts 69 KB, CSS + JS about 210 KB
-  uncompressed; GitHub Pages gzips CSS/JS/catalog to roughly a quarter of that).
-  First contentful paint 190–630 ms, LCP 290–1580 ms.
-- Game page: about 370–510 KB, FCP 120–750 ms, LCP 260–750 ms (the game itself only loads after Play).
-- What makes it fast: no framework, two deferred scripts, self-hosted woff2 fonts preloaded with
-  `font-display: swap`, CSS skeleton tiles in the HTML, side rail / chips / footer pre-rendered into the HTML by
-  `tools/build_catalog.py`, first three mosaic images at `fetchpriority=high`, everything else `loading=lazy`,
-  hover previews fetched only on hover, and the service worker precaching the shell.
+- Home: about 920 KB at desktop and 750 KB on a phone after round 2 (the big mosaic tiles now load 960x600
+  key art; the rest is lazy). First contentful paint 0.27–0.8 s, LCP 1.2–2.4 s.
+- Game page: 440–610 KB, FCP 0.2–0.85 s, LCP 0.4–1.1 s (the game itself only loads after Play).
+- What keeps it fast: no framework, two deferred scripts, self-hosted woff2 fonts preloaded with
+  `font-display: swap`, skeleton tiles in the HTML, rail / chips / footer pre-rendered by the build,
+  big tiles at `fetchpriority=high`, everything else `loading=lazy`, hover previews only on hover,
+  and a service worker precaching the shell.
 
-## Rubric (portal version of the quality gate, 1–10, PASS needs >= 8 on every axis)
-| Axis | Score | Why |
-|---|---|---|
-| A. Art direction vs Poki / CrazyGames | 7 | Layout, mosaic, rail, rows and game page match the genre. The tiles are real gameplay captures, not commissioned key art, so the wall is less punchy than Poki's. |
-| B. Colour and lighting | 7 | Bright day theme and a rich night theme, but many games are dark by nature (neon minigames, mines, menus), which dulls parts of the grid. |
-| C. Assets (thumbnails) | 6 | 21 weak thumbnails recaptured or re-cropped as bold close-ups; about 25 are still sparse or menu-like (see below). |
-| D. UI polish | 8 | One type system (Fredoka + Nunito), drawn icon set, clear hierarchy, no clipping or tofu seen at any viewport. |
-| E. Feel and juice | 8 | Tile lift + glow on hover, 10 animated hover previews, pulsing Play, toasts, instant search, smooth rows; reduced motion honoured. |
-| F. Phone | 8 | Poki-style 3-column mosaic, chip bar, captioned tiles, Play goes straight to fullscreen. |
-| G. Stability | 9 | 0 errors, 0 failed requests, axe clean. |
+## Rubric after round 2 (1–10, PASS needs >= 8 on every axis)
+| Axis | Round 1 | Round 2 | Why |
+|---|---|---|---|
+| A. Art direction vs Poki / CrazyGames | 7 | 8 | Every tile is now a titled key-art card in one consistent style, which is how CrazyGames tiles read. |
+| B. Colour and lighting | 7 | 7 | Hero-mode gradients fixed the flat and dark tiles, but some scene tiles are still dull because the games are (Bloxburg Town, SwellRider, LA City, DEEPCUT, Typhoon Mine, the dark Skywalker screens). |
+| C. Assets (thumbnails) | 6 | 7 | The tiles are clean and legible now, but some games only offer primitive or menu frames (LA City boxes, Heaven's Grace and Word Dungeon menus, Heat Firm's text UI, Surviv Royale's flat field). Compositing cannot turn those into commissioned art. |
+| D. UI polish | 8 | 8 | Unchanged shell. The duplicate caption strips were removed from the big tiles because the art now carries the title. |
+| E. Feel and juice | 8 | 8 | Unchanged. |
+| F. Phone | 8 | 8 | Mosaic reads well at 390. |
+| G. Stability | 9 | 9 | 0 errors, 0 failed requests, 0 overflow, axe clean. |
 
-**Verdict: FAIL on the strict gate** (A, B and C are below 8), driven by thumbnail art, not by the shell.
-
-## Weak thumbnails still in the catalogue
-Sparse or menu-like frames that could not be improved by capture alone: most Skywalker minigames
-(spike-jump, slide-runner, sniper-shot, swim-dodge, cut-rope, grow-shrink, hole-eater, lane-switcher,
-parking-puzzle, key-unlock, color-match, balance-tile), typhoon-mine, deepcut-mine, word-dungeon,
-math-miner, high-nest, bloxburg-town, godot-heavens-grace, godot-tidebreak-world-tour, godot-heat-firm,
-rap-academy, sneaker-drop, field-station, hub-block-blast. Real key art would lift axes A–C.
+**Verdict: still FAIL on the strict gate** (B and C are 7). The gap is now in the source games, not the portal:
+tiles for the games listed under B and C need better in-game moments, which means changing those games.
