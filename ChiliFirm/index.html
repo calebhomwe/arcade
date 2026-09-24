@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+<title>Chili Firm 2: Replanted</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tune.css">
+</head>
+<body class="day">
+<div id="app">
+  <header id="topbar"></header>
+  <div id="layout">
+    <nav id="nav">
+      <button class="navbtn active" data-action="nav" data-nav="farm"><span>🌶️</span>Farm</button>
+      <button class="navbtn" data-action="nav" data-nav="market"><span>🏪</span>Market</button>
+      <button class="navbtn" data-action="nav" data-nav="workers"><span>🧑‍🌾</span>Workers</button>
+      <button class="navbtn" data-action="nav" data-nav="lab"><span>🔬</span>Lab &amp; R&amp;D</button>
+      <button class="navbtn" data-action="nav" data-nav="biz"><span>💼</span>Businesses</button>
+      <button class="navbtn" data-action="nav" data-nav="stats"><span>📊</span>Stats</button>
+    </nav>
+    <main id="main">
+      <section id="view-farm" class="view active"></section>
+      <section id="view-market" class="view"></section>
+      <section id="view-workers" class="view"></section>
+      <section id="view-lab" class="view"></section>
+      <section id="view-biz" class="view"></section>
+      <section id="view-stats" class="view"></section>
+    </main>
+    <aside id="side">
+      <div id="quest-panel" class="card"></div>
+      <div id="event-panel"></div>
+      <div id="log-panel" class="card">
+        <div class="card-title">📜 Town News</div>
+        <div id="log"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+<div id="toasts"></div>
+<div id="modal-root"></div>
+<script src="js/core/defs.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/logic.js"></script>
+<script src="js/story/story.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui/art.js"></script>
+<script src="js/content/expansion1.js"></script>
+<script src="js/content/expansion2.js"></script>
+<script src="js/ui/ui.js"></script>
+<script src="js/ui/juice.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

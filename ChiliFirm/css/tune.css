@@ -1,0 +1,32 @@
+/* ============================================================
+   T9 reference-tuned overrides — colors measured against real
+   Weed Firm screenshots via tools/ref-match.js
+   (dark rust chrome + gold counters, like the original's HUD)
+   ============================================================ */
+
+#topbar {
+  background: rgba(126, 78, 50, 0.94);
+  border-bottom-color: #2a1610;
+}
+#topbar .tb-stat {
+  background: linear-gradient(180deg, #a9713f, #8a5a33);
+  border-color: #2f1a10;
+  box-shadow: 0 3px 0 rgba(42, 22, 16, 0.8);
+}
+#topbar .tb-stat small { color: #eed8ae; }
+#topbar .tb-stat .val { color: #f5e6c8; }
+#topbar .money-val { color: #ffd54f; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+#topbar .rep-val { color: #ffd54f; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+#topbar .xp-bar { background: #4a2c18; border-color: #2f1a10; }
+#topbar .tb-btn {
+  background: linear-gradient(180deg, #c49a6e, #9c6b3f);
+  color: #2f1a10;
+  border-color: #2f1a10;
+}
+
+/* slightly darker, more saturated scene (refs are darker + greener) */
+#farm-room { filter: saturate(1.1) brightness(0.96); }
+#farm-room::before {
+  background: repeating-linear-gradient(90deg, rgba(74, 44, 24, 0.18) 0 2px, transparent 2px 52px),
+    linear-gradient(180deg, #d8c698, #c2b17e);
+}

@@ -1,7 +1,7 @@
 CALEB'S ARCADE
 ==============
 
-The front door for every browser game Caleb has shipped: 104 games,
+The front door for every browser game Caleb has shipped: 110 games,
 no ads, no accounts, no installs. Live at https://calebhomwe.github.io/arcade/
 
 WHAT IS HERE

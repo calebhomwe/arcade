@@ -296,6 +296,8 @@ function play() {
   function start() {
     if (started) return; started = true;
     const l = $('.launch', stage); if (l) l.remove();
+    // Cabinets on this site inherit mic access; a game hosted elsewhere only gets it when tagged 'mic'. The browser still asks the player.
+    if ((g.tags || []).includes('mic')) frame.allow = frame.allow + '; microphone';
     frame.src = g.src; frame.title = g.title;
     frame.addEventListener('load', () => loadEl.classList.add('off'));
     setTimeout(() => loadEl.classList.add('off'), 6000);
