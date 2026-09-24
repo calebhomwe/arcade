@@ -474,6 +474,7 @@ function play() {
   const facts = () => {
     const best = bestOf(g), p = plays()[g.id];
     const rows = [['Category', '<a href="./?cat=' + c.id + '">' + esc(c.name) + '</a>'], ['From', esc(fromLabel(g))], ['Screen', g.stage === 'tall' ? 'Portrait' : 'Landscape'], ['Players', g.players > 1 ? g.players + ' players' : '1 player'], ['Runs in', 'Your browser, no install']];
+    if (g.mb) rows.push(['Download', (g.mb < 1 ? 'under 1 MB' : Math.round(g.mb) + ' MB') + (/Godot web build/.test(g.note) ? ' + 38 MB engine, once' : '')]);
     if (mic) rows.push(['Microphone', 'Optional, the browser asks first']);
     if (best != null) rows.push(['Your ' + esc(g.label || 'best'), '<b>' + best + '</b>']);
     if (p && p.n) rows.push(['You played', p.n + (p.n === 1 ? ' time' : ' times')]);
@@ -481,7 +482,7 @@ function play() {
   };
   facts();
 
-  const frame = $('#frame'), splash = $('#splash'), load = $('#load');
+  const frame = $('#frame'), splash = $('#splash'), load = $('#load'), fs = $('#fs');
   let started = false;
   function start() {
     if (started) return; started = true;
@@ -493,14 +494,16 @@ function play() {
     frame.addEventListener('load', done, { once: true }); setTimeout(() => load.classList.add('off'), 9000);
     recordPlay(g.id); facts();
   }
-  $('#playbtn').addEventListener('click', start);
-  splash.addEventListener('click', e => { if (!e.target.closest('a,button')) start(); });
+  // phones: Play goes straight to fullscreen (theatre where the browser has no fullscreen API)
+  const phonePlay = () => { start(); if (touch.matches && innerWidth <= 760) fs.click(); };
+  $('#playbtn').addEventListener('click', phonePlay);
+  splash.addEventListener('click', e => { if (!e.target.closest('a,button')) phonePlay(); });
   const alt = $('#alt');
   alt.innerHTML = '<a href="' + esc(g.src) + '" target="_blank" rel="noopener">' + ico('ext') + ' Open in a new tab</a>';
   $('a', alt).addEventListener('click', () => recordPlay(g.id));
   if (g.ext && S.extnew) { $('#playbtn').lastChild.textContent = 'Play here'; $('a', alt).style.cssText = 'opacity:1;background:rgba(255,255,255,.22)'; }
   const snote = $('#snote');
-  if (/Godot web build/.test(g.note)) { snote.hidden = false; snote.textContent = 'First Godot game? The shared engine (38 MB) downloads once, then every Godot game starts fast.'; }
+  if (/Godot web build/.test(g.note)) { snote.hidden = false; snote.textContent = 'Godot game: ' + (g.mb >= 1 ? Math.round(g.mb) + ' MB to download, plus ' : '') + 'the shared 38 MB engine the first time. Desktop browsers are happiest.'; }
   else if (/Unity WebGL/.test(g.note)) { snote.hidden = false; snote.textContent = 'About 16 MB to load the first time. Happiest in a desktop browser.'; }
   else if (mic) { snote.hidden = false; snote.textContent = 'Some rounds use your microphone. The browser asks first; everything else works without it.'; }
   $('#open').href = g.src;
@@ -534,7 +537,6 @@ function play() {
     else { closePop(); try { await navigator.share({ title: g.title + " — Caleb's Arcade", text: g.blurb, url }); } catch (err) {} }
   })));
   // fullscreen, with a theatre-mode fallback for browsers without the fullscreen API (iPhone Safari)
-  const fs = $('#fs');
   const canFs = !!(player.requestFullscreen || player.webkitRequestFullscreen);
   const theatre = on => { document.body.classList.toggle('theatre', on); if (!on) player.scrollIntoView(scrollOpts({ block: 'center' })); };
   fs.addEventListener('click', () => {

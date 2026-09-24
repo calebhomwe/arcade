@@ -26,7 +26,7 @@ WHAT IS HERE
   assets/previews/      optional short hover loops, <id>.webp (picked up
                         automatically by build_catalog.py)
   assets/fonts/         Fredoka + Nunito (SIL OFL, see LICENSE.txt there)
-  assets/og.png         the link-preview card
+  assets/og.jpg         the link-preview card
   <GameFolder>/         the 14 cabinets that live in this repo
   manifest.webmanifest  + sw.js: installable, and the shell works offline
   sitemap.xml, robots.txt  generated with the catalogue (one URL per game)

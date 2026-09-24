@@ -184,6 +184,10 @@ for g in G:
     g['pop'] = POPULAR.index(g['id'])+1 if g['id'] in POPULAR else 0
     pv = 'assets/previews/%s.webp' % g['id']      # optional hover preview, picked up automatically
     g['preview'] = pv if os.path.exists(os.path.join(ROOT,pv)) else ''
+    g['mb'] = 0   # download size of a local game's own folder (the shared Godot engine is counted separately)
+    if not g['ext']:
+        d = os.path.dirname(os.path.join(ROOT, g['src']))
+        g['mb'] = round(sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(d) for f in fs) / 1048576, 1)
 unknown=[i for i in POPULAR if i not in {g['id'] for g in G}]; assert not unknown, 'POPULAR has unknown ids: %s' % unknown
 
 # ---------- verify thumbs exist ----------
