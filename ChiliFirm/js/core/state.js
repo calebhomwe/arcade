@@ -56,7 +56,8 @@
         contracts: 0, festivals: 0, offlineEarned: 0, bestHarvest: 0,
       },
       ach: {},
-      settings: { sound: true, speed: 1 },
+      settings: { sound: true, speed: 1, music: true },
+      coach: {},
       log: [],
       wt: { farmhand: 0, buyer: 0 },
       last: now,
@@ -88,6 +89,7 @@
     s.biz.media = Object.assign({}, fresh.biz.media, s.biz.media);
     s.stats = Object.assign({}, fresh.stats, s.stats);
     s.settings = Object.assign({}, fresh.settings, s.settings);
+    s.coach = (s.coach && typeof s.coach === 'object') ? s.coach : {};
     s.wt = Object.assign({ farmhand: 0, buyer: 0 }, s.wt || {});
     s.contract = Object.assign({ offer: null, active: null, forced: null }, s.contract || {});
     s.story = Object.assign({ festivalSold: 0, vega: null }, s.story);
