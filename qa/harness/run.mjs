@@ -63,6 +63,7 @@ async function test(game,mobile){
 }
 const jobs=catalog.flatMap(g=>[{g,m:false},{g,m:true}]);
 await Promise.all(Array.from({length:2},async()=>{while(jobs.length){const job=jobs.shift();await test(job.g,job.m);}}));
+await fs.writeFile(path.join(out,'results.json'),JSON.stringify(results,null,2));
 for(const mobile of [false,true]){
  const page=await browser.newPage({viewport:mobile?{width:390,height:844}:{width:1440,height:1000}});
  await page.goto(base,{waitUntil:'domcontentloaded'});await page.waitForTimeout(1500);await page.screenshot({path:path.join(out,'portal-'+(mobile?'phone':'desktop')+'.png')});

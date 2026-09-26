@@ -4,8 +4,8 @@
    GETs are cache-first with a background refresh. Games on the other live
    sites are cross-origin and are left to the network (their own sites cache
    them if they choose to). */
-const VERSION = 'arcade-v6-playroom';
-const SHELL = ['./', 'index.html', 'play.html', 'catalog.js', 'assets/site.css', 'assets/playroom.css', 'assets/feature-kingdom.webp', 'assets/site.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'assets/fonts/fredoka.woff2', 'assets/fonts/nunito.woff2'];
+const VERSION = 'arcade-v7-playroom';
+const SHELL = ['./', 'index.html', 'play.html', 'catalog.js', 'assets/site.css?v=playroom-7', 'assets/playroom.css?v=playroom-7', 'assets/feature-kingdom.webp', 'assets/site.js?v=playroom-7', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'assets/fonts/fredoka.woff2', 'assets/fonts/nunito.woff2'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
