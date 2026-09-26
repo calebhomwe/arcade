@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="system">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -12,10 +12,11 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
-<script>(function(){try{var s=JSON.parse(localStorage.getItem('ca_settings')||'{}'),h=document.documentElement;h.dataset.theme=s.theme||'system';h.dataset.accent=s.accent||'violet';h.dataset.size=s.size||'comfy';h.dataset.motion=s.motion||'auto';h.dataset.labels=s.labels===true?'1':'0';if(innerWidth>1100)h.dataset.rail='min'}catch(e){}})()</script>
+<script>(function(){try{var s=JSON.parse(localStorage.getItem('ca_settings')||'{}'),h=document.documentElement;h.dataset.theme=s.theme||'dark';h.dataset.accent=s.accent||'lime';h.dataset.size=s.size||'comfy';h.dataset.motion=s.motion||'auto';h.dataset.labels=s.labels!==false?'1':'0';if(innerWidth>1100)h.dataset.rail='min'}catch(e){}})()</script>
 <link rel="preload" href="assets/fonts/fredoka.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/nunito.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/playroom.css">
 <script src="catalog.js" defer></script>
 <script src="assets/site.js" defer></script>
 </head>
@@ -26,7 +27,7 @@
 <a class="skip" href="#player">Skip to the game</a>
 <header class="top">
   <button class="ico" id="menu" type="button" aria-label="Collapse the side menu" aria-controls="rail" aria-expanded="true"><svg class="i"><use href="#i-menu"/></svg></button>
-  <a class="brand" href="./" aria-label="Caleb's Arcade home"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span class="word">Caleb's Arcade<small>play free · no ads</small></span></a>
+  <a class="brand" href="./" aria-label="Caleb's Arcade home"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span class="word">Caleb's Arcade<small>GOOD GAMES. ZERO ADS.</small></span></a>
   <div class="search" role="search">
     <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
     <input id="q" type="search" placeholder="Search 110 games" autocomplete="off" spellcheck="false" aria-label="Search games" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg" enterkeyhint="search">
@@ -149,7 +150,7 @@
 <!--@foot-->
 <footer class="foot">
   <div class="in">
-    <div><a class="brand" href="./" aria-label="Caleb's Arcade home"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span class="word">Caleb's Arcade<small>play free · no ads</small></span></a>
+    <div><a class="brand" href="./" aria-label="Caleb's Arcade home"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span class="word">Caleb's Arcade<small>GOOD GAMES. ZERO ADS.</small></span></a>
       <p>110 free games you can play right now in the browser: arcade, puzzle, learning, sims and more. No downloads, no sign-ups, nothing to install.</p>
       <div class="perks"><span><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> No ads</span><span><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg> No accounts</span><span><svg class="i" aria-hidden="true"><use href="#i-offline"/></svg> Saves on your device</span></div></div>
     <div><h2 class="fh">Categories</h2><ul><li><a href="./?cat=arcade">Arcade</a></li><li><a href="./?cat=hyper">Hyper-Casual</a></li><li><a href="./?cat=puzzle">Puzzle</a></li><li><a href="./?cat=classic">Classic</a></li><li><a href="./?cat=learning">Learning</a></li><li><a href="./?cat=sim">Sim &amp; Worlds</a></li><li><a href="./?cat=idle">Idle</a></li></ul></div>

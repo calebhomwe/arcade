@@ -41,7 +41,7 @@ function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<'
 const ico = (n, cls) => '<svg class="i' + (cls ? ' ' + cls : '') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>';
 
 /* ---------- settings ---------- */
-const DEF = { theme: 'system', accent: 'violet', size: 'comfy', motion: 'auto', labels: null, sort: 'featured', stage: 'fit', extnew: false, rail: 'full' };
+const DEF = { theme: 'dark', accent: 'lime', size: 'comfy', motion: 'auto', labels: true, sort: 'featured', stage: 'fit', extnew: false, rail: 'full' };
 const OPTS = {
   theme: [['light', 'Day'], ['dark', 'Night'], ['system', 'Match device']],
   accent: [['violet', 'Grape'], ['pink', 'Bubblegum'], ['cyan', 'Lagoon'], ['lime', 'Lime'], ['amber', 'Mango']],
@@ -277,7 +277,7 @@ function openPrefs(focus) {
     '<div class="row2"><div class="lbl">Accent colour</div>' + seg('accent', OPTS.accent, S.accent, true) + '</div>' +
     '<div class="row2"><div class="lbl">Tile size<small>How big the game tiles are in rows and lists</small></div>' + seg('size', OPTS.size, S.size) + '</div>' +
     '<div class="row2"><div class="lbl">Motion<small>Hover lifts, previews and smooth scrolling</small></div>' + seg('motion', OPTS.motion, S.motion) + '</div>' +
-    swRow('labels', labelsOn, 'Show game names under tiles', 'Every tile already carries its title; this adds the category underneath') +
+    swRow('labels', labelsOn, 'Show game categories', 'Game names always stay visible; choose whether to show categories too') +
     '<h3>Playing</h3>' +
     '<div class="row2"><div class="lbl">Default screen size<small>Each game also remembers its own choice</small></div>' + seg('stage', OPTS.stage, S.stage) + '</div>' +
     swRow('extnew', S.extnew, 'Open other-site games in a new tab', 'The ' + ext + ' games hosted on Caleb\'s other sites offer a new-tab launch first') +
@@ -335,13 +335,22 @@ function home() {
 
   function renderHome(frag) {
     const pop = popular();
-    const featured = CATALOG.filter(g => g.featured).sort((a, b) => popRank(a) - popRank(b));
-    const hugeId = pop[0].id;
-    const bigIds = [...new Set([...featured.map(g => g.id), ...pop.slice(0, 8).map(g => g.id)])].filter(id => id !== hugeId).slice(0, 7);
-    const seed = [...new Set([...pop.slice(0, 40), ...newest()])];
-    const items = withBigs(pop.slice(0, 14), bigIds, hugeId).slice(0, 1 + bigIds.length + 9);
-    const h1 = document.createElement('h1'); h1.className = 'sr'; h1.textContent = "Caleb's Arcade: free browser games"; frag.appendChild(h1);
-    frag.appendChild(mosaic(items, seed));
+    const lead = byId['kingdom-defense'];
+    const intro = document.createElement('div'); intro.className = 'welcome';
+    intro.innerHTML = '<div><div class="eyebrow">YOUR NEXT GOOD TIME</div><h1>Find your next favourite.</h1><p>Little breaks. Big adventures. Just press play.</p></div><a class="library-count" href="./?view=all">' + CATALOG.length + ' games to explore ' + ico('right') + '</a>';
+    frag.appendChild(intro);
+    const feature = document.createElement('section'); feature.className = 'feature-layout'; feature.setAttribute('aria-label', 'Featured games');
+    feature.innerHTML = '<a class="feature-lead" href="' + playHref(lead) + '"><img class="feature-image" src="assets/feature-kingdom.webp" alt="A castle surrounded by forests in Kingdom Defense" fetchpriority="high" width="960" height="600"><div class="feature-copy"><span class="feature-kicker">IN THE SPOTLIGHT · STRATEGY</span><h2>Build your kingdom.<br>Hold your ground.</h2><p>Command your army. Defend the castle.<br>Make every move count.</p><span class="feature-cta">' + ico('play') + ' Play Kingdom Defense</span></div><span class="feature-index">FEATURED</span></a><div class="feature-picks"></div>';
+    const picks = $('.feature-picks', feature);
+    for (const [id, kicker] of [['neon-dash', 'QUICK REFLEXES'], ['claire-pip', 'A LITTLE ESCAPE']]) {
+      const g = byId[id], a = document.createElement('a'); a.className = 'feature-pick'; a.href = playHref(g);
+      a.innerHTML = '<img src="assets/feature-' + (id === 'neon-dash' ? 'neon' : 'claire') + '.webp" alt="" width="480" height="300"><div><small>' + kicker + '</small><h3>' + esc(g.title) + '</h3><span>Jump in ' + ico('right') + '</span></div>';
+      picks.appendChild(a);
+    }
+    frag.appendChild(feature);
+    const moods = document.createElement('nav'); moods.className = 'mood-nav'; moods.setAttribute('aria-label','Choose a category');
+    moods.innerHTML = CATS.map(c => '<a href="./?cat=' + c.id + '">' + ico(c.icon) + '<span>' + esc(c.name.replace('Hyper-Casual','Quick play')) + '</span></a>').join('');
+    frag.appendChild(moods);
     const recent = recentList();
     const rs = rowSection('Continue playing', recent.slice(0, 16), { icon: 'clock', more: './?view=recent', id: 'recent' }); if (rs) frag.appendChild(rs);
     if (recent.length) {
@@ -349,14 +358,14 @@ function home() {
       const bs = rowSection('Because you played ' + last.title, rel, { icon: 'spark', cc: 'var(--c-' + last.cat + ')' }); if (bs) frag.appendChild(bs);
     }
     const fl = favList(); const fs = rowSection('Your favourites', fl, { icon: 'heart', cc: '#ff3d6e', sub: fl.length + (fl.length === 1 ? ' game' : ' games'), more: './?view=favourites', id: 'favourites' }); if (fs) frag.appendChild(fs);
-    frag.appendChild(rowSection('New games', newest().slice(0, 16), { icon: 'spark', cc: 'var(--c-learning)', more: './?view=new' }));
-    frag.appendChild(rowSection('Popular', pop.slice(0, 20), { icon: 'flame', cc: 'var(--c-hyper)', more: './?view=popular', ranked: true }));
+    frag.appendChild(rowSection('Fresh from the studio', newest().slice(0, 12), { icon: 'spark', cc: 'var(--c-learning)', more: './?view=new' }));
+    frag.appendChild(rowSection('Worth one more round', pop.slice(0, 12), { icon: 'flame', cc: 'var(--c-hyper)', more: './?view=popular', ranked: true }));
     const cs = document.createElement('section'); cs.className = 'sec'; cs.setAttribute('aria-label', 'Categories');
     cs.innerHTML = secHead('Categories', { icon: 'grid' }) + '<div class="cats-grid">' + CATS.map(c => '<a class="catcard" href="./?cat=' + c.id + '" style="--cc:var(--c-' + c.id + ')">' + ico(c.icon) + '<span>' + esc(c.name) + '<small>' + CATALOG.filter(g => g.cat === c.id).length + ' games</small></span></a>').join('') + '</div>';
     frag.appendChild(cs);
     for (const c of CATS) {
       const list = sortList(CATALOG.filter(g => g.cat === c.id), 'featured');
-      frag.appendChild(rowSection(c.name + ' games', list.slice(0, 18), { icon: c.icon, cc: 'var(--c-' + c.id + ')', more: './?cat=' + c.id, moreLabel: 'All ' + list.length, hot: true }));
+      frag.appendChild(rowSection(c.name + ' games', list.slice(0, 10), { icon: c.icon, cc: 'var(--c-' + c.id + ')', more: './?cat=' + c.id, moreLabel: 'All ' + list.length, hot: true }));
     }
     const all = document.createElement('div'); all.className = 'sec'; all.style.textAlign = 'center';
     all.innerHTML = '<a class="btn prime" href="./?view=all" style="height:48px;padding:0 26px;font-size:15px">' + ico('grid') + 'Browse all ' + CATALOG.length + ' games</a>';
@@ -366,10 +375,7 @@ function home() {
     const sort = st.sort || S.sort || 'featured';
     const list = sortList(CATALOG.filter(g => g.cat === c.id), sort);
     frag.appendChild(phead({ icon: c.icon, cc: 'var(--c-' + c.id + ')', title: c.name + ' games', desc: c.desc, count: list.length, sort }));
-    if (sort === 'featured' && list.length >= 16 && !touch.matches) {
-      const bigs = list.slice(0, 4).map(g => g.id);
-      frag.appendChild(mosaic(withBigs(list, bigs.slice(1), bigs[0]), null));
-    } else frag.appendChild(gridOf(list));
+    frag.appendChild(gridOf(list));
     const others = CATS.filter(x => x.id !== c.id);
     const more = document.createElement('section'); more.className = 'sec'; more.setAttribute('aria-label', 'Other categories');
     more.innerHTML = secHead('More categories', { icon: 'grid' }) + '<div class="cats-grid">' + others.map(x => '<a class="catcard" href="./?cat=' + x.id + '" style="--cc:var(--c-' + x.id + ')">' + ico(x.icon) + '<span>' + esc(x.name) + '<small>' + CATALOG.filter(g => g.cat === x.id).length + ' games</small></span></a>').join('') + '</div>';

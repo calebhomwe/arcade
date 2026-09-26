@@ -60,6 +60,19 @@
   #energyBar{width:170px;height:12px;background:#241505;border:1px solid #6b5220;border-radius:6px;overflow:hidden}
   #energyFill{height:100%;background:linear-gradient(90deg,#37d6a0,#f0a832);width:100%}
   #elevBtn{pointer-events:auto}
+  /* movement was arrow-keys/WASD only, which is unplayable on a phone.
+     Coarse pointers get a dig pad; desktop is untouched. */
+  canvas{touch-action:none}
+  #digpad{position:absolute;left:0;right:0;bottom:0;display:none;z-index:7;
+    padding:0 18px calc(16px + env(safe-area-inset-bottom,0px));pointer-events:none}
+  body.touch #digpad{display:block}
+  #digpad .cluster{position:relative;width:186px;height:186px;margin-left:auto;pointer-events:auto}
+  #digpad button{position:absolute;width:60px;height:60px;border-radius:14px;
+    border:2px solid rgba(240,168,50,.55);background:rgba(15,10,5,.72);color:var(--amber);
+    font-size:24px;line-height:1;cursor:pointer;-webkit-tap-highlight-color:transparent;
+    touch-action:none;font-family:inherit}
+  #digpad button:active{background:rgba(240,168,50,.85);color:#241505}
+  #dpU{left:63px;top:0} #dpL{left:0;top:63px} #dpR{left:126px;top:63px} #dpD{left:63px;top:126px}
   #toasts{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:6;
     display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
   .toast{background:rgba(15,10,5,.85);border:2px solid var(--amber);border-radius:8px;
@@ -80,6 +93,13 @@
 <body>
 <div id="wrap">
   <canvas id="cv"></canvas>
+
+  <div id="digpad"><div class="cluster">
+    <button id="dpU" aria-label="Dig up">&#9650;</button>
+    <button id="dpL" aria-label="Dig left">&#9664;</button>
+    <button id="dpR" aria-label="Dig right">&#9654;</button>
+    <button id="dpD" aria-label="Dig down">&#9660;</button>
+  </div></div>
 
   <div id="hud">
     <div class="hudbox">
@@ -475,6 +495,26 @@ addEventListener('keydown',e=>{
 });
 document.getElementById('elevBtn').addEventListener('click',()=>{
   if(G.running&&!G.over) endRun('RODE THE ELEVATOR HOME'); });
+
+/* dig pad: same move() and same puzzle guard as the keyboard path */
+if(matchMedia('(pointer: coarse)').matches){
+  document.body.classList.add('touch');
+  const step=(dx,dy)=>e=>{
+    e.preventDefault();
+    if(document.getElementById('puzzle').classList.contains('show'))return;
+    move(dx,dy);
+  };
+  for(const [id,dx,dy] of [['dpU',0,-1],['dpD',0,1],['dpL',-1,0],['dpR',1,0]]){
+    const el=document.getElementById(id);
+    el.addEventListener('pointerdown',step(dx,dy));
+    // holding a direction should keep digging, as holding a key does
+    let t=null;
+    el.addEventListener('pointerdown',()=>{t=setInterval(()=>{
+      if(!document.getElementById('puzzle').classList.contains('show'))move(dx,dy);},140);});
+    for(const ev of ['pointerup','pointercancel','pointerleave'])
+      el.addEventListener(ev,()=>{if(t){clearInterval(t);t=null;}});
+  }
+}
 
 /* ═══════════ puzzle overlay ═══════════ */
 function openPuzzle(x,y){

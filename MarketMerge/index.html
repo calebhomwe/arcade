@@ -176,7 +176,11 @@ function armNext(){state.cur={tier:state.nextTier};state.nextTier=rndTier();
 
 /* ═══ input ═══ */
 let keys={};
-function setX(x){state.curX=clamp(x,LEFT+FRUITS[state.cur.tier].r+2,RIGHT-FRUITS[state.cur.tier].r-2);}
+// dropFruit() nulls state.cur and re-arms 240ms later, so there is a window
+// after every drop with no held fruit. pointermove guards for it; the
+// keyboard path in tick() did not, so holding left/right across a drop threw
+// every frame. Guarding here covers both call sites.
+function setX(x){if(!state.cur)return;state.curX=clamp(x,LEFT+FRUITS[state.cur.tier].r+2,RIGHT-FRUITS[state.cur.tier].r-2);}
 addEventListener('pointermove',e=>{if(state.phase==='play'&&!state.paused&&state.cur)setX(toWorldX(e.clientX));});
 function primary(){AU.init();
   if(state.phase==='menu')return startGame();

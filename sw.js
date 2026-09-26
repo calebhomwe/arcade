@@ -4,13 +4,13 @@
    GETs are cache-first with a background refresh. Games on the other live
    sites are cross-origin and are left to the network (their own sites cache
    them if they choose to). */
-const VERSION = 'arcade-v5';
-const SHELL = ['./', 'index.html', 'play.html', 'catalog.js', 'assets/site.css', 'assets/site.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'assets/fonts/fredoka.woff2', 'assets/fonts/nunito.woff2'];
+const VERSION = 'arcade-v6-playroom';
+const SHELL = ['./', 'index.html', 'play.html', 'catalog.js', 'assets/site.css', 'assets/playroom.css', 'assets/feature-kingdom.webp', 'assets/site.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'assets/fonts/fredoka.woff2', 'assets/fonts/nunito.woff2'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('arcade-') && k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', e => {
   const req = e.request;
