@@ -44,14 +44,20 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
     const boostImmediate=a.speed>b.speed&&a.boost<.25;
     a.pendingRail={name:'Rail',pts:500};a.crash('test');const crashDropsRail=a.pendingRail===null;
     a.reset(3,0);const cleanReset=a.score===0&&!a.finished&&!a.pendingRail;
-    return {boostImmediate,crashDropsRail,cleanReset};
+    const landing=new Racer({s:30,speed:10});landing.vel.set(0,-1,-10);landing.yaw=0;landing.pendingRail={name:'Boardslide',pts:500};landing.landing();
+    const railBanksAfterLanding=landing.score===500&&landing.pendingRail===null;
+    const bad=new Racer({s:30});bad.vel.set(0,-1,-10);bad.yaw=Math.PI/2;bad.pendingRail={name:'Boardslide',pts:500};bad.landing();
+    const badLandingScoresZero=bad.score===0&&bad.crashT>0&&!bad.pendingRail;
+    const fast=new Racer({s:40}),slow=new Racer({s:40});fast.reset(40,0,14);slow.reset(40,0,14);for(let i=0;i<30;i++){fast.step(1/60,neutral);slow.step(1/60,{...neutral,brake:true});}
+    const brakingSlows=slow.speed<fast.speed;
+    return {boostImmediate,crashDropsRail,cleanReset,railBanksAfterLanding,badLandingScoresZero,brakingSlows};
    });check(Object.values(r.physics).every(Boolean),'Boost, crash and reset physics regressions pass');
    await page.locator('#btnPlay').click();await page.waitForFunction(()=>__game.state()==='race',{},{timeout:45000});
    if(mobile){check(await page.locator('#touch').isVisible(),'Touch controls are visible');await page.locator('#tBoost').tap();}
    else await page.keyboard.down('ArrowUp');
    await page.waitForFunction(()=>__game.player().s>15,{},{timeout:45000});
    check(true,'Rider moves downhill during real-time play');
-   await page.keyboard.down('Space');await page.waitForTimeout(900);await page.keyboard.up('Space');
+   if(mobile){const box=await page.locator('#tJump').boundingBox();const cdp=await ctx.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:box.x+box.width/2,y:box.y+box.height/2}]});await page.waitForTimeout(900);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}else{await page.keyboard.up('ArrowUp');await page.keyboard.down('Space');await page.waitForTimeout(900);await page.keyboard.up('Space');}
    await page.waitForFunction(()=>__game.player().totalAir>0,{},{timeout:45000});check(true,'Charge and release produces airtime');
    await page.keyboard.up('ArrowUp');await page.locator('#btnPause').click();
    const s=await page.evaluate(()=>__game.player().s);await page.waitForTimeout(400);check(s===await page.evaluate(()=>__game.player().s),'Pause freezes snowboard physics');

@@ -183,3 +183,15 @@ kbd { display: inline-block; min-width: 26px; padding: 3px 7px; margin-right: 3p
   .combo { top: calc(30% + 90px); }
 }
 
+
+/* Keep the start menu and controls reachable on a phone held sideways. */
+@media (max-height: 500px) and (orientation: landscape) {
+  #title { padding: 18px max(24px, env(safe-area-inset-right)) 18px max(24px, env(safe-area-inset-left)); flex-direction: row; align-items: center; gap: 28px; }
+  .logo { font-size: 64px; } .tagline { font-size: 13px; max-width: 240px; }
+  .menu { width: 290px; gap: 8px; } .menu .btn { min-height: 44px; padding: 9px 18px; font-size: 20px; }
+  .credit { display: none; } .best { font-size: 11px; }
+  .stick { width: 116px; height: 116px; bottom: max(22px, env(safe-area-inset-bottom)); left: max(24px, env(safe-area-inset-left)); }
+  .tbtns { bottom: max(20px, env(safe-area-inset-bottom)); right: max(24px, env(safe-area-inset-right)); grid-template-columns: 60px 68px; grid-template-rows: 58px 68px; gap: 7px; }
+  .tbtn.grab, .tbtn.boostb { width: 58px; height: 58px; font-size: 14px; } .tbtn.jump { font-size: 17px; }
+  .boost { bottom: 22px; width: 28vw; } .pause-btn { top: 108px; } .trick-pop { top: 26%; } .combo { top: 52%; }
+}
