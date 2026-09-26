@@ -18,7 +18,7 @@ jobs:
       - run: python3 -m http.server 3000 > /tmp/arcade-server.log 2>&1 &
       - run: node qa/harness/run.mjs
         env:
-          GAME_IDS: high-nest,market-merge,math-miner,maths-kart,kingdom-defense,hub-game-2048,sky-maze-runner
+          GAME_IDS: claire-pip,kingdom-defense,hub-spell-and-say,hub-word-scramble
       - uses: actions/upload-artifact@v4
         if: always()
         with:

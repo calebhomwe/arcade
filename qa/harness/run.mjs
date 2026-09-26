@@ -29,11 +29,17 @@ async function test(game,mobile){
   const starts={'high-nest':'#play','market-merge':'#play','survivor-wave':'#playBtn','surviv-royale':'#btn-play','hole-grind':'#btnPlay','maths-kart':'#bPlay','math-miner':'#btnMath','fishing-for-words':'#btn-math','neon-dash':'#play-btn','critter-rush':'#playBtn','critter-rush-2d':'#play','sneaker-drop':'#startBtn','deepcut-mine':'#btnPlay','cook-rush':'#btnPlay','typhoon-mine':'#btnPlay','nistar':'#start-btn','chef-chloe-kitchen':'#bootStart'};
   if(starts[game.id]){const b=f.locator(starts[game.id]);if(await b.count()&&await b.isVisible()){const label=await b.innerText();await b.click();r.actions.push('Started via '+label);await page.waitForTimeout(800);}}
 
+  if(game.id==='claire-pip'){
+   const age=f.locator('#ageBands [data-band="medium"]');
+   if(await age.count()&&await age.isVisible()){await age.click();r.actions.push('Selected ages 7–9');}
+  }
   // Use rendered controls, never invoke internal game functions or mutate its state.
+  const clickedLabels=new Set();
   for(let n=0;n<3;n++){
    const buttons=f.getByRole('button',{name:/^(?:[▶►▷]\s*)?(?:play(?:\s+now)?|start(?:\s+(?:game|building|run|adventure|playing))?|new game|let.s (?:go|play)|begin|continue|easy|classic|normal)(?:\s*[!▶►])?$/i});
-   let chosen=null;for(let i=0;i<await buttons.count();i++){if(await buttons.nth(i).isVisible()){chosen=buttons.nth(i);break;}}
-   if(!chosen)break;const label=await chosen.innerText();await chosen.click();r.actions.push('Clicked '+label);await page.waitForTimeout(650);
+   let chosen=null;for(let i=0;i<await buttons.count();i++){const b=buttons.nth(i);if(await b.isVisible()&&await b.isEnabled()&&!clickedLabels.has(await b.innerText())){chosen=b;break;}}
+   if(!chosen)break;const label=await chosen.innerText();
+   try{await chosen.click({timeout:1500});clickedLabels.add(label);r.actions.push('Clicked '+label);await page.waitForTimeout(650);}catch{r.actions.push('Start control obstructed; checking game-specific route');break;}
   }
   if(game.id==='kingdom-defense'){
    const map=f.getByRole('button',{name:/^Cloverfield Lane Cloverfield Lane/});
@@ -46,7 +52,7 @@ async function test(game,mobile){
   if(game.id==='market-merge'){await page.keyboard.down('ArrowRight');await page.keyboard.press('Space');await page.waitForTimeout(350);await page.keyboard.up('ArrowRight');r.actions.push('Held direction while dropping fruit');}
   const canvas=f.locator('canvas:visible').first();
   if(await canvas.count()){
-    const box=await canvas.boundingBox();if(box){try{await canvas.click({position:{x:box.width*.5,y:box.height*.65},timeout:1200});r.actions.push('Tapped canvas centre/lower play area');}catch{r.actions.push('Canvas covered by menu; pointer action skipped');}}
+    const box=await canvas.boundingBox({timeout:1500}).catch(()=>null);if(box){try{await canvas.click({position:{x:box.width*.5,y:box.height*.65},timeout:1200});r.actions.push('Tapped canvas centre/lower play area');}catch{r.actions.push('Canvas covered by menu; pointer action skipped');}}
   }
   // Standard browser-game verbs; the per-game note and before/after evidence remain in report.
   for(const key of ['Enter','ArrowRight','Space','ArrowLeft','ArrowUp','w','d']){await page.keyboard.down(key);await page.waitForTimeout(220);await page.keyboard.up(key);r.actions.push('Pressed '+key);}
