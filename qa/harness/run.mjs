@@ -3,7 +3,8 @@ import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'../..');
-const catalog=vm.runInNewContext((await fs.readFile(path.join(root,'catalog.js'),'utf8'))+';CATALOG');
+const allCatalog=vm.runInNewContext((await fs.readFile(path.join(root,'catalog.js'),'utf8'))+';CATALOG');
+const catalog=process.env.GAME_IDS?allCatalog.filter(g=>process.env.GAME_IDS.split(',').includes(g.id)):allCatalog;
 const base=process.env.BASE_URL||'http://127.0.0.1:3000/';
 const out=process.env.REPORT_DIR||path.join(root,'qa/results');
 await fs.mkdir(out,{recursive:true});
@@ -23,6 +24,9 @@ async function test(game,mobile){
   await f.waitForLoadState('domcontentloaded',{timeout:45000});
   await page.waitForTimeout(/Godot|Unity/.test(game.note)?14000:3000);
   r.before=await snapshot(f);
+  const starts={'high-nest':'#play','market-merge':'#play','survivor-wave':'#playBtn','surviv-royale':'#btn-play','hole-grind':'#btnPlay','maths-kart':'#bPlay','math-miner':'#btnMath','fishing-for-words':'#btn-math','neon-dash':'#play-btn','critter-rush':'#playBtn','critter-rush-2d':'#play','sneaker-drop':'#startBtn','deepcut-mine':'#btnPlay','cook-rush':'#btnPlay','typhoon-mine':'#btnPlay','nistar':'#start-btn','chef-chloe-kitchen':'#bootStart'};
+  if(starts[game.id]){const b=f.locator(starts[game.id]);if(await b.count()&&await b.isVisible()){const label=await b.innerText();await b.click();r.actions.push('Started via '+label);await page.waitForTimeout(800);}}
+
   // Use rendered controls, never invoke internal game functions or mutate its state.
   for(let n=0;n<3;n++){
    const buttons=f.getByRole('button',{name:/^(?:[▶►▷]\s*)?(?:play(?:\s+now)?|start(?:\s+(?:game|building|run|adventure|playing))?|new game|let.s (?:go|play)|begin|continue|easy|classic|normal)(?:\s*[!▶►])?$/i});
@@ -30,18 +34,20 @@ async function test(game,mobile){
    if(!chosen)break;const label=await chosen.innerText();await chosen.click();r.actions.push('Clicked '+label);await page.waitForTimeout(650);
   }
   r.started=await snapshot(f);
+  if(mobile){for(const label of ['Dig down','Dig right','Accelerate','Steer right']){const control=f.getByRole('button',{name:label,exact:true});if(await control.count()&&await control.isVisible()){await control.tap();r.actions.push('Tapped '+label);}}}
+  if(game.id==='market-merge'){await page.keyboard.down('ArrowRight');await page.keyboard.press('Space');await page.waitForTimeout(350);await page.keyboard.up('ArrowRight');r.actions.push('Held direction while dropping fruit');}
   const canvas=f.locator('canvas:visible').first();
   if(await canvas.count()){
-    const box=await canvas.boundingBox();if(box){await canvas.click({position:{x:box.width*.5,y:box.height*.65}});r.actions.push('Tapped canvas centre/lower play area');}
+    const box=await canvas.boundingBox();if(box){try{await canvas.click({position:{x:box.width*.5,y:box.height*.65},timeout:1200});r.actions.push('Tapped canvas centre/lower play area');}catch{r.actions.push('Canvas covered by menu; pointer action skipped');}}
   }
   // Standard browser-game verbs; the per-game note and before/after evidence remain in report.
-  for(const key of ['ArrowRight','Space','ArrowLeft','ArrowUp']){await page.keyboard.down(key);await page.waitForTimeout(220);await page.keyboard.up(key);r.actions.push('Pressed '+key);}
+  for(const key of ['Enter','ArrowRight','Space','ArrowLeft','ArrowUp','w','d']){await page.keyboard.down(key);await page.waitForTimeout(220);await page.keyboard.up(key);r.actions.push('Pressed '+key);}
   await page.waitForTimeout(1800);r.after=await snapshot(f);
   r.stateChanged=r.started.text!==r.after.text;
   r.startChanged=r.before.text!==r.started.text;
   r.overflow=await f.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
   r.url=f.url();
-  r.status=r.errors.length||r.http.some(x=>x.status>=400&&/\.(?:js|wasm|pck)(?:\?|$)/.test(x.url))?'error':r.stateChanged?'interaction-observed':'needs-review';
+  r.status=r.errors.length||r.http.some(x=>x.status>=400)?'error':r.stateChanged?'interaction-observed':'needs-review';
   if(!r.before.text.trim()&&!r.before.canvas.length)r.status='blank';
   await page.screenshot({path:path.join(out,game.id+'-'+r.viewport+'.png')});
  }catch(e){r.status='blocked';r.failure=e.message;await page.screenshot({path:path.join(out,game.id+'-'+r.viewport+'.png')}).catch(()=>{});}
@@ -51,7 +57,7 @@ const jobs=catalog.flatMap(g=>[{g,m:false},{g,m:true}]);
 await Promise.all(Array.from({length:4},async()=>{while(jobs.length){const job=jobs.shift();await test(job.g,job.m);}}));
 for(const mobile of [false,true]){
  const page=await browser.newPage({viewport:mobile?{width:390,height:844}:{width:1440,height:1000}});
- await page.goto(base,{waitUntil:'networkidle'});await page.screenshot({path:path.join(out,'portal-'+(mobile?'phone':'desktop')+'.png')});
+ await page.goto(base,{waitUntil:'domcontentloaded'});await page.waitForTimeout(1500);await page.screenshot({path:path.join(out,'portal-'+(mobile?'phone':'desktop')+'.png')});
  await page.close();
 }
 await browser.close();

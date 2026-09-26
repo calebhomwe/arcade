@@ -344,7 +344,7 @@ function home() {
     const picks = $('.feature-picks', feature);
     for (const [id, kicker] of [['neon-dash', 'QUICK REFLEXES'], ['claire-pip', 'A LITTLE ESCAPE']]) {
       const g = byId[id], a = document.createElement('a'); a.className = 'feature-pick'; a.href = playHref(g);
-      a.innerHTML = '<img src="' + g.thumb2x + '" alt="" width="480" height="300"><div><small>' + kicker + '</small><h3>' + esc(g.title) + '</h3><span>Jump in ' + ico('right') + '</span></div>';
+      a.innerHTML = '<img src="assets/feature-' + (id === 'neon-dash' ? 'neon' : 'claire') + '.webp" alt="" width="480" height="300"><div><small>' + kicker + '</small><h3>' + esc(g.title) + '</h3><span>Jump in ' + ico('right') + '</span></div>';
       picks.appendChild(a);
     }
     frag.appendChild(feature);

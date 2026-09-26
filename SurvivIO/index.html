@@ -6,8 +6,10 @@
 <title>SURVIV ROYALE</title>
 <style>
   html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#4e8b52;
-    font-family:system-ui,Segoe UI,Arial,sans-serif;user-select:none}
-  #cv{display:block;width:100vw;height:100vh;cursor:crosshair}
+    font-family:system-ui,Segoe UI,Arial,sans-serif;user-select:none;touch-action:none}
+  /* without touch-action the browser claims a drag as a pan gesture and fires
+     pointercancel mid-stroke, which drops the stick */
+  #cv{display:block;width:100vw;height:100vh;cursor:crosshair;touch-action:none}
   .ovr{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
     justify-content:center;background:rgba(14,26,17,.86);color:#eaf5ec;z-index:10}
   .ovr h1{font-size:56px;margin:0 0 8px;letter-spacing:6px;color:#ffd257}
@@ -22,10 +24,32 @@
   .stats b{display:block;font-size:24px;color:#fff}
   .stats span{font-size:12px;color:#9fbfa3;letter-spacing:1px}
   .hidden{display:none !important}
+  /* touch controls: coarse pointers only, so desktop is untouched */
+  #touchLayer{position:fixed;inset:0;pointer-events:none;z-index:5;display:none}
+  body.touch #touchLayer{display:block}
+  body.touch #cv{cursor:none}
+  .stick-base{position:absolute;width:112px;height:112px;margin:-56px 0 0 -56px;
+    border-radius:50%;background:rgba(10,20,12,.28);border:2px solid rgba(255,255,255,.28)}
+  .stick-knob{position:absolute;left:50%;top:50%;width:52px;height:52px;
+    margin:-26px 0 0 -26px;border-radius:50%;background:rgba(255,255,255,.55);
+    border:2px solid rgba(255,255,255,.75)}
+  #touchBtns{position:fixed;right:14px;top:14px;display:none;flex-direction:column;
+    gap:10px;z-index:6}
+  body.touch #touchBtns{display:flex}
+  #touchBtns button{width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,255,255,.4);
+    background:rgba(20,38,24,.72);color:#eaf5ec;font-size:12px;font-weight:700;
+    letter-spacing:.5px;line-height:1.1;cursor:pointer}
+  #touchBtns button:active{background:rgba(255,210,87,.8);color:#2c3d2e}
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
+<div id="touchLayer"></div>
+<div id="touchBtns">
+  <button id="tbReload" aria-label="Reload">RE<br>LOAD</button>
+  <button id="tbBandage" aria-label="Use bandage">BAND<br>AGE</button>
+  <button id="tbMedkit" aria-label="Use medkit">MED<br>KIT</button>
+</div>
 
 <div id="menu" class="ovr">
   <h1>SURVIV ROYALE</h1>
@@ -87,8 +111,18 @@ const AMMO_BOX = {pistol:30, smg:60, shell:15, ar:40};
 
 const cv = document.getElementById("cv");
 const ctx = cv.getContext("2d");
-let VW = 0, VH = 0;
-function resize(){ VW = cv.width = window.innerWidth; VH = cv.height = window.innerHeight; }
+let VW = 0, VH = 0;      // canvas size in CSS px (HUD space)
+let VS = 1, WVW = 0, WVH = 0;  // view scale, and the world area it makes visible
+// The HUD and world were authored against a desktop window. On a narrow screen
+// drawing the world 1:1 would leave a battle-royale player seeing ~430 units of
+// map, so scale the world down to keep the field of view. VS is exactly 1 at
+// >=760px, which leaves desktop rendering untouched.
+const DESIGN_W = 760;
+function resize(){
+  VW = cv.width = window.innerWidth; VH = cv.height = window.innerHeight;
+  VS = Math.min(1, VW / DESIGN_W);
+  WVW = VW / VS; WVH = VH / VS;
+}
 window.addEventListener("resize", resize); resize();
 
 const R = (a,b)=>a+Math.random()*(b-a);
@@ -118,12 +152,13 @@ let frames = 0, fps = 0, fpsT = 0;
 const player = {
   x:0, y:0, r:22, hp:100, weapon:"pistol", mag:8,
   reserve:{pistol:32, smg:0, shell:0, ar:0},
-  meds:{bandage:2, medkit:0},
+  meds:{bandage:1, medkit:0},
   kills:0, dmg:0, fireCd:0, reloadT:0, useT:0, useKind:null,
   aim:0, lastShot:-9,
 };
 const keys = {};
 const mouse = {x:0, y:0, down:false};
+const touchMove = {x:0, y:0, active:false};
 
 /* ------------------------------------------------ world generation */
 function overlaps(x,y,r){
@@ -167,7 +202,7 @@ function newMatch(){
   Object.assign(player, {
     x:WORLD/2 + R(-120,120), y:WORLD/2 + R(-120,120), hp:100,
     weapon:"pistol", mag:8, reserve:{pistol:32, smg:0, shell:0, ar:0},
-    meds:{bandage:2, medkit:0}, kills:0, dmg:0,
+    meds:{bandage:1, medkit:0}, kills:0, dmg:0,
     fireCd:0, reloadT:0, useT:0, useKind:null, lastShot:-9,
   });
   const jx = WORLD/2 + R(-200,200), jy = WORLD/2 + R(-200,200);
@@ -459,16 +494,20 @@ function updatePlayer(dt){
   player.fireCd = Math.max(0, player.fireCd - dt);
   if (player.reloadT > 0){ player.reloadT -= dt; if (player.reloadT <= 0) finishReload(player); }
   let mx = 0, my = 0;
-  if (keys["w"]) my -= 1;
-  if (keys["s"]) my += 1;
-  if (keys["a"]) mx -= 1;
-  if (keys["d"]) mx += 1;
+  if (touchMove.active){ mx = touchMove.x; my = touchMove.y; }
+  else {
+    if (keys["w"]) my -= 1;
+    if (keys["s"]) my += 1;
+    if (keys["a"]) mx -= 1;
+    if (keys["d"]) mx += 1;
+  }
   if (mx || my){
-    const l = Math.hypot(mx, my);
+    // floor of 1 keeps keyboard vectors normalised while letting a part-thrown
+    // stick (magnitude < 1) move proportionally slower
+    const l = Math.max(Math.hypot(mx, my), 1);
     moveCircle(player, mx/l*PLAYER_SPEED*dt, my/l*PLAYER_SPEED*dt);
   }
-  const camX = player.x - VW/2, camY = player.y - VH/2;
-  player.aim = Math.atan2(mouse.y - (player.y - camY), mouse.x - (player.x - camX));
+  player.aim = Math.atan2(mouse.y - VH/2, mouse.x - VW/2);
   if (mouse.down && player.useT <= 0){
     if (player.mag <= 0) startReload(player);
     else fireWeapon(player, player.aim, true);
@@ -565,20 +604,21 @@ requestAnimationFrame(frame);
 
 /* ------------------------------------------------ rendering */
 function camNow(){
-  return [clamp(player.x - VW/2, -60, Math.max(-60, WORLD-VW+60)) + (shake ? R(-shake,shake)*0.5 : 0),
-          clamp(player.y - VH/2, -60, Math.max(-60, WORLD-VH+60)) + (shake ? R(-shake,shake)*0.5 : 0)];
+  return [clamp(player.x - WVW/2, -60, Math.max(-60, WORLD-WVW+60)) + (shake ? R(-shake,shake)*0.5 : 0),
+          clamp(player.y - WVH/2, -60, Math.max(-60, WORLD-WVH+60)) + (shake ? R(-shake,shake)*0.5 : 0)];
 }
 function draw(){
   const [camX, camY] = camNow();
   const W2S = (x,y)=>[x-camX, y-camY];
+  ctx.setTransform(VS, 0, 0, VS, 0, 0);
 
-  ctx.fillStyle = "#58a35c"; ctx.fillRect(0, 0, VW, VH);
+  ctx.fillStyle = "#58a35c"; ctx.fillRect(0, 0, WVW, WVH);
   // grass stripes
   const s0 = Math.floor(camX/250)*250;
   ctx.fillStyle = "rgba(0,0,0,0.045)";
-  for (let gx = s0; gx < camX+VW; gx += 500) ctx.fillRect(gx-camX, 0, 250, VH);
+  for (let gx = s0; gx < camX+WVW; gx += 500) ctx.fillRect(gx-camX, 0, 250, WVH);
   const t0 = Math.floor(camY/250)*250;
-  for (let gy = t0; gy < camY+VH; gy += 500) ctx.fillRect(0, gy-camY, VW, 250);
+  for (let gy = t0; gy < camY+WVH; gy += 500) ctx.fillRect(0, gy-camY, WVW, 250);
   // border fence
   ctx.strokeStyle = "#7a5a3a"; ctx.lineWidth = 6;
   ctx.strokeRect(12-camX, 12-camY, WORLD-24, WORLD-24);
@@ -586,7 +626,7 @@ function draw(){
   // obstacles
   for (const o of obstacles){
     const [x,y] = W2S(o.x,o.y);
-    if (x<-90||y<-90||x>VW+90||y>VH+90) continue;
+    if (x<-90||y<-90||x>WVW+90||y>WVH+90) continue;
     if (o.type === "bush"){
       ctx.fillStyle = "#3f7a45";
       ctx.beginPath(); ctx.arc(x,y,o.r,0,7); ctx.fill();
@@ -622,7 +662,7 @@ function draw(){
   // loot
   for (const L of loots){
     const [x,y] = W2S(L.x,L.y);
-    if (x<-40||y<-40||x>VW+40||y>VH+40) continue;
+    if (x<-40||y<-40||x>WVW+40||y>WVH+40) continue;
     let col = "#c9b04a", txt = "?";
     if (WEAPONS[L.kind]){ col = "#7d8a4a"; txt = L.kind[0].toUpperCase(); }
     else if (L.kind.endsWith("Ammo")){ col = "#9a7c3f"; txt = "A"; }
@@ -659,7 +699,7 @@ function draw(){
   const [gx,gy] = W2S(gas.cx,gas.cy);
   ctx.fillStyle = "rgba(214,52,44,0.30)";
   ctx.beginPath();
-  ctx.rect(0,0,VW,VH);
+  ctx.rect(0,0,WVW,WVH);
   ctx.arc(gx, gy, gas.r, 0, Math.PI*2, true);
   ctx.fill("evenodd");
   ctx.strokeStyle = "rgba(255,80,70,0.85)"; ctx.lineWidth = 3;
@@ -675,7 +715,7 @@ function draw(){
   // gas direction arrow when outside
   if (phase === "playing" && d2(player.x,player.y,gas.cx,gas.cy) > gas.r){
     const an = Math.atan2(gas.cy-player.y, gas.cx-player.x);
-    const ax = VW/2 + Math.cos(an)*90, ay = VH/2 + Math.sin(an)*90;
+    const ax = WVW/2 + Math.cos(an)*90, ay = WVH/2 + Math.sin(an)*90;
     ctx.save(); ctx.translate(ax,ay); ctx.rotate(an);
     ctx.fillStyle = "#ff6a5e";
     ctx.beginPath(); ctx.moveTo(18,0); ctx.lineTo(-10,-12); ctx.lineTo(-10,12);
@@ -686,7 +726,7 @@ function draw(){
 
   if (hitFlash > 0){
     ctx.fillStyle = "rgba(214,40,40,"+(hitFlash*1.4)+")";
-    ctx.fillRect(0,0,VW,VH);
+    ctx.fillRect(0,0,WVW,WVH);
   }
 }
 function drawActor(e, isPlayer, skin){
@@ -735,7 +775,13 @@ function drawActor(e, isPlayer, skin){
     ctx.fillRect(x-30, y-e.r-20, 60*(1-player.useT/total), 8);
   }
 }
+const HUD_PAD = 14;   // left margin for ALIVE/KILLS and the kill feed
 function drawHUD(){
+  // HUD is screen furniture: draw it unscaled so it stays legible on a phone.
+  // The locals shadow the globals, keeping every coordinate below in CSS px.
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const VW = cv.width, VH = cv.height;
   ctx.textBaseline = "alphabetic";
   // health bar
   ctx.fillStyle = "rgba(0,0,0,0.45)"; ctx.fillRect(VW/2-150, VH-58, 300, 26);
@@ -753,8 +799,8 @@ function drawHUD(){
   ctx.fillText("bandage x"+player.meds.bandage+" [3]   medkit x"+player.meds.medkit+" [4]", VW-24, VH-12);
   // alive / kills
   ctx.textAlign = "left"; ctx.font = "bold 17px system-ui"; ctx.fillStyle = "#fff";
-  ctx.fillText("ALIVE "+(bots.length + (player.hp>0?1:0)), 186, 34);
-  ctx.fillText("KILLS "+player.kills, 186, 58);
+  ctx.fillText("ALIVE "+(bots.length + (player.hp>0?1:0)), HUD_PAD, 34);
+  ctx.fillText("KILLS "+player.kills, HUD_PAD, 58);
   // gas timer
   ctx.textAlign = "center"; ctx.font = "bold 17px system-ui";
   const gt = gas.phase >= GAS_RADII.length-1 && !gas.shrinking ? "FINAL CIRCLE"
@@ -765,13 +811,17 @@ function drawHUD(){
   ctx.textAlign = "left"; ctx.font = "14px system-ui";
   feed.forEach((f, i) => {
     ctx.fillStyle = "rgba(255,255,255,"+clamp(f.t/2,0,0.95)+")";
-    ctx.fillText(f.text, 186, 92 + i*22);
+    ctx.fillText(f.text, HUD_PAD, 92 + i*22);
   });
   // minimap (150px) bottom-left
   const M = 150, mx = 20, my = VH - M - 20, k = M/WORLD;
   ctx.fillStyle = "rgba(20,34,24,0.85)"; ctx.fillRect(mx, my, M, M);
   ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 1;
   ctx.strokeRect(mx, my, M, M);
+  // gas rings are world-sized: at phase 0 the ring is 105px against a 75px
+  // half-width, so clip every marker to the box or it spills onto the field
+  ctx.save();
+  ctx.beginPath(); ctx.rect(mx, my, M, M); ctx.clip();
   ctx.fillStyle = "rgba(214,52,44,0.35)";
   ctx.beginPath(); ctx.rect(mx, my, M, M);
   ctx.arc(mx+gas.cx*k, my+gas.cy*k, gas.r*k, 0, Math.PI*2, true); ctx.fill("evenodd");
@@ -792,6 +842,8 @@ function drawHUD(){
     ctx.fillStyle = "#ffe3a1";
     ctx.beginPath(); ctx.arc(mx+player.x*k, my+player.y*k, 3, 0, 7); ctx.fill();
   }
+  ctx.restore();
+  ctx.restore();
 }
 
 /* ------------------------------------------------ overlays / menu */
@@ -825,6 +877,69 @@ cv.addEventListener("mousemove", e=>{ mouse.x = e.clientX; mouse.y = e.clientY; 
 cv.addEventListener("mousedown", e=>{ if (e.button === 0) mouse.down = true; });
 window.addEventListener("mouseup", e=>{ if (e.button === 0) mouse.down = false; });
 cv.addEventListener("contextmenu", e=>e.preventDefault());
+
+/* ---- touch: left half drives movement, right half aims and fires ---- */
+if (window.matchMedia("(pointer: coarse)").matches){
+  document.body.classList.add("touch");
+  const layer = document.getElementById("touchLayer");
+  const live = {};          // pointerId -> stick
+  const MAXR = 46, DEAD = 5;
+  // aim from screen centre, so a neutral stick still points somewhere sane
+  mouse.x = VW/2; mouse.y = VH/2 - 200;
+
+  function spawnStick(x, y){
+    const base = document.createElement("div"); base.className = "stick-base";
+    const knob = document.createElement("div"); knob.className = "stick-knob";
+    base.style.left = x + "px"; base.style.top = y + "px";
+    base.appendChild(knob); layer.appendChild(base);
+    return {base, knob};
+  }
+  function release(s){
+    if (!s) return;
+    s.base.remove();
+    if (s.side === "L"){ touchMove.x = touchMove.y = 0; touchMove.active = false; }
+    else mouse.down = false;
+  }
+
+  cv.addEventListener("pointerdown", e=>{
+    if (e.pointerType === "mouse" || phase !== "playing") return;
+    const side = e.clientX < window.innerWidth/2 ? "L" : "R";
+    for (const id in live) if (live[id].side === side) return;   // one stick per side
+    const g = spawnStick(e.clientX, e.clientY);
+    live[e.pointerId] = {side, bx:e.clientX, by:e.clientY, ...g};
+    if (side === "R") mouse.down = true;
+    cv.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }, {passive:false});
+
+  cv.addEventListener("pointermove", e=>{
+    const s = live[e.pointerId]; if (!s) return;
+    const dx = e.clientX - s.bx, dy = e.clientY - s.by;
+    const len = Math.hypot(dx, dy) || 1, cap = Math.min(len, MAXR);
+    const nx = dx/len, ny = dy/len;
+    s.knob.style.transform = "translate(" + (nx*cap) + "px," + (ny*cap) + "px)";
+    if (s.side === "L"){
+      touchMove.x = nx * (cap/MAXR); touchMove.y = ny * (cap/MAXR);
+      touchMove.active = cap > DEAD;
+    } else {
+      // aim is atan2 from screen centre, so writing mouse here needs no aim changes
+      mouse.x = VW/2 + nx*200; mouse.y = VH/2 + ny*200;
+      mouse.down = cap > DEAD;
+    }
+    e.preventDefault();
+  }, {passive:false});
+
+  for (const ev of ["pointerup", "pointercancel"])
+    cv.addEventListener(ev, e=>{ release(live[e.pointerId]); delete live[e.pointerId]; });
+
+  const tap = (id, fn) => document.getElementById(id)
+    .addEventListener("click", e=>{ e.preventDefault(); if (phase === "playing") fn(); });
+  tap("tbReload", ()=>startReload(player));
+  tap("tbBandage", ()=>{ if (player.meds.bandage > 0 && player.useT <= 0 && player.hp < 100)
+    { player.useT = 2; player.useKind = "bandage"; } });
+  tap("tbMedkit", ()=>{ if (player.meds.medkit > 0 && player.useT <= 0 && player.hp < 100)
+    { player.useT = 4; player.useKind = "medkit"; } });
+}
 
 /* ------------------------------------------------ debug hook (playtest gate) */
 window.__surviv_debug = {
