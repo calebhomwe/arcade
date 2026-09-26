@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>FISHING FOR WORDS</title>
 <style>
   html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0d2740;
@@ -90,7 +91,13 @@ const SPECIES = ["Carp","Perch","Trout","Bass","Pike","Salmon","Catfish","Koi","
 const cv = document.getElementById("cv");
 const ctx = cv.getContext("2d");
 let VW = 0, VH = 0;
-function resize(){ VW = cv.width = window.innerWidth; VH = cv.height = window.innerHeight; }
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  VW = window.innerWidth; VH = window.innerHeight;
+  cv.width = Math.round(VW*dpr); cv.height = Math.round(VH*dpr);
+  cv.style.width = VW+"px"; cv.style.height = VH+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
 window.addEventListener("resize", resize); resize();
 
 const R  = (a,b)=>a+Math.random()*(b-a);

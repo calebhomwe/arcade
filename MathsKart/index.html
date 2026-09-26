@@ -263,7 +263,7 @@ function qQuick(d){
 }
 function qBonds(d){
   const T=d===1?10:d===2?20:100, g=d===3?rint(5,95):rint(1,T-1), ans=T-g;
-  return{prompt:g+' + ?',hint:'count up from '+g+' to '+T+' — or '+T+' \u2212 '+g,
+  return{prompt:g+' + ? = '+T,hint:'count up from '+g+' to '+T+' — or '+T+' \u2212 '+g,
          answer:String(ans),gates:opts(ans,d===3?14:5,0,T).map(String)};
 }
 /* lenient letter choice for rebuild-the-word gates */
@@ -940,7 +940,7 @@ function drawHUD(){
   if(G.question){
     ctx.textAlign='center';ctx.textBaseline='top';
     const q=G.question;
-    const txt=q.kind==='math'?q.promptTxt+' = ?':'SPELL IT: '+q.promptTxt;
+    const txt=q.kind==='math'?(q.promptTxt.includes('?')?q.promptTxt:q.promptTxt+' = ?'):'SPELL IT: '+q.promptTxt;
     ctx.font='bold 24px system-ui';
     const tw=ctx.measureText(txt).width;
     ctx.fillStyle='rgba(10,13,26,.8)';

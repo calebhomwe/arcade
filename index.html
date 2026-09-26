@@ -1,261 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="system">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2b2117">
+<title>Caleb's Arcade — 110 free browser games, no ads, no accounts</title>
+<meta name="description" content="Play 110 free games in your browser: arcade, puzzle, hyper-casual, learning, sims and idle. No ads, no accounts, no installs.">
+<meta name="theme-color" content="#e8f1ff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0e1f" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Caleb's Arcade — 110 free browser games">
+<meta property="og:description" content="Arcade, puzzle, hyper-casual, learning, sims and idle. No ads, no accounts, no installs.">
+<meta property="og:image" content="https://calebhomwe.github.io/arcade/assets/og.jpg">
+<meta property="og:url" content="https://calebhomwe.github.io/arcade/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://calebhomwe.github.io/arcade/">
 <link rel="manifest" href="manifest.webmanifest">
-<title>CALEB'S ARCADE</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%232b2117'/%3E%3Crect x='2' y='2' width='12' height='12' fill='%23f4ead8'/%3E%3Ctext x='8' y='12' font-family='Arial Black,Arial' font-size='8' font-weight='900' fill='%23c1543a' text-anchor='middle'%3ECA%3C/text%3E%3C/svg%3E">
-<style>
-  :root{
-    --paper:#f4ead8; --ink:#2b2117; --bone:#cbb99b; --rust:#c1543a;
-    --ochre:#d99a3c; --sage:#7d9470; --dust:#a8846b; --cream:#f8f1df;
-    --shadow:4px 4px 0 rgba(43,33,23,.35);
-    --disp:'Arial Black','Arial Bold',Arial,sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--paper);color:var(--ink);font-family:Georgia,'Times New Roman',serif;
-       line-height:1.45;min-height:100vh}
-  .wrap{max-width:1100px;margin:0 auto;padding:26px 22px 46px}
-  .kicker{font:700 .68rem/1 Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;
-          color:var(--rust)}
-  h1{font-family:var(--disp);font-size:clamp(2.1rem,7vw,3.4rem);line-height:.95;
-     letter-spacing:-.02em;text-transform:uppercase;margin-top:8px}
-  .rule{height:2px;background:var(--rust);width:64px;margin:14px 0}
-  .lede{color:#6b5a52;max-width:44em}
-
-  /* stats strip */
-  #stats{display:flex;border:2px solid var(--ink);background:var(--cream);
-         box-shadow:var(--shadow);margin:18px 0 8px;width:max-content;max-width:100%}
-  #stats .cell{padding:8px 16px;border-right:2px solid var(--ink);text-align:center}
-  #stats .cell:last-child{border-right:none}
-  #stats .lab{font:700 .56rem/1 Arial,sans-serif;letter-spacing:.16em;color:var(--dust);
-              text-transform:uppercase}
-  #stats .val{font-family:var(--disp);font-size:1.2rem}
-
-  /* controls row */
-  #controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 6px}
-  .chip{cursor:pointer;font:700 .68rem/1 Arial,sans-serif;letter-spacing:.14em;
-        text-transform:uppercase;padding:9px 14px;border:2px solid var(--ink);
-        background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 rgba(43,33,23,.35)}
-  .chip:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(43,33,23,.35)}
-  .chip.on{background:var(--ink);color:var(--paper)}
-  #q{font:600 .95rem Georgia,serif;padding:9px 12px;border:2px solid var(--ink);
-     background:var(--cream);color:var(--ink);min-width:200px;box-shadow:var(--shadow)}
-  #q:focus{outline:2px solid var(--rust);outline-offset:1px}
-  #count{font:700 .66rem/1 Arial,sans-serif;letter-spacing:.14em;color:var(--dust);
-         text-transform:uppercase}
-
-  /* recent strip */
-  #recent{margin:12px 0 4px;font:700 .66rem/1.9 Arial,sans-serif;letter-spacing:.12em;
-          text-transform:uppercase;color:var(--dust)}
-  #recent a{color:var(--rust);text-decoration:none;border-bottom:2px solid var(--ochre);
-            margin-right:14px}
-
-  /* the grid */
-  #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-        gap:16px;margin-top:16px}
-  .card{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:var(--ink);
-        background:var(--cream);border:2px solid var(--ink);box-shadow:var(--shadow);
-        padding:14px;position:relative;transition:transform .06s}
-  .card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(43,33,23,.35)}
-  .card:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(43,33,23,.35)}
-  .card .tile{width:56px;height:56px;display:grid;place-items:center;
-              font-family:var(--disp);font-size:1.15rem;color:var(--paper);
-              border:2px solid var(--ink)}
-  .card .tt{font-family:var(--disp);font-size:1.02rem;text-transform:uppercase;
-            letter-spacing:-.01em;line-height:1.1;padding-right:64px}
-  .card .genre{position:absolute;top:12px;right:12px;font:700 .56rem/1 Arial,sans-serif;
-               letter-spacing:.16em;color:var(--dust);text-transform:uppercase;
-               border:1px solid var(--dust);padding:3px 6px}
-  .card .best{font:700 .68rem/1 Arial,sans-serif;letter-spacing:.12em;color:var(--rust);
-              text-transform:uppercase;min-height:1em}
-  .card .blurb{font-size:.86rem;color:#6b5a52;font-style:italic}
-
-  /* trophy case */
-  #trophies{margin-top:34px;border:2px solid var(--ink);background:var(--cream);
-            box-shadow:var(--shadow);max-width:560px}
-  #trophies h2{font:700 .68rem/1 Arial,sans-serif;letter-spacing:.3em;color:var(--rust);
-               text-transform:uppercase;padding:12px 16px;border-bottom:2px solid var(--ink)}
-  .trow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
-        padding:10px 16px;border-bottom:2px solid rgba(203,185,155,.5)}
-  .trow:last-child{border-bottom:none}
-  .trow .n{font-weight:700;font-size:.92rem}
-  .trow .v{font-family:var(--disp);font-size:1.15rem;color:var(--ochre)}
-
-  footer{margin-top:34px;font:700 .62rem/1.8 Arial,sans-serif;letter-spacing:.2em;
-         text-transform:uppercase;color:var(--dust);text-align:center}
-  @media (max-width:560px){ #stats .cell{padding:6px 10px} }
-</style>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script>(function(){try{var s=JSON.parse(localStorage.getItem('ca_settings')||'{}'),h=document.documentElement;h.dataset.theme=s.theme||'system';h.dataset.accent=s.accent||'violet';h.dataset.size=s.size||'comfy';h.dataset.motion=s.motion||'auto';h.dataset.labels=s.labels===true?'1':'0';if(s.rail==='min'&&innerWidth>1100)h.dataset.rail='min'}catch(e){}})()</script>
+<link rel="preload" href="assets/fonts/fredoka.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/nunito.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<script src="catalog.js" defer></script>
+<script src="assets/site.js" defer></script>
 </head>
 <body>
-<div class="wrap">
-  <div class="kicker">One machine · every game · fully offline</div>
-  <h1>Caleb's Arcade</h1>
-  <div class="rule"></div>
-  <p class="lede">Every game on this shelf runs in the browser with zero servers, zero
-     ads and zero accounts. Pick a cabinet. Your bests are kept right here.</p>
-
-  <div id="stats" aria-label="arcade totals">
-    <div class="cell"><div class="lab">Cabinets</div><div class="val" id="n-games">0</div></div>
-    <div class="cell"><div class="lab">Bests on file</div><div class="val" id="n-bests">0</div></div>
-    <div class="cell"><div class="lab">Launches</div><div class="val" id="n-launches">0</div></div>
+<!--@sprite-->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="logo" viewBox="0 0 48 48"><defs><linearGradient id="lg-a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb000"/><stop offset=".48" stop-color="#ff3d8b"/><stop offset="1" stop-color="#6d4aff"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="14" fill="url(#lg-a)"/><path d="M2 26c10-6 30-6 44 0v6c0 7.7-6.3 14-14 14H16C8.3 46 2 39.7 2 32z" fill="#000" opacity=".12"/><path d="M18.5 15.6c0-1.7 1.9-2.8 3.4-1.8l11.6 7.6c1.3.9 1.3 2.8 0 3.6l-11.6 7.6c-1.5 1-3.4-.1-3.4-1.8z" fill="#fff"/><circle cx="36.5" cy="11.5" r="2.4" fill="#fff" opacity=".9"/><circle cx="11.5" cy="36.5" r="1.6" fill="#fff" opacity=".6"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11L12 4l8.5 7"/><path d="M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.2-4.5-9-8.8C1.8 8.1 3.9 5 7.1 5c2 0 3.6 1.1 4.9 2.8C13.3 6.1 14.9 5 16.9 5c3.2 0 5.3 3.1 4.1 6.2C19.2 15.5 12 20 12 20z"/></symbol><symbol id="i-spark" viewBox="0 0 24 24"><path d="M11 3.5l1.9 5.2 5.2 1.9-5.2 1.9L11 17.7l-1.9-5.2-5.2-1.9 5.2-1.9z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol><symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 21.5c3.9 0 6.8-2.6 6.8-6.5 0-3.2-2-5.4-3.5-7-.3 1.8-1.1 3-2.2 3.4.4-3.2-.9-6.3-3.8-8.2.2 2.9-1.4 4.8-2.8 6.6-1.3 1.8-2.3 3.4-2.3 5.2 0 3.9 3.9 6.5 7.8 6.5z"/><path d="M12 21.5c-1.7 0-3-1.2-3-3 0-1.6 1.4-2.7 2.3-3.9.4 1.1 1.3 1.6 2 1.8.5 1 .7 1.6.7 2.1 0 1.8-.6 3-2 3z"/></symbol><symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></symbol><symbol id="i-dice" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="8.5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.3" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.3" fill="currentColor"/></symbol><symbol id="i-joy" viewBox="0 0 24 24"><rect x="3" y="14" width="18" height="6.5" rx="2.5"/><path d="M12 14V9"/><circle cx="12" cy="6" r="3"/><path d="M7 17.3h2"/></symbol><symbol id="i-zap" viewBox="0 0 24 24"><path d="M13.5 2.5L5 13.5h6.5l-1 8 8.5-11h-6.5z"/></symbol><symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M5 7h3.2a2.3 2.3 0 1 1 4.6 0H16v3.2a2.3 2.3 0 1 1 0 4.6V19h-3.2a2.3 2.3 0 1 0-4.6 0H5v-4.2a2.3 2.3 0 1 0 0-4.6z"/></symbol><symbol id="i-crown" viewBox="0 0 24 24"><path d="M3.5 8l4.3 3.8L12 5l4.2 6.8L20.5 8l-1.8 10.5H5.3z"/><path d="M6 21h12"/></symbol><symbol id="i-cap" viewBox="0 0 24 24"><path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.8v4.4c2.6 2.3 8.4 2.3 11 0v-4.4"/><path d="M21.5 9.5v5"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.6 2.4 3.6 5.3 3.6 8.5s-1 6.1-3.6 8.5c-2.6-2.4-3.6-5.3-3.6-8.5s1-6.1 3.6-8.5z"/></symbol><symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="9" cy="7" rx="5.5" ry="2.5"/><path d="M3.5 7v4c0 1.4 2.5 2.5 5.5 2.5s5.5-1.1 5.5-2.5V7"/><path d="M9.5 16.3c.9 1.3 3 2.2 5.5 2.2 3 0 5.5-1.1 5.5-2.5v-4c0-1.2-1.8-2.2-4.3-2.4"/><path d="M14.5 14.4c2.8-.2 6-1 6-2.4"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6L6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol><symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol><symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol><symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol><symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.2c0-1 1.1-1.6 1.9-1.1l10 6.8c.8.5.8 1.7 0 2.2l-10 6.8c-.8.5-1.9-.1-1.9-1.1z" fill="currentColor" stroke="none"/></symbol><symbol id="i-up" viewBox="0 0 24 24"><path d="M7 11v9H4.5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M7 11l3.6-7.2a2 2 0 0 1 3.4 1.6L13.4 9h5.3a2 2 0 0 1 2 2.4l-1.4 7a2 2 0 0 1-2 1.6H7"/></symbol><symbol id="i-down" viewBox="0 0 24 24"><path d="M17 13V4h2.5a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1z"/><path d="M17 13l-3.6 7.2a2 2 0 0 1-3.4-1.6l.6-3.6H5.3a2 2 0 0 1-2-2.4l1.4-7a2 2 0 0 1 2-1.6H17"/></symbol><symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1"/></symbol><symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol><symbol id="i-restart" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></symbol><symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol><symbol id="i-ratio" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M7 9.5v-1h2M17 14.5v1h-2"/></symbol><symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol><symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M4 7l8 6 8-6"/></symbol><symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 18.5l1.2-3.6A7.5 7.5 0 1 1 8.6 18z"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol><symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 5.5H4.5c0 3 1.5 4.5 3.7 4.8M16 5.5h3.5c0 3-1.5 4.5-3.7 4.8"/><path d="M12 13v4M8.5 20h7"/></symbol><symbol id="i-bolt" viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol><symbol id="i-offline" viewBox="0 0 24 24"><path d="M5 13a7 7 0 0 1 14 0"/><path d="M8.5 13a3.5 3.5 0 0 1 7 0"/><circle cx="12" cy="17" r="1.2" fill="currentColor"/></symbol><symbol id="i-key" viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="11" rx="2.5"/><path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M7.5 14h9"/></symbol><symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/></symbol></svg>
+<!--/@sprite-->
+<a class="skip" href="#main">Skip to the games</a>
+<header class="top">
+  <button class="ico" id="menu" type="button" aria-label="Collapse the side menu" aria-controls="rail" aria-expanded="true"><svg class="i"><use href="#i-menu"/></svg></button>
+  <a class="brand" href="./" aria-label="Caleb's Arcade home"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span class="word">Caleb's Arcade<small>play free · no ads</small></span></a>
+  <div class="search" role="search">
+    <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+    <input id="q" type="search" placeholder="Search 110 games" autocomplete="off" spellcheck="false" aria-label="Search games" enterkeyhint="search">
+    <button class="clear" id="qclear" type="button" aria-label="Clear the search" hidden><svg class="i"><use href="#i-x"/></svg></button>
+    <kbd aria-hidden="true">/</kbd>
   </div>
-
-  <div id="recent" hidden>RECENT:
-    <span id="recent-list"></span>
+  <div class="tools">
+    <button class="ico only-phone" id="srch-btn" type="button" aria-label="Search"><svg class="i"><use href="#i-search"/></svg></button>
+    <a class="pill" id="rnd" href="play.html?g=random" title="Surprise me (S)"><svg class="i" aria-hidden="true"><use href="#i-dice"/></svg><span class="lbl">Surprise me</span><span class="sr">: play a random game</span></a>
+    <button class="ico" id="theme-btn" type="button" aria-label="Switch to night theme"><svg class="i"><use href="#i-moon"/></svg></button>
+    <button class="ico" id="prefs-btn" type="button" aria-label="Settings" title="Settings (,)"><svg class="i"><use href="#i-gear"/></svg></button>
   </div>
-
-  <div id="controls">
-    <button class="chip on" data-genre="ALL">All</button>
-    <button class="chip" data-genre="arcade">Arcade</button>
-    <button class="chip" data-genre="learning">Learning</button>
-    <button class="chip" data-genre="sim">Sim</button>
-    <button class="chip" data-genre="rhythm">Rhythm</button>
-    <input id="q" type="search" placeholder="find a game…" autocomplete="off">
-    <span id="count"></span>
-  </div>
-
-  <main id="grid" aria-label="game grid"></main>
-
-  <section id="trophies">
-    <h2>Trophy case — bests on this machine</h2>
-    <div class="trow"><span class="n">HIGH NEST — tallest treehouse</span><span class="v" id="t-nest">—</span></div>
-    <div class="trow"><span class="n">MARKET MERGE — biggest haul</span><span class="v" id="t-merge">—</span></div>
-    <div class="trow"><span class="n">LONG WAY HOME — richest log</span><span class="v" id="t-tlwh">—</span></div>
-  </section>
-
-  <footer>every game runs offline · no ads · no accounts · made with the machine swarm</footer>
+</header>
+<!--@chips-->
+<nav class="chips" id="chips" aria-label="Browse games">
+  <a class="chip" href="./" data-view="home"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg> Home</a>
+  <a class="chip" href="./?view=new" data-view="new" style="--cc:var(--c-learning)"><svg class="i" aria-hidden="true"><use href="#i-spark"/></svg> New</a>
+  <a class="chip" href="./?view=popular" data-view="popular" style="--cc:var(--c-hyper)"><svg class="i" aria-hidden="true"><use href="#i-flame"/></svg> Popular</a>
+  <a class="chip" href="./?cat=arcade" data-cat="arcade" style="--cc:var(--c-arcade)"><svg class="i" aria-hidden="true"><use href="#i-joy"/></svg> Arcade</a>
+  <a class="chip" href="./?cat=hyper" data-cat="hyper" style="--cc:var(--c-hyper)"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg> Hyper-Casual</a>
+  <a class="chip" href="./?cat=puzzle" data-cat="puzzle" style="--cc:var(--c-puzzle)"><svg class="i" aria-hidden="true"><use href="#i-puzzle"/></svg> Puzzle</a>
+  <a class="chip" href="./?cat=classic" data-cat="classic" style="--cc:var(--c-classic)"><svg class="i" aria-hidden="true"><use href="#i-crown"/></svg> Classic</a>
+  <a class="chip" href="./?cat=learning" data-cat="learning" style="--cc:var(--c-learning)"><svg class="i" aria-hidden="true"><use href="#i-cap"/></svg> Learning</a>
+  <a class="chip" href="./?cat=sim" data-cat="sim" style="--cc:var(--c-sim)"><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg> Sim &amp; Worlds</a>
+  <a class="chip" href="./?cat=idle" data-cat="idle" style="--cc:var(--c-idle)"><svg class="i" aria-hidden="true"><use href="#i-coins"/></svg> Idle</a>
+  <a class="chip" href="./?view=recent" data-view="recent"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg> Recent</a>
+  <a class="chip" href="./?view=favourites" data-view="favourites" style="--cc:#ff3d6e"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg> Favourites</a>
+  <a class="chip" href="./?view=all" data-view="all"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg> All 110</a>
+</nav>
+<!--/@chips-->
+<div class="shell">
+<!--@rail-->
+<nav class="rail" id="rail" aria-label="Browse games">
+  <a href="./" data-view="home" title="Home"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg></span><span>Home</span></a>
+  <a href="./?view=recent" data-view="recent" title="Recently played"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span><span>Recently played</span></a>
+  <a href="./?view=favourites" data-view="favourites" title="Favourites"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg></span><span>Favourites</span></a>
+  <a href="./?view=new" data-view="new" title="New games"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-spark"/></svg></span><span>New games</span></a>
+  <a href="./?view=popular" data-view="popular" title="Popular"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-flame"/></svg></span><span>Popular</span></a>
+  <a href="./?view=all" data-view="all" title="All games"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg></span><span>All games</span><span class="n">110</span></a>
+  <hr><h4>Categories</h4>
+  <a href="./?cat=arcade" data-cat="arcade" data-c style="--cc:var(--c-arcade)" title="Arcade"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-joy"/></svg></span><span>Arcade</span><span class="n">20</span></a>
+  <a href="./?cat=hyper" data-cat="hyper" data-c style="--cc:var(--c-hyper)" title="Hyper-Casual"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-zap"/></svg></span><span>Hyper-Casual</span><span class="n">37</span></a>
+  <a href="./?cat=puzzle" data-cat="puzzle" data-c style="--cc:var(--c-puzzle)" title="Puzzle"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-puzzle"/></svg></span><span>Puzzle</span><span class="n">8</span></a>
+  <a href="./?cat=classic" data-cat="classic" data-c style="--cc:var(--c-classic)" title="Classic"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-crown"/></svg></span><span>Classic</span><span class="n">7</span></a>
+  <a href="./?cat=learning" data-cat="learning" data-c style="--cc:var(--c-learning)" title="Learning"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-cap"/></svg></span><span>Learning</span><span class="n">16</span></a>
+  <a href="./?cat=sim" data-cat="sim" data-c style="--cc:var(--c-sim)" title="Sim &amp; Worlds"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-globe"/></svg></span><span>Sim &amp; Worlds</span><span class="n">17</span></a>
+  <a href="./?cat=idle" data-cat="idle" data-c style="--cc:var(--c-idle)" title="Idle"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-coins"/></svg></span><span>Idle</span><span class="n">5</span></a>
+  <hr><a href="play.html?g=random" data-random title="Surprise me"><span class="dot"><svg class="i" aria-hidden="true"><use href="#i-dice"/></svg></span><span>Surprise me</span></a>
+  <p class="mini">110 games, all free. No ads, no accounts. Favourites and bests stay on this device.</p>
+</nav>
+<!--/@rail-->
+  <main class="main" id="main" tabindex="-1">
+    <noscript><p class="empty">JavaScript is off, so the shelf can't be drawn. Every game still opens from its own folder.</p></noscript>
+    <div id="view" aria-live="polite">
+      <div class="mosaic-wrap"><div class="mosaic" aria-hidden="true">
+        <div class="skel" style="grid-column:span 2;grid-row:span 2"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel" style="grid-column:span 2;grid-row:span 2"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div>
+      </div></div>
+    </div>
+  </main>
 </div>
-
-<script>
-(()=>{
-'use strict';
-/* ═══ CALEB'S ARCADE — the front door of the offline game shelf ═══
-   Sits at the index of C:\Games\Web. All links are relative, so this works
-   from any static server AND from file://. Bests are read from the same-origin
-   localStorage each game already writes. */
-const GAMES=[
- {folder:'HighNest',           file:'index.html',          title:'High Nest',          genre:'arcade',  rec:'hn_rec',   bestLabel:'BEST PLANKS', blurb:'stack the treehouse into the stars',  col:'#c1543a'},
- {folder:'MarketMerge',        file:'index.html',          title:'Market Merge',       genre:'arcade',  rec:'mm_rec',   bestLabel:'BEST SCORE',  blurb:'merge the crate up to watermelons',   col:'#d99a3c'},
- {folder:'SpellMathsGalaxy',   file:'index.html',          title:'The Long Way Home',  genre:'learning',rec:'tlwh_rec', bestLabel:'BEST LOG',    blurb:'fly 11,000 ly on correct answers',    col:'#7d9470'},
- {folder:'SurvivorWave',       file:'index.html',  title:'Survivor Wave',      genre:'arcade',  rec:null,       bestLabel:'',            blurb:'horde survival, wave after wave',     col:'#8a5a7a'},
- {folder:'SurvivIO',           file:'index.html',          title:'Surviv Royale',      genre:'arcade',  rec:null,       bestLabel:'',            blurb:'battle royale against the bots',      col:'#a8846b'},
- {folder:'HoleGrind',          file:'index.html',          title:'Hole Grind',         genre:'arcade',  rec:null,       bestLabel:'',            blurb:'swallow the level whole',             col:'#4a3550'},
- {folder:'MathsKart',          file:'index.html',          title:'Maths Kart GP',      genre:'learning',rec:null,       bestLabel:'',            blurb:'arithmetic puts you in the lead',     col:'#c1543a'},
- {folder:'WordDungeon',        file:'index.html',          title:'Word Dungeon',       genre:'learning',rec:null,       bestLabel:'',            blurb:'spell the runes to advance',          col:'#7d4550'},
- {folder:'BalloonBust',        file:'index.html',          title:'Balloon Bust',       genre:'learning',rec:null,       bestLabel:'',            blurb:'pop the balloon with the answer',     col:'#d99a3c'},
- {folder:'QuizTower',          file:'index.html',          title:'Quiz Tower',         genre:'learning',rec:null,       bestLabel:'',            blurb:'defend the tower with knowledge',     col:'#7d9470'},
- {folder:'WordFishing',        file:'index.html',          title:'Fishing for Words',  genre:'learning',rec:null,       bestLabel:'',            blurb:'cozy fishing for letters and sums',   col:'#5f7a8a'},
- {folder:'MathMiner',          file:'index.html',          title:'Math Miner',         genre:'learning',rec:null,       bestLabel:'',            blurb:'dig deep by getting sums right',      col:'#8a6a42'},
- {folder:'MiniMart',           file:'index.html',          title:'MiniMart',           genre:'sim',     rec:null,       bestLabel:'',            blurb:'run the little shop yourself',        col:'#a03d54'},
- {folder:'FieldStation',       file:'index.html',          title:'Field Station',      genre:'sim',     rec:null,       bestLabel:'',            blurb:'circuits, particles, food webs',      col:'#6b7a4a'},
-];
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
-             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const launches=()=>{const v=store.get('arcade_rec',[]);return Array.isArray(v)?v:(v&&v.launches)||[]};
-
-/* ── build the grid ── */
-const grid=$('#grid');
-for(const g of GAMES){
-  const a=document.createElement('a');
-  a.className='card';a.dataset.folder=g.folder;a.dataset.genre=g.genre;
-  a.dataset.title=g.title;a.href=g.folder+'/'+g.file;
-  const mono=g.title.split(' ').map(w=>w[0]).join('').slice(0,3).toUpperCase();
-  a.innerHTML=
-    '<span class="tile" style="background:'+g.col+'">'+mono+'</span>'+
-    '<span class="genre">'+g.genre+'</span>'+
-    '<span class="tt">'+g.title+'</span>'+
-    '<span class="best" data-rec="'+(g.rec||'')+'" data-label="'+g.bestLabel+'">—</span>'+
-    '<span class="blurb">'+g.blurb+'</span>';
-  a.addEventListener('click',()=>{recordLaunch(g);});
-  grid.appendChild(a);
-}
-$('#n-games').textContent=GAMES.length;
-
-/* ── bests + trophies ── */
-function refreshBests(){
-  let known=0;
-  $$('.card .best').forEach(el=>{
-    const key=el.dataset.rec;
-    if(!key){el.textContent='';return;}
-    const r=store.get(key,null);
-    if(r&&typeof r.best==='number'){
-      el.textContent=el.dataset.label+' '+r.best;known++;
-    } else el.textContent='—';
-  });
-  $('#n-bests').textContent=known;
-  const nest=store.get('hn_rec',null), merge=store.get('mm_rec',null),
-        tlwh=store.get('tlwh_rec',null);
-  $('#t-nest').textContent =nest&&nest.best?nest.best+' planks':'—';
-  $('#t-merge').textContent=merge&&merge.best?merge.best+' pts':'—';
-  $('#t-tlwh').textContent =tlwh&&tlwh.best?tlwh.best+' log':'—';
-  $('#n-launches').textContent=launches().length;
-}
-function refreshRecent(){
-  const L=launches().slice(-3).reverse();
-  if(!L.length){$('#recent').hidden=true;return;}
-  $('#recent').hidden=false;
-  $('#recent-list').innerHTML=L.map(l=>
-    '<a href="'+l.folder+'/'+(l.file||'index.html')+'">'+l.title+'</a>').join('');
-}
-function recordLaunch(g){
-  const L=launches().filter(x=>x.folder!==g.folder);
-  L.push({folder:g.folder,file:g.file,title:g.title,ts:Date.now()});
-  store.set('arcade_rec',L.slice(-20));
-}
-
-/* ── filters ── */
-let filter='ALL';
-function applyFilter(){
-  const q=$('#q').value.trim().toLowerCase();
-  let visible=0;
-  $$('#grid .card').forEach(c=>{
-    const okG=filter==='ALL'||c.dataset.genre===filter;
-    const okQ=!q||c.dataset.title.toLowerCase().includes(q);
-    const on=okG&&okQ; c.style.display=on?'':'none'; if(on)visible++;
-  });
-  $('#count').textContent=visible+' of '+GAMES.length;
-}
-$$('.chip').forEach(ch=>ch.addEventListener('click',()=>{
-  filter=ch.dataset.genre;
-  $$('.chip').forEach(c=>c.classList.toggle('on',c===ch));
-  applyFilter();
-}));
-$('#q').addEventListener('input',applyFilter);
-addEventListener('keydown',e=>{
-  if(e.key==='/'&&document.activeElement!==$('#q')){e.preventDefault();$('#q').focus();return;}
-  const n=parseInt(e.key,10);
-  if(n>=1&&n<=9&&document.activeElement!==$('#q')){
-    const vis=$$('#grid .card').filter(c=>c.style.display!=='none');
-    if(vis[n-1])vis[n-1].click();
-  }
-});
-
-refreshBests();refreshRecent();applyFilter();
-/* PWA: installable + offline after first visit (http(s) only, never file://) */
-if('serviceWorker' in navigator&&(location.protocol==='https:'||
-   ['localhost','127.0.0.1'].includes(location.hostname))){
-  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
-
-/* ═══ test hook — read-mostly, used by Arcade/tools/playtest.py ═══
-   seed/wipe only mutate + refresh in place; the test harness reloads itself. */
-window.__arcade_debug={
-  state:()=>({games:GAMES.length,
-    visible:$$('#grid .card').filter(c=>c.style.display!=='none').length,
-    filter,query:$('#q').value,launches:launches().length,
-    trophies:{nest:(store.get('hn_rec',{})||{}).best??null,
-              merge:(store.get('mm_rec',{})||{}).best??null,
-              tlwh:(store.get('tlwh_rec',{})||{}).best??null}}),
-  seed(recs){for(const k in recs)store.set(k,recs[k]);
-    refreshBests();refreshRecent();},
-  wipe(){['arcade_rec','hn_rec','mm_rec','tlwh_rec'].forEach(k=>{
-    try{localStorage.removeItem(k)}catch(e){}});
-    refreshBests();refreshRecent();}
-};
-})();
-</script>
+<!--@foot-->
+<footer class="foot">
+  <div class="in">
+    <div><a class="brand" href="./" aria-label="Caleb's Arcade home"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span class="word">Caleb's Arcade<small>play free · no ads</small></span></a>
+      <p>110 free games you can play right now in the browser: arcade, puzzle, learning, sims and more. No downloads, no sign-ups, nothing to install.</p>
+      <div class="perks"><span><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> No ads</span><span><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg> No accounts</span><span><svg class="i" aria-hidden="true"><use href="#i-offline"/></svg> Saves on your device</span></div></div>
+    <div><h2 class="fh">Categories</h2><ul><li><a href="./?cat=arcade">Arcade</a></li><li><a href="./?cat=hyper">Hyper-Casual</a></li><li><a href="./?cat=puzzle">Puzzle</a></li><li><a href="./?cat=classic">Classic</a></li><li><a href="./?cat=learning">Learning</a></li><li><a href="./?cat=sim">Sim &amp; Worlds</a></li><li><a href="./?cat=idle">Idle</a></li></ul></div>
+    <div><h2 class="fh">Explore</h2><ul><li><a href="./?view=new">New games</a></li><li><a href="./?view=popular">Popular</a></li><li><a href="./?view=all">All 110 games</a></li><li><a href="play.html?g=random">Surprise me</a></li><li><a href="./?view=recent">Recently played</a></li><li><a href="./?view=favourites">Favourites</a></li></ul></div>
+    <div><h2 class="fh">Your arcade</h2><ul><li><button type="button" data-open-prefs>Settings &amp; theme</button></li><li><button type="button" data-open-prefs="data">Back up your progress</button></li><li><button type="button" data-open-prefs="report">Tester report for Caleb</button></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>
+    <div class="base"><span>© 2026 Caleb's Arcade. Every game here was made by Caleb.</span><span class="keys"><span><kbd class="kbd">/</kbd> search</span><span><kbd class="kbd">S</kbd> surprise me</span><span><kbd class="kbd">,</kbd> settings</span></span></div>
+  </div>
+</footer>
+<!--/@foot-->
 </body>
 </html>

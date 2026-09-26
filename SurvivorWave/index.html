@@ -15019,6 +15019,8 @@ function drawThreatChevron(x,y,isBoss){
 
   function show(i){
 
+    b3Cur=i;
+
     txt.textContent=STEPS[i].t;
 
     const base=pill.style.cssText.split(';').filter(p=>p&&!/^(left|right|top|bottom|transform)/.test(p.trim())).join(';');

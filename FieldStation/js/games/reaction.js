@@ -126,7 +126,7 @@ export function start(root, api) {
     function paintBars() {
       const L = counts('l'), R = counts('r');
       const max = Math.max(2, ...elems.map(e => Math.max(L[e] || 0, R[e] || 0)));
-      bars.replaceChildren(elems.map(e => {
+      bars.replaceChildren(...elems.map(e => {
         const l = L[e] || 0, r = R[e] || 0, ok = l === r;
         const bar = (v, align) => el('div', {
           style:`flex:1;display:flex;justify-content:${align};align-items:center;gap:6px`

@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>SURVIV ROYALE</title>
 <style>
   html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#4e8b52;
@@ -117,7 +118,7 @@ let frames = 0, fps = 0, fpsT = 0;
 const player = {
   x:0, y:0, r:22, hp:100, weapon:"pistol", mag:8,
   reserve:{pistol:32, smg:0, shell:0, ar:0},
-  meds:{bandage:1, medkit:0},
+  meds:{bandage:2, medkit:0},
   kills:0, dmg:0, fireCd:0, reloadT:0, useT:0, useKind:null,
   aim:0, lastShot:-9,
 };
@@ -166,7 +167,7 @@ function newMatch(){
   Object.assign(player, {
     x:WORLD/2 + R(-120,120), y:WORLD/2 + R(-120,120), hp:100,
     weapon:"pistol", mag:8, reserve:{pistol:32, smg:0, shell:0, ar:0},
-    meds:{bandage:1, medkit:0}, kills:0, dmg:0,
+    meds:{bandage:2, medkit:0}, kills:0, dmg:0,
     fireCd:0, reloadT:0, useT:0, useKind:null, lastShot:-9,
   });
   const jx = WORLD/2 + R(-200,200), jy = WORLD/2 + R(-200,200);

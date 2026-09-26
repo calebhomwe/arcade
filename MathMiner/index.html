@@ -600,8 +600,10 @@ document.getElementById('btnMath').addEventListener('click',()=>startRun('math')
 document.getElementById('btnSpell').addEventListener('click',()=>startRun('spell'));
 
 function toast(msg){
+  const box=document.getElementById('toasts');
   const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
-  document.getElementById('toasts').appendChild(t); setTimeout(()=>t.remove(),2700);
+  box.appendChild(t); setTimeout(()=>t.remove(),2700);
+  while(box.children.length>3) box.removeChild(box.firstChild);
 }
 
 /* ═══════════ fx ═══════════ */

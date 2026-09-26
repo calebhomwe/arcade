@@ -1,0 +1,2355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF6E9">
+<title>Chef Chloe: Viral Kitchen</title>
+<!--
+  ============================================================================
+  CHEF CHLOE: VIRAL KITCHEN  —  single-file mobile cooking game
+  ----------------------------------------------------------------------------
+  100% original. No third-party names/characters/assets/sounds. All art is
+  drawn procedurally (SVG / canvas / CSS). All audio is synthesized live with
+  the Web Audio API. Zero external requests. Runs offline by opening this file.
+
+  ARCHITECTURE OVERVIEW (search for the banner comments):
+    [SAVE]        localStorage save system (coins, gems, stars, unlocks, ...)
+    [HAPTICS]     platform-safe haptics abstraction (never throws)
+    [AUDIO]       layered Web Audio engine (ADSR, noise, reverb, limiter, duck)
+    [JUICE]       unified Juice Event bus + data-driven Juice Table
+    [PARTICLES]   pooled particle + floating-number system
+    [CHLOE]       procedural mascot (SVG) with expression + thumbs-up
+    [VERBS]       data-driven technique-VERB engine (chop/whisk/crack/...)
+    [RECIPES]     RECIPE DATA REGISTRY + schema (add a recipe = add one object)
+    [RUSH]        Rush Mode service (combos, café upgrades)
+    [STATE]       state machine + all screens
+  ============================================================================
+-->
+<style>
+  :root{
+    --cream:#FFF6E9; --peach:#FFE3C7; --pink:#FF5D8F; --coral:#FF7A59;
+    --mint:#3DD6B0; --yellow:#FFC93C; --purple:#7C5CFF; --cocoa:#4A2C2A;
+    --card:#FFFFFF; --shadow:rgba(74,44,42,.18);
+    --r:22px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; touch-action:manipulation;}
+  :focus-visible{outline:3px solid var(--purple); outline-offset:2px;}
+  html,body{margin:0; padding:0; height:100%; overflow:hidden; background:#2a1f2a;}
+  body{
+    font-family:"Baloo 2","Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+    font-weight:800; color:var(--cocoa);
+  }
+  #app{
+    position:fixed; inset:0; margin:auto;
+    /* Plays in BOTH portrait and landscape. Height always fills the viewport
+       (exactly like normal portrait did before) — width is what adapts: it
+       fills too in portrait, and only pillarboxes down to a comfortable
+       phone-like shape when the viewport is short/wide (landscape). The
+       55.73vh figure is simply 520/933 expressed as a percentage of height. */
+    height:100%;
+    width:min(520px, 100vw, 55.73vh);
+    background:linear-gradient(160deg,var(--cream),var(--peach));
+    overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 0 40px rgba(0,0,0,.4);
+  }
+  .screen{position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden;}
+  .screen.active{display:flex;}
+  .fx-layer{position:absolute; inset:0; pointer-events:none; z-index:900;}
+  #particleCanvas{position:absolute; inset:0; pointer-events:none; z-index:850;}
+
+  /* ---- reusable buttons ---- */
+  .btn{
+    border:none; border-radius:var(--r); padding:16px 22px; font-family:inherit;
+    font-weight:800; font-size:19px; color:#fff; background:var(--pink);
+    box-shadow:0 6px 0 rgba(0,0,0,.12), 0 8px 16px var(--shadow);
+    cursor:pointer; position:relative; transition:transform .08s;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn:active{transform:translateY(3px) scale(.97); box-shadow:0 3px 0 rgba(0,0,0,.12);}
+  .btn.mint{background:var(--mint);} .btn.coral{background:var(--coral);}
+  .btn.yellow{background:var(--yellow); color:var(--cocoa);} .btn.purple{background:var(--purple);}
+  .btn.ghost{background:#fff; color:var(--cocoa); box-shadow:0 4px 0 rgba(0,0,0,.08), 0 6px 12px var(--shadow);}
+  .btn.sm{padding:10px 16px; font-size:15px; border-radius:16px; min-height:44px;}
+  .btn.big{width:100%; padding:20px; font-size:22px;}
+  .btn:disabled{opacity:.5; cursor:default;}
+
+  .topbar{display:flex; align-items:center; gap:8px; padding:12px 14px; padding-top:max(12px,env(safe-area-inset-top));}
+  .chip{background:#fff; border-radius:20px; padding:7px 14px; font-size:15px; display:flex; align-items:center; gap:6px;
+        box-shadow:0 3px 8px var(--shadow);}
+  .spacer{flex:1}
+  .iconbtn{width:44px;height:44px;border-radius:50%;border:none;background:#fff;box-shadow:0 3px 8px var(--shadow);
+           font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .iconbtn:active{transform:scale(.92)}
+
+  .title{font-size:30px; text-align:center; margin:6px 0; text-shadow:0 2px 0 #fff;}
+  .sub{font-size:15px; font-weight:700; opacity:.75; text-align:center;}
+  .scroll{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:10px 16px 24px;}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .card{background:var(--card); border-radius:var(--r); padding:14px; box-shadow:0 6px 16px var(--shadow);
+        position:relative; cursor:pointer; transition:transform .1s;}
+  .card:active{transform:scale(.96)}
+  .card .emoji{font-size:40px; line-height:1}
+  .card .cname{font-size:16px; margin-top:6px}
+  .card .meta{font-size:12px; font-weight:700; opacity:.7; margin-top:2px}
+  .locked{filter:grayscale(.7) brightness(.9); opacity:.7}
+  .lockbadge{position:absolute; top:8px; right:10px; font-size:20px}
+  .starsrow{color:var(--yellow); font-size:15px; margin-top:4px; letter-spacing:1px}
+
+  /* Chloe container */
+  .chloe-wrap{display:flex; justify-content:center; align-items:center;}
+  .chloe-wrap svg{width:100%; height:100%; overflow:visible;}
+
+  /* boot */
+  #screen-boot .bootbox{margin:auto; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px;}
+  .bigtitle{font-size:40px; line-height:1.05; background:linear-gradient(90deg,var(--pink),var(--coral),var(--purple));
+            -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:none;}
+
+  /* cook stage */
+  .cookhead{display:flex; align-items:center; gap:10px; padding:10px 14px;}
+  .stepbar{flex:1; height:14px; background:#fff; border-radius:10px; overflow:hidden; box-shadow:inset 0 2px 4px rgba(0,0,0,.1)}
+  .stepbar > i{display:block; height:100%; width:0; border-radius:10px; background:linear-gradient(90deg,var(--mint),var(--yellow)); transition:width .3s}
+  .stage{flex:1; position:relative; margin:6px 12px; border-radius:26px; overflow:hidden;
+         background:radial-gradient(circle at 50% 30%,#fff,#ffeede); box-shadow:inset 0 0 0 4px #fff, 0 8px 20px var(--shadow);}
+  .verbcanvas{position:absolute; inset:0; width:100%; height:100%; touch-action:none;}
+  .prompt{position:absolute; top:10px; left:0; right:0; text-align:center; font-size:19px; pointer-events:none; z-index:5;
+          text-shadow:0 2px 0 #fff;}
+  .chloecorner{position:absolute; bottom:8px; right:8px; width:96px; height:96px; z-index:6; pointer-events:none;}
+  .speech{position:absolute; bottom:96px; right:8px; background:#fff; border-radius:16px; padding:8px 12px; font-size:14px;
+          max-width:190px; box-shadow:0 4px 10px var(--shadow); z-index:6;}
+  .speech:after{content:""; position:absolute; bottom:-8px; right:24px; border:8px solid transparent; border-top-color:#fff; border-bottom:0;}
+
+  /* results */
+  .platewrap{width:220px; height:220px; margin:10px auto; position:relative;}
+  .bigstars{display:flex; justify-content:center; gap:6px; font-size:44px; margin:6px;}
+  .bigstars span{opacity:.25; transform:scale(.6); transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+  .bigstars span.on{opacity:1; transform:scale(1); color:var(--yellow); text-shadow:0 3px 0 #e0a800}
+  .scorenum{font-size:54px; text-align:center; color:var(--coral)}
+  .banner{font-size:34px; text-align:center; letter-spacing:1px;
+          background:linear-gradient(90deg,var(--pink),var(--purple)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+
+  /* rush */
+  .rushtop{display:flex; gap:8px; align-items:center; padding:8px 12px; flex-wrap:wrap}
+  .customers{display:flex; gap:8px; padding:6px 12px; overflow-x:auto; overflow-y:visible; min-height:168px}
+  .cust{min-width:128px; background:#fff; border-radius:18px; padding:8px; box-shadow:0 4px 10px var(--shadow); position:relative; text-align:center}
+  .cust .face{font-size:34px}
+  .cust .order{font-size:12px; font-weight:800; margin-top:2px}
+  .patience{height:8px; border-radius:6px; background:#eee; margin-top:6px; overflow:hidden}
+  .patience > i{display:block; height:100%; background:var(--mint)}
+  .needlist{display:flex; gap:4px; justify-content:center; margin-top:6px; flex-wrap:wrap}
+  .needchip{font-size:16px; background:#f3ede4; border-radius:10px; width:26px; height:26px; display:flex; align-items:center; justify-content:center; position:relative; opacity:.55; transition:all .15s}
+  .needchip.got{background:var(--mint); opacity:1; box-shadow:0 0 0 2px rgba(61,214,176,.35)}
+  .needchip.got::after{content:"✓"; position:absolute; top:-4px; right:-4px; background:#fff; color:var(--mint); font-size:10px; font-weight:900; border-radius:50%; width:13px; height:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .tierpick{background:#fff; border-radius:20px; padding:14px; margin-bottom:12px; box-shadow:0 5px 14px var(--shadow); cursor:pointer; border:3px solid transparent; text-align:left}
+  .tierpick.sel{border-color:var(--mint); background:#f2fbf8}
+  .tierpick .tname{font-size:17px; font-weight:900}
+  .tierpick .tdesc{font-size:13px; font-weight:700; opacity:.7; margin-top:2px}
+  .stations{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:8px 12px}
+  .station{background:#fff; border-radius:16px; padding:10px 4px; text-align:center; box-shadow:0 4px 10px var(--shadow); cursor:pointer; font-size:13px; min-height:52px}
+  .station .se{font-size:28px}
+  .tray{display:flex; gap:6px; flex-wrap:wrap; min-height:56px; padding:8px 12px; align-items:center}
+  .traychip{background:var(--yellow); color:var(--cocoa); border-radius:14px; padding:10px 12px; font-size:14px; box-shadow:0 3px 6px var(--shadow); cursor:pointer; min-height:44px; display:inline-flex; align-items:center}
+  .combo{position:absolute; top:60px; left:0; right:0; text-align:center; font-size:30px; pointer-events:none; z-index:20;
+         color:var(--coral); opacity:0}
+
+  /* shop / list rows */
+  .row{background:#fff; border-radius:18px; padding:14px; margin-bottom:12px; box-shadow:0 5px 14px var(--shadow); display:flex; align-items:center; gap:12px}
+  .row .rt{flex:1} .row .rname{font-size:17px} .row .rdesc{font-size:13px; font-weight:700; opacity:.7}
+  .owned{color:var(--mint)}
+
+  /* settings sliders */
+  .setrow{display:flex; align-items:center; gap:12px; background:#fff; border-radius:16px; padding:12px 14px; margin-bottom:10px; box-shadow:0 4px 10px var(--shadow)}
+  .setrow label{flex:1; font-size:15px}
+  input[type=range]{-webkit-appearance:none; appearance:none; height:8px; border-radius:6px; background:#eee; width:130px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:var(--pink); box-shadow:0 2px 5px var(--shadow); cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:24px; height:24px; border:none; border-radius:50%; background:var(--pink); cursor:pointer}
+  .toggle{width:56px; height:32px; border-radius:20px; background:#ddd; position:relative; cursor:pointer; transition:background .2s; flex:none}
+  .toggle.on{background:var(--mint)}
+  .toggle i{position:absolute; top:3px; left:3px; width:26px; height:26px; border-radius:50%; background:#fff; transition:left .2s; box-shadow:0 2px 4px rgba(0,0,0,.2)}
+  .toggle.on i{left:27px}
+
+  /* map worlds */
+  .world{background:#fff; border-radius:24px; padding:16px; margin-bottom:14px; box-shadow:0 6px 16px var(--shadow); display:flex; gap:14px; align-items:center; cursor:pointer}
+  .world .wemoji{font-size:44px}
+  .world .wt{flex:1}
+  .world .wname{font-size:19px}
+  .world .wprog{font-size:13px; font-weight:700; opacity:.7}
+
+  /* modal */
+  .modal{position:absolute; inset:0; background:rgba(74,44,42,.45); z-index:1000; display:none; align-items:center; justify-content:center; padding:24px}
+  .modal.show{display:flex}
+  .modalbox{background:#fff; border-radius:24px; padding:22px; max-width:340px; width:100%; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,.4);
+            animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes pop{from{transform:scale(.7); opacity:0} to{transform:scale(1); opacity:1}}
+  .modalbox h3{font-size:23px; margin:6px 0}
+  .modalbox p{font-weight:700; font-size:15px; opacity:.8; margin:8px 0 16px}
+
+  /* home hub big buttons */
+  .hub{display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:12px 16px}
+  .hubbtn{border:none; border-radius:24px; padding:22px 10px; color:#fff; font-family:inherit; font-weight:800; font-size:19px;
+          box-shadow:0 6px 0 rgba(0,0,0,.12), 0 10px 20px var(--shadow); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px}
+  .hubbtn:active{transform:translateY(3px)}
+  .hubbtn .he{font-size:34px}
+
+  .toast{position:absolute; bottom:24px; left:50%; transform:translateX(-50%); background:var(--cocoa); color:#fff; padding:12px 20px;
+         border-radius:20px; font-size:15px; z-index:1200; opacity:0; transition:opacity .3s, transform .3s; pointer-events:none; text-align:center; max-width:80%}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px)}
+
+  .flash{position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:880; transition:opacity .06s}
+  .reduced #particleCanvas{opacity:.85}
+  .reduced .modalbox{animation:none}
+  .reduced .bigstars span{transition:opacity .2s}
+  .reduced .banner{transition:opacity .2s}
+  .reduced .toast{transition:opacity .2s}
+  .reduced .combo{transition:opacity .2s}
+  @media (prefers-reduced-motion: reduce){
+    .modalbox{animation:none}
+    .bigstars span,.toast,.stepbar>i,.toggle i,.toggle,.btn,.card,.combo,.banner{transition:none}
+    .flash{display:none}
+  }
+  /* Landscape and portrait are both fully playable — see #app sizing above.
+     #rotateHint is kept in the DOM (unused) so nothing else needs to change. */
+  #rotateHint{display:none;}
+  .daycal{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:10px 0}
+  .dayc{background:#fff; border-radius:16px; padding:10px 4px; text-align:center; font-size:13px; box-shadow:0 4px 8px var(--shadow); position:relative}
+  .dayc.claimed{background:var(--mint); color:#fff}
+  .dayc.today{outline:3px solid var(--yellow)}
+  .dayc .amt{font-size:18px; margin-top:2px}
+  .hint{font-size:13px; font-weight:700; opacity:.7; text-align:center; margin:6px}
+  .section-title{font-size:20px; margin:12px 4px 6px}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="particleCanvas"></canvas>
+  <div class="fx-layer" id="fxLayer"></div>
+  <div class="flash" id="flash"></div>
+
+  <!-- BOOT -->
+  <section class="screen" id="screen-boot">
+    <div class="bootbox">
+      <div class="chloe-wrap" id="bootChloe" style="width:180px;height:200px"></div>
+      <div class="bigtitle">Chef Chloe</div>
+      <div class="title" style="margin-top:-6px">Viral Kitchen</div>
+      <div class="sub">Tap to start cooking!</div>
+      <button class="btn big yellow" id="bootStart" style="margin-top:14px; width:220px">Let's Cook! 👍</button>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-home"></section>
+  <section class="screen" id="screen-map"></section>
+  <section class="screen" id="screen-select"></section>
+  <section class="screen" id="screen-cook"></section>
+  <section class="screen" id="screen-results"></section>
+  <section class="screen" id="screen-rush"></section>
+  <section class="screen" id="screen-shop"></section>
+  <section class="screen" id="screen-wardrobe"></section>
+  <section class="screen" id="screen-cookbook"></section>
+  <section class="screen" id="screen-settings"></section>
+  <section class="screen" id="screen-daily"></section>
+
+  <div class="modal" id="modal"><div class="modalbox" id="modalBox"></div></div>
+  <div class="toast" id="toast"></div>
+</div>
+<div id="rotateHint"><div style="font-size:52px">🔄</div><div>Please rotate to portrait<br>to keep cooking!</div></div>
+
+<script>
+"use strict";
+/* ==========================================================================
+   Small utility helpers
+   ========================================================================== */
+const $  = (s,r)=>(r||document).querySelector(s);
+const $$ = (s,r)=>Array.prototype.slice.call((r||document).querySelectorAll(s));
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const rand=(a,b)=>{ if(a===undefined)a=1; if(b===undefined)b=0; return b+Math.random()*(a-b); };
+const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+const now=()=>performance.now();
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function appRect(){ return document.getElementById("app").getBoundingClientRect(); }
+
+/* ==========================================================================
+   [SAVE] localStorage save system
+   ========================================================================== */
+const SAVE_KEY="chefChloeViralKitchen_v1";
+const DefaultSave={
+  coins:120, gems:6, stars:{}, best:{},
+  unlocked:{dubai_chocolate_bar:true, tanghulu:true, choc_strawberries:true},
+  learned:{}, owned:{}, fullKitchen:false,
+  cosmetic:{outfit:"classic", glasses:"pink", apron:"strawberry"},
+  cafe:{level:1, speed:1, stations:3, decor:0, tier:"beginner"},
+  daily:{lastClaim:"", streak:0},
+  trending:{date:"", recipeId:"", best:0},
+  settings:{music:.6, sfx:.9, asmr:.85, asmrOn:true, haptics:true, hapticIntensity:.8, reducedMotion:false, cozy:false, muted:false},
+  seenBoot:false
+};
+let S=loadSave();
+function loadSave(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw) return JSON.parse(JSON.stringify(DefaultSave));
+    return deepMerge(JSON.parse(JSON.stringify(DefaultSave)),JSON.parse(raw));
+  }catch(e){ return JSON.parse(JSON.stringify(DefaultSave)); }
+}
+function deepMerge(base,over){
+  if(over==null) return base;
+  for(const k in over){
+    if(over[k]&&typeof over[k]==="object"&&!Array.isArray(over[k])&&typeof base[k]==="object"&&base[k]!=null){
+      deepMerge(base[k],over[k]);
+    }else base[k]=over[k];
+  }
+  return base;
+}
+let _saveT=0;
+function save(){ clearTimeout(_saveT); _saveT=setTimeout(()=>{ try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){} },120); }
+
+/* ==========================================================================
+   [HAPTICS] platform-safe abstraction — NEVER throws where unsupported.
+   ----------------------------------------------------------------------------
+   Web build backs these with navigator.vibrate() (Android/dev). On iOS Safari
+   navigator.vibrate is absent -> every call is a safe no-op.
+
+   NATIVE / CAPACITOR WRAPPER MAPPING (documented for the App-Store build):
+     Haptics.transient(intensity, sharpness)
+        -> iOS Core Haptics CHHapticEvent(.hapticTransient) with
+           CHHapticEventParameter(.hapticIntensity,intensity) and (.hapticSharpness,sharpness),
+           played on a shared CHHapticEngine. Simple taps may use UIImpactFeedbackGenerator
+           (light/medium/heavy chosen from intensity).
+     Haptics.continuous({intensity,sharpness,duration})
+        -> CHHapticEvent(.hapticContinuous,duration:...) with a parameter curve so the
+           haptic intensity follows the SAME envelope value as the audio layer.
+     Haptics.pattern('CRACK'|'CELEBRATE'|'OOPS'|...)
+        -> a prebuilt AHAP pattern (or CHHapticPattern) per named event, fired frame-locked
+           with the Juice Event's sound + visuals.
+     @capacitor/haptics covers simple impact/notification cases; a small native Core Haptics
+     bridge covers custom transient+sharpness and AHAP patterns.
+   Graceful tiers: iPhone(Core Haptics) -> iPad/unsupported(UIFeedback or none)
+                   -> Android(vibrate patterns) -> desktop/web(visual+audio only).
+   ========================================================================== */
+const Haptics=(function(){
+  const canVibrate = typeof navigator!=="undefined" && typeof navigator.vibrate==="function";
+  let _lastContinuous=0;
+  function on(){ return S.settings.haptics; }
+  function scaledPattern(pat){
+    const k=clamp(S.settings.hapticIntensity,0,1);
+    return pat.map((v,i)=> i%2===0 ? Math.max(1,Math.round(v*(.4+.6*k))) : v );
+  }
+  function vibe(pat){
+    if(!on()||!canVibrate) return;
+    try{ navigator.vibrate(scaledPattern(Array.isArray(pat)?pat:[pat])); }catch(e){/* never throw */}
+  }
+  return {
+    supported:canVibrate,
+    transient(intensity,sharpness){ if(intensity===undefined)intensity=.7; vibe([Math.round(8+intensity*30)]); },
+    continuous(env){ env=env||{}; const t=(typeof performance!=="undefined"?performance.now():Date.now());
+      if(t-_lastContinuous<60) return; _lastContinuous=t;
+      vibe([Math.round((env.duration||.2)*300*(env.intensity||.5)+10)]); },
+    pattern(name){
+      const P={
+        CRACK:[26,18,10], SMASH:[40,20,26,14,30], TICK:[10],
+        CELEBRATE:[16,40,16,40,26], COMBO:[8,20,10], OOPS:[10,60,10],
+        POUR:[60], SIZZLE:[120], STAR:[14,30,14,30,22], COIN:[9]
+      };
+      vibe(P[name]||[12]);
+    }
+  };
+})();
+
+/* ==========================================================================
+   [AUDIO] Layered Web Audio engine
+   ----------------------------------------------------------------------------
+   Path per SFX: sources -> per-layer ADSR gain -> [dry + reverb send]
+                 -> category bus (sfx/asmr/music) -> compressor -> limiter -> out.
+   ADSR envelopes, filtered-noise layers, algorithmic reverb send, master
+   compressor+limiter, music side-chain ducking under big SFX, per-trigger
+   pitch/gain randomization (anti machine-gun).
+
+   PRODUCTION UPGRADE PATH: in the native / App-Store build swap this live
+   synthesis for base64-embedded or engine-loaded professionally-recorded Foley
+   and adaptive-audio middleware (FMOD / Wwise) — the SAME Juice Event bus
+   drives it, just higher-fidelity assets.
+   ========================================================================== */
+const Audio2=(function(){
+  let ctx=null, master, comp, limiter, revNode, revGain;
+  let busMusic, busSfx, busAsmr;
+  let musicPlaying=false, ready=false, noiseBuf=null;
+  let musicEnergy=0, musicTimer=null, step=0, duckUntil=0;
+
+  function init(){
+    if(ctx) return;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC){ ready=false; return; }
+    try{ ctx=new AC(); }catch(e){ ready=false; return; }
+    master=ctx.createGain(); master.gain.value=0.9;
+    comp=ctx.createDynamicsCompressor();
+    comp.threshold.value=-18; comp.knee.value=24; comp.ratio.value=3.4; comp.attack.value=.004; comp.release.value=.18;
+    limiter=ctx.createDynamicsCompressor();
+    limiter.threshold.value=-2; limiter.knee.value=0; limiter.ratio.value=20; limiter.attack.value=.001; limiter.release.value=.09;
+    busMusic=ctx.createGain(); busSfx=ctx.createGain(); busAsmr=ctx.createGain();
+    revNode=ctx.createConvolver(); revNode.buffer=makeImpulse(1.6,2.2);
+    revGain=ctx.createGain(); revGain.gain.value=.5;
+    revNode.connect(revGain).connect(comp);
+    busMusic.connect(comp); busSfx.connect(comp); busAsmr.connect(comp);
+    comp.connect(limiter).connect(master).connect(ctx.destination);
+    noiseBuf=makeNoise(1.2);
+    ready=true;
+    applyMix();
+    startMusic();
+  }
+  function makeNoise(sec){
+    const n=Math.floor(ctx.sampleRate*sec), b=ctx.createBuffer(1,n,ctx.sampleRate), d=b.getChannelData(0);
+    for(let i=0;i<n;i++) d[i]=Math.random()*2-1;
+    return b;
+  }
+  function makeImpulse(sec,decay){
+    const n=Math.floor(ctx.sampleRate*sec), b=ctx.createBuffer(2,n,ctx.sampleRate);
+    for(let c=0;c<2;c++){ const d=b.getChannelData(c);
+      for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,decay); }
+    return b;
+  }
+  function applyMix(){
+    if(!ready) return;
+    const s=S.settings, m=s.muted?0:1;
+    master.gain.value=0.9*m;
+    // Never clobber a possibly-ducking music bus with a raw .value write.
+    if(ctx.currentTime>=duckUntil){
+      const bm=busMusic.gain;
+      bm.cancelScheduledValues(ctx.currentTime);
+      bm.setValueAtTime(s.music*0.55, ctx.currentTime);
+    }
+    busSfx.gain.value=s.sfx;
+    busAsmr.gain.value=(s.asmrOn?s.asmr:0);
+    // Mute Everything should actually stop synthesis, not just gain-zero it.
+    if(s.muted){ stopMusic(); }
+    else if(!musicPlaying){ startMusic(); }
+  }
+  function busFor(cat){ return cat==="music"?busMusic:cat==="asmr"?busAsmr:busSfx; }
+  function duck(amount,time){
+    amount=amount||.5; time=time||.28;
+    if(!ready||!musicPlaying) return;
+    const g=busMusic.gain, t=ctx.currentTime, base=S.settings.music*0.55;
+    g.cancelScheduledValues(t);
+    g.setValueAtTime(g.value,t);
+    g.linearRampToValueAtTime(base*(1-amount),t+.02);
+    g.linearRampToValueAtTime(base,t+time);
+    duckUntil=t+time;
+  }
+  function voice(o){
+    if(!ready) return;
+    const t=ctx.currentTime+(o.delay||0);
+    const g=ctx.createGain(); g.gain.value=0;
+    let src, node;
+    if(o.noise){ src=ctx.createBufferSource(); src.buffer=noiseBuf; src.loop=true; }
+    else{
+      src=ctx.createOscillator(); src.type=o.type||"sine";
+      const f=o.freq*Math.pow(2,(o.pitchVar? rand(o.pitchVar,-o.pitchVar):0)/12);
+      src.frequency.setValueAtTime(f,t);
+      if(o.glide) src.frequency.exponentialRampToValueAtTime(Math.max(20,o.glide),t+(o.dur||.2));
+    }
+    node=src;
+    if(o.filter){
+      const filt=ctx.createBiquadFilter(); filt.type=o.filter; filt.frequency.value=o.cutoff||1200; if(o.q)filt.Q.value=o.q;
+      if(o.sweep) filt.frequency.exponentialRampToValueAtTime(Math.max(60,o.sweep),t+(o.dur||.2));
+      node.connect(filt); node=filt;
+    }
+    const bus=busFor(o.cat||"sfx");
+    let out=g;
+    if(o.pan!=null && ctx.createStereoPanner){ const p=ctx.createStereoPanner(); p.pan.value=clamp(o.pan,-1,1); g.connect(p); out=p; }
+    node.connect(g);
+    out.connect(bus);
+    if(o.reverb){ const rs=ctx.createGain(); rs.gain.value=o.reverb; out.connect(rs); rs.connect(revNode); }
+    const peak=(o.gain||.5)*rand(1.06,.9);
+    const A=o.a!=null?o.a:.005, D=o.d!=null?o.d:.05, Sl=o.s!=null?o.s:0, R=o.r!=null?o.r:.12, dur=o.dur||.2;
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(peak,t+A);
+    g.gain.linearRampToValueAtTime(Math.max(.0001,peak*(Sl||.0001)),t+A+D);
+    g.gain.setValueAtTime(Math.max(.0001,peak*(Sl||.0001)),t+Math.max(A+D,dur));
+    g.gain.exponentialRampToValueAtTime(.0001,t+Math.max(A+D,dur)+R);
+    src.start(t);
+    src.stop(t+Math.max(A+D,dur)+R+.05);
+  }
+  const SND={
+    chop(pan){ voice({type:"square",freq:1400,gain:.28,a:.001,d:.03,r:.03,dur:.04,pitchVar:2,pan,cat:"asmr"});
+               voice({type:"sine",freq:230,gain:.4,a:.001,d:.08,r:.06,dur:.09,pitchVar:1.5,pan});
+               voice({noise:true,filter:"highpass",cutoff:3500,gain:.18,a:.001,d:.04,r:.03,dur:.05,pan,reverb:.15,cat:"asmr"}); },
+    crack(pan){ voice({noise:true,filter:"highpass",cutoff:2600,gain:.6,a:.0005,d:.02,r:.06,dur:.05,pan,reverb:.25});
+                voice({type:"triangle",freq:2100,glide:1500,gain:.34,a:.0008,d:.12,r:.18,dur:.18,pan,reverb:.4,cat:"asmr"});
+                voice({type:"sine",freq:120,glide:60,gain:.55,a:.001,d:.1,r:.16,dur:.16,pan});
+                voice({noise:true,filter:"bandpass",cutoff:1800,q:2,gain:.2,a:.03,d:.15,r:.2,dur:.2,delay:.04,pan,cat:"asmr"}); },
+    smash(pan){ voice({type:"sine",freq:90,glide:45,gain:.7,a:.001,d:.14,r:.2,dur:.2,pan});
+                voice({noise:true,filter:"lowpass",cutoff:900,sweep:200,gain:.4,a:.002,d:.18,r:.22,dur:.24,pan,reverb:.2,cat:"asmr"});
+                voice({type:"square",freq:180,gain:.16,a:.001,d:.05,r:.05,dur:.06,pan}); },
+    whisk(pan){ voice({noise:true,filter:"bandpass",cutoff:2600,q:1.5,gain:.14,a:.02,d:.08,s:.3,r:.1,dur:.14,pan,reverb:.18,cat:"asmr",pitchVar:1}); },
+    pour(pan){ voice({noise:true,filter:"bandpass",cutoff:900,q:3,gain:.16,a:.04,d:.2,s:.5,r:.2,dur:.5,sweep:1400,pan,reverb:.2,cat:"asmr"});
+               voice({type:"sine",freq:520,glide:680,gain:.1,a:.05,d:.3,r:.2,dur:.45,pan}); },
+    sizzle(pan){ voice({noise:true,filter:"highpass",cutoff:2400,gain:.16,a:.08,d:.3,s:.6,r:.4,dur:.7,pan,reverb:.22,cat:"asmr"}); },
+    squish(pan){ voice({type:"sine",freq:300,glide:160,gain:.34,a:.006,d:.12,r:.12,dur:.16,pan,pitchVar:2,cat:"asmr"});
+                 voice({noise:true,filter:"lowpass",cutoff:700,gain:.1,a:.01,d:.1,r:.1,dur:.14,pan}); },
+    drip(pan){ voice({type:"sine",freq:900,glide:400,gain:.24,a:.001,d:.06,r:.1,dur:.12,pan,pitchVar:2,cat:"asmr"}); },
+    sprinkle(pan){ for(let i=0;i<5;i++) voice({type:"triangle",freq:rand(2600,1600),gain:.08,a:.001,d:.03,r:.03,dur:.04,delay:i*.03,pan,cat:"asmr"}); },
+    pop(pan){ voice({type:"sine",freq:700,glide:1300,gain:.3,a:.001,d:.05,r:.05,dur:.07,pan,pitchVar:2,cat:"asmr"}); },
+    fizz(pan){ voice({noise:true,filter:"highpass",cutoff:4000,gain:.1,a:.04,d:.4,s:.5,r:.4,dur:.8,pan,cat:"asmr"}); },
+    ding(pan,semi){ semi=semi||0; voice({type:"sine",freq:880*Math.pow(2,semi/12),gain:.32,a:.001,d:.18,r:.35,dur:.3,pan,reverb:.35});
+                    voice({type:"sine",freq:1760*Math.pow(2,semi/12),gain:.12,a:.001,d:.1,r:.2,dur:.2,pan,reverb:.3}); },
+    tick(){ voice({type:"square",freq:1200,gain:.14,a:.001,d:.02,r:.02,dur:.03,pitchVar:2}); },
+    coin(pan){ voice({type:"square",freq:1180,gain:.16,a:.001,d:.04,r:.05,dur:.05,pan,pitchVar:1});
+               voice({type:"square",freq:1760,gain:.12,a:.001,d:.05,r:.06,dur:.06,delay:.05,pan}); },
+    star(){ [0,4,7,12].forEach((s,i)=>voice({type:"triangle",freq:660*Math.pow(2,s/12),gain:.2,a:.002,d:.15,r:.3,dur:.25,delay:i*.06,reverb:.4})); },
+    whoosh(pan){ voice({noise:true,filter:"bandpass",cutoff:1200,sweep:2600,q:1,gain:.2,a:.02,d:.14,r:.1,dur:.2,pan,cat:"asmr"}); },
+    oops(){ voice({type:"sine",freq:420,glide:300,gain:.2,a:.005,d:.14,r:.12,dur:.2}); voice({type:"sine",freq:330,glide:250,gain:.16,a:.01,d:.16,r:.12,dur:.22,delay:.08}); },
+    ui(){ voice({type:"triangle",freq:660,gain:.14,a:.001,d:.05,r:.05,dur:.06,pitchVar:1}); },
+    fanfare(){ [0,4,7,12,16].forEach((s,i)=>voice({type:"triangle",freq:523*Math.pow(2,s/12),gain:.2,a:.003,d:.2,r:.3,dur:.3,delay:i*.09,reverb:.45})); }
+  };
+  function startMusic(){ if(!ready||musicPlaying||S.settings.muted) return; musicPlaying=true; step=0; scheduleLoop(); }
+  function stopMusic(){ musicPlaying=false; clearTimeout(musicTimer); musicTimer=null; }
+  function scheduleLoop(){
+    if(!ready||!musicPlaying) return;
+    const bpm=96, beat=60/bpm, scale=[0,2,4,7,9], root=220;
+    const chords=[[0,4,7],[-3,0,4],[-5,-1,2],[-1,2,7]];
+    const bar=step%4;
+    chords[bar].forEach(iv=>voice({type:"triangle",freq:root*Math.pow(2,iv/12),gain:.05+musicEnergy*.03,a:.15,d:.4,s:.4,r:.6,dur:beat*3.4,cat:"music",reverb:.5}));
+    const notes=2+Math.round(musicEnergy*4);
+    for(let i=0;i<notes;i++){ const iv=pick(scale)+12;
+      voice({type:"sine",freq:root*Math.pow(2,iv/12),gain:.06+musicEnergy*.04,a:.01,d:.2,r:.2,dur:.28,delay:i*(beat*4/notes),cat:"music",reverb:.4}); }
+    if(musicEnergy>.35) voice({type:"sine",freq:110,glide:55,gain:.16,a:.002,d:.12,r:.1,dur:.14,cat:"music"});
+    step++;
+    musicTimer=setTimeout(scheduleLoop,beat*4*1000);
+  }
+  function setEnergy(e){ musicEnergy=clamp(e,0,1); }
+  function resume(){ if(ctx&&ctx.state==="suspended") ctx.resume(); }
+  function suspend(){ stopMusic(); if(ctx&&ctx.state==="running"){ try{ctx.suspend();}catch(e){} } }
+  function wake(){ if(ctx&&ctx.state==="suspended"){ try{ctx.resume();}catch(e){} } if(ready&&!S.settings.muted&&!musicPlaying) startMusic(); }
+  return {
+    init, resume, applyMix, duck, setEnergy, startMusic, stopMusic, suspend, wake,
+    play(name,opts){ if(!ready) return; try{ if(SND[name]) SND[name]((opts&&opts.pan)||0,(opts&&opts.semi)||0); }catch(e){} },
+    get ready(){ return ready; }
+  };
+})();
+
+/* ==========================================================================
+   [PARTICLES] pooled particle + floating number system (canvas)
+   ========================================================================== */
+const Particles=(function(){
+  const cvs=document.getElementById("particleCanvas"), ctx=cvs.getContext("2d");
+  let W=0,H=0,dpr=1;
+  const pool=[]; const active=[];
+  const MAX=260;
+  function resize(){
+    const app=appRect();
+    dpr=Math.min(2,window.devicePixelRatio||1);
+    W=app.width; H=app.height;
+    cvs.width=W*dpr; cvs.height=H*dpr; cvs.style.width=W+"px"; cvs.style.height=H+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function get(){ return pool.pop()||{}; }
+  function cap(){ return S.settings.reducedMotion?60:MAX; }
+  function spawn(o){
+    if(active.length>=cap()) return;
+    const p=get();
+    p.x=o.x; p.y=o.y; p.vx=o.vx||0; p.vy=o.vy||0; p.g=o.g||0; p.life=o.life||.8; p.age=0;
+    p.size=o.size||6; p.color=o.color||"#fff"; p.shape=o.shape||"circle";
+    p.spin=o.spin||0; p.rot=o.rot||0; p.fade=o.fade!==false; p.text=o.text||null; p.drag=o.drag||1;
+    active.push(p);
+  }
+  function burst(x,y,opts){
+    opts=opts||{};
+    let n=opts.n||14;
+    if(S.settings.reducedMotion && opts.reduced!==false) n=Math.min(n,6);
+    for(let i=0;i<n;i++){
+      const a=rand(Math.PI*2), sp=rand(opts.speed||260,60);
+      spawn({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(opts.up||60),g:opts.g!=null?opts.g:520,
+        life:rand(opts.life||1.0,.5),size:rand(opts.size||9,4),
+        color:opts.colors?pick(opts.colors):(opts.color||"#FFC93C"),
+        shape:opts.shape||pick(["circle","square","star"]),spin:rand(8,-8),drag:opts.drag||1});
+    }
+  }
+  function shards(x,y,color){
+    const n=S.settings.reducedMotion?8:18;
+    for(let i=0;i<n;i++){ const a=rand(Math.PI*2),sp=rand(360,120);
+      spawn({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-120,g:900,life:rand(1.1,.6),size:rand(12,5),
+        color:color||"#7a4a2a",shape:"shard",spin:rand(14,-14),drag:.99}); }
+  }
+  function floatText(x,y,text,color){
+    spawn({x,y,vx:rand(30,-30),vy:-120,g:120,life:1.1,size:26,color:color||"#FF7A59",shape:"text",text,fade:true,drag:.94});
+  }
+  function confetti(){
+    const cols=["#FF5D8F","#FF7A59","#3DD6B0","#FFC93C","#7C5CFF"];
+    const n=S.settings.reducedMotion?18:44;
+    for(let i=0;i<n;i++) spawn({x:rand(W,0),y:-20,vx:rand(60,-60),vy:rand(120,40),g:260,life:rand(2.4,1.4),
+      size:rand(11,6),color:pick(cols),shape:pick(["square","circle"]),spin:rand(10,-10),drag:1});
+  }
+  function drawStar(cx,cy,r,rot){
+    ctx.beginPath();
+    for(let i=0;i<5;i++){ const a=rot+i*Math.PI*2/5-Math.PI/2;
+      ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);
+      const a2=a+Math.PI/5; ctx.lineTo(cx+Math.cos(a2)*r*.45,cy+Math.sin(a2)*r*.45); }
+    ctx.closePath();
+  }
+  function update(dt){
+    ctx.clearRect(0,0,W,H);
+    for(let i=active.length-1;i>=0;i--){
+      const p=active[i]; p.age+=dt;
+      if(p.age>=p.life){ active.splice(i,1); pool.push(p); continue; }
+      p.vy+=p.g*dt; p.vx*=p.drag; p.vy*=p.drag; p.x+=p.vx*dt; p.y+=p.vy*dt; p.rot+=p.spin*dt;
+      const k=p.fade?(1-p.age/p.life):1;
+      ctx.globalAlpha=clamp(k,0,1);
+      ctx.fillStyle=p.color;
+      if(p.shape==="text"){
+        ctx.font="800 "+p.size+"px 'Baloo 2', Nunito, sans-serif";
+        ctx.textAlign="center"; ctx.lineWidth=4; ctx.strokeStyle="#fff";
+        ctx.strokeText(p.text,p.x,p.y); ctx.fillText(p.text,p.x,p.y);
+      }else if(p.shape==="star"){
+        drawStar(p.x,p.y,p.size,p.rot); ctx.fill();
+      }else if(p.shape==="square"||p.shape==="shard"){
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+        if(p.shape==="shard"){ ctx.beginPath(); ctx.moveTo(0,-p.size); ctx.lineTo(p.size*.7,p.size*.6); ctx.lineTo(-p.size*.6,p.size*.5); ctx.closePath(); ctx.fill(); }
+        else ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+        ctx.restore();
+      }else{
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
+      }
+    }
+    ctx.globalAlpha=1;
+  }
+  return {resize,update,burst,shards,floatText,confetti,spawn, get count(){return active.length;}};
+})();
+
+/* ==========================================================================
+   Screen-shake + slow-mo + flash controllers
+   ========================================================================== */
+const FX=(function(){
+  const app=document.getElementById("app"), flash=document.getElementById("flash");
+  let shake=0, slow=1, slowUntil=0;
+  function screenShake(mag){ if(mag===undefined)mag=8; if(S.settings.reducedMotion) mag*=.35; shake=Math.max(shake,mag); }
+  function slowMo(scale,ms){ slow=scale||.35; slowUntil=now()+(ms||150); }
+  function doFlash(a,color){ if(a===undefined)a=.7; if(S.settings.reducedMotion)a*=.5; flash.style.background=color||"#fff"; flash.style.opacity=a;
+    setTimeout(()=>flash.style.opacity=0,60); }
+  function timeScale(){ if(now()>slowUntil) slow=1; return slow; }
+  function apply(){
+    if(shake>.4){ const dx=rand(shake,-shake), dy=rand(shake,-shake); app.style.transform="translate("+dx+"px,"+dy+"px)"; shake*=.86; }
+    else { shake=0; app.style.transform=""; }
+  }
+  return {screenShake,slowMo,doFlash,timeScale,apply};
+})();
+
+/* ==========================================================================
+   [CHLOE] procedural mascot — SVG, expressive, glasses + double thumbs-up
+   ========================================================================== */
+const Chloe=(function(){
+  const GL={pink:"#FF9EC4",blue:"#8FD3FF",purple:"#C4B0FF",clear:"#DDDDDD"};
+  const AP={strawberry:"#FF5D8F",mint:"#3DD6B0",sunny:"#FFC93C",berry:"#7C5CFF"};
+  function starPath(cx,cy,r){
+    let p="";
+    for(let i=0;i<5;i++){ const a=i*Math.PI*2/5-Math.PI/2;
+      p+=(i?"L":"M")+(cx+Math.cos(a)*r)+" "+(cy+Math.sin(a)*r)+" ";
+      const a2=a+Math.PI/5; p+="L"+(cx+Math.cos(a2)*r*.45)+" "+(cy+Math.sin(a2)*r*.45)+" "; }
+    return '<path d="'+p+'Z" fill="#4A2C2A"/>';
+  }
+  function eyes(expr){
+    if(expr==="yum"||expr==="excited") return "<g>"+starPath(78,96,7)+starPath(122,96,7)+"</g>";
+    if(expr==="focus") return '<g><ellipse cx="78" cy="97" rx="7" ry="4"/><ellipse cx="122" cy="97" rx="7" ry="4"/></g>';
+    if(expr==="oops") return '<g><circle cx="78" cy="95" r="7"/><circle cx="122" cy="95" r="7"/><circle cx="80" cy="93" r="2.4" fill="#fff"/><circle cx="124" cy="93" r="2.4" fill="#fff"/></g>';
+    return '<g><circle cx="78" cy="95" r="9"/><circle cx="122" cy="95" r="9"/><circle cx="81" cy="92" r="3" fill="#fff"/><circle cx="125" cy="92" r="3" fill="#fff"/><circle cx="75" cy="98" r="1.6" fill="#fff"/><circle cx="119" cy="98" r="1.6" fill="#fff"/></g>';
+  }
+  function mouth(expr){
+    if(expr==="yum"||expr==="excited") return '<path d="M82 116 Q100 138 118 116 Q100 128 82 116Z" fill="#B5364F"/><path d="M88 120 Q100 130 112 120" fill="#FF9EC4"/>';
+    if(expr==="thumbs") return '<path d="M80 114 Q100 140 120 114 Q100 126 80 114Z" fill="#B5364F"/>';
+    if(expr==="focus") return '<path d="M92 118 Q100 122 108 118" stroke="#4A2C2A" stroke-width="3.5" fill="none" stroke-linecap="round"/><ellipse cx="112" cy="120" rx="4" ry="6" fill="#FF9EC4"/>';
+    if(expr==="oops") return '<ellipse cx="100" cy="120" rx="9" ry="11" fill="#B5364F"/>';
+    return '<path d="M84 114 Q100 132 116 114" stroke="#4A2C2A" stroke-width="4" fill="none" stroke-linecap="round"/>';
+  }
+  function thumbHand(x,y,rot){
+    return '<g transform="translate('+x+' '+y+') rotate('+rot+')"><ellipse cx="0" cy="10" rx="15" ry="18" fill="#8A5A3C"/><rect x="-8" y="-18" width="16" height="22" rx="8" fill="#8A5A3C"/><circle cx="0" cy="-20" r="8" fill="#8A5A3C"/></g>';
+  }
+  function wave(x,y,rot){ return '<g transform="translate('+x+' '+y+') rotate('+rot+')"><ellipse cx="0" cy="0" rx="14" ry="17" fill="#8A5A3C"/></g>'; }
+  function hands(expr){
+    if(expr==="thumbs") return "<g>"+thumbHand(30,150,-18)+thumbHand(170,150,18)+"</g>";
+    if(expr==="excited") return "<g>"+wave(34,150,-30)+wave(166,150,30)+"</g>";
+    return "";
+  }
+  function render(o){
+    o=o||{};
+    const expr=o.expr||"idle";
+    const gl=GL[o.glasses||S.cosmetic.glasses]||GL.pink;
+    const ap=AP[o.apron||S.cosmetic.apron]||AP.strawberry;
+    const outfit=o.outfit||S.cosmetic.outfit;
+    const teeColor=outfit==="chef"?"#FFFFFF":outfit==="viral"?"#7C5CFF":outfit==="berry"?"#C4B0FF":"#FFE3C7";
+    const uid='c'+((Math.random()*1e9)|0);
+    return '<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">'
+      +'<defs>'
+      +'<radialGradient id="cheek_'+uid+'" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FB0" stop-opacity=".8"/><stop offset="100%" stop-color="#FF8FB0" stop-opacity="0"/></radialGradient>'
+      +'<linearGradient id="skin_'+uid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#9C6A47"/><stop offset="100%" stop-color="#8A5A3C"/></linearGradient>'
+      +'</defs>'
+      +'<g>'
+      +'<rect x="58" y="150" width="84" height="60" rx="26" fill="'+teeColor+'" stroke="#4A2C2A" stroke-width="3"/>'
+      +'<path d="M72 150 Q100 146 128 150 L124 208 Q100 214 76 208Z" fill="'+ap+'" stroke="#4A2C2A" stroke-width="3"/>'
+      +'<rect x="86" y="150" width="28" height="20" rx="6" fill="'+ap+'" stroke="#4A2C2A" stroke-width="2"/>'
+      +'</g>'
+      +hands(expr)
+      +'<rect x="90" y="132" width="20" height="20" fill="url(#skin_'+uid+')"/>'
+      +'<circle cx="56" cy="78" r="26" fill="#3A2418"/><circle cx="144" cy="78" r="26" fill="#3A2418"/>'
+      +'<circle cx="52" cy="60" r="18" fill="#4A2E1E"/><circle cx="148" cy="60" r="18" fill="#4A2E1E"/>'
+      +'<circle cx="46" cy="86" r="7" fill="#FF5D8F"/><circle cx="154" cy="86" r="7" fill="#7C5CFF"/>'
+      +'<circle cx="100" cy="96" r="46" fill="url(#skin_'+uid+')" stroke="#4A2C2A" stroke-width="3"/>'
+      +'<path d="M56 78 Q60 44 100 42 Q140 44 144 78 Q140 62 100 60 Q60 62 56 78Z" fill="#3A2418"/>'
+      +'<circle cx="80" cy="54" r="12" fill="#3A2418"/><circle cx="100" cy="48" r="13" fill="#3A2418"/><circle cx="120" cy="54" r="12" fill="#3A2418"/>'
+      +'<circle cx="100" cy="47" r="5" fill="#FFC93C"/>'
+      +'<circle cx="70" cy="110" r="11" fill="url(#cheek_'+uid+')"/><circle cx="130" cy="110" r="11" fill="url(#cheek_'+uid+')"/>'
+      +eyes(expr)
+      +'<g fill="none" stroke="#4A2C2A" stroke-width="3">'
+      +'<circle cx="78" cy="96" r="16" fill="'+gl+'" fill-opacity=".28"/>'
+      +'<circle cx="122" cy="96" r="16" fill="'+gl+'" fill-opacity=".28"/>'
+      +'<path d="M94 96 h12"/><path d="M62 92 l-10 -4"/><path d="M138 92 l10 -4"/>'
+      +'</g>'
+      +'<path d="M64 78 q10 -5 20 -1" stroke="#3A2418" stroke-width="3" fill="none" stroke-linecap="round"/>'
+      +'<path d="M116 78 q10 -6 20 -1" stroke="#3A2418" stroke-width="3" fill="none" stroke-linecap="round"/>'
+      +mouth(expr)
+      +'</svg>';
+  }
+  function draw(container,o){ if(!container) return; container.innerHTML=render(o); }
+  return {draw,render};
+})();
+
+/* ==========================================================================
+   [JUICE] Unified Juice Event bus + data-driven Juice Table
+   ----------------------------------------------------------------------------
+   Juice.fire('CRACK',{x,y}) triggers VISUAL + AUDIO + HAPTIC on the same frame.
+   Coordinates x,y are relative to the #app box. `pan` derives from x.
+   ========================================================================== */
+const Juice=(function(){
+  function panFor(x){ const w=appRect().width||400; return clamp((x/w)*2-1,-1,1); }
+  const T={
+    CRACK:(e)=>{ FX.doFlash(.85); FX.screenShake(16); FX.slowMo(.28,170);
+      Particles.shards(e.x,e.y,e.color||"#6b3f22"); Particles.burst(e.x,e.y,{n:20,colors:["#fff","#C9A15A","#6b3f22"],speed:340,size:10});
+      Audio2.play("crack",{pan:panFor(e.x)}); Audio2.duck(.6,.3); Haptics.pattern("CRACK"); },
+    SMASH:(e)=>{ FX.doFlash(.6); FX.screenShake(14); FX.slowMo(.4,140);
+      Particles.burst(e.x,e.y,{n:16,colors:["#FFC93C","#FF7A59","#fff"],speed:300,size:11});
+      Audio2.play("smash",{pan:panFor(e.x)}); Audio2.duck(.5,.28); Haptics.pattern("SMASH"); },
+    PERFECT_CHOP:(e)=>{ Particles.burst(e.x,e.y,{n:8,colors:["#fff","#FFC93C"],speed:180,size:7,g:400});
+      Particles.floatText(e.x,e.y-18,"+"+(e.pts||10),"#3DD6B0"); Audio2.play("chop",{pan:panFor(e.x)}); Haptics.transient(.55,.85); },
+    CHOP:(e)=>{ Particles.burst(e.x,e.y,{n:5,colors:["#fff","#eebb88"],speed:150,size:6}); Audio2.play("chop",{pan:panFor(e.x)}); Haptics.transient(.4,.8); },
+    WHISK:(e)=>{ if(Math.random()<.5)Particles.burst(e.x,e.y,{n:3,colors:["#fff"],speed:80,size:5,life:.4,reduced:false}); Audio2.play("whisk",{pan:panFor(e.x)}); Haptics.continuous({duration:.1,intensity:.35}); },
+    POUR:(e)=>{ Particles.spawn({x:e.x,y:e.y,vx:rand(10,-10),vy:120,g:200,life:.5,size:5,color:e.color||"#FFB0C4",shape:"circle"}); Audio2.play("pour",{pan:panFor(e.x)}); Haptics.continuous({duration:.16,intensity:.3}); },
+    SIZZLE:(e)=>{ if(Math.random()<.4)Particles.spawn({x:e.x+rand(20,-20),y:e.y,vx:rand(20,-20),vy:-60,g:-40,life:1,size:6,color:"rgba(255,255,255,.6)",shape:"circle"}); Audio2.play("sizzle",{pan:panFor(e.x)}); Haptics.continuous({duration:.1,intensity:.25}); },
+    PIPE:(e)=>{ Particles.spawn({x:e.x,y:e.y,vx:0,vy:0,g:0,life:.6,size:5,color:e.color||"#fff",shape:"circle"}); Audio2.play("squish",{pan:panFor(e.x)}); Haptics.transient(.3,.4); },
+    KNEAD:(e)=>{ Audio2.play("squish",{pan:panFor(e.x)}); Haptics.transient(.4,.3); Particles.burst(e.x,e.y,{n:3,colors:["#fff","#f0d0a0"],speed:80,size:6}); },
+    DIP:(e)=>{ Particles.burst(e.x,e.y,{n:8,colors:[e.color||"#8a4a2a","#fff"],speed:140,size:7,up:20}); Audio2.play("drip",{pan:panFor(e.x)}); Haptics.transient(.4,.5); },
+    SPRINKLE:(e)=>{ Particles.burst(e.x,e.y,{n:10,colors:["#FF5D8F","#3DD6B0","#FFC93C","#7C5CFF"],speed:120,size:5,g:500}); Audio2.play("sprinkle",{pan:panFor(e.x)}); Haptics.transient(.25,.7); },
+    FLIP:(e)=>{ FX.slowMo(.5,120); Audio2.play("whoosh",{pan:panFor(e.x)}); Audio2.play("sizzle",{pan:panFor(e.x)}); Haptics.transient(.5,.5); },
+    STACK:(e)=>{ Particles.burst(e.x,e.y,{n:6,colors:["#fff","#FFC93C"],speed:120,size:7}); Audio2.play("squish",{pan:panFor(e.x)}); Haptics.transient(.5,.6); },
+    POP:(e)=>{ Particles.burst(e.x,e.y,{n:6,colors:["#4A2C2A","#fff"],speed:160,size:6}); Audio2.play("pop",{pan:panFor(e.x)}); Haptics.transient(.4,.7); },
+    COMBO_UP:(e)=>{ Audio2.play("ding",{semi:clamp(e.combo||1,0,14)}); Haptics.pattern("COMBO"); Particles.floatText(e.x||200,e.y||120,"x"+(e.combo||1),"#FF7A59"); },
+    COIN:(e)=>{ if(e.amt) Particles.floatText(e.x||200,e.y||120,"+"+(e.amt||1),"#FFC93C"); Audio2.play("coin"); Haptics.pattern("COIN"); },
+    STAR_AWARDED:(e)=>{ Audio2.play("star"); Haptics.pattern("STAR"); Particles.burst(e.x||200,e.y||150,{n:12,colors:["#FFC93C","#fff"],shape:"star",speed:200,size:12}); },
+    STEP_DONE:(e)=>{ FX.doFlash(.3,"#FFF6E9"); Audio2.play("ui"); Haptics.transient(.4,.6); Particles.burst(e.x||200,e.y||200,{n:8,colors:["#3DD6B0","#fff"],speed:150,size:7}); },
+    OOPS:()=>{ Audio2.play("oops"); Haptics.pattern("OOPS"); },
+    CELEBRATE:()=>{ Particles.confetti(); Audio2.play("fanfare"); Audio2.duck(.4,.5); Haptics.pattern("CELEBRATE"); FX.doFlash(.4); },
+    UI_TAP:()=>{ Audio2.play("ui"); Haptics.transient(.2,.5); },
+    FIZZ:(e)=>{ Audio2.play("fizz",{pan:panFor(e.x||0)}); Haptics.continuous({duration:.2,intensity:.2}); }
+  };
+  function fire(name,e){ e=e||{}; const fn=T[name]; if(fn){ try{fn(e);}catch(err){} } }
+  return {fire, TABLE:T};
+})();
+
+/* ==========================================================================
+   [VERBS] Data-driven technique-VERB engine
+   ----------------------------------------------------------------------------
+   Each verb is a mini-game rendered into the cook stage canvas. Signature:
+     verbFn(stage, params, done)
+       stage  = { canvas, ctx, w, h, prompt(text), chloe(expr,line) }
+       params = author-supplied numbers/colors from the recipe step
+       done({score:0..1}) = call when the step is complete
+   Every verb gives INSTANT visual+audio+haptic confirmation via Juice.fire.
+   ========================================================================== */
+const Verbs=(function(){
+  function pointer(stage,ev){
+    const r=stage.canvas.getBoundingClientRect();
+    const t=ev.touches&&ev.touches[0]?ev.touches[0]:ev;
+    return {x:(t.clientX-r.left), y:(t.clientY-r.top), gx:t.clientX-appRect().left, gy:t.clientY-appRect().top};
+  }
+  function bind(stage,handlers){
+    const c=stage.canvas; const wrap={};
+    const map={down:["pointerdown"],move:["pointermove"],up:["pointerup","pointercancel"]};
+    for(const key in map){
+      map[key].forEach(evt=>{
+        const h=e=>{ e.preventDefault(); if(handlers[key]) handlers[key](pointer(stage,e),e); };
+        wrap[evt]=h; c.addEventListener(evt,h,{passive:false});
+      });
+    }
+    stage._unbind=()=>{ for(const evt in wrap) c.removeEventListener(evt,wrap[evt]); };
+  }
+  function roundRect(ctx,x,y,w,h,r){ r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  function meter(ctx,w,h,v){
+    const gx=w*.2,gy=h*.9,gw=w*.6;
+    ctx.fillStyle="rgba(255,255,255,.7)"; roundRect(ctx,gx,gy,gw,12,8); ctx.fill();
+    ctx.fillStyle="#3DD6B0"; roundRect(ctx,gx,gy,gw*clamp(v,0,1),12,8); ctx.fill();
+  }
+  function hx(c){ c=c.replace("#",""); if(c.length===3)c=c.split("").map(x=>x+x).join(""); return [parseInt(c.substr(0,2),16),parseInt(c.substr(2,2),16),parseInt(c.substr(4,2),16)]; }
+  function blend(a,b,t){ const A=hx(a),B=hx(b); return "rgb("+Math.round(lerp(A[0],B[0],t))+","+Math.round(lerp(A[1],B[1],t))+","+Math.round(lerp(A[2],B[2],t))+")"; }
+  function makePath(shape,stage){
+    const pts=[],w=stage.w,h=stage.h;
+    if(shape==="bar"){ for(let i=0;i<=24;i++){ const t=i/24; pts.push({x:w*.2+w*.6*t,y:h*.46}); }
+      for(let i=1;i<=24;i++){ const t=i/24; pts.push({x:w*.2+w*.6*t,y:h*.56}); } }
+    else if(shape==="heart"){ for(let i=0;i<=40;i++){ const a=i/40*Math.PI*2; const x=16*Math.pow(Math.sin(a),3);
+      const y=13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a); pts.push({x:w/2+x*(w*.012),y:h*.5-y*(h*.02)}); } }
+    else { for(let i=0;i<=30;i++){ const a=i/30*Math.PI*2; pts.push({x:w/2+Math.cos(a)*w*.2,y:h*.5+Math.sin(a)*h*.16}); } }
+    return pts;
+  }
+  function end(stage,done,score){
+    if(stage._done) return; stage._done=true;
+    if(stage._unbind) stage._unbind(); if(stage._cleanup) stage._cleanup();
+    Juice.fire("STEP_DONE",{x:stage.w/2,y:stage.h/2});
+    stage.chloe(score>.75?"yum":"idle",score>.75?"Yum, perfect!":"Good job!");
+    setTimeout(()=>done({score:clamp(score,0,1)}),380);
+  }
+
+  /* ---------- CHOP / SLICE ---------- */
+  function chop(stage,p,done){
+    const cuts=p.cuts||5; let made=0, quality=0, raf;
+    const targets=[]; for(let i=0;i<cuts;i++) targets.push({x:(i+1)/(cuts+1),done:false});
+    const crust=p.crust||"#F3C67A", inside=p.inside||"#FFF3D6";
+    const pieces=[]; // little cross-section chunks that pop out and roll, Toca-Boca style
+    stage.prompt("Swipe across each dotted line! 🔪"); stage.chloe("focus","Nice and steady…");
+    let startY=null;
+    function spawnPiece(t){
+      const x=stage.w*(.12+.76*t.x), speckCount=3+Math.floor(rand(3,0));
+      pieces.push({ x, y:stage.h*.5, vx:rand(70,-70), vy:-rand(120,60), rot:0, vr:rand(6,-6),
+        r:stage.h*.055, life:1, speck:Array.from({length:speckCount},()=>({dx:rand(.6,-.6),dy:rand(.5,-.5)})) });
+    }
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      // the log: crust outside, pale cross-section tone peeking at the ends
+      ctx.fillStyle=crust; roundRect(ctx,w*.12,h*.4,w*.76,h*.2,26); ctx.fill();
+      ctx.fillStyle="rgba(255,255,255,.35)"; roundRect(ctx,w*.12,h*.4,w*.76,h*.06,26); ctx.fill();
+      ctx.fillStyle=inside; ctx.beginPath(); ctx.ellipse(w*.12+6,h*.5,10,h*.09,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=inside; ctx.beginPath(); ctx.ellipse(w*.88-6,h*.5,10,h*.09,0,0,Math.PI*2); ctx.fill();
+      targets.forEach(t=>{
+        const tx=w*(.12+.76*t.x);
+        if(t.done){
+          // an opened cut: a small gap revealing the cross-section on both faces
+          ctx.fillStyle=inside; ctx.beginPath(); ctx.ellipse(tx-7,h*.5,9,h*.085,0,0,Math.PI*2); ctx.fill();
+          ctx.fillStyle=inside; ctx.beginPath(); ctx.ellipse(tx+7,h*.5,9,h*.085,0,0,Math.PI*2); ctx.fill();
+          for(let i=0;i<3;i++){ ctx.fillStyle="rgba(150,100,50,.4)"; ctx.beginPath();
+            ctx.arc(tx-7+rand(6,-6),h*.5+rand(h*.06,-h*.06),1.6,0,Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(tx+7+rand(6,-6),h*.5+rand(h*.06,-h*.06),1.6,0,Math.PI*2); ctx.fill(); }
+          ctx.strokeStyle="rgba(74,44,42,.3)"; ctx.lineWidth=2;
+          ctx.beginPath(); ctx.moveTo(tx-7,h*.4); ctx.lineTo(tx-7,h*.6); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(tx+7,h*.4); ctx.lineTo(tx+7,h*.6); ctx.stroke();
+        } else {
+          ctx.strokeStyle="rgba(74,44,42,.35)"; ctx.lineWidth=3; ctx.setLineDash([8,8]);
+          ctx.beginPath(); ctx.moveTo(tx,h*.36); ctx.lineTo(tx,h*.64); ctx.stroke(); ctx.setLineDash([]);
+        }
+      });
+      // little chopped chunks that pop out and roll/settle
+      pieces.forEach(pc=>{
+        ctx.save(); ctx.globalAlpha=clamp(pc.life,0,1); ctx.translate(pc.x,pc.y); ctx.rotate(pc.rot);
+        ctx.fillStyle=crust; ctx.beginPath(); ctx.arc(0,0,pc.r,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle=inside; ctx.beginPath(); ctx.arc(0,0,pc.r*.72,0,Math.PI*2); ctx.fill();
+        pc.speck.forEach(s=>{ ctx.fillStyle="rgba(150,100,50,.5)"; ctx.beginPath(); ctx.arc(s.dx*pc.r,s.dy*pc.r,1.4,0,Math.PI*2); ctx.fill(); });
+        ctx.restore();
+      });
+    }
+    function tick(){
+      let alive=false;
+      for(let i=pieces.length-1;i>=0;i--){ const pc=pieces[i];
+        pc.vy+=9; pc.x+=pc.vx/60; pc.y+=pc.vy/60; pc.rot+=pc.vr/60; pc.vx*=.985;
+        if(pc.y>stage.h*.62){ pc.y=stage.h*.62; pc.vy*=-.35; pc.vx*=.7; pc.vr*=.7; if(Math.abs(pc.vy)<20) pc.life-=1/60/.6; }
+        if(pc.life<=0) pieces.splice(i,1); else alive=true;
+      }
+      render();
+      raf=requestAnimationFrame(tick);
+    }
+    let startX=null, moved=false;
+    function cut(t,pt,straight){ t.done=true; made++; quality+=.5+straight*.5;
+      spawnPiece(t);
+      Juice.fire("PERFECT_CHOP",{x:pt.gx,y:pt.gy,pts:10}); render();
+      if(made>=cuts) end(stage,done,clamp(quality/cuts,0,1)); }
+    bind(stage,{
+      down:(pt)=>{ startY=pt.y; startX=pt.x; moved=false; },
+      move:(pt)=>{
+        if(startY==null) return;
+        // "moved" fires on horizontal OR vertical travel — a real swipe across the vertical
+        // dashed lines is primarily horizontal, matching the on-screen "swipe across" prompt.
+        if(Math.abs(pt.x-startX)>stage.w*.04 || Math.abs(pt.y-startY)>stage.h*.06) moved=true;
+        targets.forEach(t=>{ if(t.done)return; const tx=stage.w*(.12+.76*t.x);
+          if(moved && Math.abs(pt.x-tx)<stage.w*.06){
+            const straight=1-clamp(Math.abs(pt.x-tx)/(stage.w*.06),0,1);
+            cut(t,pt,straight);
+          }});
+      },
+      up:(pt)=>{
+        // Tap-to-cut fallback for motor accessibility: a tap over an undone line registers with reduced quality.
+        if(startY!=null && !moved){
+          for(const t of targets){ if(t.done) continue; const tx=stage.w*(.12+.76*t.x);
+            if(Math.abs(pt.x-tx)<stage.w*.08){ cut(t,pt,.4); break; } }
+        }
+        startY=null; startX=null;
+      }
+    });
+    render(); tick(); stage._cleanup=()=>cancelAnimationFrame(raf);
+  }
+
+  /* ---------- WHISK / MIX / STIR ---------- */
+  function whisk(stage,p,done){
+    const need=p.revs||4; let ang=0,last=null,fill=0; const color1="#FFE8B0",color2=p.color||"#FF9EC4";
+    stage.prompt("Stir in circles to mix! 🥣"); stage.chloe("focus","Round and round!");
+    const cx=()=>stage.w/2, cy=()=>stage.h*.5, R=()=>Math.min(stage.w,stage.h)*.28;
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(cx(),cy(),R()+22,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=blend(color1,color2,clamp(fill,0,1)); ctx.beginPath(); ctx.arc(cx(),cy(),R(),0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle="rgba(255,255,255,.5)"; ctx.lineWidth=6; ctx.beginPath();
+      for(let a=0;a<Math.PI*4;a+=.2){ const rr=R()*(a/(Math.PI*4)); const x=cx()+Math.cos(a+ang)*rr, y=cy()+Math.sin(a+ang)*rr; a===0?ctx.moveTo(x,y):ctx.lineTo(x,y);} ctx.stroke();
+      meter(ctx,w,h,fill);
+    }
+    bind(stage,{
+      move:(pt)=>{
+        const a=Math.atan2(pt.y-cy(),pt.x-cx());
+        if(last!=null){ let d=a-last; if(d>Math.PI)d-=Math.PI*2; if(d<-Math.PI)d+=Math.PI*2;
+          if(Math.abs(d)>.02){ ang+=d; fill=clamp(fill+Math.abs(d)/(Math.PI*2*need),0,1); if(Math.random()<.3)Juice.fire("WHISK",{x:pt.gx,y:pt.gy}); } }
+        last=a; render();
+        if(fill>=1) end(stage,done,1);
+      },
+      up:()=>{ last=null; }
+    });
+    render();
+  }
+
+  /* ---------- POUR / FILL ---------- */
+  function pour(stage,p,done){
+    const target=p.target||.8, tol=p.tol||.08; let level=0, pouring=false, raf;
+    stage.prompt("Hold to pour — stop at the line! 🫗"); stage.chloe("focus","Careful, don't overflow!");
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      const gx=w*.3,gy=h*.2,gw=w*.4,gh=h*.6;
+      ctx.fillStyle="#fff"; roundRect(ctx,gx,gy,gw,gh,20); ctx.fill();
+      const lh=gh*clamp(level,0,1);
+      ctx.fillStyle=p.color||"#FFB0C4"; roundRect(ctx,gx+4,gy+gh-lh,gw-8,lh,16); ctx.fill();
+      const ty=gy+gh-gh*target;
+      const inTol=Math.abs(level-target)<tol;
+      ctx.strokeStyle=inTol?"#3DD6B0":"#FF7A59"; ctx.lineWidth=4; ctx.setLineDash(inTol?[]:[10,6]);
+      ctx.beginPath(); ctx.moveTo(gx-10,ty); ctx.lineTo(gx+gw+10,ty); ctx.stroke(); ctx.setLineDash([]);
+      // colorblind-safe redundant cue: check glyph when in tolerance, arrow otherwise
+      ctx.fillStyle=inTol?"#3DD6B0":"#FF7A59"; ctx.font="800 22px 'Baloo 2',Nunito,sans-serif"; ctx.textAlign="left";
+      ctx.fillText(inTol?"✓":(level<target?"↑":"↓"),gx+gw+16,ty+8);
+      if(pouring){ ctx.fillStyle="rgba(255,176,196,.7)"; ctx.fillRect(gx+gw/2-6,gy-10,12,gh-lh+10); }
+    }
+    function tick(){ if(pouring){ level=clamp(level+.012,0,1.2); if(level>=1.15)pouring=false; render(); if(Math.random()<.2)Juice.fire("POUR",{x:stage.w/2,y:stage.h/2}); } raf=requestAnimationFrame(tick); }
+    bind(stage,{
+      down:()=>{ pouring=true; Juice.fire("POUR",{x:stage.w/2,y:stage.h/2}); },
+      up:()=>{ pouring=false; let sc=clamp(1-Math.abs(level-target)/.4,0,1); if(Math.abs(level-target)<tol){ sc=1; FX.doFlash(.25,"#3DD6B0"); } end(stage,done,sc); }
+    });
+    render(); tick(); stage._cleanup=()=>cancelAnimationFrame(raf);
+  }
+
+  /* ---------- MELT / SIZZLE / HEAT — a real stovetop scene ---------- */
+  function heat(stage,p,done){
+    const dur=p.dur||3.2, lo=p.lo||.45, hi=p.hi||.75; let t0=null,val=0,inZone=0,total=0,held=false,heatv=0,raf,started=false;
+    const steam=[]; let steamT=0, releasedBigPuff=false;
+    stage.prompt("Hold the flame in the sweet spot! 🔥"); stage.chloe("focus","Keep it cozy warm…");
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      const panCx=w/2, panCy=h*.4, panRx=w*.27, panRy=h*.13;
+      // countertop + burner ring
+      ctx.fillStyle="#3a3238"; ctx.fillRect(0,h*.56,w,h*.44);
+      ctx.fillStyle="#2b2529"; ctx.beginPath(); ctx.ellipse(panCx,h*.63,panRx*1.15,h*.05,0,0,Math.PI*2); ctx.fill();
+      // flame licks — height/color track the live heat value `val`
+      const flameH=h*.05+val*h*.11, flicker=Math.sin(now()/60)*3;
+      for(let i=-2;i<=2;i++){
+        const fx=panCx+i*w*.045, fh=flameH*(1-Math.abs(i)*.18)+flicker*(i%2?1:-1);
+        const fg=ctx.createLinearGradient(0,h*.63,0,h*.63-fh);
+        fg.addColorStop(0,"#FFC93C"); fg.addColorStop(.6,"#FF7A2E"); fg.addColorStop(1,"#FF5D2E");
+        ctx.fillStyle=fg; ctx.beginPath();
+        ctx.moveTo(fx-7,h*.63); ctx.quadraticCurveTo(fx-9,h*.63-fh*.6,fx,h*.63-fh); ctx.quadraticCurveTo(fx+9,h*.63-fh*.6,fx+7,h*.63); ctx.fill();
+      }
+      // pan body (metal shading + handle)
+      ctx.fillStyle="#8a8f99"; ctx.fillRect(panCx+panRx*.75,panCy-6,w*.16,12);
+      ctx.fillStyle="#c8ccd2"; ctx.fillRect(panCx+panRx*.75,panCy-6,w*.16,4);
+      const pg=ctx.createRadialGradient(panCx,panCy-panRy*.4,4,panCx,panCy,panRx);
+      pg.addColorStop(0,"#e8ebef"); pg.addColorStop(.55,"#aeb4bd"); pg.addColorStop(1,"#7d838d");
+      ctx.fillStyle=pg; ctx.beginPath(); ctx.ellipse(panCx,panCy,panRx,panRy,0,0,Math.PI*2); ctx.fill();
+      // contents — color shifts raw -> cooked -> browned as heatv rises
+      const contentsColor=heatv>1.05?blend(p.color||"#C97A3A","#3a2416",clamp((heatv-1.05)/.25,0,1)):blend("#FFE0A0",p.color||"#C97A3A",clamp(heatv/1.05,0,1));
+      ctx.fillStyle=contentsColor; ctx.beginPath(); ctx.ellipse(panCx,panCy,panRx*.82,panRy*.78,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle="rgba(255,255,255,.25)"; ctx.beginPath(); ctx.ellipse(panCx-panRx*.3,panCy-panRy*.35,panRx*.22,panRy*.16,0,0,Math.PI*2); ctx.fill();
+      // gentle bubbling while properly in the zone
+      const inZoneNow2=val>=lo&&val<=hi;
+      if(inZoneNow2){ for(let i=0;i<3;i++){ const bx=panCx+Math.sin(now()/300+i*2)*panRx*.5, by=panCy+Math.cos(now()/260+i)*panRy*.4;
+        ctx.fillStyle="rgba(255,255,255,.35)"; ctx.beginPath(); ctx.arc(bx,by,2+Math.sin(now()/150+i)*1.5,0,Math.PI*2); ctx.fill(); } }
+      // ambient steam wisps drifting up off the pan
+      steam.forEach(s=>{ ctx.globalAlpha=clamp(s.life,0,1)*.5; ctx.fillStyle="#fff";
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill(); });
+      ctx.globalAlpha=1;
+      // pan rim highlight on top so steam reads as coming from inside
+      ctx.strokeStyle="rgba(255,255,255,.4)"; ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(panCx,panCy,panRx,panRy,0,Math.PI*1.15,Math.PI*1.85); ctx.stroke();
+      // compact thermometer: ice -> sweet-spot -> flame, with the live dot
+      const gx=w*.2,gy=h*.82,gw=w*.6,gh=16;
+      ctx.fillStyle="rgba(255,255,255,.7)"; roundRect(ctx,gx,gy,gw,gh,8); ctx.fill();
+      ctx.fillStyle="#B6F0DE"; roundRect(ctx,gx+gw*lo,gy,gw*(hi-lo),gh,8); ctx.fill();
+      ctx.font="16px sans-serif"; ctx.textAlign="center"; ctx.fillText("🧊",gx-2,gy+13); ctx.fillText("🔥",gx+gw+2,gy+13);
+      const state=val>hi?"HOT":val<lo?"COLD":"OK";
+      ctx.fillStyle=val>hi?"#FF5D8F":val<lo?"#8FD3FF":"#3DD6B0";
+      ctx.beginPath(); ctx.arc(gx+gw*clamp(val,0,1),gy+gh/2,13,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle="#fff"; ctx.lineWidth=2.5; ctx.stroke();
+      // colorblind-safe redundant label
+      ctx.font="800 18px 'Baloo 2',Nunito,sans-serif"; ctx.textAlign="center";
+      ctx.fillStyle=state==="OK"?"#2b9d7f":state==="HOT"?"#c33864":"#3d7fb0";
+      ctx.fillText(state,w/2,gy-10);
+    }
+    function tick(){
+      val=clamp(val+(held?.010:-.012),0,1);
+      heatv=clamp(heatv+(val>=lo&&val<=hi?.008:val>hi?.02:-.004),0,1.3);
+      const inZoneNow=val>=lo&&val<=hi;
+      if(inZoneNow) started=true;
+      // Only start grading once the pan first reaches the zone, so the ramp-up frames don't dilute the score.
+      if(started){ total++; if(inZoneNow){ inZone++; if(Math.random()<.35)Juice.fire("SIZZLE",{x:stage.w/2,y:stage.h*.4}); } }
+      // The first time it hits temperature, release one big steam puff — like lifting a lid.
+      if(started && !releasedBigPuff){ releasedBigPuff=true;
+        for(let i=0;i<10;i++) steam.push({x:stage.w/2+rand(20,-20),y:stage.h*.36,r:rand(10,5),life:1.3,vy:rand(-38,-22)});
+        Juice.fire("SIZZLE",{x:stage.w/2,y:stage.h*.4}); }
+      // thin continuous wisps while cooking properly
+      steamT-=1/60; if(inZoneNow && steamT<=0){ steamT=rand(.5,.25);
+        steam.push({x:stage.w/2+rand(16,-16),y:stage.h*.36,r:rand(6,3),life:1,vy:rand(-30,-18)}); }
+      for(let i=steam.length-1;i>=0;i--){ const s=steam[i]; s.y+=s.vy/60; s.x+=Math.sin(now()/200+i)*.3; s.life-=1/60/1.1; if(s.life<=0) steam.splice(i,1); }
+      render();
+      // The dur-second grading clock only starts on the player's first touch, so nobody
+      // can silently lose the whole step to page/reaction latency before they've acted.
+      if(t0!=null && (now()-t0)/1000>=dur){ const sc=clamp(inZone/Math.max(1,total)*(heatv>1.1?.6:1),0,1); end(stage,done,sc); return; }
+      raf=requestAnimationFrame(tick);
+    }
+    bind(stage,{ down:()=>{ held=true; if(t0==null) t0=now(); }, up:()=>held=false });
+    render(); tick(); stage._cleanup=()=>cancelAnimationFrame(raf);
+  }
+
+  /* ---------- PIPE / DRIZZLE / DECORATE ---------- */
+  function pipe(stage,p,done){
+    const path=makePath(p.shape||"bar",stage); const covered=new Array(path.length).fill(false); let cov=0;
+    const DONE_AT=.94; let active=false;
+    stage.prompt("Trace the WHOLE shape to pipe it all! 🧁"); stage.chloe("focus","Fill it in!");
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      ctx.strokeStyle="rgba(74,44,42,.25)"; ctx.lineWidth=18; ctx.lineCap="round"; ctx.beginPath();
+      path.forEach((pt,i)=> i?ctx.lineTo(pt.x,pt.y):ctx.moveTo(pt.x,pt.y)); ctx.stroke();
+      ctx.strokeStyle=p.color||"#6b8e23"; ctx.lineWidth=16; ctx.beginPath(); let drew=false;
+      path.forEach((pt,i)=>{ if(covered[i]){ if(!drew){ctx.moveTo(pt.x,pt.y);drew=true;} else ctx.lineTo(pt.x,pt.y);} else drew=false; }); ctx.stroke();
+      meter(ctx,w,h,cov/path.length);
+    }
+    bind(stage,{
+      // Gate coverage on an actual press-and-drag (not just mouse hover) so
+      // touch and mouse behave the same way.
+      down:()=>{ active=true; },
+      up:()=>{ active=false; },
+      move:(pt)=>{
+        if(!active) return;
+        path.forEach((pp,i)=>{ if(!covered[i] && Math.hypot(pp.x-pt.x,pp.y-pt.y)<26){ covered[i]=true; cov++;
+          if(cov%3===0)Juice.fire("PIPE",{x:pt.gx,y:pt.gy,color:p.color}); }});
+        render();
+        // Require near-total coverage before finishing, so the step never ends
+        // while the player can still see obvious gaps left to trace.
+        if(cov>=path.length*DONE_AT) end(stage,done,clamp(cov/path.length/DONE_AT,0,1));
+      }
+    });
+    render();
+  }
+
+  /* ---------- ROLL / KNEAD / SHAPE ---------- */
+  function knead(stage,p,done){
+    const need=p.presses||6; let n=0, squash=0, raf;
+    stage.prompt("Press & roll the dough! 👐"); stage.chloe("focus","Squish squish!");
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      const sq=1+squash*.3, sy=1-squash*.25;
+      ctx.fillStyle="#F3E1C0"; ctx.beginPath(); ctx.ellipse(w/2,h*.5,w*.2*sq,h*.16*sy,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle="rgba(255,255,255,.5)"; ctx.beginPath(); ctx.ellipse(w/2-14,h*.5-14,14,8,0,0,Math.PI*2); ctx.fill();
+      meter(ctx,w,h,n/need);
+    }
+    function relax(){ squash*=.85; render(); raf=requestAnimationFrame(relax); }
+    bind(stage,{
+      down:(pt)=>{ n++; squash=1; Juice.fire("KNEAD",{x:pt.gx,y:pt.gy}); render();
+        if(n>=need) end(stage,done,1); }
+    });
+    render(); relax(); stage._cleanup=()=>cancelAnimationFrame(raf);
+  }
+
+  /* ---------- DIP / COAT ---------- */
+  function dip(stage,p,done){
+    let y=stage.h*.3, dragging=false, coat=0;
+    stage.prompt("Drag the treat into the coating, then lift! 🍓"); stage.chloe("focus","Dip it good!");
+    const bowlY=()=>stage.h*.66;
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      ctx.fillStyle=p.color||"#5A3A2A"; ctx.beginPath(); ctx.ellipse(w/2,bowlY(),w*.26,h*.1,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle="rgba(255,255,255,.25)"; ctx.beginPath(); ctx.ellipse(w/2-20,bowlY()-8,30,10,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=coat>.3?(p.color||"#5A3A2A"):(p.item||"#FF5D8F");
+      ctx.beginPath(); ctx.moveTo(w/2,y-26); ctx.bezierCurveTo(w/2-24,y-26,w/2-22,y+22,w/2,y+30);
+      ctx.bezierCurveTo(w/2+22,y+22,w/2+24,y-26,w/2,y-26); ctx.fill();
+      if(coat>.3){ ctx.fillStyle="rgba(255,255,255,.3)"; ctx.beginPath(); ctx.ellipse(w/2-6,y-6,6,10,0,0,Math.PI*2); ctx.fill(); }
+      meter(ctx,w,h,coat);
+    }
+    bind(stage,{
+      down:()=>{ dragging=true; },
+      move:(pt)=>{ if(!dragging)return; y=clamp(pt.y,stage.h*.2,bowlY());
+        if(y>bowlY()-20){ coat=clamp(coat+.04,0,1); if(Math.random()<.3)Juice.fire("DIP",{x:pt.gx,y:pt.gy,color:p.color}); }
+        render(); },
+      up:()=>{ dragging=false;
+        if(coat>0){ let t=0; const dr=setInterval(()=>{ if(stage._done){ clearInterval(dr); return; }
+            y=lerp(y,stage.h*.3,.2); render();
+            if(Math.random()<.3)Particles.spawn({x:stage.w/2,y:y+30,vx:0,vy:60,g:400,life:.6,size:5,color:p.color||"#5A3A2A"});
+            if(++t>10){ clearInterval(dr); end(stage,done,clamp(coat,0,1)); } },40);
+          stage._dipTimer=dr;
+        } else { Juice.fire("OOPS",{}); stage.prompt("Dunk it fully in the coating! 🍫"); stage.chloe("focus","A little more coating!"); render(); }
+      }
+    });
+    stage._cleanup=()=>{ if(stage._dipTimer) clearInterval(stage._dipTimer); };
+    render();
+  }
+
+  /* ---------- SPRINKLE / SEASON ---------- */
+  function sprinkle(stage,p,done){
+    const need=p.shakes||8; let n=0; const dots=[];
+    stage.prompt("Tap-tap to sprinkle toppings! ✨"); stage.chloe("yum","Make it pretty!");
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      ctx.fillStyle=p.base||"#FFFFFF"; ctx.beginPath(); ctx.arc(w/2,h*.55,Math.min(w,h)*.26,0,Math.PI*2); ctx.fill();
+      dots.forEach(d=>{ ctx.fillStyle=d.c; ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2); ctx.fill(); });
+      meter(ctx,w,h,n/need);
+    }
+    bind(stage,{
+      down:(pt)=>{ n++; const cols=p.colors||["#FF5D8F","#3DD6B0","#FFC93C","#7C5CFF"];
+        for(let i=0;i<8;i++){ const a=rand(Math.PI*2),rr=rand(Math.min(stage.w,stage.h)*.24,0);
+          dots.push({x:stage.w/2+Math.cos(a)*rr,y:stage.h*.55+Math.sin(a)*rr,r:rand(5,2),c:pick(cols)}); }
+        Juice.fire("SPRINKLE",{x:pt.gx,y:pt.gy}); render();
+        if(n>=need) end(stage,done,1); }
+    });
+    render();
+  }
+
+  /* ---------- FLIP ---------- */
+  function flip(stage,p,done){
+    let phase=0, marker=0, dir=1, flipped=false, raf, st=now(), sy=null, t0=now();
+    stage.prompt("Swipe UP (or tap the sweet spot) to flip! 🥞"); stage.chloe("focus","Wait for it…");
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      ctx.fillStyle="#333"; ctx.beginPath(); ctx.ellipse(w/2,h*.6,w*.26,h*.1,0,0,Math.PI*2); ctx.fill();
+      ctx.save(); ctx.translate(w/2,h*.55-phase*140); ctx.scale(1,Math.cos(phase*Math.PI*2));
+      ctx.fillStyle=p.color||"#E0A040"; ctx.beginPath(); ctx.ellipse(0,0,w*.16,h*.06,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+      const gx=w*.2,gy=h*.82,gw=w*.6;
+      ctx.fillStyle="#eee"; roundRect(ctx,gx,gy,gw,14,8); ctx.fill();
+      ctx.fillStyle="#B6F0DE"; ctx.fillRect(gx+gw*.42,gy,gw*.16,14);
+      ctx.fillStyle="#FF7A59"; ctx.beginPath(); ctx.arc(gx+gw*marker,gy+7,11,0,Math.PI*2); ctx.fill();
+    }
+    function doFlip(gx,gy){ if(flipped) return; flipped=true; st=now(); FX.slowMo(.5,150); Juice.fire("FLIP",{x:gx||stage.w/2,y:gy||stage.h/2}); }
+    function tick(){
+      if(!flipped){ marker+=dir*.012; if(marker>1){marker=1;dir=-1;} if(marker<0){marker=0;dir=1;} render();
+        // guaranteed-progress fallback: never let the player get stuck waiting for a perfect swipe
+        if(now()-t0>7000) doFlip();
+        raf=requestAnimationFrame(tick); }
+      else { phase=clamp((now()-st)/500,0,1); render(); if(phase>=1){ end(stage,done,clamp(1-Math.abs(marker-.5)/.5,0,1)); return; } raf=requestAnimationFrame(tick); }
+    }
+    bind(stage,{
+      down:(pt)=>{ sy=pt.y; },
+      up:(pt)=>{
+        // Accept a qualifying upward swipe OR a tap near the sweet-spot (motor-accessible fallback).
+        const swipedUp = sy!=null && sy-pt.y>stage.h*.06;
+        const tapNearCenter = sy!=null && Math.abs(sy-pt.y)<stage.h*.06 && Math.abs(marker-.5)<.18;
+        if((swipedUp||tapNearCenter) && !flipped) doFlip(pt.gx,pt.gy);
+        sy=null;
+      }
+    });
+    render(); tick(); stage._cleanup=()=>cancelAnimationFrame(raf);
+  }
+
+  /* ---------- CRACK / SMASH — the money moment (rapid-tap mash) ---------- */
+  function crackSmash(stage,p,done){
+    const isSmash=p.mode==="smash"; let charge=0, cracked=false, raf, taps=0, lastTapT=now(), punch=0;
+    const TAP_GAIN=.15, DECAY_PER_SEC=.22;
+    stage.prompt(isSmash?"TAP FAST to SMASH it! 💥👆👆":"TAP FAST to CRACK it! 🔨👆👆");
+    stage.chloe("excited",isSmash?"Tap tap tap — smash it!":"Tap tap tap — crack it!");
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      const cx=w/2,cy=h*.5;
+      if(!cracked){
+        const wob=1+punch*.08;
+        ctx.save(); ctx.translate(cx,cy); ctx.scale(wob,1/wob);
+        if(isSmash){ ctx.fillStyle="#8A4A2A"; roundRect(ctx,-w*.2,-h*.09,w*.4,h*.18,40); ctx.fill();
+          ctx.fillStyle="#A85A34"; roundRect(ctx,-w*.2,-h*.09,w*.4,h*.06,40); ctx.fill(); }
+        else {
+          const g=ctx.createLinearGradient(-w*.22,0,w*.22,0); g.addColorStop(0,p.color||"#5A3A2A"); g.addColorStop(.5,p.color2||"#7A4A32"); g.addColorStop(1,p.color||"#5A3A2A");
+          ctx.fillStyle=g; roundRect(ctx,-w*.22,-h*.12,w*.44,h*.24,22); ctx.fill();
+          ctx.strokeStyle="rgba(0,0,0,.2)"; ctx.lineWidth=3;
+          for(let i=1;i<3;i++){ ctx.beginPath(); ctx.moveTo(-w*.22+w*.44*i/3,-h*.12); ctx.lineTo(-w*.22+w*.44*i/3,h*.12); ctx.stroke(); }
+          ctx.beginPath(); ctx.moveTo(-w*.22,0); ctx.lineTo(w*.22,0); ctx.stroke();
+          ctx.fillStyle="rgba(255,255,255,.22)"; roundRect(ctx,-w*.2,-h*.1,w*.4,h*.05,10); ctx.fill();
+          for(let i=0;i<8;i++){ ctx.fillStyle="#8FB03A"; ctx.beginPath(); ctx.arc(rand(w*.18,-w*.18),rand(h*.09,-h*.09),rand(4,2),0,Math.PI*2); ctx.fill(); }
+        }
+        ctx.restore();
+        ctx.strokeStyle="#FF7A59"; ctx.lineWidth=8; ctx.beginPath(); ctx.arc(cx,cy,Math.min(w,h)*.34,-Math.PI/2,-Math.PI/2+charge*Math.PI*2); ctx.stroke();
+        ctx.font="800 26px 'Baloo 2',Nunito,sans-serif"; ctx.textAlign="center"; ctx.fillStyle="#4A2C2A";
+        ctx.fillText("👆 x"+taps,cx,cy+Math.min(w,h)*.34+40);
+      } else {
+        ctx.fillStyle=isSmash?"#C98A4A":(p.inside||"#9BBF4A");
+        roundRect(ctx,cx-w*.2,cy-h*.1,w*.19,h*.2,14); ctx.fill();
+        roundRect(ctx,cx+w*.01,cy-h*.1,w*.19,h*.2,14); ctx.fill();
+        ctx.fillStyle="rgba(255,255,255,.2)"; roundRect(ctx,cx-w*.2,cy-h*.1,w*.4,h*.05,10); ctx.fill();
+      }
+    }
+    function doCrack(){
+      if(cracked) return; cracked=true;
+      // Faster mashing (fewer taps to fill the ring) earns a better score.
+      const sc=clamp(1-(taps-7)*.05,.55,1);
+      Juice.fire(isSmash?"SMASH":"CRACK",{x:stage.w/2,y:stage.h/2,color:isSmash?"#8A4A2A":"#5A3A2A"});
+      stage.chloe("yum","OOOH the CRACK! 🤤"); render();
+      setTimeout(()=>end(stage,done,sc),650);
+    }
+    function tick(){
+      if(!cracked){
+        const dt=Math.min((now()-lastTapT)/1000,.05);
+        punch=Math.max(0,punch-dt*6);
+        render();
+      }
+      if(!cracked) raf=requestAnimationFrame(tick);
+    }
+    bind(stage,{
+      down:()=>{
+        if(cracked) return;
+        lastTapT=now(); taps++; punch=1;
+        charge=clamp(charge+TAP_GAIN,0,1);
+        Juice.fire("UI_TAP",{});
+        if(charge>=1) doCrack();
+      }
+    });
+    // Continuous gentle decay so a single hold-and-wait can't finish it — it
+    // takes genuine rapid, repeated tapping to fill the ring.
+    const decayTimer=setInterval(()=>{ if(!cracked) charge=clamp(charge-DECAY_PER_SEC*.05,0,1); },50);
+    render(); tick(); stage._cleanup=()=>{ cancelAnimationFrame(raf); clearInterval(decayTimer); };
+  }
+
+  /* ---------- ASSEMBLE / STACK / PLATE ---------- */
+  function assemble(stage,p,done){
+    const layers=p.layers||["🥯","🧀","🥩"]; let placed=0;
+    stage.prompt("Tap to stack each layer! 🍔"); stage.chloe("focus","Build it up!");
+    const stackY=()=>stage.h*.72;
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      ctx.font=(Math.min(w,h)*.16)+"px serif"; ctx.textAlign="center";
+      ctx.fillStyle="#fff"; ctx.beginPath(); ctx.ellipse(w/2,stackY()+14,w*.28,h*.05,0,0,Math.PI*2); ctx.fill();
+      for(let i=0;i<placed;i++) ctx.fillText(layers[i], w/2, stackY()-i*(h*.09));
+      if(placed<layers.length){ ctx.globalAlpha=.4+Math.sin(now()/300)*.2; ctx.fillText(layers[placed], w/2, stage.h*.25); ctx.globalAlpha=1; }
+    }
+    let raf; function anim(){ render(); raf=requestAnimationFrame(anim); }
+    bind(stage,{
+      down:(pt)=>{ if(placed<layers.length){ placed++; Juice.fire("STACK",{x:pt.gx,y:pt.gy}); if(placed>=layers.length) end(stage,done,1); } }
+    });
+    anim(); stage._cleanup=()=>cancelAnimationFrame(raf);
+  }
+
+  /* ---------- POP (boba / soda) ---------- */
+  function popfizz(stage,p,done){
+    const need=p.taps||6; let n=0; const pearls=[];
+    for(let i=0;i<need;i++) pearls.push({x:rand(.65,.35),y:rand(.7,.4),popped:false});
+    stage.prompt("Tap to pop the pearls! 🧋"); stage.chloe("yum","Pop pop pop!");
+    function render(){
+      const ctx=stage.ctx,w=stage.w,h=stage.h; ctx.clearRect(0,0,w,h);
+      ctx.fillStyle="#E8C9A0"; roundRect(ctx,w*.3,h*.2,w*.4,h*.6,24); ctx.fill();
+      pearls.forEach(pl=>{ if(!pl.popped){ ctx.fillStyle="#4A2C2A"; ctx.beginPath(); ctx.arc(w*pl.x,h*pl.y,12,0,Math.PI*2); ctx.fill(); } });
+    }
+    bind(stage,{
+      down:(pt)=>{ pearls.forEach(pl=>{ if(!pl.popped && Math.hypot(stage.w*pl.x-pt.x,stage.h*pl.y-pt.y)<28){ pl.popped=true; n++;
+        Juice.fire("POP",{x:pt.gx,y:pt.gy}); } }); render();
+        if(n>=need) end(stage,done,1); }
+    });
+    render();
+  }
+
+  const REGISTRY={ chop, slice:chop, whisk, mix:whisk, stir:whisk, pour, fill:pour,
+    heat, melt:heat, sizzle:heat, pipe, drizzle:pipe, decorate:pipe, knead, roll:knead, shape:knead,
+    dip, coat:dip, sprinkle, season:sprinkle, flip, crack:(s,p,d)=>crackSmash(s,p,d),
+    smash:(s,p,d)=>crackSmash(s,Object.assign({mode:"smash"},p),d),
+    assemble, stack:assemble, plate:assemble, pop:popfizz, fizz:popfizz };
+
+  return {REGISTRY};
+})();
+
+/* ==========================================================================
+   [RECIPES] RECIPE DATA REGISTRY + SCHEMA
+   ----------------------------------------------------------------------------
+   Adding a recipe = pushing ONE object into RECIPES. Schema (field-by-field):
+     id        : string   unique key (used in save/unlocks/stars/best)
+     name      : string   display name (original, generic dish names only)
+     emoji     : string   icon shown on cards / cookbook
+     category  : "Dessert" | "Meal" | "Drink"
+     world     : world id (see WORLDS)
+     difficulty: "Easy" | "Medium" | "Hard"
+     hero      : boolean  marquee recipe (bigger reward, featured star badge)
+     free      : boolean  playable without the Full Kitchen unlock
+     desc      : string   short flavor text / Chloe intro line
+     plate     : { bg, emoji, sparkle } — plate-reveal presentation
+     signature : string   Juice event name of its money beat (e.g. "CRACK")
+     rushComponents: [string]  quick station names used in Rush Mode assembly
+     steps     : [ { verb, label, params } ]  ORDERED technique-verb chain, where
+         verb   = one of Verbs.REGISTRY keys (see verbApi),
+         label  = UI caption for the step,
+         params = object of numbers/colors the verb reads (see verbApi).
+   The reference recipe (dubai_chocolate_bar) is the copy-me example.
+   ========================================================================== */
+const RECIPES=[
+  {
+    id:"dubai_chocolate_bar", name:"Crispy Pistachio Chocolate Bar", emoji:"🍫", category:"Dessert", world:"trends",
+    difficulty:"Medium", hero:true, free:true, desc:"Melt, toast, pipe, chill… then the glassy CRACK!",
+    plate:{ bg:"#3b2216", emoji:"🍫", sparkle:"#8FB03A" }, signature:"CRACK",
+    rushComponents:["Melt","Toast","Pipe","Chill"],
+    steps:[
+      { verb:"melt",  label:"Melt the chocolate",          params:{ dur:3.0, lo:.4, hi:.72, color:"#7A4A32" } },
+      { verb:"chop",  label:"Toast crispy kataifi",        params:{ cuts:5 } },
+      { verb:"whisk", label:"Fold in pistachio cream",     params:{ revs:4, color:"#8FB03A" } },
+      { verb:"pipe",  label:"Pipe into the bar mold",      params:{ shape:"bar", color:"#6b8e23" } },
+      { verb:"pour",  label:"Top with chocolate & chill",  params:{ target:.85, tol:.08, color:"#5A3A2A" } },
+      { verb:"crack", label:"CRACK the bar open!",         params:{ mode:"crack", color:"#5A3A2A", color2:"#7A4A32", inside:"#9BBF4A" } }
+    ]
+  },
+  {
+    id:"tanghulu", name:"Candied Fruit Skewer", emoji:"🍡", category:"Dessert", world:"street",
+    difficulty:"Easy", hero:true, free:true, desc:"Dip in hot sugar, set hard, then that crunch!",
+    plate:{ bg:"#7a1f3a", emoji:"🍡", sparkle:"#FF5D8F" }, signature:"CRACK",
+    rushComponents:["Skewer","Dip","Set"],
+    steps:[
+      { verb:"assemble", label:"Skewer the fruit",       params:{ layers:["🍓","🍇","🍓"] } },
+      { verb:"heat",     label:"Cook the sugar syrup",    params:{ dur:2.6, lo:.5, hi:.8, color:"#E8B04A" } },
+      { verb:"dip",      label:"Dip & coat in syrup",     params:{ color:"#E8A24A", item:"#FF5D8F" } },
+      { verb:"crack",    label:"CRACK the candy shell!",  params:{ mode:"crack", color:"#E8A24A", color2:"#F5C060", inside:"#FF5D8F" } }
+    ]
+  },
+  {
+    id:"choc_strawberries", name:"Chocolate-Dipped Berries", emoji:"🍓", category:"Dessert", world:"bakery",
+    difficulty:"Easy", hero:false, free:true, desc:"Dip, drizzle, and sprinkle. So cute!",
+    plate:{ bg:"#4a2a20", emoji:"🍓", sparkle:"#FF5D8F" }, signature:"DIP",
+    rushComponents:["Dip","Drizzle","Sprinkle"],
+    steps:[
+      { verb:"melt",     label:"Melt the chocolate",       params:{ dur:2.4, lo:.4, hi:.72, color:"#7A4A32" } },
+      { verb:"dip",      label:"Dip the berries",          params:{ color:"#5A3A2A", item:"#FF5D8F" } },
+      { verb:"pipe",     label:"Drizzle white chocolate",  params:{ shape:"circle", color:"#FFFFFF" } },
+      { verb:"sprinkle", label:"Add sprinkles",            params:{ shakes:6, base:"#5A3A2A" } }
+    ]
+  },
+  {
+    id:"smash_burger", name:"Smash Burger", emoji:"🍔", category:"Meal", world:"street",
+    difficulty:"Medium", hero:true, free:false, desc:"SMASH the patty, sear, melt cheese, stack!",
+    plate:{ bg:"#3a2412", emoji:"🍔", sparkle:"#FFC93C" }, signature:"SMASH",
+    rushComponents:["Smash","Sear","Cheese","Stack"],
+    steps:[
+      { verb:"smash",    label:"SMASH the patty!",        params:{ mode:"smash" } },
+      { verb:"heat",     label:"Sear it sizzling",        params:{ dur:2.8, lo:.45, hi:.78, color:"#8A4A2A" } },
+      { verb:"pour",     label:"Melt the cheese on top",  params:{ target:.7, tol:.1, color:"#FFC93C" } },
+      { verb:"assemble", label:"Stack the burger",        params:{ layers:["🍞","🥬","🍅","🧀","🥩","🍞"] } }
+    ]
+  },
+  {
+    id:"pancake_cereal", name:"Mini Pancake Cereal", emoji:"🥞", category:"Dessert", world:"bakery",
+    difficulty:"Easy", hero:false, free:true, desc:"Pour tiny dots, flip, drown in syrup!",
+    plate:{ bg:"#4a3418", emoji:"🥞", sparkle:"#FFC93C" }, signature:"FLIP",
+    rushComponents:["Mix","Pour","Flip"],
+    steps:[
+      { verb:"whisk", label:"Whisk the batter",     params:{ revs:3, color:"#FFE0A0" } },
+      { verb:"pour",  label:"Pour tiny pancakes",   params:{ target:.6, tol:.12, color:"#F0C070" } },
+      { verb:"flip",  label:"Flip them!",           params:{ color:"#E0A040" } },
+      { verb:"pour",  label:"Drizzle warm syrup",   params:{ target:.8, tol:.1, color:"#B5793A" } }
+    ]
+  },
+  {
+    id:"boba_tea", name:"Boba Milk Tea", emoji:"🧋", category:"Drink", world:"trends",
+    difficulty:"Easy", hero:false, free:false, desc:"Pop the pearls, pour the tea, swirl!",
+    plate:{ bg:"#4a3a2a", emoji:"🧋", sparkle:"#E8C9A0" }, signature:"POP",
+    rushComponents:["Pearls","Pour","Serve"],
+    steps:[
+      { verb:"pop",   label:"Pop in the pearls",     params:{ taps:6 } },
+      { verb:"pour",  label:"Pour the milk tea",     params:{ target:.85, tol:.1, color:"#D8B48A" } },
+      { verb:"whisk", label:"Swirl it together",     params:{ revs:2, color:"#C8A070" } }
+    ]
+  },
+  {
+    id:"cake_pops", name:"Cake Pops", emoji:"🍭", category:"Dessert", world:"bakery",
+    difficulty:"Medium", hero:false, free:false, desc:"Crumble, roll, dip, sprinkle!",
+    plate:{ bg:"#3a2a4a", emoji:"🍭", sparkle:"#7C5CFF" }, signature:"DIP",
+    rushComponents:["Roll","Dip","Sprinkle"],
+    steps:[
+      { verb:"knead",    label:"Crumble & mix the cake",  params:{ presses:5 } },
+      { verb:"knead",    label:"Roll into balls",         params:{ presses:4 } },
+      { verb:"dip",      label:"Dip in candy coating",    params:{ color:"#FF5D8F", item:"#F0D0A0" } },
+      { verb:"sprinkle", label:"Rainbow sprinkles!",      params:{ shakes:6, base:"#FF5D8F" } }
+    ]
+  },
+  {
+    id:"fried_rice", name:"Wok Fried Rice", emoji:"🍚", category:"Meal", world:"street",
+    difficulty:"Medium", hero:false, free:false, desc:"Chop, toss, sizzle in the wok!",
+    plate:{ bg:"#3a2a1a", emoji:"🍚", sparkle:"#FFC93C" }, signature:"SIZZLE",
+    rushComponents:["Chop","Toss","Sizzle"],
+    steps:[
+      { verb:"chop",  label:"Chop the veggies",       params:{ cuts:5 } },
+      { verb:"heat",  label:"Sizzle in the wok",      params:{ dur:2.8, lo:.45, hi:.78, color:"#C97A3A" } },
+      { verb:"flip",  label:"Toss the rice",          params:{ color:"#F0E0B0" } },
+      { verb:"whisk", label:"Mix the sauce through",  params:{ revs:3, color:"#B5793A" } }
+    ]
+  },
+  /* ---- Added dish pack: 18 selectable, playable viral recipes ---- */
+  {
+    id:"tanghulu_glass_skewer", name:"Tanghulu", emoji:"🍓", category:"Dessert", world:"trends",
+    difficulty:"Medium", hero:true, free:true, desc:"Skewer, boil the syrup to a hair-thin shell, dip, chill… then the glassy CRACK bite!",
+    plate:{ bg:"#4a0d1a", emoji:"🍓", sparkle:"#FFD34D" }, signature:"CRACK",
+    rushComponents:["Skewer","Syrup","Dip","Chill"],
+    steps:[
+      { verb:"assemble", label:"Thread the fruit on the skewer",     params:{ layers:["🍓","🍇","🍓","🍊"] } },
+      { verb:"heat",     label:"Boil syrup to a hair-thin crack",     params:{ dur:3.4, lo:.62, hi:.82, color:"#E8A33A" } },
+      { verb:"dip",      label:"Twirl-dip in the molten glass syrup", params:{ color:"#F0B23C", item:"#FF5D8F" } },
+      { verb:"pour",     label:"Let the last drip set glassy-clear",  params:{ target:.9, tol:.06, color:"#FFE08A" } },
+      { verb:"crack",    label:"CRACK the glassy shell with a bite!", params:{ mode:"crack", color:"#E8A33A", color2:"#FFD34D", inside:"#FF3D6E" } }
+    ]
+  },
+  {
+    id:"chocolate_dipped_strawberries", name:"Chocolate-Dipped Strawberries", emoji:"🍓", category:"Dessert", world:"trends",
+    difficulty:"Easy", hero:true, free:true, desc:"Melt it glossy, DIP the berry, drizzle white ribbons, and the final glossy snap!",
+    plate:{ bg:"#2a1418", emoji:"🍓", sparkle:"#F04D6E" }, signature:"DIP",
+    rushComponents:["Melt","Dip","Drizzle","Chill"],
+    steps:[
+      { verb:"melt",  label:"Melt chocolate to a silky pool",     params:{ dur:3.0, lo:.42, hi:.7, color:"#5A3A2A" } },
+      { verb:"whisk", label:"Swirl until glossy & smooth",         params:{ revs:3, color:"#6B4630" } },
+      { verb:"dip",   label:"DIP the berry & lift to drip",        params:{ color:"#5A3A2A", item:"#F04D6E" } },
+      { verb:"drizzle", label:"Ribbon white chocolate on top",     params:{ shape:"bar", color:"#FFF3E6" } },
+      { verb:"sprinkle", label:"Scatter freeze-dried sparkle",     params:{ shakes:8, base:"#5A3A2A", colors:["#F04D6E","#FFF3E6","#FFC93C"] } },
+      { verb:"crack", label:"Bite the glossy shell — SNAP!",       params:{ mode:"crack", color:"#4A2E20", color2:"#6B4630", inside:"#F04D6E" } }
+    ]
+  },
+  {
+    id:"mini_pancake_cereal", name:"Fluffy Pancake Cereal", emoji:"🥞", category:"Meal", world:"trends",
+    difficulty:"Easy", hero:true, free:true, desc:"Whisk the batter, dot a hundred teeny pancakes, flip 'em golden… then that glossy syrup POUR.",
+    plate:{ bg:"#5a3a1e", emoji:"🥞", sparkle:"#F4B740" }, signature:"POUR",
+    rushComponents:["Batter","Dot","Flip","Syrup"],
+    steps:[
+      { verb:"whisk", label:"Whisk the fluffy batter (swish-swish)", params:{ revs:4, color:"#F3D9A4" } },
+      { verb:"pipe",  label:"Dot the pan with tiny circles",         params:{ shape:"circle", color:"#E8C170" } },
+      { verb:"flip",  label:"Flip 'em golden at the sweet-spot!",    params:{ color:"#E0A040" } },
+      { verb:"assemble", label:"Pile the minis into the bowl",       params:{ layers:["🥞","🥞","🥞"] } },
+      { verb:"pour",  label:"POUR the glossy syrup — stop at the line!", params:{ target:.82, tol:.07, color:"#B5731F" } },
+      { verb:"sprinkle", label:"Dust with powdered sugar snow",      params:{ shakes:8, base:"#B5731F", colors:["#FFFFFF","#FFF3D6","#FFE9B0"] } }
+    ]
+  },
+  {
+    id:"gooey_crookie", name:"Gooey Crookie", emoji:"🥐", category:"Dessert", world:"trends",
+    difficulty:"Medium", hero:true, free:true, desc:"Flaky croissant, molten cookie-dough core… break it for the gooey PULL!",
+    plate:{ bg:"#3a2414", emoji:"🥐", sparkle:"#E8A13C" }, signature:"CRACK",
+    rushComponents:["Split","Stuff","Bake","Melt"],
+    steps:[
+      { verb:"slice",    label:"Split the croissant open (tk-tk)",        params:{ cuts:4 } },
+      { verb:"pipe",     label:"Pipe in the cookie dough",                params:{ shape:"heart", color:"#8a5a2b" } },
+      { verb:"sprinkle", label:"Studded with chocolate chunks",          params:{ shakes:9, base:"#c98a4a", colors:["#4a2c14","#6b3f1e","#3a2010"] } },
+      { verb:"heat",     label:"Bake until edges go golden & crisp",      params:{ dur:3.2, lo:.5, hi:.78, color:"#C97A3A" } },
+      { verb:"pour",     label:"Warm chocolate drizzle over the top",     params:{ target:.82, tol:.08, color:"#5A3A2A" } },
+      { verb:"crack",    label:"CRACK it open — molten gooey PULL!",      params:{ mode:"crack", color:"#A9702F", color2:"#D89A4E", inside:"#7A4A28" } }
+    ]
+  },
+  {
+    id:"cake_pops_dip", name:"Dipped Cake Pops", emoji:"🍭", category:"Dessert", world:"trends",
+    difficulty:"Easy", hero:true, free:true, desc:"Crumble, squish, roll… then the glossy DIP and a candy-rain shower!",
+    plate:{ bg:"#F7C6DE", emoji:"🍭", sparkle:"#FFC93C" }, signature:"DIP",
+    rushComponents:["Crumble","Roll","Dip","Sprinkle"],
+    steps:[
+      { verb:"mix",      label:"Crumble cake into frosting",     params:{ revs:4, color:"#E7A6C4" } },
+      { verb:"knead",    label:"Squish into a smooth dough",     params:{ presses:6 } },
+      { verb:"pipe",     label:"Trace & roll perfect little balls", params:{ shape:"circle", color:"#E7A6C4" } },
+      { verb:"dip",      label:"DIP into glossy candy coat!",    params:{ color:"#FF5D8F", item:"#E7A6C4" } },
+      { verb:"sprinkle", label:"Shower with rainbow sprinkles",  params:{ shakes:8, base:"#FF5D8F", colors:["#FFC93C","#3DD6B0","#7C5CFF","#FF5D8F"] } }
+    ]
+  },
+  {
+    id:"rainbow_macarons", name:"Rainbow Macarons", emoji:"🌈", category:"Dessert", world:"bakery",
+    difficulty:"Hard", hero:true, free:true, desc:"Whisk the meringue, pipe glossy shells, tap out the bubbles… then the soft SANDWICH squish!",
+    plate:{ bg:"#f3d7e6", emoji:"🌈", sparkle:"#FFC93C" }, signature:"POP",
+    rushComponents:["Whip","Pipe","Tap","Fill"],
+    steps:[
+      { verb:"whisk",    label:"Whip the meringue to stiff peaks", params:{ revs:5, color:"#FFF3F8" } },
+      { verb:"pipe",     label:"Pipe perfect round shells",         params:{ shape:"circle", color:"#FF9EC4" } },
+      { verb:"pop",      label:"Tap the tray — pop the air bubbles!", params:{ taps:6 } },
+      { verb:"pipe",     label:"Pipe the buttercream filling",       params:{ shape:"circle", color:"#FFC93C" } },
+      { verb:"assemble", label:"Sandwich the shells — soft squish!", params:{ layers:["🔴","🟡","🔴"] } }
+    ]
+  },
+  {
+    id:"fudgy_brownies", name:"Fudgy Brownies", emoji:"🍫", category:"Dessert", world:"bakery",
+    difficulty:"Easy", hero:true, free:true, desc:"Melt, fold, bake to a crackly top… then the gooey molten CUT!",
+    plate:{ bg:"#2a170f", emoji:"🍫", sparkle:"#E7B15A" }, signature:"CRACK",
+    rushComponents:["Melt","Fold","Bake","Cut"],
+    steps:[
+      { verb:"melt",  label:"Melt butter & dark chocolate",     params:{ dur:3.0, lo:.42, hi:.7, color:"#5A3320" } },
+      { verb:"whisk", label:"Fold in sugar & cocoa batter",     params:{ revs:4, color:"#3E241A" } },
+      { verb:"pour",  label:"Pour batter into the pan",         params:{ target:.82, tol:.08, color:"#4A2A1C" } },
+      { verb:"heat",  label:"Bake to a shiny crackly top",      params:{ dur:3.4, lo:.5, hi:.78, color:"#71462C" } },
+      { verb:"sprinkle", label:"Scatter flaky sea salt",        params:{ shakes:6, base:"#71462C", colors:["#FFFFFF","#F3E9D2","#E7B15A"] } },
+      { verb:"crack", label:"CUT it open — gooey molten pull!",  params:{ mode:"crack", color:"#3A2015", color2:"#71462C", inside:"#8A4A22" } }
+    ]
+  },
+  {
+    id:"matcha_strawberry_cream_cup", name:"Matcha Strawberry Cream Cup", emoji:"🍵", category:"Dessert", world:"trends",
+    difficulty:"Easy", hero:true, free:true, desc:"Whisk it frothy, layer the cream, POUR to the perfect line… glossy green on ruby red.",
+    plate:{ bg:"#1f3b24", emoji:"🍓", sparkle:"#8FD14F" }, signature:"POUR",
+    rushComponents:["Whisk","Berries","Cream","Swirl"],
+    steps:[
+      { verb:"whisk",   label:"Whisk the matcha frothy",           params:{ revs:5, color:"#7FB13A" } },
+      { verb:"slice",   label:"Slice ripe strawberries",           params:{ cuts:5 } },
+      { verb:"pour",    label:"Pour the cream to the line",        params:{ target:.82, tol:.06, color:"#FFF3F6" } },
+      { verb:"pipe",    label:"Pipe a matcha cream swirl",         params:{ shape:"circle", color:"#8FD14F" } },
+      { verb:"sprinkle",label:"Finish with berries & matcha dust", params:{ shakes:8, base:"#FFF3F6", colors:["#E23E57","#8FD14F","#FFFFFF"] } }
+    ]
+  },
+  {
+    id:"smash_burger_stack", name:"Stacked Smash Burger", emoji:"🍔", category:"Meal", world:"street",
+    difficulty:"Medium", hero:true, free:true, desc:"Ball it, SMASH it flat, melt the cheese, stack it tall!",
+    plate:{ bg:"#3a2418", emoji:"🍔", sparkle:"#FFC93C" }, signature:"SMASH",
+    rushComponents:["Patty","Cheese","Buns","Sauce"],
+    steps:[
+      { verb:"knead",  label:"Roll the beef into a loose ball", params:{ presses:5 } },
+      { verb:"smash",  label:"SMASH it onto the sizzling griddle!", params:{ mode:"smash", color:"#6B3E26", inside:"#8A5030" } },
+      { verb:"heat",   label:"Sear the crust, melt the cheese", params:{ dur:3.2, lo:.45, hi:.75, color:"#E4A93A" } },
+      { verb:"pour",   label:"Drizzle the tangy burger sauce", params:{ target:.82, tol:.08, color:"#F2A93B" } },
+      { verb:"assemble", label:"Stack it: bun, patty, cheese, crown", params:{ layers:["🍞","🥩","🧀","🥬","🍞"] } }
+    ]
+  },
+  {
+    id:"birria_tacos", name:"Birria Tacos", emoji:"🌮", category:"Meal", world:"street",
+    difficulty:"Medium", hero:true, free:true, desc:"Braise, crisp the shell, then the deep consommé DIP… drip and shine!",
+    plate:{ bg:"#5a1e12", emoji:"🌮", sparkle:"#E8A33D" }, signature:"DIP",
+    rushComponents:["Braise","Crisp","Garnish","Dip"],
+    steps:[
+      { verb:"melt",     label:"Braise the chile-adobo beef",        params:{ dur:3.2, lo:.42, hi:.7, color:"#8B2E12" } },
+      { verb:"pour",     label:"Ladle the rich red consommé",        params:{ target:.82, tol:.07, color:"#7A1F0E" } },
+      { verb:"flip",     label:"Toss & crisp the shell on the plancha", params:{ color:"#D98A2B" } },
+      { verb:"sprinkle", label:"Scatter onion & cilantro",          params:{ shakes:8, base:"#E8B04B", colors:["#F4F0E6","#3DAE5A","#E8A33D"] } },
+      { verb:"dip",      label:"DIP the taco in the consommé!",       params:{ color:"#7A1F0E", item:"#D98A2B" } }
+    ]
+  },
+  {
+    id:"molten_mac_and_cheese", name:"Molten Mac & Cheese", emoji:"🧀", category:"Meal", world:"street",
+    difficulty:"Medium", hero:true, free:true, desc:"Boil, blend, bake golden… then lift the endless cheese PULL!",
+    plate:{ bg:"#7a4d12", emoji:"🧀", sparkle:"#FFD34E" }, signature:"DIP",
+    rushComponents:["Boil","Sauce","Bake","Pull"],
+    steps:[
+      { verb:"pour",     label:"Boil & drain the elbows",        params:{ target:.78, tol:.08, color:"#F4E3A1" } },
+      { verb:"whisk",    label:"Whisk the molten cheese sauce",   params:{ revs:4, color:"#FFB347" } },
+      { verb:"pour",     label:"Flood the noodles in gold",       params:{ target:.85, tol:.07, color:"#FFC93C" } },
+      { verb:"sprinkle", label:"Snow the crispy crumb topping",   params:{ shakes:8, base:"#FFC93C", colors:["#E8A317","#C97A3A","#FFE08A"] } },
+      { verb:"sizzle",   label:"Bake to a bubbling crust",        params:{ dur:3.2, lo:.5, hi:.78, color:"#C97A3A" } },
+      { verb:"dip",      label:"Lift the endless cheese PULL!",   params:{ color:"#FFD34E", item:"#F4C430" } }
+    ]
+  },
+  {
+    id:"wok_fried_rice", name:"Wok Fried Rice", emoji:"🍚", category:"Meal", world:"street",
+    difficulty:"Medium", hero:true, free:true, desc:"Sizzle, chop, glaze… then the wok-hei FLIP! Catch it at the apex.",
+    plate:{ bg:"#2a1d10", emoji:"🍚", sparkle:"#FFC93C" }, signature:"FLIP",
+    rushComponents:["Sizzle","Veg","Sauce","Toss"],
+    steps:[
+      { verb:"sizzle",   label:"Heat the wok screaming-hot",        params:{ dur:3.0, lo:.55, hi:.82, color:"#C97A3A" } },
+      { verb:"chop",     label:"Chop scallions & garlic",          params:{ cuts:5 } },
+      { verb:"stir",     label:"Fold in egg & day-old rice",       params:{ revs:4, color:"#F4C430" } },
+      { verb:"drizzle",  label:"Ribbon the soy-glaze over top",    params:{ shape:"circle", color:"#5A3A2A" } },
+      { verb:"flip",     label:"TOSS the wok — catch it at apex!",  params:{ color:"#F4C430" } },
+      { verb:"season",   label:"Shower with scallion & sesame",    params:{ shakes:8, base:"#F4C430", colors:["#3DD6B0","#FFFFFF","#2e7d32","#C97A3A"] } }
+    ]
+  },
+  {
+    id:"homemade_pizza", name:"Homemade Pizza", emoji:"🍕", category:"Meal", world:"street",
+    difficulty:"Medium", hero:true, free:true, desc:"Stretch the dough, swirl the sauce, bake it bubbly… then the cheesy slice PULL!",
+    plate:{ bg:"#3a1e12", emoji:"🍕", sparkle:"#F4C430" }, signature:"CRACK",
+    rushComponents:["Dough","Sauce","Cheese","Bake"],
+    steps:[
+      { verb:"knead", label:"Stretch & spin the dough",        params:{ presses:6 } },
+      { verb:"pour",  label:"Swirl on the tomato sauce",       params:{ target:.8, tol:.08, color:"#C1362B" } },
+      { verb:"sprinkle", label:"Rain the mozzarella & basil",  params:{ shakes:8, base:"#E9C46A", colors:["#FFF6E0","#3DAA5B","#C1362B"] } },
+      { verb:"heat",  label:"Bake till the crust bubbles",     params:{ dur:3.2, lo:.5, hi:.78, color:"#B5651D" } },
+      { verb:"chop",  label:"Roll-cut into slices",            params:{ cuts:6 } },
+      { verb:"crack", label:"PULL a cheesy slice free!",       params:{ mode:"crack", color:"#E9C46A", color2:"#F4C430", inside:"#FFF1C9" } }
+    ]
+  },
+  {
+    id:"soup_dumpling_basket", name:"Steamy Soup Dumplings", emoji:"🥟", category:"Meal", world:"street",
+    difficulty:"Medium", hero:true, free:true, desc:"Fill 'em juicy, twist the perfect pleats, then that golden pan-fry SIZZLE!",
+    plate:{ bg:"#2c2418", emoji:"🥟", sparkle:"#F5C36B" }, signature:"SIZZLE",
+    rushComponents:["Fill","Pleat","Fry","Steam"],
+    steps:[
+      { verb:"pipe",  label:"Spoon the juicy pork filling", params:{ shape:"circle", color:"#D98A5E" } },
+      { verb:"pipe",  label:"Twist the pleats shut",         params:{ shape:"circle", color:"#F3E3C3" } },
+      { verb:"pour",  label:"Ladle water for the steam",     params:{ target:.82, tol:.07, color:"#BFE0F0" } },
+      { verb:"sizzle",label:"Crisp the bottoms — SIZZLE!",   params:{ dur:3.2, lo:.5, hi:.78, color:"#E0A040" } },
+      { verb:"sprinkle", label:"Scatter sesame & scallion",  params:{ shakes:8, base:"#EBCB87", colors:["#F5C36B","#5FA84A","#FFFFFF"] } }
+    ]
+  },
+  {
+    id:"crispy_chicken_sandwich", name:"Crispy Chicken Sandwich", emoji:"🍔", category:"Meal", world:"street",
+    difficulty:"Medium", hero:true, free:true, desc:"Brine, dredge, fry to gold… then the shattering CRUNCH!",
+    plate:{ bg:"#4a2f14", emoji:"🍔", sparkle:"#F4B740" }, signature:"CRACK",
+    rushComponents:["Dredge","Fry","Sauce","Stack"],
+    steps:[
+      { verb:"pour",  label:"Bathe the fillet in buttermilk",  params:{ target:.78, tol:.08, color:"#F3EAD3" } },
+      { verb:"knead", label:"Press into the seasoned dredge",   params:{ presses:7 } },
+      { verb:"heat",  label:"Fry it golden — don't burn it!",   params:{ dur:3.2, lo:.5, hi:.78, color:"#D98A2B" } },
+      { verb:"pipe",  label:"Swirl on the spicy mayo",          params:{ shape:"circle", color:"#E8452B" } },
+      { verb:"assemble", label:"Stack the sandwich tall",       params:{ layers:["🍔","🥬","🍗","🍞"] } },
+      { verb:"crack", label:"CRUNCH into that crispy crust!",   params:{ mode:"crack", color:"#C97A2E", color2:"#E8A64B", inside:"#F5EAD0" } }
+    ]
+  },
+  {
+    id:"boba_milk_tea", name:"Boba Milk Tea", emoji:"🧋", category:"Drink", world:"trends",
+    difficulty:"Easy", hero:true, free:true, desc:"Steep, pour, shake it silky… then POP every pearl!",
+    plate:{ bg:"#3a2a20", emoji:"🧋", sparkle:"#F2C879" }, signature:"POP",
+    rushComponents:["Steep","Pearls","Milk","Shake"],
+    steps:[
+      { verb:"heat",  label:"Steep the black tea (keep it in the zone)", params:{ dur:3.0, lo:.42, hi:.72, color:"#6B4A2E" } },
+      { verb:"pour",  label:"Pour warm brown sugar syrup",              params:{ target:.82, tol:.07, color:"#8A5A2B" } },
+      { verb:"whisk", label:"Swirl in the creamy milk",                 params:{ revs:4, color:"#E9D2A8" } },
+      { verb:"whisk", label:"SHAKE it silky & frothy",                  params:{ revs:6, color:"#D9BE93" } },
+      { verb:"pop",   label:"POP the tapioca pearls in!",               params:{ taps:7 } }
+    ]
+  },
+  {
+    id:"strawberry_refresher", name:"Strawberry Refresher", emoji:"🍓", category:"Drink", world:"trends",
+    difficulty:"Easy", hero:true, free:true, desc:"Muddle the berries, pour it icy, then let it FIZZ and dance.",
+    plate:{ bg:"#7a1f33", emoji:"🍓", sparkle:"#FF6FA3" }, signature:"POP",
+    rushComponents:["Muddle","Ice","Pour","Fizz"],
+    steps:[
+      { verb:"knead", label:"Muddle the fresh strawberries",     params:{ presses:6 } },
+      { verb:"whisk", label:"Swirl in the pink sugar syrup",      params:{ revs:4, color:"#FF6FA3" } },
+      { verb:"pour",  label:"Pour over crushed ice — stop at the rim!", params:{ target:.86, tol:.07, color:"#FF4E86" } },
+      { verb:"fizz",  label:"POP the sparkling bubbles!",         params:{ taps:7 } },
+      { verb:"sprinkle", label:"Crown with berry slices & mint",  params:{ shakes:6, base:"#FF9EC4", colors:["#E23E57","#3DD6B0","#FFFFFF"] } }
+    ]
+  },
+  {
+    id:"matcha_latte", name:"Matcha Latte", emoji:"🍵", category:"Drink", world:"trends",
+    difficulty:"Easy", hero:true, free:true, desc:"Sift, whisk to a jade froth, then POUR that milky ribbon and finish with latte art.",
+    plate:{ bg:"#3f5233", emoji:"🍵", sparkle:"#B7E37A" }, signature:"POUR",
+    rushComponents:["Sift","Whisk","Steam","Art"],
+    steps:[
+      { verb:"sprinkle", label:"Sift the matcha powder in",        params:{ shakes:6, base:"#EAF3D6", colors:["#8FB03A","#A7C64E","#6E8E2E"] } },
+      { verb:"heat",     label:"Warm the water to bloom it",       params:{ dur:2.6, lo:.42, hi:.7, color:"#7FA33C" } },
+      { verb:"whisk",    label:"Whisk to a frothy jade foam",      params:{ revs:5, color:"#8FB03A" } },
+      { verb:"pour",     label:"POUR the steamed milk ribbon",     params:{ target:.82, tol:.06, color:"#F3EAD6" } },
+      { verb:"pipe",     label:"Trace the latte-art leaf",         params:{ shape:"heart", color:"#5E7A2A" } }
+    ]
+  }
+];
+const RECIPE_BY_ID={}; RECIPES.forEach(r=>RECIPE_BY_ID[r.id]=r);
+const REFERENCE_RECIPE_ID="dubai_chocolate_bar";
+
+const WORLDS=[
+  { id:"bakery", name:"Sweet Bakery", emoji:"🧁", desc:"Cozy sweet treats" },
+  { id:"street", name:"Street Food Lane", emoji:"🌮", desc:"Sizzling savory eats" },
+  { id:"trends", name:"Viral Trends", emoji:"📱", desc:"The internet's favorites" }
+];
+
+/* ==========================================================================
+   Economy helpers
+   ========================================================================== */
+function isUnlocked(id){ const r=RECIPE_BY_ID[id]; if(!r) return false; if(r.free) return true; if(S.fullKitchen) return true; return !!S.unlocked[id]; }
+function recipesForWorld(w){ return RECIPES.filter(r=>r.world===w); }
+
+/* ==========================================================================
+   [STATE] state machine + screen router
+   ========================================================================== */
+const Screens={};
+let currentScreen="boot";
+function go(name,data){
+  // Tear down an active Café Rush when navigating away so its RAF loop can't award phantom coins/levels.
+  if(currentScreen==="rush" && name!=="rush" && rush){ rush.running=false; cancelAnimationFrame(rushRaf); rush=null; }
+  currentScreen=name;
+  $$(".screen").forEach(s=>s.classList.remove("active"));
+  const target=document.getElementById("screen-"+name); if(target) target.classList.add("active");
+  Audio2.resume();
+  if(Screens[name]) Screens[name].render(data);
+}
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800); }
+function modal(html){ document.getElementById("modalBox").innerHTML=html; document.getElementById("modal").classList.add("show"); }
+function closeModal(){ document.getElementById("modal").classList.remove("show"); }
+document.getElementById("modal").addEventListener("click",e=>{ if(e.target.id==="modal") closeModal(); });
+
+function topBar(title,back){
+  return '<div class="topbar">'
+    +(back?'<button class="iconbtn" data-back>‹</button>':'')
+    +'<div class="chip coinChip">🪙 <span>'+S.coins+'</span></div>'
+    +'<div class="chip gemChip">💎 <span>'+S.gems+'</span></div>'
+    +'<div class="spacer"></div>'
+    +'<button class="iconbtn" data-nav="settings">⚙️</button>'
+    +'</div>'+(title?'<div class="title">'+title+'</div>':'');
+}
+function renderTopChips(){
+  $$(".coinChip span").forEach(e=>e.textContent=S.coins);
+  $$(".gemChip span").forEach(e=>e.textContent=S.gems);
+}
+document.addEventListener("click",e=>{
+  const nav=e.target.closest("[data-nav]"); if(nav){ Juice.fire("UI_TAP"); go(nav.getAttribute("data-nav")); return; }
+  const back=e.target.closest("[data-back]"); if(back){ Juice.fire("UI_TAP"); go(back.getAttribute("data-back")||"home"); }
+});
+
+/* ---------------- BOOT ---------------- */
+Chloe.draw(document.getElementById("bootChloe"),{expr:"thumbs"});
+document.getElementById("bootStart").addEventListener("click",()=>{
+  Audio2.init(); Audio2.resume(); Audio2.applyMix(); S.seenBoot=true; save();
+  Juice.fire("CELEBRATE"); go("home");
+});
+
+/* ---------------- HOME HUB ---------------- */
+Screens.home={
+  render(){
+    const s=document.getElementById("screen-home");
+    const canDaily=canClaimDaily();
+    s.innerHTML=topBar("")
+      +'<div class="chloe-wrap" id="homeChloe" style="width:150px;height:160px;margin:0 auto"></div>'
+      +'<div class="title" style="margin-top:-4px">Chef Chloe</div>'
+      +'<div class="sub">Viral Kitchen</div>'
+      +'<div class="hub">'
+      +'<button class="hubbtn" style="background:var(--pink)" data-nav="map"><span class="he">👩‍🍳</span>Cook</button>'
+      +'<button class="hubbtn" style="background:var(--coral)" data-nav="rush"><span class="he">🍽️</span>Café Rush</button>'
+      +'<button class="hubbtn" style="background:var(--mint)" data-nav="cookbook"><span class="he">📖</span>Cookbook</button>'
+      +'<button class="hubbtn" style="background:var(--purple)" data-nav="shop"><span class="he">🛍️</span>Shop</button>'
+      +'<button class="hubbtn" style="background:var(--yellow);color:var(--cocoa)" data-nav="wardrobe"><span class="he">👗</span>Wardrobe</button>'
+      +'<button class="hubbtn" style="background:'+(canDaily?'#FF7A59':'#c9a26a')+'" data-nav="daily"><span class="he">🎁</span>Daily'+(canDaily?' !':'')+'</button>'
+      +'</div>'
+      +'<div class="hint">Tip: learn recipes in Cook, then serve them in Café Rush!</div>';
+    Chloe.draw(document.getElementById("homeChloe"),{expr:"idle"});
+  }
+};
+
+/* ---------------- WORLD MAP ---------------- */
+Screens.map={
+  render(){
+    const s=document.getElementById("screen-map");
+    let worlds="";
+    WORLDS.forEach(w=>{
+      const rs=recipesForWorld(w.id);
+      const starSum=rs.reduce((a,r)=>a+(S.stars[r.id]||0),0);
+      const starMax=rs.length*3;
+      worlds+='<div class="world" data-world="'+w.id+'"><div class="wemoji">'+w.emoji+'</div>'
+        +'<div class="wt"><div class="wname">'+w.name+'</div><div class="wprog">'+w.desc+'</div>'
+        +'<div class="starsrow">⭐ '+starSum+'/'+starMax+'</div></div><div style="font-size:26px">›</div></div>';
+    });
+    s.innerHTML=topBar("Kitchens",true)+'<div class="scroll">'+worlds+'<div class="hint">Earn stars to master every kitchen!</div></div>';
+    s.querySelector("[data-back]").setAttribute("data-back","home");
+    $$(".world",s).forEach(w=>w.addEventListener("click",()=>go("select",{world:w.getAttribute("data-world")})));
+  }
+};
+
+/* ---------------- RECIPE SELECT ---------------- */
+Screens.select={
+  render(data){
+    const world=(data&&data.world)||"bakery";
+    const w=WORLDS.find(x=>x.id===world)||WORLDS[0];
+    const rs=recipesForWorld(world);
+    const s=document.getElementById("screen-select");
+    let cards="";
+    rs.forEach(r=>{
+      const unlocked=isUnlocked(r.id);
+      const stars=S.stars[r.id]||0;
+      cards+='<div class="card '+(unlocked?'':'locked')+'" data-recipe="'+r.id+'">'
+        +(!unlocked?'<div class="lockbadge">🔒</div>':'')
+        +(r.hero?'<div class="lockbadge" style="left:8px;right:auto">⭐</div>':'')
+        +'<div class="emoji">'+r.emoji+'</div>'
+        +'<div class="cname">'+esc(r.name)+'</div>'
+        +'<div class="meta">'+r.difficulty+' · '+r.category+'</div>'
+        +'<div class="starsrow">'+"★".repeat(stars)+"☆".repeat(3-stars)+'</div></div>';
+    });
+    s.innerHTML=topBar(w.emoji+" "+w.name,true)+'<div class="scroll"><div class="grid">'+cards+'</div>'
+      +'<div class="hint">Tap a recipe to cook it with Chloe!</div></div>';
+    s.querySelector("[data-back]").setAttribute("data-back","map");
+    $$(".card",s).forEach(c=>c.addEventListener("click",()=>{
+      const id=c.getAttribute("data-recipe");
+      if(isUnlocked(id)) startCook(id); else offerUnlock(id);
+    }));
+  }
+};
+function offerUnlock(id){
+  const r=RECIPE_BY_ID[id];
+  if(!r) return;
+  modal('<div style="font-size:40px">'+r.emoji+'🔒</div><h3>'+esc(r.name)+'</h3>'
+    +'<p>This recipe is part of the <b>Full Kitchen</b> unlock — all worlds, forever.</p>'
+    +'<button class="btn big purple" id="mGoShop">See Full Kitchen</button>'
+    +'<button class="btn ghost sm" id="mClose" style="margin-top:8px">Not now</button>');
+  document.getElementById("mGoShop").onclick=()=>{ closeModal(); go("shop"); };
+  document.getElementById("mClose").onclick=closeModal;
+}
+
+/* ==========================================================================
+   COOK MODE runner — walks a recipe's ordered technique chain
+   ========================================================================== */
+let cookSession=null, activeStage=null;
+function startCook(id){
+  const recipe=RECIPE_BY_ID[id]; if(!recipe) return;
+  cookSession={ recipe, stepIndex:0, scores:[] };
+  go("cook");
+}
+Screens.cook={
+  render(){
+    const s=document.getElementById("screen-cook");
+    const r=cookSession.recipe;
+    s.innerHTML='<div class="cookhead">'
+      +'<button class="iconbtn" id="cookBack">‹</button>'
+      +'<div class="stepbar"><i id="cookProg"></i></div>'
+      +'<div class="chip">'+r.emoji+' <span style="font-size:13px">'+esc(r.name)+'</span></div>'
+      +'</div>'
+      +'<div class="stage" id="cookStage">'
+      +'<div class="prompt" id="cookPrompt"></div>'
+      +'<canvas class="verbcanvas" id="verbCanvas"></canvas>'
+      +'<div class="speech" id="cookSpeech" style="display:none"></div>'
+      +'<div class="chloecorner" id="cookChloe"></div>'
+      +'</div>';
+    document.getElementById("cookBack").addEventListener("click",()=>{ Juice.fire("UI_TAP"); abortCook(); go("select",{world:r.world}); });
+    requestAnimationFrame(()=>runStep());
+  }
+};
+function cleanupStage(){ if(activeStage){ if(activeStage._unbind)activeStage._unbind(); if(activeStage._cleanup)activeStage._cleanup(); activeStage=null; } }
+function abortCook(){ if(cookSession) cookSession.aborted=true; cleanupStage(); }
+function runStep(){
+  cleanupStage();
+  const sess=cookSession, r=sess.recipe;
+  if(sess.stepIndex>=r.steps.length){ finishCook(); return; }
+  const step=r.steps[sess.stepIndex];
+  const canvas=document.getElementById("verbCanvas");
+  const rect=document.getElementById("cookStage").getBoundingClientRect();
+  canvas.width=rect.width; canvas.height=rect.height;
+  const ctx=canvas.getContext("2d");
+  document.getElementById("cookProg").style.width=((sess.stepIndex)/r.steps.length*100)+"%";
+  const stage={
+    canvas, ctx, w:rect.width, h:rect.height,
+    prompt(t){ document.getElementById("cookPrompt").innerHTML=t; },
+    chloe(expr,line){ Chloe.draw(document.getElementById("cookChloe"),{expr}); const sp=document.getElementById("cookSpeech");
+      if(line){ sp.style.display="block"; sp.textContent=line; } else sp.style.display="none"; }
+  };
+  activeStage=stage;
+  const verbFn=Verbs.REGISTRY[step.verb];
+  if(!verbFn){ sess.scores.push(.8); sess.stepIndex++; runStep(); return; }
+  Chloe.draw(document.getElementById("cookChloe"),{expr:"idle"});
+  verbFn(stage, step.params||{}, (result)=>{
+    if(sess.aborted) return;
+    sess.scores.push(result.score);
+    sess.stepIndex++;
+    const prog=document.getElementById("cookProg"); if(prog) prog.style.width=((sess.stepIndex)/r.steps.length*100)+"%";
+    if(currentScreen==="cook") runStep();
+  });
+}
+function finishCook(){
+  cleanupStage();
+  const sess=cookSession, r=sess.recipe;
+  const avg=sess.scores.reduce((a,b)=>a+b,0)/Math.max(1,sess.scores.length);
+  const score=Math.round(avg*100);
+  const stars=score>=85?3:score>=65?2:1;
+  S.learned[r.id]=true;
+  S.unlocked[r.id]=true;
+  S.stars[r.id]=Math.max(S.stars[r.id]||0,stars);
+  S.best[r.id]=Math.max(S.best[r.id]||0,score);
+  if(r.id===getTrending()) S.trending.best=Math.max(S.trending.best||0,score);
+  const coins=20+stars*15+(r.hero?15:0);
+  S.coins+=coins;
+  save();
+  go("results",{recipe:r,score,stars,coins});
+}
+
+/* ---------------- RESULTS / PLATE REVEAL ---------------- */
+Screens.results={
+  render(data){
+    const recipe=data.recipe, score=data.score, stars=data.stars, coins=data.coins;
+    const s=document.getElementById("screen-results");
+    const banner=stars>=3?"VIRAL!":stars>=2?"YUMMY!":"TASTY!";
+    s.innerHTML=topBar("")
+      +'<div class="scroll" style="text-align:center">'
+      +'<div class="banner" id="resBanner" style="opacity:0">'+banner+'</div>'
+      +'<div class="platewrap" id="platewrap"></div>'
+      +'<div class="bigstars" id="bigstars"><span>★</span><span>★</span><span>★</span></div>'
+      +'<div class="scorenum" id="scorenum">0</div>'
+      +'<div class="sub">Plate Score</div>'
+      +'<div class="chip" style="margin:12px auto;width:max-content">🪙 +'+coins+' coins</div>'
+      +'<div class="chloe-wrap" id="resChloe" style="width:140px;height:150px;margin:6px auto"></div>'
+      +'<div style="display:flex;gap:10px;padding:0 16px">'
+      +'<button class="btn mint" style="flex:1" id="resAgain">Cook Again</button>'
+      +'<button class="btn coral" style="flex:1" id="resCafe">To the Café</button>'
+      +'</div>'
+      +'<button class="btn ghost sm" id="resHome" style="margin:12px auto;display:block">Home</button>'
+      +'</div>';
+    document.getElementById("platewrap").innerHTML=
+      '<svg viewBox="0 0 220 220"><defs>'
+      +'<radialGradient id="pg" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#f0e0d0"/></radialGradient></defs>'
+      +'<circle cx="110" cy="118" r="92" fill="url(#pg)" stroke="#e0c8b0" stroke-width="3"/>'
+      +'<circle cx="110" cy="118" r="66" fill="'+recipe.plate.bg+'" opacity=".12"/>'
+      +'<text x="110" y="150" font-size="86" text-anchor="middle">'+recipe.plate.emoji+'</text></svg>';
+    Chloe.draw(document.getElementById("resChloe"),{expr:"thumbs"});
+    setTimeout(()=>{ const b=document.getElementById("resBanner"); if(b){ if(S.settings.reducedMotion){ b.style.transition="opacity .3s"; b.style.opacity=1; } else { b.style.transition="all .5s cubic-bezier(.34,1.56,.64,1)"; b.style.opacity=1; b.style.transform="scale(1.1)"; } } },100);
+    let cur=0; const target=score; const iv=setInterval(()=>{ cur+=Math.max(1,Math.round(target/24)); if(cur>=target){cur=target;clearInterval(iv);} const sn=document.getElementById("scorenum"); if(sn)sn.textContent=cur; else clearInterval(iv); },30);
+    const starEls=$$("#bigstars span");
+    for(let i=0;i<stars;i++){ setTimeout(()=>{ if(starEls[i]){ starEls[i].classList.add("on"); Juice.fire("STAR_AWARDED",{x:appRect().width/2,y:180}); } },500+i*350); }
+    setTimeout(()=>{ if(currentScreen==="results") Juice.fire("CELEBRATE"); },500+stars*350);
+    document.getElementById("resAgain").onclick=()=>startCook(recipe.id);
+    document.getElementById("resCafe").onclick=()=>go("rush");
+    document.getElementById("resHome").onclick=()=>go("home");
+    renderTopChips();
+  }
+};
+
+/* ==========================================================================
+   [RUSH] Rush Mode service — combos + café upgrades
+   ========================================================================== */
+let rush=null, rushRaf=0, rushLast=0;
+// patienceMul is calibrated against the base rate so a customer's patience lasts
+// roughly: beginner ~50s, easy ~28s, classic ~16s, rush ~10s (the original pace).
+const CAFE_TIERS={
+  beginner:{ name:"Beginner", desc:"1 order at a time · about 50s per order · super relaxed", maxCust:1, timeMul:2.0,  patienceMul:.2,  goalMul:.7 },
+  easy:     { name:"Easy",     desc:"2 orders at a time · about 28s per order",                maxCust:2, timeMul:1.4,  patienceMul:.36, goalMul:.85 },
+  classic:  { name:"Classic",  desc:"3 orders at a time · about 16s per order",                maxCust:3, timeMul:1,    patienceMul:.625,goalMul:1 },
+  rush:     { name:"Rush!",    desc:"5 orders at a time · fast & frantic",                      maxCust:5, timeMul:.9,   patienceMul:1,   goalMul:1.15 }
+};
+Screens.rush={
+  render(){
+    const learned=RECIPES.filter(r=>S.learned[r.id]||r.free);
+    if(learned.length===0){
+      const s=document.getElementById("screen-rush");
+      s.innerHTML=topBar("Café Rush",true)+'<div class="scroll" style="text-align:center">'
+        +'<div style="font-size:60px;margin:30px">🍽️</div>'
+        +'<p class="sub">Learn a recipe in Cook Mode first, then serve it here!</p>'
+        +'<button class="btn mint big" data-nav="map" style="margin-top:16px">Go Cook</button></div>';
+      s.querySelector("[data-back]").setAttribute("data-back","home");
+      return;
+    }
+    this.showTierPicker(learned);
+  },
+  showTierPicker(learned){
+    const s=document.getElementById("screen-rush");
+    const cur=S.cafe.tier||"beginner";
+    s.innerHTML=topBar("Café Rush",true)+'<div class="scroll">'
+      +'<p class="sub" style="text-align:center">Pick your pace — you can change this any time.</p>'
+      +Object.keys(CAFE_TIERS).map(k=>{ const t=CAFE_TIERS[k];
+        return '<div class="tierpick'+(k===cur?' sel':'')+'" data-tier="'+k+'"><div class="tname">'+t.name+'</div><div class="tdesc">'+t.desc+'</div></div>'; }).join("")
+      +'<button class="btn mint big" id="tierGo" style="width:100%;margin-top:6px">Start Serving! 🍽️</button>'
+      +'</div>';
+    s.querySelector("[data-back]").setAttribute("data-back","home");
+    $$(".tierpick",s).forEach(el=>el.addEventListener("click",()=>{ $$(".tierpick",s).forEach(e=>e.classList.remove("sel")); el.classList.add("sel");
+      S.cafe.tier=el.getAttribute("data-tier"); save(); Juice.fire("UI_TAP",{}); }));
+    document.getElementById("tierGo").addEventListener("click",()=>{ Juice.fire("UI_TAP",{}); startRush(learned); });
+  }
+};
+function startRush(pool){
+  const tier=CAFE_TIERS[S.cafe.tier]||CAFE_TIERS.beginner;
+  rush={ pool, tier, coins:0, combo:0, day:S.cafe.level, patienceRate:0.10*tier.patienceMul/(S.cafe.speed*(1+0.1*(S.cafe.decor||0))),
+    customers:[], tray:[], time:60*tier.timeMul, running:true, spawnT:0, servedCount:0, goal:Math.max(3,Math.round((6+S.cafe.level*2)*tier.goalMul)) };
+  const s=document.getElementById("screen-rush");
+  s.innerHTML=topBar("")
+    +'<div class="rushtop">'
+    +'<button class="iconbtn" data-back="home">‹</button>'
+    +'<div class="chip">Day '+rush.day+'</div>'
+    +'<div class="chip">'+tier.name+'</div>'
+    +'<div class="chip">🪙 <span id="rushCoins">0</span></div>'
+    +'<div class="chip">⏱️ <span id="rushTime">60</span></div>'
+    +'<div class="spacer"></div>'
+    +'<div class="chip">🎯 <span id="rushServed">0</span>/'+rush.goal+'</div>'
+    +'</div>'
+    +'<div class="combo" id="rushCombo"></div>'
+    +'<div class="customers" id="rushCustomers"></div>'
+    +'<div class="sub" style="margin:4px">🍳 Stations — tap to prep</div>'
+    +'<div class="stations" id="rushStations"></div>'
+    +'<div class="sub" style="margin:4px">🍽️ Serving tray — tap a customer to serve</div>'
+    +'<div class="tray" id="rushTray"></div>';
+  s.querySelector("[data-back]").setAttribute("data-back","home");
+  buildStations();
+  renderTray();
+  rushLast=now();
+  cancelAnimationFrame(rushRaf);
+  rushRaf=requestAnimationFrame(rushFrame);
+}
+const STATION_EMOJI={Melt:"🍫",Toast:"🔥",Pipe:"🧁",Chill:"❄️",Skewer:"🍢",Dip:"🍯",Set:"❄️",Drizzle:"🥄",Sprinkle:"✨",
+  Smash:"💥",Sear:"🔥",Cheese:"🧀",Stack:"🍔",Mix:"🥣",Pour:"🫗",Flip:"🥞",Pearls:"⚫",Serve:"🥤",Roll:"🤲",
+  Chop:"🔪",Toss:"🍳",Sizzle:"🔥",
+  /* added dish-pack stations */
+  Syrup:"🍯",Batter:"🥣",Dot:"⚪",Split:"🔪",Stuff:"🥄",Bake:"🔥",Crumble:"🍰",Whip:"🥣",Tap:"👆",Fill:"🥄",
+  Fold:"🥣",Cut:"🔪",Berries:"🍓",Cream:"🥛",Swirl:"🌀",Patty:"🥩",Buns:"🍞",Sauce:"🥫",Braise:"🍲",Crisp:"🔥",
+  Garnish:"🌿",Boil:"♨️",Pull:"🧀",Veg:"🥬",Dough:"🍞",Pleat:"🥟",Fry:"🍳",Steam:"♨️",Dredge:"🥣",Steep:"🍵",
+  Milk:"🥛",Shake:"🥤",Muddle:"🥄",Ice:"🧊",Fizz:"🫧",Sift:"❄️",Art:"🎨",Whisk:"🥣"};
+function buildStations(){
+  const comps=[]; rush.pool.forEach(r=>(r.rushComponents||[]).forEach(c=>{ if(comps.indexOf(c)<0)comps.push(c); }));
+  const list=comps.slice(0,S.cafe.stations*3);
+  rush.stationSet=new Set(list);
+  // Only customers whose every needed component has a station can spawn — guarantees every order is serveable.
+  rush.servable=rush.pool.filter(r=>(r.rushComponents||[]).every(c=>rush.stationSet.has(c)));
+  if(rush.servable.length===0) rush.servable=rush.pool.slice();
+  document.getElementById("rushStations").innerHTML=list.map(c=>'<div class="station" data-comp="'+c+'"><div class="se">'+(STATION_EMOJI[c]||"🍴")+'</div>'+c+'</div>').join("");
+  $$("#rushStations .station").forEach(st=>st.addEventListener("click",()=>prepComponent(st.getAttribute("data-comp"),st)));
+}
+function prepComponent(comp,elm){
+  rush.tray.push(comp);
+  const r=elm.getBoundingClientRect(), ax=appRect();
+  Juice.fire("STACK",{x:r.left+r.width/2-ax.left,y:r.top+r.height/2-ax.top});
+  elm.style.transform="scale(.9)"; setTimeout(()=>elm.style.transform="",100);
+  renderTray(); refreshNeedChips();
+}
+function renderTray(){
+  const t=document.getElementById("rushTray"); if(!t) return;
+  t.innerHTML=rush.tray.length?rush.tray.map((c,i)=>'<div class="traychip" data-i="'+i+'">'+c+' ✕</div>').join(""):'<span class="hint">Tap stations to prep components…</span>';
+  $$("#rushTray .traychip").forEach(tc=>tc.addEventListener("click",()=>{ rush.tray.splice(+tc.getAttribute("data-i"),1); renderTray(); refreshNeedChips(); }));
+}
+function spawnCustomer(){
+  const recipe=pick(rush.servable&&rush.servable.length?rush.servable:rush.pool);
+  rush.customers.push({ id:Math.random().toString(36).slice(2), recipe, patience:1,
+    needed:(recipe.rushComponents||["Serve"]).slice(0), face:pick(["😀","😋","🥰","😎","🤗","😻","🧒","👧","👦","🧑"]) });
+  renderCustomers();
+}
+function neededChipsHTML(cu){
+  // Shows exactly what this order still needs, checked off live against the tray —
+  // so the player is never guessing what to prep.
+  const trayCopy=rush.tray.slice();
+  return '<div class="needlist">'+cu.needed.map(n=>{
+    const i=trayCopy.indexOf(n); const got=i>=0; if(got) trayCopy.splice(i,1);
+    return '<div class="needchip'+(got?' got':'')+'" title="'+esc(n)+'">'+(STATION_EMOJI[n]||"🍴")+'</div>';
+  }).join("")+'</div>';
+}
+function renderCustomers(){
+  const c=document.getElementById("rushCustomers"); if(!c) return;
+  c.innerHTML=rush.customers.map(cu=>'<div class="cust" data-id="'+cu.id+'">'
+    +'<div class="face">'+cu.face+'</div>'
+    +'<div style="font-size:22px">'+cu.recipe.emoji+'</div>'
+    +'<div class="order">'+esc(cu.recipe.name)+'</div>'
+    +neededChipsHTML(cu)
+    +'<div class="patience"><i style="width:'+Math.round(cu.patience*100)+'%;background:'+(cu.patience>.4?'#3DD6B0':'#FF7A59')+'"></i></div>'
+    +'<div class="pnum" style="font-size:11px;font-weight:800;margin-top:2px;color:'+(cu.patience>.4?'#2b9d7f':'#c33864')+'">'+(cu.patience>.4?'🙂':'😣')+' '+Math.round(cu.patience*100)+'%</div>'
+    +'</div>').join("");
+  $$("#rushCustomers .cust").forEach(cd=>cd.addEventListener("click",()=>tryServe(cd.getAttribute("data-id"),cd)));
+}
+function refreshNeedChips(){
+  // Cheap re-sync (no listener churn) so checkmarks update the instant the tray changes.
+  const c=document.getElementById("rushCustomers"); if(!c) return;
+  $$(".cust",c).forEach(cd=>{ const cu=rush.customers.find(x=>x.id===cd.getAttribute("data-id")); if(!cu) return;
+    const nl=cd.querySelector(".needlist"); if(nl) nl.outerHTML=neededChipsHTML(cu); });
+}
+function tryServe(id,cd){
+  const idx=rush.customers.findIndex(c=>c.id===id); if(idx<0) return;
+  const cu=rush.customers[idx];
+  const trayCopy=rush.tray.slice();
+  const ok=cu.needed.every(n=>{ const i=trayCopy.indexOf(n); if(i>=0){ trayCopy.splice(i,1); return true; } return false; });
+  const rect=cd.getBoundingClientRect(), ax=appRect();
+  const px=rect.left+rect.width/2-ax.left, py=rect.top+rect.height/2-ax.top;
+  if(ok){
+    cu.needed.forEach(n=>{ const i=rush.tray.indexOf(n); if(i>=0)rush.tray.splice(i,1); });
+    rush.combo++;
+    const gain=8+Math.round(rush.combo*2)+(cu.recipe.hero?6:0)+(cu.patience>.5?4:0)+(S.cafe.decor||0);
+    rush.coins+=gain; rush.servedCount++;
+    Juice.fire("COMBO_UP",{combo:rush.combo,x:px,y:py});
+    Juice.fire("COIN",{amt:gain,x:px,y:py});
+    for(let i=0;i<5;i++)Particles.spawn({x:px,y:py,vx:rand(80,-80),vy:rand(-180,-60),g:200,life:1,size:14,color:"#FF5D8F",shape:"star"});
+    showCombo();
+    Audio2.setEnergy(clamp(rush.combo/12,0,1));
+    rush.customers.splice(idx,1);
+    renderCustomers(); renderTray();
+    const rc=document.getElementById("rushCoins"); if(rc)rc.textContent=rush.coins;
+    const rsv=document.getElementById("rushServed"); if(rsv)rsv.textContent=rush.servedCount;
+    if(rush.servedCount>=rush.goal) endRush(true);
+  }else{
+    rush.combo=0; Audio2.setEnergy(0);
+    Juice.fire("OOPS",{}); toast("Need: "+cu.needed.join(", "));
+    cd.style.transform="translateX(-4px)"; setTimeout(()=>cd.style.transform="translateX(4px)",60); setTimeout(()=>cd.style.transform="",120);
+  }
+}
+function showCombo(){
+  if(rush.combo<2) return;
+  const el=document.getElementById("rushCombo"); if(!el) return;
+  el.textContent="COMBO x"+rush.combo+" 🔥";
+  el.style.transition="none"; el.style.opacity="1"; el.style.transform="scale(1.4)";
+  requestAnimationFrame(()=>{ el.style.transition="all .5s cubic-bezier(.34,1.56,.64,1)"; el.style.transform="scale(1)"; el.style.opacity="0"; });
+}
+function rushFrame(){
+  if(!rush||!rush.running){ return; }
+  const t=now(), dt=Math.min((t-rushLast)/1000,.05); rushLast=t;
+  rush.time-=dt;
+  rush.spawnT-=dt;
+  if(rush.spawnT<=0 && rush.customers.length<rush.tier.maxCust){ spawnCustomer(); rush.spawnT=rand(3.4,1.8); }
+  let dropped=false;
+  for(let i=rush.customers.length-1;i>=0;i--){
+    const cu=rush.customers[i];
+    if(!S.settings.cozy) cu.patience-=rush.patienceRate*dt;
+    if(cu.patience<=0){ rush.customers.splice(i,1); rush.combo=0; Audio2.setEnergy(0); Juice.fire("OOPS",{}); dropped=true; }
+  }
+  updatePatienceBars(dropped);
+  const tEl=document.getElementById("rushTime"); if(tEl) tEl.textContent=Math.max(0,Math.ceil(rush.time));
+  if(rush.time<=0){ endRush(rush.servedCount>=rush.goal); return; }
+  rushRaf=requestAnimationFrame(rushFrame);
+}
+function updatePatienceBars(dropped){
+  if(dropped){ renderCustomers(); return; }
+  $$("#rushCustomers .cust").forEach(b=>{ const cu=rush.customers.find(c=>c.id===b.getAttribute("data-id"));
+    if(cu){ const i=b.querySelector(".patience > i"); if(i){ i.style.width=Math.round(cu.patience*100)+"%"; i.style.background=cu.patience>.4?"#3DD6B0":"#FF7A59"; }
+      const pn=b.querySelector(".pnum"); if(pn){ pn.textContent=(cu.patience>.4?'🙂':'😣')+' '+Math.round(cu.patience*100)+'%'; pn.style.color=cu.patience>.4?'#2b9d7f':'#c33864'; } }
+  });
+}
+function endRush(won){
+  if(!rush) return; rush.running=false; cancelAnimationFrame(rushRaf);
+  const earned=rush.coins; S.coins+=earned;
+  if(won) S.cafe.level++;
+  save(); renderTopChips();
+  if(won) Juice.fire("CELEBRATE");
+  modal('<div style="font-size:44px">'+(won?"🎉":"⏰")+'</div>'
+    +'<h3>'+(won?"Day Complete!":"Time's Up!")+'</h3>'
+    +'<p>You served <b>'+rush.servedCount+'</b> customers'+(won?' and unlocked Day '+S.cafe.level+'!':'')+'.<br>Earned <b>🪙 '+earned+'</b> coins.</p>'
+    +'<button class="btn big coral" id="rushUpg">Café Upgrades</button>'
+    +'<button class="btn mint sm" id="rushAgain" style="margin-top:8px">Serve Again</button>'
+    +'<button class="btn ghost sm" id="rushHome" style="margin-top:8px">Home</button>');
+  document.getElementById("rushUpg").onclick=()=>{ closeModal(); openCafeUpgrades(); };
+  document.getElementById("rushAgain").onclick=()=>{ closeModal(); go("rush"); };
+  document.getElementById("rushHome").onclick=()=>{ closeModal(); go("home"); };
+}
+function openCafeUpgrades(){
+  const ups=[
+    {k:"speed",name:"Faster Equipment",desc:"Customers stay patient longer",cost:80,emoji:"⚡",cur:()=>Math.round((S.cafe.speed-1)/.2)+1,inc:()=>{S.cafe.speed=Math.min(2,S.cafe.speed+.2);}},
+    {k:"stations",name:"Extra Station",desc:"More prep stations",cost:120,emoji:"🍳",cur:()=>S.cafe.stations,inc:()=>{S.cafe.stations=Math.min(6,S.cafe.stations+1);}},
+    {k:"decor",name:"Cozy Décor",desc:"Happier customers, bigger tips",cost:100,emoji:"🪴",cur:()=>S.cafe.decor+1,inc:()=>{S.cafe.decor++;}}
+  ];
+  function isMaxed(k){ return (k==="speed"&&S.cafe.speed>=2)||(k==="stations"&&S.cafe.stations>=6); }
+  const rows=ups.map(u=>'<div class="row"><div style="font-size:30px">'+u.emoji+'</div>'
+    +'<div class="rt"><div class="rname">'+u.name+' <span style="opacity:.6;font-size:13px">Lv '+u.cur()+'</span></div><div class="rdesc">'+u.desc+'</div></div>'
+    +(isMaxed(u.k)?'<span class="owned">Maxed ✓</span>':'<button class="btn yellow sm" data-up="'+u.k+'">🪙 '+u.cost+'</button>')+'</div>').join("");
+  const sc=document.getElementById("screen-shop");
+  currentScreen="shop"; $$(".screen").forEach(s=>s.classList.remove("active")); sc.classList.add("active");
+  sc.innerHTML=topBar("Café Upgrades",true)+'<div class="scroll">'+rows+'<div class="hint">Upgrades make each service day easier and tastier!</div></div>';
+  sc.querySelector("[data-back]").addEventListener("click",()=>go("home"));
+  $$("#screen-shop [data-up]").forEach(b=>b.addEventListener("click",()=>{
+    const u=ups.find(x=>x.k===b.getAttribute("data-up"));
+    if(isMaxed(u.k)){ toast("Already maxed!"); return; }
+    if(S.coins>=u.cost){ S.coins-=u.cost; u.inc(); save(); renderTopChips(); toast(u.name+" upgraded!"); Juice.fire("STEP_DONE",{}); openCafeUpgrades(); }
+    else toast("Not enough coins!");
+  }));
+}
+
+/* ---------------- SHOP ---------------- */
+const COSMETICS=[
+  {sku:"outfit_chef",name:"Chef Whites Outfit",desc:"Classic pro chef look",cost:60,emoji:"👨‍🍳"},
+  {sku:"outfit_viral",name:"Viral Star Outfit",desc:"Purple influencer fit",cost:80,emoji:"✨"},
+  {sku:"glasses_blue",name:"Blue Glasses",desc:"Cool blue frames",cost:40,emoji:"🕶️"},
+  {sku:"glasses_purple",name:"Berry Glasses",desc:"Berry purple frames",cost:40,emoji:"👓"},
+  {sku:"apron_mint",name:"Mint Apron",desc:"Fresh minty apron",cost:50,emoji:"🥬"},
+  {sku:"apron_berry",name:"Berry Apron",desc:"Bold berry apron",cost:50,emoji:"🫐"}
+];
+Screens.shop={
+  render(){
+    const s=document.getElementById("screen-shop");
+    const fk=S.fullKitchen;
+    let cosHtml=COSMETICS.map(c=>{
+      const owned=S.owned[c.sku]||(fk&&c.sku==="outfit_viral");
+      return '<div class="row"><div style="font-size:30px">'+c.emoji+'</div>'
+        +'<div class="rt"><div class="rname">'+c.name+'</div><div class="rdesc">'+c.desc+'</div></div>'
+        +(owned?'<span class="owned">Owned ✓</span>':'<button class="btn purple sm" data-buy="'+c.sku+'">🪙 '+c.cost+'</button>')+'</div>';
+    }).join("");
+    s.innerHTML=topBar("Shop",true)+'<div class="scroll">'
+      +'<div class="row" style="background:linear-gradient(135deg,#FFF3D6,#FFE0B0)">'
+      +'<div style="font-size:38px">🌟</div>'
+      +'<div class="rt"><div class="rname">Full Kitchen Unlock</div>'
+      +'<div class="rdesc">All recipe worlds forever · exclusive outfit + café theme · no ads. One honest price.</div></div>'
+      +(fk?'<span class="owned">Owned ✓</span>':'<button class="btn yellow" id="buyFull">$4.99</button>')
+      +'</div>'
+      +'<div class="section-title">Cosmetics</div>'+cosHtml
+      +'<div class="section-title">Coins</div>'
+      +'<div class="row"><div style="font-size:30px">🪙</div><div class="rt"><div class="rname">Rewarded 2× Coins</div>'
+      +'<div class="rdesc">Watch a short clip for +100 coins (player-initiated).</div></div>'
+      +'<button class="btn mint sm" id="rewardCoins">+100</button></div>'
+      +'<div class="row"><div style="font-size:30px">💎</div><div class="rt"><div class="rname">Trade Gems for Coins</div>'
+      +'<div class="rdesc">Exchange 5 💎 for 150 🪙. You have '+S.gems+' 💎.</div></div>'
+      +'<button class="btn purple sm" id="tradeGems">5 💎 → 150 🪙</button></div>'
+      +'<button class="btn ghost big" id="restoreBtn" style="margin-top:14px">Restore Purchases</button>'
+      +'<div class="hint">No energy timers · no loot boxes · no forced ads · no pay-to-win.</div>'
+      +'</div>';
+    s.querySelector("[data-back]").setAttribute("data-back","home");
+    const buyFull=document.getElementById("buyFull");
+    if(buyFull) buyFull.onclick=()=>confirmPurchase("Full Kitchen","$4.99",()=>{
+      S.fullKitchen=true; S.owned.full_kitchen=true; S.owned.outfit_viral=true;
+      RECIPES.forEach(r=>S.unlocked[r.id]=true);
+      save(); toast("Full Kitchen unlocked! 🌟"); Juice.fire("CELEBRATE"); Screens.shop.render();
+    });
+    $$("[data-buy]",s).forEach(b=>b.onclick=()=>{
+      const sku=b.getAttribute("data-buy"); const c=COSMETICS.find(x=>x.sku===sku);
+      if(S.coins>=c.cost){ S.coins-=c.cost; S.owned[sku]=true; save(); renderTopChips(); toast(c.name+" bought!"); Audio2.play("coin"); Screens.shop.render(); }
+      else toast("Not enough coins!");
+    });
+    const rew=document.getElementById("rewardCoins");
+    if(rew) rew.onclick=()=>{ modal('<div style="font-size:40px">📺</div><h3>Rewarded Coins</h3>'
+      +'<p>(Simulated ad) Enjoy your bonus!</p><button class="btn mint big" id="rewClaim">Claim +100 🪙</button>');
+      document.getElementById("rewClaim").onclick=()=>{ closeModal(); S.coins+=100; save(); renderTopChips();
+        Juice.fire("COIN",{amt:100,x:appRect().width/2,y:appRect().height/2}); Screens.shop.render(); }; };
+    const tg=document.getElementById("tradeGems");
+    if(tg) tg.onclick=()=>{ if(S.gems>=5){ S.gems-=5; S.coins+=150; save(); renderTopChips();
+        Juice.fire("COIN",{amt:150,x:appRect().width/2,y:appRect().height/2}); toast("Traded 5 💎 for 150 🪙!"); Screens.shop.render(); }
+      else toast("Need 5 💎 to trade."); };
+    const rb=document.getElementById("restoreBtn"); if(rb) rb.onclick=()=>{ toast("Purchases restored ✓"); Juice.fire("UI_TAP"); };
+  }
+};
+function confirmPurchase(name,price,onOk){
+  modal('<div style="font-size:40px">🛍️</div><h3>Confirm Purchase</h3>'
+    +'<p>Unlock <b>'+name+'</b> for <b>'+price+'</b>?<br><span style="font-size:12px;opacity:.7">(Simulated — no real charge)</span></p>'
+    +'<button class="btn big yellow" id="pcOk">Buy '+price+'</button>'
+    +'<button class="btn ghost sm" id="pcNo" style="margin-top:8px">Cancel</button>');
+  document.getElementById("pcOk").onclick=()=>{ closeModal(); onOk(); };
+  document.getElementById("pcNo").onclick=closeModal;
+}
+
+/* ---------------- WARDROBE ---------------- */
+Screens.wardrobe={
+  render(){
+    const s=document.getElementById("screen-wardrobe");
+    const outfits=[{v:"classic",n:"Classic Tee",own:true},{v:"chef",n:"Chef Whites",own:!!S.owned.outfit_chef},{v:"viral",n:"Viral Star",own:!!S.owned.outfit_viral||S.fullKitchen},{v:"berry",n:"Berry Cutie",own:true}];
+    const glasses=[{v:"pink",n:"Pink",own:true},{v:"blue",n:"Blue",own:!!S.owned.glasses_blue},{v:"purple",n:"Berry",own:!!S.owned.glasses_purple},{v:"clear",n:"Clear",own:true}];
+    const aprons=[{v:"strawberry",n:"Strawberry",own:true},{v:"mint",n:"Mint",own:!!S.owned.apron_mint},{v:"sunny",n:"Sunny",own:true},{v:"berry",n:"Berry",own:!!S.owned.apron_berry}];
+    function chips(arr,cur,key){ return arr.map(o=>'<button class="btn '+(o.v===cur?'':'ghost')+' sm" '+(o.own?'':'disabled')+' data-set="'+key+'" data-val="'+o.v+'">'+o.n+(o.own?'':' 🔒')+'</button>').join(" "); }
+    s.innerHTML=topBar("Wardrobe",true)+'<div class="scroll" style="text-align:center">'
+      +'<div class="chloe-wrap" id="wardChloe" style="width:180px;height:200px;margin:0 auto"></div>'
+      +'<div class="section-title">Outfit</div><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">'+chips(outfits,S.cosmetic.outfit,"outfit")+'</div>'
+      +'<div class="section-title">Glasses</div><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">'+chips(glasses,S.cosmetic.glasses,"glasses")+'</div>'
+      +'<div class="section-title">Apron</div><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">'+chips(aprons,S.cosmetic.apron,"apron")+'</div>'
+      +'<div class="hint">Buy more looks in the Shop!</div></div>';
+    s.querySelector("[data-back]").setAttribute("data-back","home");
+    Chloe.draw(document.getElementById("wardChloe"),{expr:"thumbs"});
+    $$("[data-set]",s).forEach(b=>b.addEventListener("click",()=>{
+      if(b.disabled) return;
+      S.cosmetic[b.getAttribute("data-set")]=b.getAttribute("data-val"); save(); Juice.fire("UI_TAP"); Screens.wardrobe.render();
+    }));
+  }
+};
+
+/* ---------------- COOKBOOK ---------------- */
+Screens.cookbook={
+  render(){
+    const s=document.getElementById("screen-cookbook");
+    const learned=RECIPES.filter(r=>S.learned[r.id]);
+    let cards=learned.length?learned.map(r=>'<div class="card"><div class="emoji">'+r.emoji+'</div><div class="cname">'+esc(r.name)+'</div>'
+      +'<div class="meta">Best: '+(S.best[r.id]||0)+'</div>'
+      +'<div class="starsrow">'+"★".repeat(S.stars[r.id]||0)+"☆".repeat(3-(S.stars[r.id]||0))+'</div></div>').join("")
+      :'<div class="hint" style="grid-column:1/3;padding:40px">No recipes learned yet — go cook something! 👩‍🍳</div>';
+    s.innerHTML=topBar("Cookbook",true)+'<div class="scroll">'
+      +'<div class="sub">Learned '+learned.length+'/'+RECIPES.length+' recipes</div>'
+      +'<div class="grid" style="margin-top:10px">'+cards+'</div></div>';
+    s.querySelector("[data-back]").setAttribute("data-back","home");
+  }
+};
+
+/* ---------------- DAILY REWARD ---------------- */
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+function canClaimDaily(){ return S.daily.lastClaim!==todayStr(); }
+function getTrending(){
+  const t=todayStr();
+  if(S.trending.date!==t || !RECIPE_BY_ID[S.trending.recipeId]){
+    const free=RECIPES.filter(r=>r.free);
+    S.trending={date:t,recipeId:pick(free).id,best:0}; save();
+  }
+  return S.trending.recipeId;
+}
+Screens.daily={
+  render(){
+    const s=document.getElementById("screen-daily");
+    const rewards=[10,15,20,25,30,40,50,80];
+    const streak=S.daily.streak%rewards.length;
+    const trendId=getTrending();
+    let cal=rewards.map((amt,i)=>'<div class="dayc '+(i<streak?'claimed':'')+' '+(i===streak&&canClaimDaily()?'today':'')+'">Day '+(i+1)+'<div class="amt">🪙'+amt+'</div>'+(i<streak?'✓':'')+'</div>').join("");
+    s.innerHTML=topBar("Daily Reward",true)+'<div class="scroll" style="text-align:center">'
+      +'<div class="chloe-wrap" id="dailyChloe" style="width:120px;height:130px;margin:0 auto"></div>'
+      +'<div class="daycal">'+cal+'</div>'
+      +(canClaimDaily()?'<button class="btn big yellow" id="claimDaily">Claim Day '+(streak+1)+'! 🎁</button>':'<div class="sub">Come back tomorrow for more! 💛</div>')
+      +'<div class="hint">Trending Now: <b>'+esc((RECIPE_BY_ID[trendId]||{name:"—"}).name)+'</b> — best score '+(S.trending.best||0)+'</div>'
+      +'<button class="btn mint sm" id="playTrending" style="margin-top:10px">Cook Trending Recipe</button>'
+      +'</div>';
+    s.querySelector("[data-back]").setAttribute("data-back","home");
+    Chloe.draw(document.getElementById("dailyChloe"),{expr:"excited"});
+    const cd=document.getElementById("claimDaily");
+    if(cd) cd.onclick=()=>{
+      // Reset the streak if the previous claim was neither empty nor exactly yesterday (a real skip).
+      const yd=new Date(); yd.setDate(yd.getDate()-1); const yStr=yd.getFullYear()+"-"+(yd.getMonth()+1)+"-"+yd.getDate();
+      if(S.daily.lastClaim!=="" && S.daily.lastClaim!==yStr) S.daily.streak=0;
+      const amt=rewards[S.daily.streak%rewards.length]; S.daily.streak++; S.daily.lastClaim=todayStr();
+      S.coins+=amt;
+      // Gems are a real reward now: earn 1 gem each daily claim, +2 bonus on a full 8-day cycle.
+      const gemGain=1+((S.daily.streak%rewards.length===0)?2:0); S.gems+=gemGain;
+      save(); renderTopChips();
+      Juice.fire("CELEBRATE"); Juice.fire("COIN",{amt,x:appRect().width/2,y:appRect().height/2}); toast("+"+amt+" coins, +"+gemGain+" 💎!"); Screens.daily.render();
+    };
+    document.getElementById("playTrending").onclick=()=>{ const id=getTrending(); if(isUnlocked(id))startCook(id); else offerUnlock(id); };
+  }
+};
+
+/* ---------------- SETTINGS ---------------- */
+Screens.settings={
+  render(){
+    const s=document.getElementById("screen-settings"), st=S.settings;
+    function slider(id,label,val){ return '<div class="setrow"><label>'+label+'</label><input type="range" min="0" max="1" step="0.05" value="'+val+'" data-slider="'+id+'"></div>'; }
+    function toggle(id,label,on){ return '<div class="setrow"><label>'+label+'</label><div class="toggle '+(on?'on':'')+'" data-toggle="'+id+'"><i></i></div></div>'; }
+    s.innerHTML=topBar("Settings",true)+'<div class="scroll">'
+      +'<div class="section-title">🔊 Audio</div>'
+      +slider("music","Music",st.music)
+      +slider("sfx","UI & Coins",st.sfx)
+      +slider("asmr","Cooking Sounds",st.asmr)
+      +toggle("asmrOn","Cooking Sounds On",st.asmrOn)
+      +toggle("muted","Mute Everything",st.muted)
+      +'<div class="section-title">📳 Haptics</div>'
+      +toggle("haptics","Haptics / Vibration"+(Haptics.supported?"":" (unsupported here)"),st.haptics)
+      +slider("hapticIntensity","Haptic Intensity",st.hapticIntensity)
+      +'<div class="section-title">♿ Accessibility</div>'
+      +toggle("reducedMotion","Reduced Motion",st.reducedMotion)
+      +toggle("cozy","Cozy Mode (no time pressure)",st.cozy)
+      +'<div class="hint">Cozy Mode removes all timers in Café Rush. Reduced Motion tones down shake &amp; particles. All of Chloe\'s lines have on-screen text.</div>'
+      +'<button class="btn ghost sm" id="resetSave" style="margin:16px auto;display:block">Reset All Progress</button>'
+      +'</div>';
+    s.querySelector("[data-back]").setAttribute("data-back","home");
+    let _lastUiTick=0;
+    $$("[data-slider]",s).forEach(sl=>sl.addEventListener("input",()=>{
+      S.settings[sl.getAttribute("data-slider")]=parseFloat(sl.value); Audio2.applyMix(); save();
+      const t=now(); if(t-_lastUiTick>120){ _lastUiTick=t; Audio2.play("ui"); }
+    }));
+    $$("[data-toggle]",s).forEach(tg=>tg.addEventListener("click",()=>{
+      const k=tg.getAttribute("data-toggle"); S.settings[k]=!S.settings[k];
+      tg.classList.toggle("on",S.settings[k]);
+      if(k==="reducedMotion") document.body.classList.toggle("reduced",S.settings[k]);
+      Audio2.applyMix(); save(); Juice.fire("UI_TAP");
+    }));
+    document.getElementById("resetSave").onclick=()=>{ modal('<div style="font-size:40px">🗑️</div><h3>Reset Progress?</h3>'
+      +'<p>This erases all coins, stars, and unlocks. Can\'t be undone.</p>'
+      +'<button class="btn big coral" id="rsYes">Yes, reset</button><button class="btn ghost sm" id="rsNo" style="margin-top:8px">Cancel</button>');
+      document.getElementById("rsYes").onclick=()=>{ localStorage.removeItem(SAVE_KEY); S=JSON.parse(JSON.stringify(DefaultSave)); closeModal(); Audio2.applyMix(); document.body.classList.toggle("reduced",S.settings.reducedMotion); go("home"); toast("Progress reset."); };
+      document.getElementById("rsNo").onclick=closeModal;
+    };
+  }
+};
+
+/* ==========================================================================
+   Master requestAnimationFrame loop — particles, shake, slow-mo
+   ========================================================================== */
+let lastT=now();
+function loop(){
+  const t=now(); let dt=(t-lastT)/1000; lastT=t;
+  dt=Math.min(dt,.05)*FX.timeScale();
+  Particles.update(dt);
+  FX.apply();
+  requestAnimationFrame(loop);
+}
+
+/* ==========================================================================
+   Boot-up wiring
+   ========================================================================== */
+function boot(){
+  Particles.resize();
+  // Honor the OS-level reduced-motion preference on first launch (no saved preference yet).
+  try{
+    if(localStorage.getItem(SAVE_KEY)===null && window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){
+      S.settings.reducedMotion=true;
+    }
+  }catch(e){}
+  document.body.classList.toggle("reduced",S.settings.reducedMotion);
+  document.addEventListener("touchmove",e=>{ if(e.touches.length>1) e.preventDefault(); },{passive:false});
+  let lastTouch=0;
+  document.addEventListener("touchend",e=>{ const n=Date.now(); if(n-lastTouch<300) e.preventDefault(); lastTouch=n; },{passive:false});
+  const kick=()=>{ Audio2.init(); Audio2.resume(); Audio2.applyMix(); };
+  window.addEventListener("pointerdown",kick,{once:true});
+  window.addEventListener("touchstart",kick,{once:true});
+  // Pause/stop synthesis when the app is hidden so music doesn't keep scheduling in the background.
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden) Audio2.suspend(); else Audio2.wake(); });
+  go("boot");
+  requestAnimationFrame(loop);
+}
+window.addEventListener("load",boot);
+window.addEventListener("resize",()=>Particles.resize());
+</script>
+</body>
+</html>
