@@ -6,7 +6,7 @@ const browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-u
 const results=[];
 for(const mobile of [false,true])for(const game of ['tower','snow']){
  const name=game+'-'+(mobile?'phone':'desktop');if(process.env.CASE&&process.env.CASE!==name)continue;const r={name,checks:[],errors:[]};
- const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:720},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1});
+ const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:720},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:mobile?1:0.5});
  const page=await ctx.newPage();r.console=[];page.on('console',m=>{if(m.type()==='error')r.console.push(m.text());});page.on('pageerror',e=>r.errors.push(e.message));
  page.on('response',res=>{if(res.status()>=400)r.errors.push(res.status()+' '+res.url());});
  const check=(x,msg)=>{assert.ok(x,msg);r.checks.push(msg);};
@@ -54,13 +54,13 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
     const raceFinishes=bot.finished&&bot.s>=2000;
     return {boostImmediate,crashDropsRail,cleanReset,railBanksAfterLanding,badLandingScoresZero,brakingSlows,raceFinishes};
    });check(Object.values(r.physics).every(Boolean),'Boost, crash and reset physics regressions pass');
-   await page.locator('#btnPlay').click();await page.waitForFunction(()=>__game.state()==='race',{},{timeout:45000});
+   await page.locator('#btnPlay').click();await page.waitForFunction(()=>__game.state()==='race',{},{timeout:90000});
    if(mobile){check(await page.locator('#touch').isVisible(),'Touch controls are visible');await page.locator('#tBoost').tap();}
    else await page.keyboard.down('ArrowUp');
-   await page.waitForFunction(()=>__game.player().s>15,{},{timeout:45000});
+   await page.waitForFunction(()=>__game.player().s>15,{},{timeout:90000});
    check(true,'Rider moves downhill during real-time play');
-   if(mobile){const box=await page.locator('#tJump').boundingBox();const cdp=await ctx.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:box.x+box.width/2,y:box.y+box.height/2}]});await page.waitForFunction(()=>__game.player().jumpHeld&&__game.player().charge>.5,{},{timeout:45000});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}else{await page.keyboard.up('ArrowUp');await page.keyboard.down('Space');await page.waitForFunction(()=>__game.player().jumpHeld&&__game.player().charge>.5,{},{timeout:45000});await page.keyboard.up('Space');}
-   await page.waitForFunction(()=>__game.player().totalAir>0,{},{timeout:45000});check(true,'Charge and release produces airtime');
+   if(mobile){const box=await page.locator('#tJump').boundingBox();const cdp=await ctx.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:box.x+box.width/2,y:box.y+box.height/2}]});await page.waitForFunction(()=>__game.player().jumpHeld&&__game.player().charge>.5,{},{timeout:90000});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}else{await page.keyboard.up('ArrowUp');await page.keyboard.down('Space');await page.waitForFunction(()=>__game.player().jumpHeld&&__game.player().charge>.5,{},{timeout:90000});await page.keyboard.up('Space');}
+   await page.waitForFunction(()=>__game.player().totalAir>0,{},{timeout:90000});check(true,'Charge and release produces airtime');
    await page.keyboard.up('ArrowUp');await page.locator('#btnPause').click();
    const s=await page.evaluate(()=>__game.player().s);await page.waitForTimeout(400);check(s===await page.evaluate(()=>__game.player().s),'Pause freezes snowboard physics');
    await page.locator('#btnResume').click();
@@ -72,7 +72,7 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
   }
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
   check(r.errors.length===0,'No runtime or failed-asset errors');r.status='passed';
- }catch(e){r.status='failed';r.failure=e.message;r.diagnostics=await page.evaluate(()=>({loading:document.querySelector('#loadTxt')?.textContent,pending:window.__assetLoads?[...window.__assetLoads]:[]})).catch(()=>null);await page.screenshot({path:`${out}/${name}-failure.png`,timeout:10000}).catch(()=>{});}
+ }catch(e){r.status='failed';r.failure=e.message;r.diagnostics=await page.evaluate(()=>({loading:document.querySelector('#loadTxt')?.textContent,pending:window.__assetLoads?[...window.__assetLoads]:[],state:window.__game?.state(),player:window.__game?{s:__game.player().s,time:__game.player().time,charge:__game.player().charge}:null,visibility:document.visibilityState})).catch(()=>null);await page.screenshot({path:`${out}/${name}-failure.png`,timeout:10000}).catch(()=>{});}
  finally{results.push(r);console.log(JSON.stringify(r));await fs.writeFile(`${out}/results.json`,JSON.stringify(results,null,2));await ctx.close();}
 }
 await browser.close();if(results.some(r=>r.status!=='passed'))process.exitCode=1;

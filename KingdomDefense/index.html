@@ -151,10 +151,11 @@ body.breach-warning::after{content:"";position:fixed;inset:0;pointer-events:none
 @keyframes gatePulse{50%{box-shadow:inset 0 0 130px rgba(255,69,58,.78)}}
 #debug{position:absolute;right:calc(var(--safe-right) + 12px);bottom:calc(var(--safe-bottom) + 12px);display:none;z-index:110;padding:8px 10px;border-radius:12px;background:rgba(3,12,9,.76);border:1px solid rgba(126,232,255,.34);color:#c8f5ff;font:700 10px/1.45 ui-monospace,Consolas,monospace;white-space:pre;pointer-events:none}.dev-on #debug{display:block}.routeLegend{position:absolute;left:50%;bottom:calc(var(--safe-bottom) + 142px);transform:translateX(-50%);padding:6px 10px;border-radius:99px;background:rgba(7,21,13,.6);color:#d9f7e2;font-size:10px;letter-spacing:.5px;opacity:.9;pointer-events:none;transition:background .2s,color .2s}.breachPulse{transition:color .2s,background .2s;animation:breachPulse 0.16s ease-out;box-shadow:0 0 0 1px rgba(255,92,92,.6),0 0 22px rgba(255,60,58,.5)}@keyframes breachPulse{50%{background:rgba(80,10,16,.85)}}
 @media(max-width:1199px){#rankUp{top:calc(var(--safe-top) + 119px)}.rankbox{min-width:min(420px,92vw);padding:9px 11px;gap:8px}.rankbox p{max-width:190px}.routeLegend{bottom:calc(var(--safe-bottom) + 168px)}}
+#orientationTip{display:none} @media(orientation:portrait){#orientationTip{display:block;position:fixed;top:165px;left:20px;right:20px;text-align:center;color:#d7e8d9;font:600 12px system-ui;pointer-events:none;z-index:2}}
 </style>
 </head>
 <body>
-<canvas id="game"></canvas>
+<canvas id="game"></canvas><div id="orientationTip">Rotate your phone for a larger battlefield</div>
 <div id="ui">
   <div id="stats" class="panel"><span class="stat coin">CREDITS <b id="money">700</b></span><span class="stat life">GATE <b id="lives">30</b></span><span class="stat wave">WAVE <b id="wave">0/40</b></span></div>
   <div id="controls"><button class="btn" id="pause" aria-label="Pause">Ⅱ</button><div class="segmented" aria-label="Game speed"><button class="btn on speed" data-speed="1">1×</button><button class="btn speed" data-speed="2">2×</button><button class="btn speed" data-speed="3">3×</button></div><button class="btn" id="auto">AUTO OFF</button><button class="btn" id="rush">RUSH 0%</button><button class="btn" id="soundBtn" aria-label="Toggle sound">🔊</button><button class="btn primary" id="startWave">START WAVE</button></div>
@@ -227,7 +228,7 @@ function masteryLevel(type){let x=mastery(type);return x>=2400?50:x>=900?25:x>=2
 function gainMastery(type,n=1){career.towerXP[type]=(career.towerXP[type]||0)+n;saveCareer()}
 function unlockAchievement(id,label){if(career.achievements[id])return;career.achievements[id]=true;saveCareer();toast(`ACHIEVEMENT UNLOCKED — ${label}`);fanfare();burst(W/2,H*.22,"#ffd43b",24)}
 const MAPS_FALLBACK=[
-  {name:"Riverside Switchback",theme:"Castle Courtyard",trait:"Tutorial · winding road and clear build pads",stars:1,src:"assets/maps/riverside-switchback.webp",fallback:"assets/maps/riverside-switchback.webp",path:[[0.00,0.63],[0.075,0.60],[0.11,0.56],[0.15,0.51],[0.185,0.48],[0.215,0.465],[0.25,0.475],[0.275,0.515],[0.29,0.57],[0.305,0.625],[0.325,0.585],[0.345,0.51],[0.36,0.45],[0.375,0.435],[0.41,0.42],[0.44,0.415],[0.475,0.44],[0.49,0.50],[0.505,0.57],[0.53,0.635],[0.555,0.60],[0.575,0.53],[0.585,0.46],[0.60,0.445],[0.62,0.435],[0.655,0.43],[0.685,0.46],[0.70,0.52],[0.715,0.585],[0.735,0.635],[0.76,0.59],[0.775,0.52],[0.785,0.465],[0.825,0.44],[0.86,0.45],[0.885,0.50],[0.905,0.535],[0.95,0.52],[1.03,0.50]]},
+  {name:"Riverside Switchback",theme:"Castle Courtyard",trait:"Tutorial · winding road and clear build pads",stars:1,src:"assets/maps/riverside-switchback.webp",fallback:"assets/maps/riverside-switchback.webp",path:[[0,0.716],[0.06,0.654],[0.11,0.588],[0.16,0.52],[0.21,0.479],[0.245,0.475],[0.275,0.52],[0.287,0.6],[0.3,0.646],[0.327,0.66],[0.35,0.635],[0.365,0.575],[0.369,0.5],[0.395,0.429],[0.433,0.391],[0.482,0.387],[0.53,0.425],[0.545,0.486],[0.545,0.566],[0.544,0.646],[0.569,0.7],[0.6,0.733],[0.647,0.726],[0.676,0.699],[0.692,0.65],[0.697,0.57],[0.68,0.49],[0.68,0.43],[0.71,0.393],[0.75,0.394],[0.788,0.441],[0.815,0.51],[0.825,0.56],[0.855,0.579],[0.9,0.564],[0.932,0.532],[0.95,0.48],[1.03,0.43]]},
   {name:"Iron Harbour",theme:"Storm Coast",trait:"Harbour winds · +15% projectile speed",stars:2,src:"assets/maps/iron-harbour.webp",fallback:"assets/maps/iron-harbour.webp",path:[[0,.58],[.12,.52],[.20,.42],[.28,.38],[.38,.40],[.44,.52],[.42,.62],[.52,.66],[.62,.62],[.66,.52],[.72,.45],[.82,.48],[.90,.55],[1.03,.50]]},
   {name:"Red Ridge Convoy",theme:"Volcanic Wasteland",trait:"Hard route · +20% crown reward",stars:3,src:"assets/maps/red-ridge-convoy.webp",fallback:"assets/maps/red-ridge-convoy.webp",path:[[.10,0],[.10,.14],[.08,.24],[.17,.29],[.26,.31],[.34,.37],[.36,.48],[.33,.60],[.43,.68],[.55,.67],[.66,.57],[.71,.44],[.81,.45],[.86,.58],[.90,.70],[1.03,.78]]},
   {name:"Alpine Relay",theme:"Frozen Tundra",trait:"Ice specialists gain +20% range",stars:2,src:"assets/maps/alpine-relay.webp",fallback:"assets/maps/alpine-relay.webp",path:[[.17,.02],[.21,.16],[.31,.24],[.44,.29],[.55,.36],[.64,.47],[.66,.58],[.62,.66],[.72,.73],[.84,.78],[1.03,.85]]},
@@ -270,7 +271,7 @@ function buildRoutesForMap(i){
   return routeDefs;
 }
 function buildRouteGeometry(){
-  routesPx=routeDefs.map(route=>route.map(p=>({x:p[0]*W,y:p[1]*H})));
+  routesPx=routeDefs.map(route=>route.map(p=>({x:p[0]*W,y:boardRect().y+p[1]*boardRect().h})));
   routesSeg=[];
   routesTotal=[];
   for(let i=0;i<routesPx.length;i++){
@@ -630,6 +631,7 @@ Object.keys(TYPES).forEach(k=>shop.insertAdjacentHTML("beforeend",`<button class
 function showCategory(cat){if(activeCategory!==cat)haptic();activeCategory=cat;document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("on",b.dataset.cat===cat));let visible=Object.keys(TYPES).filter(k=>TYPES[k].category===cat);document.querySelectorAll(".card").forEach(c=>{let on=c.dataset.cat===cat;c.style.display=on?"block":"none";if(on)c.querySelector(".key").textContent=visible.indexOf(c.dataset.type)+1});selectedType=null;closeTowerPanel();syncCards()}
 document.querySelector("#shopFilters").onclick=e=>{let b=e.target.closest(".filter");if(b)showCategory(b.dataset.cat)};
 showCategory("Primary");
+function boardRect(){const h=W<H?W*9/16:H;return {y:W<H?Math.max(170,(H-150-h)/2):0,h};}
 function resize(){
   D=Math.min(devicePixelRatio||1,2);
   W=innerWidth;
@@ -642,7 +644,7 @@ function resize(){
   ctx.imageSmoothingEnabled=true;
   ctx.imageSmoothingQuality="high";
   buildRouteGeometry();
-  state.towers.forEach(t=>{t.x=t.nx*W;t.y=t.ny*H});
+  state.towers.forEach(t=>{t.x=t.nx*W;t.y=boardRect().y+t.ny*boardRect().h});
   updateCanvasMargins();
   markBuildZoneDirty();
   buildVignette();
@@ -665,7 +667,7 @@ const BUILD_MASK_B64={
  7:"+AEA/P////////8//z/wf/gBAP7///////////9/+P8AAAD+//////////////3/AAAA/P///////////////wAAAPj///////////////8AAADw////////////////AAAA4P///////////////wAAAMD///////////////8AAAAA/uP/////////////AAAAAPzj////////////8wAAAAD85///j/n///////MAAAAA/Of/PwDw////////AAAAAP7D/x8A4P///////wAAAID/AfwPAMD///////8AAADA/wDgDwCA////////AAAA4D8AwAcAAP/9/////wAAAPAfAMAHAAAA+P////8AAAD4BwDgBwAAAPD/////AAAA+AEA/g8A+Afg////fwAAgDwAwP8fAP8PAPj//z8AAMAfAPj///H/PwDw//8fAACADwD+/////38A4P//DwAAgA/A////////AMD//w8AAIAH+P+P/////wPA//8fAACAB///Afj/A/8HwP//fwAAwO//PwCAPwD+H8D///8AAOD//w8AAAAA+D/g////AADw//8BAAAAAPB/4P///wAA+P8/AAAAAADg//D///8A/P//BwAAAAAAwP///////v//fwAAAAAAMID//////////w8AAAAAADAA//////////8BAAAAAABwAP7///////8fAAAAAAAA+AD8//////8HAAAAAAAAAP8H+P////8AAAAAAAAAAPz/D/D/////AAAAAAAAAAD//w/g/////wAAAAAAAAAA//8PwP////8AAAAAAAAwAPj/D4D/////AAAAAAAAfgDA/x8A/////wAAAAAAgD8AAP8/AP7///8AAAAAAMAfAAD+fwD8////AAAAAADwDwAA/P8P8P///wAAAAAA/AcAAPj/f+D///8AAAAAAP4AAADw///A////AAAAAAA/AAAAwP//gP///wAAAADgHwAAAID//wH///8AAAAA+A8AAACA//8B/P//AAAAAPwHAAAAgP//Afj//wAAAAD8AwAAAID//wDg//8AAAAA/gEAAADA//8AwP//AAAAgP8BAAAAwP//AQD//wAAAOD/AAAAAcD//wMA/v8AAAD+/wAAAAHA//8DAPz/AADA//8AAAAAgP//AwDg/wAA4P9/AAAAAAD//wEAAP8AAPD/PwAAYAAA/P8BAAD8AAD4/x8AAOAYAPj/AQAA+AAA/P8fAADgPwDw/wMAAPAAAPz/PwAAwD8A8P8DAADgAAD+/z8AAOB/APD/AwAAwAAA/v9/AAD+fxjw/wcAAMAAAP//fwAA//9/8P8PBADAAID//38AwP////j//w8AwADA////AOD///////8PAOAA4P///x/4/////////wPwAPD///9//P/////////v/wD8//////z///////////8A/v/////8////////////AP///////////////////4D///////////////////8Ah/////////////////9/",
 };
 const BUILD_MASKS=Object.keys(BUILD_MASK_B64).sort((a,b)=>a-b).map(k=>Uint8Array.from(atob(BUILD_MASK_B64[k]),c=>c.charCodeAt(0)));
-function maskBlocked(x,y){const m=BUILD_MASKS[selectedMap];if(!m)return false;const gx=Math.min(127,Math.max(0,x/W*128|0)),gy=Math.min(71,Math.max(0,y/H*72|0)),i=gy*128+gx;return !!(m[i>>3]&(1<<(i&7)))}
+function maskBlocked(x,y){const m=BUILD_MASKS[selectedMap];if(!m)return false;const gx=Math.min(127,Math.max(0,x/W*128|0)),gy=Math.min(71,Math.max(0,(y-boardRect().y)/boardRect().h*72|0)),i=gy*128+gx;return !!(m[i>>3]&(1<<(i&7)))}
 function markBuildZoneDirty(){buildZoneDirty=true}
 function computeBuildZone(){
   if(!W||!H)return;
@@ -827,7 +829,7 @@ hurt(d,t){
 const nativeEnemyHurt=Enemy.prototype.hurt;Enemy.prototype.hurt=function(d,t){let alive=!this.dead;if(t?.damageType==="sharp"&&this.slowT>0)d*=2;if(t?.damageType==="chemical")this.poisonT=2.8;nativeEnemyHurt.call(this,d,t);if(alive&&this.dead&&t?.type){gainMastery(t.type,this.boss?6:1);if(state.kills===1)unlockAchievement("first-blood","FIRST BLOOD")}}
 function drawTowerEvolution(t,s,ty){let tier=Math.min(5,1+Math.floor(t.level/2)),cols=["#e9f1ee","#86d6ff","#ffd557","#ff8c58","#d98cff"],c=cols[tier-1];ctx.save();ctx.strokeStyle=c;ctx.fillStyle=c;ctx.shadowColor=c;ctx.shadowBlur=8+tier*3;ctx.globalAlpha=.78;for(let i=0;i<tier-1;i++){let a=-Math.PI/2+i*(Math.PI*2/Math.max(1,tier-1));ctx.beginPath();ctx.arc(Math.cos(a)*s*.28,Math.sin(a)*s*.16,s*(.045+i*.008),0,7);ctx.fill()}if(tier>=3){ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,3,s*.43,Math.PI*.1,Math.PI*.9);ctx.stroke()}if(tier>=4){ctx.setLineDash([3,3]);ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,2,s*.58,0,7);ctx.stroke();ctx.setLineDash([])}if(tier===5){ctx.globalAlpha=.42+.18*Math.sin(performance.now()/120);ctx.beginPath();ctx.arc(0,0,s*.82,0,7);ctx.stroke()}ctx.shadowBlur=0;ctx.globalAlpha=1;ctx.font=`900 ${Math.max(8,8*SC)}px 'Nunito',sans-serif`;ctx.textAlign="center";ctx.fillStyle="#fff";const tagY=ty==null?-s*.78:Math.max(-s*.78,(canvasTopMargin+4)-ty);ctx.fillText(`T${tier}`,0,tagY);ctx.restore()}
 class Tower{
- constructor(x,y,type){let d=TYPES[type];Object.assign(this,d);this.type=type;this.x=x;this.y=y;this.nx=x/W;this.ny=y/H;this.cool=0;this.angle=-1.57;this.pathLevels=[0,0,0];this.mainPath=-1;this.level=0;this.spent=d.cost;this.targetMode="first";this._rate=this.rate;this._range=this.range}
+ constructor(x,y,type){let d=TYPES[type];Object.assign(this,d);this.type=type;this.x=x;this.y=y;this.nx=x/W;this.ny=(y-boardRect().y)/boardRect().h;this.cool=0;this.angle=-1.57;this.pathLevels=[0,0,0];this.mainPath=-1;this.level=0;this.spent=d.cost;this.targetMode="first";this._rate=this.rate;this._range=this.range}
  canSee(e){if(!e.camo||this.camo)return true;return state.towers.some(b=>b.revealAura&&Math.hypot(b.x-this.x,b.y-this.y)<(b.buffRange||b.range))}
  update(dt){
   this.cool-=dt;
@@ -1096,7 +1098,7 @@ function ensureGradedMap(){
   gradedMapCanvas.height=H;
   const g=gradedMapCanvas.getContext("2d");
   g.filter="saturate(1.22) contrast(1.09) brightness(1.02) sepia(.05)";
-  g.drawImage(im,0,0,W,H);
+  g.fillStyle="#0b1d1b";g.fillRect(0,0,W,H);const b=boardRect();g.drawImage(im,0,b.y,W,b.h);
   gradedMapKey=key;
   return gradedMapCanvas;
 }
@@ -1106,7 +1108,7 @@ function drawMap(){
     ctx.drawImage(gm,0,0);
   }else{
     let im=images["map"+selectedMap];
-    if(im&&im.complete)ctx.drawImage(im,0,0,W,H);
+    if(im&&im.complete)ctx.drawImage(im,0,boardRect().y,W,boardRect().h);
     else{ctx.fillStyle="#39732e";ctx.fillRect(0,0,W,H)}
   }
   ctx.fillStyle="#07150d33";ctx.fillRect(0,0,W,H);
@@ -1275,6 +1277,7 @@ function loop(t){let dt=Math.min(.033,(t-last)/1000||0);last=t;fpsClock+=dt;fpsF
 const mouse={x:0,y:0};cv.addEventListener("pointermove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
 function placementClearance(){return Math.max(24,48*Math.min(1,Math.min(W/1100,H/620)))}
 function canBuild(x,y){
+  const b=boardRect();if(y<b.y+10||y>b.y+b.h-10)return false;
   if(x<W-SBW-8&&y>canvasTopMargin&&y<H-(SBW?34:130)&&distToPath(x,y)>placementClearance()&&!maskBlocked(x,y)&&!state.towers.some(t=>Math.hypot(t.x-x,t.y-y)<placementClearance()))return true;
   return false;
 }
