@@ -122,6 +122,10 @@
     .stat{padding:8px}
     .stat b{font-size:18px}
   }
+#viewControls{position:absolute;left:12px;bottom:100px;z-index:7;display:flex;gap:6px;padding:6px}
+#viewControls button{min-width:44px;min-height:44px;border:1px solid #8ba3ba;border-radius:10px;background:#173147;color:white;font:600 14px system-ui;touch-action:manipulation}
+#viewControls button[aria-pressed="true"]{background:#22775d;border-color:#89e2bb}
+@media(max-width:640px){#viewControls{top:118px;bottom:auto}#rail:not(.expanded){display:none}#viewControls{max-width:calc(100vw - 24px);flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -136,7 +140,8 @@
   <div id="comboChip"><span class="lbl">Streak</span><b id="comboVal">x1</b><span id="comboBar"><i></i></span></div>
 </div>
 
-<div class="panel" id="hint">Drag to look &nbsp;·&nbsp; click or drag surfaces to clean &nbsp;·&nbsp; wheel to zoom</div>
+<div class="panel" id="hint">Clean: drag surfaces · Look: drag to turn · + / −: zoom</div>
+<div class="panel" id="viewControls" aria-label="Camera and tools"><button id="lookMode" type="button" aria-pressed="false">Look</button><button id="zoomIn" type="button" aria-label="Zoom in">+</button><button id="zoomOut" type="button" aria-label="Zoom out">−</button><button id="toolboxToggle" type="button" aria-expanded="false" aria-controls="rail">Toolbox</button></div>
 
 <div class="panel" id="tools"></div>
 
@@ -698,12 +703,17 @@ function frame(now){
 requestAnimationFrame(frame);
 
 /* ------------------------------------------------------------- input */
-var dragging=false, orbiting=false, lastPt=null, moved=0;
+var dragging=false, orbiting=false, lastPt=null, moved=0, lookMode=false;
+el('lookMode').onclick=function(){endPtr();lookMode=!lookMode;this.setAttribute('aria-pressed',String(lookMode));this.textContent=lookMode?'Look on · Clean?':'Look';};
+function zoomBy(amount){cam.dist=Math.max(7,Math.min(26,cam.dist+amount));applyCam();}
+el('zoomIn').onclick=function(){zoomBy(-1.5);};
+el('zoomOut').onclick=function(){zoomBy(1.5);};
+el('toolboxToggle').onclick=function(){var open=el('rail').classList.toggle('expanded');this.setAttribute('aria-expanded',String(open));};
 canvas.addEventListener('pointerdown', function(e){
   canvas.setPointerCapture(e.pointerId);
   lastPt = { x:e.clientX, y:e.clientY }; moved=0;
   if(mode!=='play') return;
-  if(e.button===2 || e.shiftKey){ orbiting=true; return; }
+  if(lookMode || e.button===2 || e.shiftKey){ orbiting=true; return; }
   var h = pickAt(e.clientX, e.clientY);
   if(h && h.trash){ removeTrash(h.trash, h.point); return; }
   if(h && h.surface){ state.scrubbing=true; state.lastUV=null; doScrub(h); return; }
@@ -724,6 +734,9 @@ canvas.addEventListener('pointermove', function(e){
 function endPtr(){ state.scrubbing=false; state.lastUV=null; orbiting=false; lastPt=null; }
 canvas.addEventListener('pointerup', endPtr);
 canvas.addEventListener('pointercancel', endPtr);
+canvas.addEventListener('lostpointercapture', endPtr);
+window.addEventListener('blur', endPtr);
+document.addEventListener('visibilitychange', function(){if(document.hidden)endPtr();});
 canvas.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 canvas.addEventListener('wheel', function(e){
   e.preventDefault(); cam.dist = Math.max(7, Math.min(26, cam.dist + Math.sign(e.deltaY)*0.9)); applyCam();
@@ -1031,3 +1044,4 @@ window.__clean_debug = {
 </script>
 </body>
 </html>
+

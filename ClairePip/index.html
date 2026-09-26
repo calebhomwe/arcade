@@ -395,7 +395,8 @@
     border-radius:24px; padding:18px 20px; box-shadow:0 14px 36px rgba(120,50,100,.22);}
   #startBtn{border:none; cursor:pointer; font-family:inherit; font-weight:800; font-size:20px; padding:14px 44px; border-radius:999px; margin-top:2px; background:linear-gradient(180deg,#ffe08a,#ffbe34); color:#8a4e12; box-shadow:0 8px 20px rgba(247,150,40,.45), inset 0 1px 0 rgba(255,255,255,.6); transition:transform .12s;}
   #startBtn:not(:disabled){animation:startPulse 2s ease-in-out infinite;}
-  @keyframes startPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+  @keyframes startPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.08);}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
   .reduce #startBtn{animation:none;}
   #startBtn:active{transform:scale(.96);}
 
@@ -1990,3 +1991,4 @@
 </script>
 </body>
 </html>
+

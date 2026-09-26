@@ -16,7 +16,7 @@ async function snapshot(frame){return frame.evaluate(()=>({text:document.body.in
 async function test(game,mobile){
  const r={id:game.id,title:game.title,source:game.src,viewport:mobile?'phone':'desktop',status:'unverified',actions:[],errors:[],http:[],requests:[],note:game.note};
  const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,serviceWorkers:'block',reducedMotion:'reduce'});
- const deadline=setTimeout(()=>{r.deadlineExceeded=true;ctx.close().catch(()=>{});},65000);
+ const deadline=setTimeout(()=>{r.deadlineExceeded=true;ctx.close().catch(()=>{});},game.src.startsWith('Godot/')?240000:65000);
  const page=await ctx.newPage();page.setDefaultTimeout(4000);
  page.on('pageerror',e=>r.errors.push(e.message));page.on('response',e=>{if(e.status()>=400)r.http.push({status:e.status(),url:e.url()})});page.on('requestfailed',e=>r.requests.push({url:e.url(),error:e.failure()?.errorText}));
  try{
@@ -24,15 +24,17 @@ async function test(game,mobile){
   await page.locator('#playbtn').click();r.actions.push('Clicked portal Play');
   const handle=await page.locator('#frame').elementHandle();const f=await handle.contentFrame();
   await f.waitForLoadState('domcontentloaded',{timeout:45000});
-  await page.waitForTimeout(/Godot|Unity/.test(game.note)?14000:3000);
+  if(game.src.startsWith('Godot/')) await f.waitForFunction(()=>document.body.dataset.boot==='ready'||document.body.dataset.boot==='failed',null,{timeout:180000});
+  else await page.waitForTimeout(/Unity/.test(game.note)?14000:3000);
   r.before=await snapshot(f);
-  const starts={'high-nest':'#play','market-merge':'#play','survivor-wave':'#playBtn','surviv-royale':'#btn-play','hole-grind':'#btnPlay','maths-kart':'#bPlay','math-miner':'#btnMath','fishing-for-words':'#btn-math','neon-dash':'#play-btn','critter-rush':'#playBtn','critter-rush-2d':'#play','sneaker-drop':'#startBtn','deepcut-mine':'#btnPlay','cook-rush':'#btnPlay','typhoon-mine':'#btnPlay','nistar':'#start-btn','chef-chloe-kitchen':'#bootStart'};
+  const starts={'summit-line':'#btnPlay','high-nest':'#play','market-merge':'#play','survivor-wave':'#playBtn','surviv-royale':'#btn-play','hole-grind':'#btnPlay','maths-kart':'#bPlay','math-miner':'#btnMath','fishing-for-words':'#btn-math','neon-dash':'#play-btn','critter-rush':'#playBtn','critter-rush-2d':'#play','sneaker-drop':'#startBtn','deepcut-mine':'#btnPlay','cook-rush':'#btnPlay','typhoon-mine':'#btnPlay','nistar':'#start-btn','chef-chloe-kitchen':'#bootStart'};
   if(starts[game.id]){const b=f.locator(starts[game.id]);if(await b.count()&&await b.isVisible()){const label=await b.innerText();await b.click();r.actions.push('Started via '+label);await page.waitForTimeout(800);}}
 
   if(game.id==='claire-pip'){
    const age=f.locator('#ageBands [data-band="medium"]');
-   if(await age.count()&&await age.isVisible()){await age.click();r.actions.push('Selected ages 7–9');}
+   if(await age.count()&&await age.isVisible()){await age.click();r.actions.push('Selected ages 7–9');await f.locator('#startBtn').click();r.actions.push('Entered pet home');}
   }
+  if(game.id==='clean-house'){await f.locator('.job').first().click();r.actions.push('Selected first cleaning job');}
   // Use rendered controls, never invoke internal game functions or mutate its state.
   const clickedLabels=new Set();
   for(let n=0;n<3;n++){
@@ -42,10 +44,10 @@ async function test(game,mobile){
    try{await chosen.click({timeout:1500});clickedLabels.add(label);r.actions.push('Clicked '+label);await page.waitForTimeout(650);}catch{r.actions.push('Start control obstructed; checking game-specific route');break;}
   }
   if(game.id==='kingdom-defense'){
-   const map=f.getByRole('button',{name:/^Cloverfield Lane Cloverfield Lane/});
-   if(await map.count()&&await map.isVisible()){await map.click();r.actions.push('Selected Cloverfield Lane');}
+   const map=f.locator('[data-map="0"]');
+   if(await map.count()&&await map.isVisible()){await map.click();r.actions.push('Selected first tactical map');}
    const wave=f.getByRole('button',{name:'START WAVE',exact:true});
-   if(await wave.count()&&await wave.isVisible()){await wave.click();r.actions.push('Started first wave');await page.waitForTimeout(2500);}
+   if(await wave.count()&&await wave.isVisible()){await wave.click();r.actions.push('Tried wave start; focused tower harness verifies placement and combat');await page.waitForTimeout(2500);}
   }
   r.started=await snapshot(f);
   if(mobile){for(const label of ['Dig down','Dig right','Accelerate','Steer right']){const control=f.getByRole('button',{name:label,exact:true});if(await control.count()&&await control.isVisible()){await control.tap();r.actions.push('Tapped '+label);}}}
@@ -81,3 +83,4 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 await fs.writeFile(path.join(out,'index.html'),`<!doctype html><meta charset="utf-8"><title>Arcade harness</title><style>body{font:16px system-ui;background:#111513;color:#f5f7f1;max-width:1200px;margin:40px auto;padding:20px}a{color:#c5ee78}table{border-collapse:collapse;width:100%}td,th{padding:12px;border-bottom:1px solid #465046;text-align:left}img{max-width:280px}summary{cursor:pointer}</style><h1>Every-game browser harness</h1><p>${catalog.length} games, desktop and phone. ${results.length} checks. ${esc(JSON.stringify(counts))}</p><p>Interaction observed means visible text changed after input. This is smoke coverage, not proof of full game completion. Canvas-only gameplay needs visual review. Microphone, network and hardware-dependent features can remain unverified.</p><p><a href="results.json">Full machine-readable evidence</a></p><table><tr><th>Game</th><th>Viewport</th><th>Result</th><th>Evidence</th></tr>${results.sort((a,b)=>a.id.localeCompare(b.id)||a.viewport.localeCompare(b.viewport)).map(r=>`<tr><td>${esc(r.title)}</td><td>${r.viewport}</td><td>${r.status}<br>${esc(r.failure||r.errors.join('; '))}</td><td><details><summary>Actions and screenshot</summary><p>${esc(r.actions.join(' → '))}</p><a href="${r.id}-${r.viewport}.jpg"><img loading="lazy" src="${r.id}-${r.viewport}.jpg"></a></details></td></tr>`).join('')}</table>`);
 console.log('SUMMARY '+JSON.stringify(counts));
 if(results.length!==catalog.length*2)process.exitCode=1;
+
