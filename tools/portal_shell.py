@@ -99,7 +99,7 @@ def foot(G, CATS):
     cats = ''.join('<li><a href="./?cat=%s">%s</a></li>' % (c[0], html.escape(c[1])) for c in CATS)
     return '\n'.join([
       '<footer class="foot">', '  <div class="in">',
-      '    <div><a class="brand" href="./" aria-label="Caleb\'s Arcade home"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span class="word">Caleb\'s Arcade<small>play free · no ads</small></span></a>',
+      '    <div><a class="brand" href="./" aria-label="Caleb\'s Arcade home"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span class="word">Caleb\'s Arcade<small>GOOD GAMES. ZERO ADS.</small></span></a>',
       '      <p>%d free games you can play right now in the browser: arcade, puzzle, learning, sims and more. No downloads, no sign-ups, nothing to install.</p>' % len(G),
       '      <div class="perks"><span>%s No ads</span><span>%s No accounts</span><span>%s Saves on your device</span></div></div>' % (ico('check'), ico('shield'), ico('offline')),
       '    <div><h2 class="fh">Categories</h2><ul>%s</ul></div>' % cats,

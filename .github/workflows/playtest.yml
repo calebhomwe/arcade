@@ -1,15 +1,25 @@
 name: Every-game browser harness
 on:
   push:
-    branches: ['claude/web-games-list-j09h6p', main]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: playtest-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   playtest:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    env:
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_TOTAL: 4
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,6 +34,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: arcade-playtest
+          name: arcade-playtest-${{ matrix.shard }}
           path: qa/results
           retention-days: 14

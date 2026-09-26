@@ -277,7 +277,7 @@ function openPrefs(focus) {
     '<div class="row2"><div class="lbl">Accent colour</div>' + seg('accent', OPTS.accent, S.accent, true) + '</div>' +
     '<div class="row2"><div class="lbl">Tile size<small>How big the game tiles are in rows and lists</small></div>' + seg('size', OPTS.size, S.size) + '</div>' +
     '<div class="row2"><div class="lbl">Motion<small>Hover lifts, previews and smooth scrolling</small></div>' + seg('motion', OPTS.motion, S.motion) + '</div>' +
-    swRow('labels', labelsOn, 'Show game names under tiles', 'Every tile already carries its title; this adds the category underneath') +
+    swRow('labels', labelsOn, 'Show game categories', 'Game names always stay visible; choose whether to show categories too') +
     '<h3>Playing</h3>' +
     '<div class="row2"><div class="lbl">Default screen size<small>Each game also remembers its own choice</small></div>' + seg('stage', OPTS.stage, S.stage) + '</div>' +
     swRow('extnew', S.extnew, 'Open other-site games in a new tab', 'The ' + ext + ' games hosted on Caleb\'s other sites offer a new-tab launch first') +

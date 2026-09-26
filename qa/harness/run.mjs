@@ -4,7 +4,8 @@ import vm from 'node:vm';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'../..');
 const allCatalog=vm.runInNewContext((await fs.readFile(path.join(root,'catalog.js'),'utf8'))+';CATALOG');
-const catalog=process.env.GAME_IDS?allCatalog.filter(g=>process.env.GAME_IDS.split(',').includes(g.id)):allCatalog;
+const selectedCatalog=process.env.GAME_IDS?allCatalog.filter(g=>process.env.GAME_IDS.split(',').includes(g.id)):allCatalog;
+const catalog=selectedCatalog.filter((g,i)=>i%Number(process.env.SHARD_TOTAL||1)===Number(process.env.SHARD_INDEX||0));
 const base=process.env.BASE_URL||'http://127.0.0.1:3000/';
 const out=process.env.REPORT_DIR||path.join(root,'qa/results');
 await fs.mkdir(out,{recursive:true});
@@ -15,6 +16,7 @@ async function snapshot(frame){return frame.evaluate(()=>({text:document.body.in
 async function test(game,mobile){
  const r={id:game.id,title:game.title,source:game.src,viewport:mobile?'phone':'desktop',status:'unverified',actions:[],errors:[],http:[],requests:[],note:game.note};
  const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,serviceWorkers:'block',reducedMotion:'reduce'});
+ const deadline=setTimeout(()=>{r.deadlineExceeded=true;ctx.close().catch(()=>{});},65000);
  const page=await ctx.newPage();page.setDefaultTimeout(4000);
  page.on('pageerror',e=>r.errors.push(e.message));page.on('response',e=>{if(e.status()>=400)r.http.push({status:e.status(),url:e.url()})});page.on('requestfailed',e=>r.requests.push({url:e.url(),error:e.failure()?.errorText}));
  try{
@@ -32,6 +34,12 @@ async function test(game,mobile){
    const buttons=f.getByRole('button',{name:/^(?:[▶►▷]\s*)?(?:play(?:\s+now)?|start(?:\s+(?:game|building|run|adventure|playing))?|new game|let.s (?:go|play)|begin|continue|easy|classic|normal)(?:\s*[!▶►])?$/i});
    let chosen=null;for(let i=0;i<await buttons.count();i++){if(await buttons.nth(i).isVisible()){chosen=buttons.nth(i);break;}}
    if(!chosen)break;const label=await chosen.innerText();await chosen.click();r.actions.push('Clicked '+label);await page.waitForTimeout(650);
+  }
+  if(game.id==='kingdom-defense'){
+   const map=f.getByRole('button',{name:/^Cloverfield Lane Cloverfield Lane/});
+   if(await map.count()&&await map.isVisible()){await map.click();r.actions.push('Selected Cloverfield Lane');}
+   const wave=f.getByRole('button',{name:'START WAVE',exact:true});
+   if(await wave.count()&&await wave.isVisible()){await wave.click();r.actions.push('Started first wave');await page.waitForTimeout(2500);}
   }
   r.started=await snapshot(f);
   if(mobile){for(const label of ['Dig down','Dig right','Accelerate','Steer right']){const control=f.getByRole('button',{name:label,exact:true});if(await control.count()&&await control.isVisible()){await control.tap();r.actions.push('Tapped '+label);}}}
@@ -51,10 +59,10 @@ async function test(game,mobile){
   if(!r.before.text.trim()&&!r.before.canvas.length)r.status='blank';
   await page.screenshot({path:path.join(out,game.id+'-'+r.viewport+'.png')});
  }catch(e){r.status='blocked';r.failure=e.message;await page.screenshot({path:path.join(out,game.id+'-'+r.viewport+'.png')}).catch(()=>{});}
- finally{await ctx.close();results.push(r);await fs.writeFile(path.join(out,'results.json'),JSON.stringify(results,null,2));console.log(JSON.stringify({id:r.id,viewport:r.viewport,status:r.status,errors:r.errors,http:r.http,failure:r.failure,actions:r.actions}));}
+ finally{clearTimeout(deadline);await ctx.close();results.push(r);await fs.writeFile(path.join(out,'results.json'),JSON.stringify(results,null,2));console.log(JSON.stringify({id:r.id,viewport:r.viewport,status:r.status,errors:r.errors,http:r.http,failure:r.failure,actions:r.actions}));}
 }
 const jobs=catalog.flatMap(g=>[{g,m:false},{g,m:true}]);
-await Promise.all(Array.from({length:4},async()=>{while(jobs.length){const job=jobs.shift();await test(job.g,job.m);}}));
+await Promise.all(Array.from({length:2},async()=>{while(jobs.length){const job=jobs.shift();await test(job.g,job.m);}}));
 for(const mobile of [false,true]){
  const page=await browser.newPage({viewport:mobile?{width:390,height:844}:{width:1440,height:1000}});
  await page.goto(base,{waitUntil:'domcontentloaded'});await page.waitForTimeout(1500);await page.screenshot({path:path.join(out,'portal-'+(mobile?'phone':'desktop')+'.png')});
