@@ -15,7 +15,7 @@ Reports are written to `qa/results/`: an HTML index, full JSON evidence, and a s
 
 The harness launches through the portal, uses source-verified start buttons where available, tries standard game inputs and visible touch controls, and records DOM state, browser exceptions, failed requests, HTTP errors and horizontal overflow. Each context has a 65-second deadline. Market Merge includes a direction-held-across-drop regression; Kingdom Defense selects a mission and starts its first wave.
 
-`interaction-observed` means visible DOM text changed after input. It is not a claim that every mechanic or level works. Canvas-only games, microphone interactions and unrecognised start menus need visual review. `needs-review` must not be described as a pass. A failed screenshot or deadline is recorded as `blocked`. Browser automation cannot certify game quality.
+`interaction-observed` means visible DOM text changed after input. It is not a claim that every mechanic or level works. Canvas-only games, microphone interactions and unrecognised start menus need visual review. `needs-review` must not be described as a pass. A deadline is recorded as `blocked`; screenshot failures are recorded separately and never overwrite gameplay results. Captures run serially as JPEGs to reduce renderer contention. Browser automation cannot certify game quality.
 
 Environment options:
 
