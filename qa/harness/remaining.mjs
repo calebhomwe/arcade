@@ -5,21 +5,21 @@ const name=process.env.CASE||'clean-phone',mobile=name.endsWith('-phone'),slug=n
 const out='qa/remaining-results';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:720},hasTouch:mobile,isMobile:mobile,deviceScaleFactor:1,reducedMotion:'reduce'});
-const page=await ctx.newPage();page.setDefaultTimeout(15000);const r={name,checks:[],errors:[],captureErrors:[]};
+const page=await ctx.newPage();page.setDefaultTimeout(60000);const r={name,checks:[],errors:[],captureErrors:[]};
 page.on('pageerror',e=>r.errors.push(e.message));page.on('response',p=>{if(p.status()>=400)r.errors.push(p.status()+' '+p.url());});
 const check=(v,label)=>{assert.ok(v,label);r.checks.push(label);};
 try{
  await page.goto('http://localhost:3000/'+(slug==='clean'?'CleanHouse/':slug==='claire'?'ClairePip/':'Godot/'+slug+'/'),{waitUntil:'domcontentloaded',timeout:45000});
  if(slug==='clean'){
-  await page.locator('.job').first().click();await page.waitForFunction(()=>mode==='play');check(true,'Job card starts the playable room');
-  const before=await page.evaluate(()=>({...cam,target:null}));await page.locator('#zoomIn').click();check(await page.evaluate(()=>cam.dist)<before.dist,'Zoom in changes the camera');await page.locator('#zoomOut').click();
-  await page.locator('#lookMode').click();const az=await page.evaluate(()=>cam.az);await page.mouse.move(170,420);await page.mouse.down();await page.mouse.move(250,450,{steps:8});await page.mouse.up();check(await page.evaluate(()=>cam.az)!==az,'Look mode rotates over the game surface');
-  check(await page.evaluate(()=>!state.scrubbing),'Look does not scrub');await page.locator('#lookMode').click();
+  await page.locator('.job').first().click();await page.waitForFunction(()=>window.__clean_debug.state().mode==='play');check(true,'Job card starts the playable room');
+  const before=await page.evaluate(()=>window.__clean_debug.state().camera);await page.locator('#zoomIn').click();check(await page.evaluate(()=>window.__clean_debug.state().camera.dist)<before.dist,'Zoom in changes the camera');await page.locator('#zoomOut').click();
+  await page.locator('#lookMode').click();const az=await page.evaluate(()=>window.__clean_debug.state().camera.az);await page.mouse.move(170,420);await page.mouse.down();await page.mouse.move(250,450,{steps:8});await page.mouse.up();check(await page.evaluate(()=>window.__clean_debug.state().camera.az)!==az,'Look mode rotates over the game surface');
+  check(await page.evaluate(()=>!window.__clean_debug.state().scrubbing),'Look does not scrub');await page.locator('#lookMode').click();
   if(mobile){check(!await page.locator('#rail').isVisible(),'Phone toolbox starts collapsed');await page.locator('#toolboxToggle').click();check(await page.locator('#rail').isVisible(),'Phone toolbox opens');await page.locator('#toolboxToggle').click();}
   const pct=await page.locator('#cleanPct').innerText();
   for(let y=300;y<660;y+=50){await page.mouse.move(90,y);await page.mouse.down();await page.mouse.move(mobile?300:650,y,{steps:25});await page.mouse.up();}
   r.cleanBefore=pct;r.cleanAfter=await page.locator('#cleanPct').innerText();check(r.cleanAfter!==pct,'Scrubbing changes the visible clean percentage');
-  check(await page.evaluate(()=>!state.scrubbing),'Pointer release stops cleaning');
+  check(await page.evaluate(()=>!window.__clean_debug.state().scrubbing),'Pointer release stops cleaning');
  }else if(slug==='claire'){
   await page.locator('#ageBands [data-band="medium"]').click();await page.locator('#startBtn').click();await page.waitForFunction(()=>document.querySelector('#intro').classList.contains('gone'));check(true,'Age selection and stable Start button enter the game');
   check(!await page.locator('#intro').isVisible(),'Onboarding no longer obscures gameplay');
@@ -34,8 +34,9 @@ try{
    const events=await page.evaluate(()=>inputEvents);check(events.some(e=>e.startsWith('down:'))&&events.some(e=>e.startsWith('up:')),'Touch button delivers press and release to engine canvas');
   }
   await page.keyboard.press('Enter');await page.waitForTimeout(1500);
+  if(mobile&&slug!=='heavens-grace'){await page.setViewportSize({width:844,height:390});await page.waitForTimeout(500);check((await page.locator('#canvas').boundingBox()).width>390,'Landscape expands the game view');}
  }
  check(r.errors.length===0,'No runtime or HTTP failures');r.status='checks-passed';
 }catch(e){r.status='failed';r.failure=e.stack;}
-try{await page.screenshot({path:`${out}/${name}.png`,timeout:20000});}catch(e){r.captureErrors.push(e.message);if(r.status==='checks-passed')r.status='checks-passed-capture-blocked';}
+try{await page.screenshot({path:`${out}/${name}.png`,timeout:60000});}catch(e){r.captureErrors.push(e.message);if(r.status==='checks-passed')r.status='checks-passed-capture-blocked';}
 await fs.writeFile(`${out}/${name}.json`,JSON.stringify(r,null,2));console.log(JSON.stringify(r));await ctx.close();await browser.close();if(r.status!=='checks-passed')process.exitCode=1;

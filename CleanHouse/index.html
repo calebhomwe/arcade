@@ -125,7 +125,8 @@
 #viewControls{position:absolute;left:12px;bottom:100px;z-index:7;display:flex;gap:6px;padding:6px}
 #viewControls button{min-width:44px;min-height:44px;border:1px solid #8ba3ba;border-radius:10px;background:#173147;color:white;font:600 14px system-ui;touch-action:manipulation}
 #viewControls button[aria-pressed="true"]{background:#22775d;border-color:#89e2bb}
-@media(max-width:640px){#viewControls{top:118px;bottom:auto}#rail:not(.expanded){display:none}#viewControls{max-width:calc(100vw - 24px);flex-wrap:wrap}}
+@media(min-width:641px){#toolboxToggle{display:none}}
+@media(max-width:640px){#hud{left:8px;right:8px;gap:8px;padding:8px;justify-content:space-between}#hud b{font-size:16px}#cleanWrap{width:64px}#hud .lbl{font-size:8px}#comboChip{min-width:35px}#hint{left:8px;right:8px;top:78px;transform:none;width:auto;font-size:11px;padding:6px;line-height:1.3}#viewControls{top:112px;bottom:auto}#rail:not(.expanded){display:none}#viewControls{max-width:calc(100vw - 24px);flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -141,7 +142,7 @@
 </div>
 
 <div class="panel" id="hint">Clean: drag surfaces · Look: drag to turn · + / −: zoom</div>
-<div class="panel" id="viewControls" aria-label="Camera and tools"><button id="lookMode" type="button" aria-pressed="false">Look</button><button id="zoomIn" type="button" aria-label="Zoom in">+</button><button id="zoomOut" type="button" aria-label="Zoom out">−</button><button id="toolboxToggle" type="button" aria-expanded="false" aria-controls="rail">Toolbox</button></div>
+<div class="panel" id="viewControls" aria-label="Camera and tools"><button id="lookMode" type="button" aria-pressed="false">Look mode</button><button id="zoomIn" type="button" aria-label="Zoom in">+</button><button id="zoomOut" type="button" aria-label="Zoom out">−</button><button id="toolboxToggle" type="button" aria-expanded="false" aria-controls="rail">Toolbox</button></div>
 
 <div class="panel" id="tools"></div>
 
@@ -704,7 +705,7 @@ requestAnimationFrame(frame);
 
 /* ------------------------------------------------------------- input */
 var dragging=false, orbiting=false, lastPt=null, moved=0, lookMode=false;
-el('lookMode').onclick=function(){endPtr();lookMode=!lookMode;this.setAttribute('aria-pressed',String(lookMode));this.textContent=lookMode?'Look on · Clean?':'Look';};
+el('lookMode').onclick=function(){endPtr();lookMode=!lookMode;this.setAttribute('aria-pressed',String(lookMode));};
 function zoomBy(amount){cam.dist=Math.max(7,Math.min(26,cam.dist+amount));applyCam();}
 el('zoomIn').onclick=function(){zoomBy(-1.5);};
 el('zoomOut').onclick=function(){zoomBy(1.5);};
@@ -1008,7 +1009,7 @@ mode='map';
 
 // debug hook (same convention as the rest of the shelf)
 window.__clean_debug = {
-  state: function(){ return { mode:mode, clean:state.clean, cash:save.cash, placed:placed.length,
+  state: function(){ return { mode:mode, camera:{az:cam.az,el:cam.el,dist:cam.dist}, scrubbing:state.scrubbing, clean:state.clean, cash:save.cash, placed:placed.length,
                               trash:trash.length, job: job?job.name:null, dirt: job?job.dirt:null,
                               room: { w:ROOM.w, d:ROOM.d, h:ROOM.h } }; },
   jobs: function(){ return JOBS.map(function(j){ return { id:j.id, name:j.name, mess:j.mess,
