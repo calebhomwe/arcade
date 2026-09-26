@@ -34,6 +34,8 @@ def add(id, title, cat, blurb, src, thumb, ext=False, rec=None, label=None, tags
     G.append({'id':id, 'title':title, 'cat':cat, 'blurb':blurb, 'src':src, 'thumb':'assets/thumbs/'+thumb, 'ext':ext,
               'rec':rec, 'label':label, 'tags':list(tags), 'featured':featured, 'new':new, 'players':players, 'from':frm, 'note':note, 'stage':stage})
 
+add('summit-line','Summit Line','arcade','Carve a 2 km alpine course against three rivals. Charge jumps, land grabs, grind rails and earn boost.','SummitLine/index.html','summit-line.webp',tags=('snowboard','racing','3D'),featured=True,new=True,frm='Cabinet',note='Keyboard, gamepad and touch controls. Free CC0 mountain textures.')
+
 # ---------- local cabinets (this repo) ----------
 L = [
  ('high-nest','High Nest','arcade','One owl. One tree. The world\'s tallest treehouse. Drop each plank as it swings — whatever hangs over the edge is sawn off.','HighNest','hn_rec','best planks',('stack','timing'),True),

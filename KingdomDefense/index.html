@@ -753,7 +753,7 @@ class Enemy{
   const total=routesTotal[this.routeIndex]||pathTotal;
   if(this.d>=total){
     this.dead=true;
-    let leak=this.leak||(this.namedBoss?18:this.boss?10:this.siege?6:1);
+    let leak=this.leak||(this.namedBoss?18:this.boss?10:this.siege?6:Math.min(5,Math.ceil(this.tier/2)));
     state.lives=Math.max(0,state.lives-leak);
     state.leakWave=true;
     state.combo=0;
@@ -784,10 +784,10 @@ hurt(d,t){
   this.hp-=d;
   this.hit=.08;
   this.regrowDelay=3;
-  if(this.mark){this.mark=Math.max(this.mark,t.mark);this.markT=2.2}
+  if(t.mark){this.mark=Math.max(this.mark,t.mark);this.markT=2.2}
   floatText("-"+Math.ceil(d),this.x,this.y,t.damageType==="explosive"?"#ffd06a":"#fff");
   addPulse("hit",0.12);
-  if(t.slow){this.slow=t.slow;this.slowT=1.25}
+  if(t._slow||t.slow){this.slow=t._slow||t.slow;this.slowT=1.25}
   if(t.stun)this.stunT=Math.max(this.stunT,t.stun*(this.siege?.35:1));
   const total=routesTotal[this.routeIndex]||pathTotal;
   if(t.push&&!this.siege&&!this.boss)this.d=Math.max(0,this.d-total*t.push);
@@ -798,7 +798,7 @@ hurt(d,t){
     state.combo++;
     state.comboT=2.2;
     if(state.combo>=3)addPulse("combo",0.6);
-    let bonus=Math.floor(state.combo/5);
+    let bonus=Math.min(2,Math.floor(state.combo/5));
     let reward=this.reward+bonus;
     state.money+=reward;
     pulseMoney(reward,this.x,this.y);
@@ -840,7 +840,8 @@ class Tower{
   let cats=new Set(nearby.map(b=>b.category));
   if(cats.size>=3){rate*=.85;damage*=1.1}
   if(this.damageType==="energy"&&nearby.some(b=>b.damageType==="energy"))range*=1.15;
-  if(this.damageType==="cold"&&nearby.some(b=>b.damageType==="cold"))this.slow=Math.min(this.slow||.62,.25);
+  this._slow=this.slow;
+  if(this.damageType==="cold"&&nearby.some(b=>b.damageType==="cold"))this._slow=Math.min(this.slow||.62,.25);
   if(state.rush>0)rate*=.55;
   this._rate=rate;
   this._range=range;
@@ -849,7 +850,8 @@ class Tower{
     return;
   }
   let targets=state.enemies.filter(e=>!e.dead&&this.canSee(e)&&Math.hypot(e.x-this.x,e.y-this.y)<range);
-  targets.sort((a,b)=>this.targetMode==="last"?a.d-b.d:this.targetMode==="strong"?b.maxHp-a.maxHp:b.d-a.d);
+  const progress=e=>e.d/(routesTotal[e.routeIndex]||pathTotal||1);
+  targets.sort((a,b)=>this.targetMode==="last"?progress(a)-progress(b):this.targetMode==="strong"?b.maxHp-a.maxHp:progress(b)-progress(a));
   let target=targets[0];
   if(target){
     this.angle=Math.atan2(target.y-this.y,target.x-this.x);
@@ -883,6 +885,7 @@ function setReadyButtonState(){
   let ready=playing&&!paused&&!waveActive&&!waveCountdown&&state.wave<waves.length;
   btn.disabled=!ready;
   btn.classList.toggle("ready",ready);
+  if(ready&&state.wave===0&&!state.towers.some(t=>t.damage>0)){btn.textContent="PLACE DEFENDER";return;}
   if(!ready&&waveCountdown>0)btn.textContent="STARTING";
   else if(!playing)btn.textContent="START WAVE";
   else btn.textContent="START WAVE";
@@ -925,6 +928,7 @@ function gateBreachImpact(loss){
 function updateBossBar(){let b=state.enemies.find(e=>!e.dead&&e.namedBoss),bar=document.querySelector("#bossBar");bar.style.display=b?"block":"none";if(b){document.querySelector("#bossName").textContent=b.bossName+(b.enraged?" — ENRAGED":"");document.querySelector("#bossFill").style.width=Math.max(0,b.hp/b.maxHp*100)+"%"}}
 function startWave(){
   if(waveActive||waveCountdown>0||state.wave>=waves.length||!playing||paused)return;
+  if(state.wave===0&&!state.towers.some(t=>t.damage>0)){toast("PLACE AN ATTACKING DEFENDER FIRST — then start the wave","clear");return;}
   if(tutorialAwaitingWave||tutorialAwaitingBuild){tutorialAwaitingWave=false;tutorialAwaitingBuild=false;markTutorialSeen()}
   let nextWaves=waves[state.wave];
   if(!nextWaves)return;
@@ -943,24 +947,6 @@ function startWave(){
   else if(danger){toast("⚠ SIEGE WAVE INCOMING","wave");horn(true);}
   else{toast(state.wave%10===0?`WAVE ${state.wave} — HOLD THE LINE`:`WAVE ${state.wave}`,"wave");horn(false);}
   injectImpact("wave",document.querySelector("#startWave"));
-  if(!state.starterBonusUsed){
-    state.starterBonusUsed=true;
-    let bonus= Math.round(DIFFS[diff].money*0.25);
-    state.money+=bonus;
-    pulseMoney(bonus,W/2,hudY(H*.08));
-    updateUI();
-    floatText(`+${bonus} START BONUS`,W/2,hudY(H*.08),"#7dffa8");
-    addPulse("clear",.7);
-    coin();
-  }
-  if(!state.breachAwareness){
-    state.breachAwareness=true;
-    for(let i=0;i<20;i++)state.fx.push({x:W*Math.random(),y:Math.random()*H*.18,vx:(Math.random()-.5)*80,vy:20+Math.random()*65,life:.45+Math.random()*.3,c:"#8fffc2",r:1.8+Math.random()*2});
-    flash("rgba(100,255,165,.16)");
-    burst(W/2,hudY(H*.1),"#8fffc2",26);
-    toast("FIRST STRIKE PROTOCOL ONLINE","clear");
-    cuePress(document.querySelector("#startWave"));
-  }
   setReadyButtonState();
 }
 function update(dt){
@@ -983,7 +969,7 @@ function update(dt){
   }
   toastClock-=dt;
   state.comboT-=dt;
-  if(hitStop>0){hitStop-=dt;return}
+  if(hitStop>0)hitStop=Math.max(0,hitStop-dt); // Feedback must never freeze the strategy simulation.
   dt*=speed;
   decayPulse("wave",1.9,dt);
   decayPulse("build",2.6,dt);
@@ -1286,17 +1272,18 @@ function draw(){
 }
 function loop(t){let dt=Math.min(.033,(t-last)/1000||0);last=t;fpsClock+=dt;fpsFrames++;if(fpsClock>=.5){fps=Math.round(fpsFrames/fpsClock);fpsClock=0;fpsFrames=0;if(devMode){let d=document.querySelector("#debug");if(d)d.textContent=`FPS ${fps}\nTowers ${state.towers.length}\nEnemies ${state.enemies.filter(e=>!e.dead).length}\nShots ${state.shots.length}\nParticles ${state.fx.length}\nWave ${state.wave}/${waves.length}`}}update(dt);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);
 const mouse={x:0,y:0};cv.addEventListener("pointermove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+function placementClearance(){return Math.max(24,48*Math.min(1,Math.min(W/1100,H/620)))}
 function canBuild(x,y){
-  if(x<W-SBW-8&&y>canvasTopMargin&&y<H-(SBW?34:130)&&distToPath(x,y)>48&&!maskBlocked(x,y)&&!state.towers.some(t=>Math.hypot(t.x-x,t.y-y)<48))return true;
+  if(x<W-SBW-8&&y>canvasTopMargin&&y<H-(SBW?34:130)&&distToPath(x,y)>placementClearance()&&!maskBlocked(x,y)&&!state.towers.some(t=>Math.hypot(t.x-x,t.y-y)<placementClearance()))return true;
   return false;
 }
 function buildRejectionReason(x,y){
   if(!(x<W-SBW-8))return "PATH BLOCKED EDGE";
   if(!(y>canvasTopMargin))return "TOP HUD BLOCKED";
   if(!(y<H-(SBW?34:130)))return "BOTTOM UI BLOCKED";
-  if(distToPath(x,y)<=48)return "TOO CLOSE TO ROUTE";
+  if(distToPath(x,y)<=placementClearance())return "TOO CLOSE TO ROUTE";
   if(maskBlocked(x,y))return "UNPASSABLE TERRAIN";
-  if(state.towers.some(t=>Math.hypot(t.x-x,t.y-y)<48))return "TOO CLOSE TO OTHER DEFENDER";
+  if(state.towers.some(t=>Math.hypot(t.x-x,t.y-y)<placementClearance()))return "TOO CLOSE TO OTHER DEFENDER";
   return "INVALID PLACE";
 }
 function tryBuild(x,y){
@@ -1421,7 +1408,7 @@ document.querySelector("#pauseSettings").onclick=()=>{haptic();syncSettings();do
 function nextWaveLabel(){if(state.wave>=waves.length)return"FINAL WAVE COMPLETE";return"NEXT: "+waves[state.wave].map(g=>`${g[1]} ${ENEMIES[g[0]].name.toUpperCase()}`).join(" · ")}
 function updateUI(){setHudTarget("money",state.money);setHudTarget("lives",Math.max(0,state.lives));setHudTarget("wave",state.wave);document.querySelector("#wavePreview").textContent=nextWaveLabel();syncCards();updateRushUI();pulseHUDIfChanged()}
 function reset(map=selectedMap){
-  let keepAuto=state.auto,cfg=DIFFS[diff];
+  let keepAuto=false,cfg=DIFFS[diff];
   selectedMap=map;
   routeIndex=0;
   buildRoutesForMap(map);
@@ -1557,7 +1544,7 @@ document.querySelector("#endMapSelect").onclick=()=>{haptic();document.querySele
 if(document.fonts){document.fonts.load("800 20px 'Baloo 2'");document.fonts.load("700 14px 'Nunito'")}
 let assetList=Object.values(images),loaded=0;function assetDone(){loaded++;document.querySelector("#loadFill").style.width=Math.round(loaded/assetList.length*100)+"%";if(loaded>=assetList.length)setTimeout(()=>document.querySelector("#loading").style.display="none",350)}assetList.forEach(im=>{if(im.complete)assetDone();else{im.onload=assetDone;im.onerror=assetDone}});
 updateUI();syncXP();syncDiff();syncCards();
-window.KD={state,MAPS,TYPES,ENEMIES,waves,images,DIFFS,career,TOWER_RANK,awardXP,get playing(){return playing},get paused(){return paused},get waveActive(){return waveActive},get path(){return path},get pathTotal(){return pathTotal},get selectedMap(){return selectedMap},startWave,reset,finish,setPause,selectPlaced,tryBuild,canBuild,step:(dt,n)=>{for(let i=0;i<n;i++)update(dt)},get selectedType(){return selectedType},get dragState(){return drag},get canvasTopMargin(){return canvasTopMargin},get SBW(){return SBW},get W(){return W},get H(){return H},version:"v7.3"};
+window.KD={state,MAPS,TYPES,ENEMIES,waves,images,DIFFS,career,TOWER_RANK,awardXP,get playing(){return playing},get paused(){return paused},get waveActive(){return waveActive},get path(){return path},get pathTotal(){return pathTotal},get selectedMap(){return selectedMap},startWave,reset,finish,setPause,selectPlaced,tryBuild,canBuild,step:(dt,n)=>{for(let i=0;i<n;i++)update(dt)},get selectedType(){return selectedType},get dragState(){return drag},get canvasTopMargin(){return canvasTopMargin},get SBW(){return SBW},get W(){return W},get H(){return H},version:"v7.4-strategy"};
 </script>
 </body>
 </html>
