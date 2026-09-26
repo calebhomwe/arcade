@@ -5,7 +5,7 @@ const out='qa/genre-results';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 const results=[];
 for(const mobile of [false,true])for(const game of ['tower','snow']){
- const name=game+'-'+(mobile?'phone':'desktop');const r={name,checks:[],errors:[]};
+ const name=game+'-'+(mobile?'phone':'desktop');if(process.env.CASE&&process.env.CASE!==name)continue;const r={name,checks:[],errors:[]};
  const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1});
  const page=await ctx.newPage();page.on('pageerror',e=>r.errors.push(e.message));
  page.on('response',res=>{if(res.status()>=400)r.errors.push(res.status()+' '+res.url());});
@@ -39,7 +39,7 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
    check(true,'Licensed 3D assets load and title renders');
    // Pure physics regressions use real modules; the visible race below uses only UI inputs.
    r.physics=await page.evaluate(async()=>{
-    const {Racer}=await import('./js/physics.js');const neutral={steer:0,tuck:false,brake:false,jump:false,grab:false,grabType:0,boost:false};
+    const {Racer}=await import('./js/physics.js');const {AIDriver}=await import('./js/ai.js');const neutral={steer:0,tuck:false,brake:false,jump:false,grab:false,grabType:0,boost:false};
     const a=new Racer(),b=new Racer();a.step(1/60,{...neutral,boost:true});b.step(1/60,neutral);
     const boostImmediate=a.speed>b.speed&&a.boost<.25;
     a.pendingRail={name:'Rail',pts:500};a.crash('test');const crashDropsRail=a.pendingRail===null;
@@ -50,7 +50,9 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
     const badLandingScoresZero=bad.score===0&&bad.crashT>0&&!bad.pendingRail;
     const fast=new Racer({s:40}),slow=new Racer({s:40});fast.reset(40,0,14);slow.reset(40,0,14);for(let i=0;i<30;i++){fast.step(1/60,neutral);slow.step(1/60,{...neutral,brake:true});}
     const brakingSlows=slow.speed<fast.speed;
-    return {boostImmediate,crashDropsRail,cleanReset,railBanksAfterLanding,badLandingScoresZero,brakingSlows};
+    const bot=new Racer({s:3,colliders:__game.player().colliders,rails:__game.player().rails});const driver=new AIDriver(bot,{seed:7,aggression:.6,style:.5});let crashes=0,frames=0;for(;frames<60*360&&!bot.finished;frames++){bot.step(1/60,driver.input(1/60,bot.s,true));crashes+=bot.events.filter(e=>e.type==='crash').length;}
+    const raceFinishes=bot.finished&&bot.s>=2000;
+    return {boostImmediate,crashDropsRail,cleanReset,railBanksAfterLanding,badLandingScoresZero,brakingSlows,raceFinishes};
    });check(Object.values(r.physics).every(Boolean),'Boost, crash and reset physics regressions pass');
    await page.locator('#btnPlay').click();await page.waitForFunction(()=>__game.state()==='race',{},{timeout:45000});
    if(mobile){check(await page.locator('#touch').isVisible(),'Touch controls are visible');await page.locator('#tBoost').tap();}
