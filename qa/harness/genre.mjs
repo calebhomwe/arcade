@@ -4,6 +4,14 @@ import assert from 'node:assert/strict';
 const out='qa/genre-results';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 const results=[];
+async function capture(page,ctx,file,r){
+ try{await page.screenshot({path:file,timeout:12000});return;}
+ catch(e){r.captureWarnings??=[];r.captureWarnings.push(e.message);}
+ const session=await ctx.newCDPSession(page);
+ try{const shot=await Promise.race([session.send('Page.captureScreenshot',{format:'png',fromSurface:false,captureBeyondViewport:false}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Fallback capture timed out')),12000))]);await fs.writeFile(file,Buffer.from(shot.data,'base64'));}
+ catch(e){r.captureErrors??=[];r.captureErrors.push(e.message);}
+ finally{await session.detach().catch(()=>{});}
+}
 for(const mobile of [false,true])for(const game of ['tower','snow']){
  const name=game+'-'+(mobile?'phone':'desktop');if(process.env.CASE&&process.env.CASE!==name)continue;const r={name,checks:[],errors:[]};
  const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:720},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:mobile?1:0.5});
@@ -32,7 +40,7 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
    await page.locator('#resume').click();await page.waitForFunction(()=>KD.state.wave===1&&!KD.waveActive,{},{timeout:90000});
    check(await page.evaluate(()=>KD.state.lives>0),'First wave finishes with gate alive');
    r.state=await page.evaluate(()=>({wave:KD.state.wave,kills:KD.state.kills,lives:KD.state.lives,money:KD.state.money}));
-   await page.screenshot({path:`${out}/${name}.png`,timeout:20000});
+   await capture(page,ctx,`${out}/${name}.png`,r);
    await page.mouse.click(pt.x,pt.y);await page.locator('#sell').click();check(await page.evaluate(()=>KD.state.towers.length===0),'Selling removes the tower');
   }else{
    await page.waitForFunction(()=>window.__game?.state()==='title'||document.querySelector('#loadTxt')?.textContent.startsWith('Could not load:'),{},{timeout:150000});
@@ -65,13 +73,13 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
    const s=await page.evaluate(()=>__game.player().s);await page.waitForTimeout(400);check(s===await page.evaluate(()=>__game.player().s),'Pause freezes snowboard physics');
    await page.locator('#btnResume').click();
    r.state=await page.evaluate(()=>{const p=__game.player();return{s:p.s,speed:p.speed,air:p.totalAir,score:p.score};});
-   await page.screenshot({path:`${out}/${name}.png`,timeout:20000});
-   if(mobile){await page.setViewportSize({width:844,height:390});await page.waitForTimeout(500);await page.screenshot({path:`${out}/${name}-landscape.png`,timeout:20000});}
+   await capture(page,ctx,`${out}/${name}.png`,r);
+   if(mobile){await page.setViewportSize({width:844,height:390});await page.waitForTimeout(500);await capture(page,ctx,`${out}/${name}-landscape.png`,r);}
    await page.locator('#btnPause').click();await page.locator('#btnRestart').click();
    check(await page.evaluate(()=>__game.player().score===0&&__game.player().s===3),'Restart clears race and score');
   }
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
-  check(r.errors.length===0,'No runtime or failed-asset errors');r.status='passed';
+  check(r.errors.length===0,'No runtime or failed-asset errors');r.status=r.captureErrors?.length?'gameplay-passed-capture-blocked':'passed';
  }catch(e){r.status='failed';r.failure=e.message;r.diagnostics=await page.evaluate(()=>({loading:document.querySelector('#loadTxt')?.textContent,pending:window.__assetLoads?[...window.__assetLoads]:[],state:window.__game?.state(),player:window.__game?{s:__game.player().s,time:__game.player().time,charge:__game.player().charge}:null,visibility:document.visibilityState})).catch(()=>null);await page.screenshot({path:`${out}/${name}-failure.png`,timeout:10000}).catch(()=>{});}
  finally{results.push(r);console.log(JSON.stringify(r));await fs.writeFile(`${out}/results.json`,JSON.stringify(results,null,2));await ctx.close();}
 }
