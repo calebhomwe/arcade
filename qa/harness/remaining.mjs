@@ -41,6 +41,11 @@ try{
   await page.keyboard.press('Enter');await page.waitForTimeout(1500);
   if(mobile&&slug!=='heavens-grace'){await page.setViewportSize({width:844,height:390});await page.waitForTimeout(500);check((await page.locator('#canvas').boundingBox()).width>390,'Landscape expands the game view');}
  }
+ if(slug==='city-builder'){
+  await page.keyboard.press('2');const b=await page.locator('#canvas').boundingBox();
+  for(const dx of [-.12,.12]){const x=b.x+b.width*(.5+dx),y=b.y+b.height*.55;await page.mouse.move(x,y);await page.waitForTimeout(500);await page.mouse.click(x,y);}
+  r.manualChecks=['Inspect screenshot: visible ground, two houses, population 8 and building count 2'];
+ }
  check(r.errors.length===0,'No runtime or HTTP failures');r.status='checks-passed';
 }catch(e){r.status='failed';r.failure=e.stack;}
 try{await page.screenshot({path:`${out}/${name}.png`,timeout:60000});}catch(e){r.captureErrors.push(e.message);if(r.status==='checks-passed')r.status='checks-passed-capture-blocked';}
