@@ -6,7 +6,7 @@ const browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-u
 const results=[];
 for(const mobile of [false,true])for(const game of ['tower','snow']){
  const name=game+'-'+(mobile?'phone':'desktop');if(process.env.CASE&&process.env.CASE!==name)continue;const r={name,checks:[],errors:[]};
- const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1});
+ const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:720},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1});
  const page=await ctx.newPage();r.console=[];page.on('console',m=>{if(m.type()==='error')r.console.push(m.text());});page.on('pageerror',e=>r.errors.push(e.message));
  page.on('response',res=>{if(res.status()>=400)r.errors.push(res.status()+' '+res.url());});
  const check=(x,msg)=>{assert.ok(x,msg);r.checks.push(msg);};
@@ -59,7 +59,7 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
    else await page.keyboard.down('ArrowUp');
    await page.waitForFunction(()=>__game.player().s>15,{},{timeout:45000});
    check(true,'Rider moves downhill during real-time play');
-   if(mobile){const box=await page.locator('#tJump').boundingBox();const cdp=await ctx.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:box.x+box.width/2,y:box.y+box.height/2}]});await page.waitForTimeout(900);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}else{await page.keyboard.up('ArrowUp');await page.keyboard.down('Space');await page.waitForTimeout(900);await page.keyboard.up('Space');}
+   if(mobile){const box=await page.locator('#tJump').boundingBox();const cdp=await ctx.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:box.x+box.width/2,y:box.y+box.height/2}]});await page.waitForFunction(()=>__game.player().jumpHeld&&__game.player().charge>.5,{},{timeout:45000});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}else{await page.keyboard.up('ArrowUp');await page.keyboard.down('Space');await page.waitForFunction(()=>__game.player().jumpHeld&&__game.player().charge>.5,{},{timeout:45000});await page.keyboard.up('Space');}
    await page.waitForFunction(()=>__game.player().totalAir>0,{},{timeout:45000});check(true,'Charge and release produces airtime');
    await page.keyboard.up('ArrowUp');await page.locator('#btnPause').click();
    const s=await page.evaluate(()=>__game.player().s);await page.waitForTimeout(400);check(s===await page.evaluate(()=>__game.player().s),'Pause freezes snowboard physics');
