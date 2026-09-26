@@ -21,7 +21,13 @@ let QA_STEPS = parseInt(params.get('timelapse') || '0', 10); // QA hook: fixed s
 
 // ---------------------------------------------------------------- renderer
 const canvas = $('gl');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: qKey !== 'low', powerPreference: 'high-performance' });
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: qKey !== 'low', powerPreference: 'high-performance' }); }
+catch(error) {
+  $('loadTxt').textContent = '3D graphics are unavailable here. Open this game in Safari or Chrome on your device.';
+  $('loadFill').style.width = '0%';
+  throw error;
+}
 const dpr = Math.min(window.devicePixelRatio || 1, 2);
 renderer.setPixelRatio(Math.min(2, dpr * Q.pixelRatio));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
