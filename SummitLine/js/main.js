@@ -45,7 +45,7 @@ let state = 'loading', raceT = 0, countdownT = 0, finishT = 0, paused = false;
 const clock = new THREE.Clock();
 
 // ---------------------------------------------------------------- loading
-function setLoad(p, txt) { $('loadFill').style.width = Math.round(p * 100) + '%'; if (txt) $('loadTxt').textContent = txt; }
+function setLoad(p, txt) { if(state==='error')return; $('loadFill').style.width = Math.round(p * 100) + '%'; if (txt) $('loadTxt').textContent = txt; }
 
 async function boot() {
   resize();
@@ -189,13 +189,13 @@ $('btnPlay').addEventListener('click', () => startRace());
 $('btnControls').addEventListener('click', () => { audio.start(); audio.click(); show('help', true); });
 $('helpClose').addEventListener('click', () => closeHelp());
 $('help').addEventListener('click', (e) => { if (e.target === $('help')) closeHelp(); });
-function closeHelp() { show('help', false); }
+function closeHelp() { show('help', false); if(paused)show('pause',true); }
 $('btnQuality').addEventListener('click', () => { const n = nextQualityKey(qKey); saveQualityKey(n); const u = new URL(location.href); u.searchParams.delete('q'); location.href = u.toString(); });
 $('btnSound').addEventListener('click', () => { audio.start(); audio.setEnabled(!audio.enabled); updateSoundBtn(); audio.click(); });
 $('btnPause').addEventListener('click', () => togglePause());
 $('btnResume').addEventListener('click', () => togglePause());
 $('btnRestart').addEventListener('click', () => { show('pause', false); paused = false; startRace(); });
-$('btnPauseHelp').addEventListener('click', () => show('help', true));
+$('btnPauseHelp').addEventListener('click', () => {show('pause',false);show('help',true);});
 $('btnQuit').addEventListener('click', () => { audio.click(); toTitle(); });
 $('btnAgain').addEventListener('click', () => startRace());
 $('btnTitle').addEventListener('click', () => { audio.click(); toTitle(); });
@@ -519,5 +519,5 @@ function loop() {
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();paused=true;clearInput();$('loading').classList.add('show');$('loadTxt').textContent='Graphics interrupted. Reload to return to the mountain.';});
 canvas.addEventListener('webglcontextrestored',()=>location.reload());
 setupTouch();
-boot().catch((e) => { console.error(e); $('loadTxt').textContent = 'Could not load: ' + e.message; });
+boot().catch((e) => { state='error';console.error(e); $('loadTxt').textContent = 'Could not load: ' + e.message; });
 

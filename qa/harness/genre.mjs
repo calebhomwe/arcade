@@ -7,7 +7,7 @@ const results=[];
 for(const mobile of [false,true])for(const game of ['tower','snow']){
  const name=game+'-'+(mobile?'phone':'desktop');if(process.env.CASE&&process.env.CASE!==name)continue;const r={name,checks:[],errors:[]};
  const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:1});
- const page=await ctx.newPage();page.on('pageerror',e=>r.errors.push(e.message));
+ const page=await ctx.newPage();r.console=[];page.on('console',m=>{if(m.type()==='error')r.console.push(m.text());});page.on('pageerror',e=>r.errors.push(e.message));
  page.on('response',res=>{if(res.status()>=400)r.errors.push(res.status()+' '+res.url());});
  const check=(x,msg)=>{assert.ok(x,msg);r.checks.push(msg);};
  try{
@@ -35,8 +35,8 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
    await page.screenshot({path:`${out}/${name}.png`,timeout:20000});
    await page.mouse.click(pt.x,pt.y);await page.locator('#sell').click();check(await page.evaluate(()=>KD.state.towers.length===0),'Selling removes the tower');
   }else{
-   await page.waitForFunction(()=>window.__game?.state()==='title',{},{timeout:150000});
-   check(true,'Licensed 3D assets load and title renders');
+   await page.waitForFunction(()=>window.__game?.state()==='title'||document.querySelector('#loadTxt')?.textContent.startsWith('Could not load:'),{},{timeout:150000});
+   check(await page.evaluate(()=>window.__game?.state()==='title'),'Licensed 3D assets load and title renders');
    // Pure physics regressions use real modules; the visible race below uses only UI inputs.
    r.physics=await page.evaluate(async()=>{
     const {Racer}=await import('./js/physics.js');const {AIDriver}=await import('./js/ai.js');const neutral={steer:0,tuck:false,brake:false,jump:false,grab:false,grabType:0,boost:false};
@@ -72,7 +72,7 @@ for(const mobile of [false,true])for(const game of ['tower','snow']){
   }
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow');
   check(r.errors.length===0,'No runtime or failed-asset errors');r.status='passed';
- }catch(e){r.status='failed';r.failure=e.message;await page.screenshot({path:`${out}/${name}-failure.png`,timeout:10000}).catch(()=>{});}
+ }catch(e){r.status='failed';r.failure=e.message;r.diagnostics=await page.evaluate(()=>({loading:document.querySelector('#loadTxt')?.textContent,pending:window.__assetLoads?[...window.__assetLoads]:[]})).catch(()=>null);await page.screenshot({path:`${out}/${name}-failure.png`,timeout:10000}).catch(()=>{});}
  finally{results.push(r);console.log(JSON.stringify(r));await fs.writeFile(`${out}/results.json`,JSON.stringify(results,null,2));await ctx.close();}
 }
 await browser.close();if(results.some(r=>r.status!=='passed'))process.exitCode=1;
