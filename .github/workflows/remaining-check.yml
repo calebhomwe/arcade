@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        case: [clean-phone, clean-desktop, claire-phone, claire-desktop, chef-chloe-phone, city-builder-phone, claire-big-life-phone, heat-firm-phone, heavens-grace-phone, la-city-phone, swellrider-phone, tidebreak-world-tour-phone, tidebreak-phone, swellrider-desktop]
+        case: [loader-phone, clean-phone, clean-desktop, claire-phone, claire-desktop, chef-chloe-phone, city-builder-phone, claire-big-life-phone, heat-firm-phone, heavens-grace-phone, la-city-phone, swellrider-phone, tidebreak-world-tour-phone, tidebreak-phone, swellrider-desktop]
     env:
       CASE: ${{ matrix.case }}
     steps:
