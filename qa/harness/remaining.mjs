@@ -43,10 +43,10 @@ try{
  }
  if(slug==='city-builder'){
   await page.keyboard.press('2');const b=await page.locator('#canvas').boundingBox();
-  for(const dx of [-.12,.12]){const x=b.x+b.width*(.5+dx),y=b.y+b.height*.55;await page.mouse.move(x,y);await page.waitForTimeout(500);await page.mouse.click(x,y);}
-  r.manualChecks=['Inspect screenshot: visible ground, two houses, population 8 and building count 2'];
+  for(const pos of [[.38,.68],[.5,.74],[.62,.68]]){const x=b.x+b.width*pos[0],y=b.y+b.height*pos[1];await page.mouse.move(x,y);await page.waitForTimeout(350);await page.mouse.click(x,y);await page.waitForTimeout(350);}
+  r.manualChecks=['Inspect screenshot: ground faces the camera and placed houses increase the visible counters'];
  }
  check(r.errors.length===0,'No runtime or HTTP failures');r.status='checks-passed';
 }catch(e){r.status='failed';r.failure=e.stack;}
-try{await page.screenshot({path:`${out}/${name}.png`,timeout:60000});}catch(e){r.captureErrors.push(e.message);if(r.status==='checks-passed')r.status='checks-passed-capture-blocked';}
+try{await page.screenshot({path:`${out}/${name}.png`,timeout:20000});}catch(e){r.captureErrors.push(e.message);try{const cdp=await ctx.newCDPSession(page);const shot=await Promise.race([cdp.send('Page.captureScreenshot',{format:'png',fromSurface:false,captureBeyondViewport:false}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('CDP capture timed out')),20000))]);await fs.writeFile(`${out}/${name}.png`,Buffer.from(shot.data,'base64'));await cdp.detach();r.captureFallback='CDP';}catch(e2){r.captureErrors.push(e2.message);if(r.status==='checks-passed')r.status='checks-passed-capture-blocked';}}
 await fs.writeFile(`${out}/${name}.json`,JSON.stringify(r,null,2));console.log(JSON.stringify(r));await ctx.close();await browser.close();if(r.status!=='checks-passed')process.exitCode=1;
