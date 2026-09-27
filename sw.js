@@ -1,27 +1,10 @@
-/* Caleb's Arcade service worker.
-   Shell + catalogue + thumbnails are precached so the front door opens offline.
-   Navigations are network-FIRST so a redeploy always wins; other same-origin
-   GETs are cache-first with a background refresh. Games on the other live
-   sites are cross-origin and are left to the network (their own sites cache
-   them if they choose to). */
-const VERSION = 'arcade-v8-playroom';
-const SHELL = ['./', 'index.html', 'play.html', 'catalog.js', 'assets/site.css?v=playroom-8', 'assets/playroom.css?v=playroom-8', 'assets/feature-kingdom.webp', 'assets/site.js?v=playroom-8', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'assets/fonts/fredoka.woff2', 'assets/fonts/nunito.woff2'];
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
-});
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('arcade-') && k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
-});
-self.addEventListener('fetch', e => {
-  const req = e.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
-  if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(VERSION).then(c => c.put(req, copy)); return r; })
-      .catch(() => caches.match(req).then(r => r || caches.match('index.html'))));
-    return;
-  }
-  e.respondWith(caches.match(req).then(hit => {
-    const refresh = fetch(req).then(r => { if (r && r.ok) caches.open(VERSION).then(c => c.put(req, r.clone())); return r; }).catch(() => hit);
-    return hit || refresh;
-  }));
-});
+/* Caleb's Arcade service worker — portal shell plus player-selected offline games. */
+const VERSION='arcade-v9-offline', GAME_CACHE='arcade-games-v1';
+const SHELL=['./','index.html','play.html','catalog.js','offline-games.json','assets/site.css?v=playroom-8','assets/playroom.css?v=playroom-8','assets/feature-kingdom.webp','assets/site.js?v=playroom-8','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png','assets/fonts/fredoka.woff2','assets/fonts/nunito.woff2'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(VERSION).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('arcade-')&&![VERSION,GAME_CACHE].includes(k)).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+async function gameEntry(id){const r=await caches.match('offline-games.json')||await fetch('offline-games.json');const data=await r.json();return data.games.find(g=>g.id===id);}
+async function isSaved(entry){if(!entry)return false;const c=await caches.open(GAME_CACHE);for(const f of entry.files)if(!await c.match(f.url))return false;return true;}
+async function cacheGame(id,source){const entry=await gameEntry(id);if(!entry)throw new Error('This game cannot be saved from this site.');const c=await caches.open(GAME_CACHE);let done=0,bytes=0;for(const f of entry.files){let hit=await c.match(f.url);if(!hit){const r=await fetch(f.url,{cache:'reload'});if(!r.ok)throw new Error('Download failed: '+f.url);await c.put(f.url,r.clone());}done++;bytes+=f.bytes||0;source?.postMessage({type:'OFFLINE_PROGRESS',id,done,total:entry.files.length,bytes,totalBytes:entry.bytes});}return{saved:true,bytes:entry.bytes,files:entry.files.length};}
+self.addEventListener('message',e=>{const p=e.ports&&e.ports[0],reply=v=>p?p.postMessage(v):e.source?.postMessage(v);if(e.data?.type==='OFFLINE_STATUS')e.waitUntil(gameEntry(e.data.id).then(async entry=>reply({ok:true,saved:await isSaved(entry),bytes:entry?.bytes||0,files:entry?.files.length||0})).catch(error=>reply({ok:false,error:error.message})));if(e.data?.type==='CACHE_GAME')e.waitUntil(cacheGame(e.data.id,e.source).then(v=>reply({ok:true,...v})).catch(error=>reply({ok:false,error:error.message})));});
+self.addEventListener('fetch',e=>{const req=e.request;if(req.method!=='GET'||new URL(req.url).origin!==location.origin)return;if(req.mode==='navigate'){e.respondWith(fetch(req).then(r=>{const copy=r.clone();caches.open(VERSION).then(c=>c.put(req,copy));return r;}).catch(()=>caches.match(req).then(r=>r||caches.match('index.html'))));return;}e.respondWith(caches.match(req).then(hit=>hit||fetch(req).then(r=>{if(r&&r.ok)caches.open(VERSION).then(c=>c.put(req,r.clone()));return r;})));});

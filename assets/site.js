@@ -488,6 +488,18 @@ function play() {
   };
   facts();
 
+  const offlineBtn=$('#offline'),offlineLabel=offlineBtn&&$('.lbl',offlineBtn);
+  const fmtBytes=n=>n>=1048576?(n/1048576).toFixed(n>=104857600?0:1)+' MB':Math.ceil(n/1024)+' KB';
+  const swAsk=async(data)=>{const reg=await navigator.serviceWorker.ready;const worker=navigator.serviceWorker.controller||reg.active;if(!worker)throw new Error('Offline player is still starting. Try again.');return new Promise((resolve,reject)=>{const ch=new MessageChannel(),timer=setTimeout(()=>reject(new Error('Offline request timed out.')),240000);ch.port1.onmessage=e=>{clearTimeout(timer);resolve(e.data);};worker.postMessage(data,[ch.port2]);});};
+  async function setupOffline(){
+    if(!offlineBtn)return;
+    if(g.ext||/^https?:/i.test(g.src)||!('serviceWorker'in navigator)){offlineBtn.hidden=true;return;}
+    let size=0;
+    try{const status=await swAsk({type:'OFFLINE_STATUS',id:g.id});if(!status.ok)throw new Error(status.error);size=status.bytes||0;offlineBtn.dataset.bytes=size;if(status.saved){offlineLabel.textContent='Offline ready';offlineBtn.classList.add('saved');offlineBtn.disabled=true;offlineBtn.title=g.title+' is ready without internet';}else{offlineLabel.textContent='Save offline'+(size?' · '+fmtBytes(size):'');offlineBtn.title='Download '+g.title+' for offline play';}}
+    catch(e){offlineLabel.textContent='Save offline';offlineBtn.title=e.message;}
+    offlineBtn.addEventListener('click',async()=>{offlineBtn.disabled=true;offlineLabel.textContent='Preparing…';try{if(navigator.storage&&navigator.storage.persist)await navigator.storage.persist();if(navigator.storage&&navigator.storage.estimate&&size){const est=await navigator.storage.estimate();if(est.quota-est.usage<size*1.1)throw new Error('Not enough free browser storage for this game.');}const onProgress=e=>{const d=e.data;if(d?.type==='OFFLINE_PROGRESS'&&d.id===g.id){const pct=d.totalBytes?Math.min(100,Math.round(d.bytes/d.totalBytes*100)):Math.round(d.done/d.total*100);offlineLabel.textContent='Saving '+pct+'%';offlineBtn.setAttribute('aria-label','Saving '+g.title+' '+pct+'%');}};navigator.serviceWorker.addEventListener('message',onProgress);const result=await swAsk({type:'CACHE_GAME',id:g.id});navigator.serviceWorker.removeEventListener('message',onProgress);if(!result.ok)throw new Error(result.error);offlineLabel.textContent='Offline ready';offlineBtn.classList.add('saved');offlineBtn.title=g.title+' is ready without internet';offlineBtn.setAttribute('aria-label',g.title+' is ready for offline play');toast(g.title+' is ready for your flight.');}catch(e){offlineBtn.disabled=false;offlineLabel.textContent='Try offline save again';offlineBtn.title=e.message;toast('Could not save '+g.title+': '+e.message);}});
+  }
+  setupOffline();
   const frame = $('#frame'), splash = $('#splash'), load = $('#load'), fs = $('#fs');
   let started = false;
   function start() {
@@ -612,6 +624,12 @@ function suggest() {
     else if (e.key === 'Escape') { q.value = ''; close(); q.blur(); document.body.classList.remove('searching'); }
   });
   q.addEventListener('blur', () => setTimeout(close, 180));
+}
+
+const planePack=$('#plane-pack');
+if(planePack){
+  const label=$('.lbl',planePack),ids=["kingdom-defense","summit-line","clean-house","claire-pip","neon-dash","critter-rush-2d","survivor-wave","market-merge","math-miner","word-dungeon","hole-grind","tic-tac-toe"];
+  planePack.addEventListener('click',async()=>{planePack.disabled=true;try{if(navigator.storage&&navigator.storage.persist)await navigator.storage.persist();const reg=await navigator.serviceWorker.ready,worker=navigator.serviceWorker.controller||reg.active;for(let i=0;i<ids.length;i++){label.textContent='Saving '+(i+1)+' / '+ids.length;const result=await new Promise((resolve,reject)=>{const ch=new MessageChannel(),timer=setTimeout(()=>reject(new Error('Download timed out')),240000);ch.port1.onmessage=e=>{clearTimeout(timer);resolve(e.data);};worker.postMessage({type:'CACHE_GAME',id:ids[i]},[ch.port2]);});if(!result.ok)throw new Error(result.error);}label.textContent='Plane pack ready';planePack.classList.add('saved');toast('12 games are ready for your flight.');}catch(e){planePack.disabled=false;label.textContent='Try plane pack again';planePack.title=e.message;toast('Plane pack stopped: '+e.message);}});
 }
 
 shellInit(); home(); play();
