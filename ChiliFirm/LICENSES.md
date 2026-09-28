@@ -29,8 +29,13 @@ Tito Scorch is an invented character. He is not based on any real person.
 
 ## Sound and music
 
-All sound effects and the background beat are synthesized live with the Web Audio API
-in `js/audio.js`. The game ships no audio files.
+The music (`audio/music/`), Tito Scorch's voice lines (`audio/vo/`) and the effects in
+`audio/sfx/` were made with ElevenLabs (Creator plan, commercial licence) on 2026-09-28;
+`audio/AUDIO.md` lists every file with its prompt or line, and `audio/audio.json` its
+loudness gain. Tito's voice is the ElevenLabs voice Liam.
+
+Every other sound, and the fallback beat used when the music files cannot load, is
+synthesized live with the Web Audio API in `js/audio.js`.
 
 ## Reference material
 

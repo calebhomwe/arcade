@@ -9,6 +9,10 @@
   html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#aee7f2;
     font-family:"Comic Sans MS","Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none;touch-action:none}
   #c{display:block;width:100vw;height:100vh;cursor:pointer}
+  /* the arcade's pause button, dressed like the game's own white pill buttons */
+  html body #arcade-sdk-btn{position:fixed;width:44px;height:44px;border-radius:50%;background:#fff;
+    border:4px solid #5a3410;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:none}
+  html body #arcade-sdk-btn rect{fill:#5a3410}
 </style>
 </head>
 <body>
@@ -123,9 +127,17 @@ const AU={ctx:null,on:true,
   pop(){this.note(520,.06,'triangle',.06);},
   fanfare(){[0,4,7,12,16].forEach((s,i)=>this.note(392*Math.pow(2,s/12),.4,'triangle',.1,i*.13));}
 };
+/* ── arcade wiring, codes, reduced motion ─────────────────────────────── */
+const SDK=window.ArcadeSDK||null;
+const sdk=(fn,a)=>{try{if(SDK)SDK[fn](a);}catch(e){}};
+const cheated=()=>!!(SDK&&SDK.cheated);
+const RM=window.matchMedia?matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
+const CHEAT={party:false,big:false,slow:false};
+const TUTKEY='balloonbust_tut';
 /* speech — read the clue aloud when the browser has local voices */
 function speak(txt){
   if(!state.voice||!window.speechSynthesis)return;
+  if(SDK&&SDK.muted)return;   /* the arcade's Mute covers the reading voice too */
   try{
     const u=new SpeechSynthesisUtterance(txt);
     u.rate=.85;u.pitch=1.15;u.volume=.9;
@@ -190,9 +202,12 @@ function spawnBalloonsFor(q){
     const col=PALETTE[(colorIdx++)%PALETTE.length];
     state.balloons.push({
       x:W*(0.16+0.68*(n>1?lanes[i]/(n-1):0.5))+(Math.random()*30-15),
-      y:H+70+i*(95+Math.random()*40),
-      r:clamp(W*0.055,44,64),
-      rise:rise*(0.85+Math.random()*0.3),
+      /* the first balloon is already on screen so a round (and every question
+         after it) never opens on an empty sky (same fix as the game's own repo) */
+      y:(i===0?Math.round(H*0.74)+(Math.random()*24-12)
+              :H+70+(i-1)*(95+Math.random()*40)),
+      r:clamp(W*0.055,44,64)*(CHEAT.big?1.45:1),
+      rise:rise*(0.85+Math.random()*0.3)*(CHEAT.slow?0.5:1)*(state.tut===1?0.75:1),
       txt:String(txt), correct:String(txt)===String(q.answer),
       hue:col, sway:Math.random()*TAU, wig:0
     });
@@ -207,27 +222,52 @@ function newQuestion(){
 }
 
 /* ── flow ───────────────────────────────────────────────────────────── */
-function startRound(mode,speed){
+function startRound(mode,speed,withTutorial){
   if(mode)state.mode=mode; if(speed)state.speed=speed;
   AU.init();
+  let seen=false; try{seen=localStorage.getItem(TUTKEY)==='1';}catch(e){}
+  state.tut=(withTutorial===true||!seen)?1:0; state.tutT=0;
   state.phase='playing';
   state.time=ROUND_LEN;state.stars=0;state.streak=0;state.bestStreak=0;state.combo=1;
   state.correct=0;state.wrong=0;state.questions=0;state.newStickers=0;
   state.balloons=[];state.confetti=[];state.pops=[];state.floaters=[];
   state.nextQ=0;state.hint='';state.hintT=0;
   newQuestion();
+  sdk('state',{scene:'play'});
 }
 function endRound(){
   if(state.phase!=='playing')return;
-  state.phase='over';state.endT=state.t;
+  state.phase='over';state.endT=state.t;state.tut=0;
   const before=stickersOf(meta);
-  meta.totalStars+=state.stars;
-  meta.bestStreak=Math.max(meta.bestStreak,state.bestStreak);
-  meta.rounds++;
+  /* a round played with codes on is just for fun: its stars never reach the sticker book */
+  if(!cheated()){
+    meta.totalStars+=state.stars;
+    meta.bestStreak=Math.max(meta.bestStreak,state.bestStreak);
+    meta.rounds++;
+    saveMeta();
+  }
   state.newStickers=Math.max(0,stickersOf(meta)-before);
-  saveMeta();
   AU.fanfare();
   try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){}
+  sdk('state',{scene:'over',score:state.stars});
+}
+function toMenu(){state.phase='menu';state.tut=0;state.balloons=[];
+  try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){}
+  sdk('state',{scene:'title'});}
+/* hint: the question's own hint (count on, first letter...), shown on the sky and returned to the arcade */
+function hint(){
+  if(state.phase!=='playing'||!state.q)return 'Pick Math Pop or Word Pop, then tap the balloon that answers the blimp.';
+  state.hint=state.q.hint;state.hintT=4;
+  return 'Hint: '+state.q.hint+'.';
+}
+/* codes (the arcade's Codes box): fun modes only, they never give away an answer */
+const CODES={PARTY:'Party mode: rainbow confetti on every pop',BIGBALLOON:'Giant balloons, easier to tap',SLOWSKY:'Balloons float up at half speed'};
+function code(c){
+  c=String(c||'').toUpperCase(); if(!CODES[c])return {ok:false};
+  if(c==='PARTY')CHEAT.party=true;
+  if(c==='BIGBALLOON'){CHEAT.big=true;for(const b of state.balloons)b.r*=1.45;}
+  if(c==='SLOWSKY'){CHEAT.slow=true;for(const b of state.balloons)b.rise*=0.5;}
+  return {ok:true,message:CODES[c]};
 }
 function popBalloon(b,forceRight){
   const idx=state.balloons.indexOf(b);
@@ -235,6 +275,8 @@ function popBalloon(b,forceRight){
   const isRight=forceRight!==undefined?forceRight:b.correct;
   state.balloons.splice(idx,1);
   burst(b.x,b.y,b.hue,isRight);
+  if(isRight&&state.tut===1){state.tut=2;state.tutT=3;try{localStorage.setItem(TUTKEY,'1');}catch(e){}
+    sdk('event','tutorial-done');}
   if(isRight){
     state.streak++;state.correct++;
     state.bestStreak=Math.max(state.bestStreak,state.streak);
@@ -254,16 +296,17 @@ function popBalloon(b,forceRight){
   }
 }
 function burst(x,y,hue,good){
-  const cols=good?['#ffd166','#ff6f91','#6fd6ff','#7ce8a4','#b28dff','#ffffff']
+  const cols=good||CHEAT.party?['#ffd166','#ff6f91','#6fd6ff','#7ce8a4','#b28dff','#ffffff']
                  :['#cccccc','#bbbbbb'];
-  const n=good?26:6;
+  /* reduced motion: a small puff instead of a burst; PARTY doubles it */
+  const n=Math.round((good?26:6)*(CHEAT.party?2:1)*(RM.matches?0.3:1));
   for(let i=0;i<n;i++){
     const a=Math.random()*TAU,v=60+Math.random()*(good?180:60);
     state.confetti.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-60,
       rot:Math.random()*TAU,vr:(Math.random()-.5)*8,s:4+Math.random()*5,
       col:pick(cols),t:1+Math.random()*.6});
   }
-  state.pops.push({x,y,r:8,t:.3,hue:hue[0]});
+  if(!RM.matches)state.pops.push({x,y,r:8,t:.3,hue:hue[0]});   /* reduced motion: no flash ring */
 }
 
 /* ── input ──────────────────────────────────────────────────────────── */
@@ -278,16 +321,30 @@ function onDown(e){
   const p=ptFromEvt(e);
   const btn=hitButton(p);
   if(btn){AU.pop();btn.fn();return;}
+  if(state.phase==='menu'){AU.pop();startRound(state.mode,state.speed);return;}   /* one tap on the sky plays the highlighted mode */
   if(state.phase!=='playing')return;
   /* topmost balloon under the pointer (big forgiving hit radius) */
   for(let i=state.balloons.length-1;i>=0;i--){
     const b=state.balloons[i];
     if(b.dead)continue;
     const dx=p.x-b.x,dy=p.y-b.y;
-    if(dx*dx+dy*dy<(b.r+26)*(b.r+26)){b.wig=1;popBalloon(b);return;}
+    if(dx*dx+dy*dy<(b.r+26)*(b.r+26)){b.wig=RM.matches?0:1;popBalloon(b);return;}
   }
 }
 cv.addEventListener('pointerdown',onDown,{passive:false});
+/* keyboard: 1 / 2 pick Math or Word Pop, Enter plays; in a round 1-4 pop the balloons counted from the left */
+let keyMode=false;
+window.addEventListener('keydown',e=>{
+  const k=e.key;
+  if(state.phase==='menu'){
+    if(k==='1')startRound('math',state.speed); else if(k==='2')startRound('spell',state.speed);
+    else if(k==='Enter'||k===' '){e.preventDefault();startRound(state.mode,state.speed);}
+  }else if(state.phase==='playing'){
+    const n=parseInt(k,10);
+    if(n>=1&&n<=9){keyMode=true;const live=state.balloons.filter(b=>!b.dead).sort((a,b)=>a.x-b.x);
+      if(live[n-1]){AU.init();popBalloon(live[n-1]);}}
+  }else if(k==='Enter'||k===' '){e.preventDefault();startRound(state.mode,state.speed);}
+});
 try{if(window.speechSynthesis)speechSynthesis.onvoiceschanged=findVoice;}catch(e){}
 findVoice();
 
@@ -299,6 +356,7 @@ function update(dt){
     state.time-=dt;
     if(state.time<=0){state.time=0;endRound();}
     if(state.hintT>0)state.hintT-=dt;
+    if(state.tut===2){state.tutT-=dt;if(state.tutT<=0)state.tut=0;}
     if(state.nextQ&&state.t>=state.nextQ+0.6){ /* force-clear, next question */
       state.balloons=[];state.nextQ=0;newQuestion();
     }
@@ -357,7 +415,7 @@ function drawBalloon(b){
   cx.restore();
 }
 function drawBlimp(x,y,w,h,prompt,note){
-  const bob=Math.sin(state.t*1.1)*6;
+  const bob=RM.matches?0:Math.sin(state.t*1.1)*6;
   cx.save();
   cx.translate(x,y+bob);
   /* fins */
@@ -444,21 +502,28 @@ function drawHUD(){
     cx.fillStyle='#d94f72';
     cx.fillText(`x${state.combo} combo!`,44,102);
   }
-  /* gentle timer bar */
-  const bw=Math.min(360,W*0.4),bx=W-bw-30,by=34;
+  if(cheated()){   /* small "codes on" pill under the streak */
+    cx.font='bold 14px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
+    const cy2=state.combo>1?124:100, tw=cx.measureText('codes on').width+22;
+    cx.fillStyle='#ffffff';rr(cx,24,cy2-13,tw,26,13);cx.fill();
+    cx.lineWidth=3;cx.strokeStyle='#5a3410';rr(cx,24,cy2-13,tw,26,13);cx.stroke();
+    cx.fillStyle='#5a3410';cx.textAlign='left';cx.fillText('codes on',35,cy2+1);
+  }
+  /* gentle timer bar (left of the arcade's pause button) */
+  const bw=Math.min(360,W*0.4),bx=W-bw-(SDK?70:30),by=34;
   cx.fillStyle='rgba(255,255,255,.7)';rr(cx,bx,by,bw,18,9);cx.fill();
   const k=state.time/ROUND_LEN;
   if(k>0){cx.fillStyle=k>.25?'#7ce8a4':'#ffd166';
     rr(cx,bx+2,by+2,Math.max(6,(bw-4)*k),14,7);cx.fill();}
   cx.fillStyle='#5a3410';cx.textAlign='center';
   cx.font='bold 16px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
-  cx.fillText(`${Math.ceil(state.time)}s — pop the right balloon!`,bx+bw/2,by+34);
+  cx.fillText(W<560?`${Math.ceil(state.time)}s`:`${Math.ceil(state.time)}s — pop the right balloon!`,bx+bw/2,by+34,bw+40);
 }
 function drawHint(){
   if(state.hintT<=0||!state.hint)return;
   const a=Math.min(1,state.hintT);
   cx.save();cx.globalAlpha=a;
-  const w=Math.min(W-60,520),x=(W-w)/2,y=H*0.26;
+  const w=Math.min(W-60,520),x=(W-w)/2,y=cardY()+6;
   cx.fillStyle='#fff8e0';rr(cx,x,y,w,64,16);cx.fill();
   cx.lineWidth=3;cx.strokeStyle='#e8a13c';rr(cx,x,y,w,64,16);cx.stroke();
   cx.fillStyle='#7a4a10';cx.textAlign='center';cx.textBaseline='middle';
@@ -466,10 +531,38 @@ function drawHint(){
   cx.fillText('Hint: '+state.hint,x+w/2,y+32,w-30);
   cx.restore();
 }
+/* first-run card: "pop the balloon with the answer", with a bouncing arrow over the right one */
+function drawTutorial(){
+  if(!state.tut)return;
+  const good=state.balloons.find(b=>b.correct&&!b.dead);
+  if(state.tut===1&&good){
+    const bx=good.x+Math.sin(good.sway)*10, by=good.y-good.r*1.06-18-(RM.matches?0:Math.abs(Math.sin(state.t*4))*12);
+    cx.save();cx.fillStyle='#ff9fb6';cx.strokeStyle='#d94f72';cx.lineWidth=4;
+    cx.beginPath();cx.moveTo(bx,by);cx.lineTo(bx-16,by-22);cx.lineTo(bx-6,by-22);cx.lineTo(bx-6,by-40);
+    cx.lineTo(bx+6,by-40);cx.lineTo(bx+6,by-22);cx.lineTo(bx+16,by-22);cx.closePath();cx.fill();cx.stroke();
+    cx.globalAlpha=RM.matches?.8:.45+.35*Math.sin(state.t*5);cx.lineWidth=5;cx.strokeStyle='#ffd166';
+    cx.beginPath();cx.ellipse(bx,good.y,good.r*1.05,good.r*1.2,0,0,TAU);cx.stroke();cx.restore();
+  }
+  const w=Math.min(W-40,440),h=state.tut===1?108:70,x=(W-w)/2,y=cardY();
+  cx.save();cx.globalAlpha=state.tut===2?clamp(state.tutT,0,1):1;
+  cx.fillStyle='#fff8e0';rr(cx,x,y,w,h,18);cx.fill();
+  cx.lineWidth=4;cx.strokeStyle='#e8a13c';rr(cx,x,y,w,h,18);cx.stroke();
+  cx.fillStyle='#5a3410';cx.textAlign='center';cx.textBaseline='middle';
+  cx.font='bold 22px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
+  if(state.tut===1){
+    cx.fillText('Tap the balloon with the answer!',x+w/2,y+30,w-24);
+    cx.restore();
+    button(x+w/2-50,y+56,100,40,'skip',()=>{state.tut=0;try{localStorage.setItem(TUTKEY,'1');}catch(e){}
+      for(const b of state.balloons)b.rise/=0.75;},false);
+  }else{
+    cx.fillText('Yes! Keep popping.',x+w/2,y+h/2,w-24);
+    cx.restore();
+  }
+}
 function drawStickerBook(cxn,y,scale){
   const earned=stickersOf(meta);
   const total=Math.max(8,earned+4);
-  const r=18*scale,gap=r*2.4;
+  const r=Math.min(18*scale,(W-24)/total/2.4),gap=r*2.4;
   const w=total*gap,x0=cxn-w/2;
   for(let i=0;i<total;i++){
     const sx=x0+i*gap+r;
@@ -486,25 +579,36 @@ function menuScene(){
       rise:0,txt:'',hue:PALETTE[i%PALETTE.length],sway:state.t+i,wig:0});
   }
   const cxm=W/2;
-  drawBlimp(cxm,H*0.16,Math.min(W*0.7,460),96,'BALLOON BUST','');
+  /* layout: proportional on tall screens; stacked with fixed gaps on short ones (the arcade's desktop frame is ~480 px tall) */
+  const narrow=W<480, compact=H<620;
+  const bh=compact?44:56, gapy=compact?10:16;
+  const blimpY=compact?58:H*0.16, subY=compact?124:H*0.16+80, b1=compact?138:H*0.36;
+  const sy=b1+bh*2+gapy+(narrow?(compact?32:44):(compact?14:26));
+  const stickY=compact?sy+68:(W<560?H*0.78:H*0.80), starsY=compact?stickY+(W<560?52:30):H*0.87, resetY=compact?starsY+22:H*0.90;
+  drawBlimp(cxm,blimpY,Math.min(W*0.7,460),compact?88:96,'BALLOON BUST','');
   cx.textAlign='center';
-  cx.font='20px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
-  cx.fillStyle='#4a6a8a';
-  cx.fillText('pop the balloon that answers the blimp!',cxm,H*0.16+80);
+  if(cheated()){cx.font='bold 15px "Comic Sans MS","Segoe UI",system-ui,sans-serif';cx.fillStyle='#d94f72';
+    cx.fillText('codes on: stars from these rounds stay out of the sticker book',cxm,compact?subY:b1-18,W-24);}
+  if(!(compact&&cheated())){
+    cx.font='20px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
+    cx.fillStyle='#4a6a8a';
+    cx.fillText('pop the balloon that answers the blimp!',cxm,subY,W-24);
+    if(!compact){cx.font='16px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
+      cx.fillText('tap a mode to play, or tap the sky for the pink one',cxm,subY+26,W-24);}
+  }
 
-  const bw=Math.min(340,W*0.7),bh=56;
-  button(cxm-bw/2,H*0.36,bw,bh,'Math Pop   ( 3 + 4 = ? )',
+  const bw=Math.min(340,W*0.7);
+  button(cxm-bw/2,b1,bw,bh,'Math Pop   ( 3 + 4 = ? )',
     ()=>startRound('math',state.speed),state.mode==='math');
-  button(cxm-bw/2,H*0.36+bh+16,bw,bh,'Word Pop   ( the cat drank m··· )',
+  button(cxm-bw/2,b1+bh+gapy,bw,bh,'Word Pop   ( the cat drank m··· )',
     ()=>startRound('spell',state.speed),state.mode==='spell');
 
-  /* speed row */
-  const sy=H*0.36+bh*2+42;
+  /* speed row (on a narrow phone the label sits above the three buttons) */
   cx.font='bold 18px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
-  cx.fillStyle='#5a3410';cx.textAlign='right';
-  cx.fillText('Speed:',cxm-176,sy+20);
-  const sw=104,sh=40,gapx=12;
-  const sx0=cxm-152;
+  cx.fillStyle='#5a3410';cx.textAlign=narrow?'center':'right';
+  cx.fillText('Speed:',narrow?cxm:cxm-176,narrow?sy-14:sy+20);
+  const sw=narrow?Math.min(104,(W-48)/3):104,sh=40,gapx=12;
+  const sx0=narrow?cxm-(sw*3+gapx*2)/2:cxm-152;
   ['chill','normal','zoom'].forEach((sp,i)=>{
     button(sx0+i*(sw+gapx),sy,sw,sh,SPEEDS[sp].label,()=>{state.speed=sp;},state.speed===sp);
   });
@@ -512,22 +616,37 @@ function menuScene(){
   /* sticker book */
   cx.font='bold 19px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
   cx.fillStyle='#5a3410';cx.textAlign='center';
-  cx.fillText(`Your sticker book — ${earnedWord()}  (${meta.totalStars%10}/10 to the next star sticker)`,cxm,H*0.80);
-  drawStickerBook(cxm,H*0.87,1);
-  button(cxm-110,H*0.90,220,44,'reset stickers',
+  if(W<560){
+    cx.fillText(`Your sticker book — ${earnedWord()}`,cxm,stickY,W-24);
+    cx.font='bold 16px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
+    cx.fillText(`${meta.totalStars%10}/10 stars to the next sticker`+(meta.bestStreak?` · best streak ${meta.bestStreak}`:''),cxm,stickY+24,W-24);
+  }else cx.fillText(`Your sticker book — ${earnedWord()}  (${meta.totalStars%10}/10 to the next star sticker)`+(meta.bestStreak?`  · best streak ${meta.bestStreak}`:''),cxm,stickY,W-24);
+  drawStickerBook(cxm,starsY,compact?0.8:1);
+  button(cxm-110,resetY,220,compact?40:44,'reset stickers',
     ()=>{meta={totalStars:0,bestStreak:0,rounds:0};saveMeta();},false);
 }
 function earnedWord(){
   const n=stickersOf(meta);
   return n===1?'1 star sticker':n+' star stickers';
 }
+/* on a narrow phone the blimp flies a little lower so it clears the score and the timer */
+const blimpY=()=>W<560?Math.max(H*0.14,176):H*0.14;
+const cardY=()=>Math.max(H*0.25,blimpY()+66);
 function playScene(){
   drawSky();
   const qw=Math.min(W*0.86,state.q&&state.q.prompt.length>26?620:540);
-  drawBlimp(W/2,H*0.14,qw,104,state.q?state.q.prompt:'',state.q?state.q.note:'');
+  drawBlimp(W/2,blimpY(),qw,104,state.q?state.q.prompt:'',state.q?state.q.note:'');
   for(const b of state.balloons)drawBalloon(b);
+  if(keyMode){   /* after a number key, each balloon shows its key under the knot */
+    const live=state.balloons.filter(b=>!b.dead).sort((a,b)=>a.x-b.x);
+    cx.font='bold 16px "Comic Sans MS","Segoe UI",system-ui,sans-serif';cx.textAlign='center';cx.textBaseline='middle';
+    live.forEach((b,i)=>{const x=b.x+Math.sin(b.sway)*10,y=b.y+b.r*1.12+30;
+      cx.fillStyle='#ffffff';cx.beginPath();cx.arc(x,y,13,0,TAU);cx.fill();
+      cx.lineWidth=3;cx.strokeStyle='#5a3410';cx.stroke();cx.fillStyle='#5a3410';cx.fillText(String(i+1),x,y+1);});
+  }
   drawHUD();
   drawHint();
+  drawTutorial();
 }
 function overScene(){
   drawSky();
@@ -543,27 +662,31 @@ function overScene(){
   cx.font='bold 34px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
   cx.fillText('Great popping!',W/2,py+54);
   drawStar(W/2-pw*0.34,py+102,24,'#ffd166',.2);
-  cx.font='bold 25px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
+  cx.font=`bold ${W<560?21:25}px "Comic Sans MS","Segoe UI",system-ui,sans-serif`;
   cx.textAlign='left';
-  cx.fillText(`stars: ${state.stars}`,W/2-pw*0.34+36,py+102);
+  const tw=pw*0.84-24;   /* keep every line inside the card on a phone */
+  cx.fillText(`stars: ${state.stars}`,W/2-pw*0.34+36,py+102,tw-36);
   drawStar(W/2-pw*0.34,py+144,20,'#ffb4d4',-.2);
-  cx.fillText(`best streak: ${state.bestStreak}`,W/2-pw*0.34+36,py+144);
-  cx.fillText(`right pops: ${state.correct}`,W/2-pw*0.34,py+186);
-  cx.fillText(`kept trying: ${state.wrong} wiggles`,W/2-pw*0.34,py+218);
+  cx.fillText(`best streak: ${state.bestStreak}`,W/2-pw*0.34+36,py+144,tw-36);
+  cx.fillText(`right pops: ${state.correct}`,W/2-pw*0.34,py+186,tw);
+  cx.fillText(`kept trying: ${state.wrong} wiggles`,W/2-pw*0.34,py+218,tw);
   if(state.newStickers>0){
     cx.fillStyle='#d94f72';
     cx.font='bold 24px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
-    cx.fillText(`NEW STICKER${state.newStickers>1?'S':''}: +${state.newStickers} !`,W/2-pw*0.34,py+258);
+    cx.fillText(`NEW STICKER${state.newStickers>1?'S':''}: +${state.newStickers} !`,W/2-pw*0.34,py+258,tw*0.6);
     for(let i=0;i<Math.min(4,state.newStickers);i++)
       drawStar(W/2+pw*0.2+i*40,py+252,20,'#ffd166',i*.4);
   }else{
     cx.fillStyle='#8a7a5a';
     cx.font='bold 19px "Comic Sans MS","Segoe UI",system-ui,sans-serif';
-    cx.fillText(`${10-meta.totalStars%10} more stars to the next sticker`,W/2-pw*0.34,py+258);
+    cx.fillText(`${10-meta.totalStars%10} more stars to the next sticker`,W/2-pw*0.34,py+258,tw);
   }
   drawStickerBook(W/2,py+312,0.8);
-  button(W/2-240,py+ph-62,230,48,'Play again',()=>startRound(state.mode,state.speed),true);
-  button(W/2+10,py+ph-62,230,48,'Menu',()=>{state.phase='menu';},false);
+  const obw=Math.min(230,(pw-44)/2);
+  button(W/2-obw-8,py+ph-62,obw,48,'Play again',()=>startRound(state.mode,state.speed),true);
+  button(W/2+8,py+ph-62,obw,48,'Menu',toMenu,false);
+  if(cheated()){cx.font='bold 16px "Comic Sans MS","Segoe UI",system-ui,sans-serif';cx.fillStyle='#d94f72';
+    cx.textAlign='center';cx.fillText('codes on: these stars stay out of the sticker book',W/2,py+ph-78,pw-30);}
 }
 function render(){
   cx.clearRect(0,0,W,H);
@@ -621,6 +744,16 @@ window.__bb_debug={
     if(b)popBalloon(b,false);return !!b;},
   endRound
 };
+
+/* ═══════════ Caleb's Arcade: restart, exit, tutorial, hints and codes go through the SDK ═══════════ */
+if(SDK)ArcadeSDK.init({pauseKeys:'p+esc',
+  onRestart:()=>startRound(state.mode,state.speed),
+  onExit:toMenu,
+  onTutorial:()=>startRound(state.mode,state.speed,true),
+  onHint:hint,onCheat:code,
+  onPause:()=>{try{if(window.speechSynthesis)speechSynthesis.pause();}catch(e){}},
+  onResume:()=>{try{if(window.speechSynthesis)speechSynthesis.resume();}catch(e){}}});
+sdk('state',{scene:'title'});
 </script>
 </body>
 </html>

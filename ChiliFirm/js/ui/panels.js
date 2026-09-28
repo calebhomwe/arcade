@@ -284,8 +284,8 @@
     return {
       title: 'Settings', icon: 'gear',
       body: `<div class="grid">
-        <div class="card"><div class="art" style="--tile:${TILE[4]}">${I(s.sound ? 'soundOn' : 'soundOff', 70)}</div><h4>Sound effects</h4><p>Pops, coins and cash registers.</p><button class="btn small wide ${s.sound ? '' : 'ghost'}" data-action="sound">${s.sound ? 'ON' : 'OFF'}</button></div>
-        <div class="card"><div class="art" style="--tile:${TILE[3]}">${I('music', 70)}</div><h4>Beat</h4><p>Tito’s lo-fi grow-room beat.</p><button class="btn small wide ${s.music ? '' : 'ghost'}" data-action="music">${s.music ? 'ON' : 'OFF'}</button></div>
+        <div class="card"><div class="art" style="--tile:${TILE[4]}">${I(s.sound ? 'soundOn' : 'soundOff', 70)}</div><h4>Sound effects</h4><p>Pops, coins, cash registers and Tito.</p><button class="btn small wide ${s.sound ? '' : 'ghost'}" data-action="sound">${s.sound ? 'ON' : 'OFF'}</button><label class="vol">Effects<input type="range" min="0" max="100" step="5" data-vol="sfx" aria-label="Effects volume"><b></b></label></div>
+        <div class="card"><div class="art" style="--tile:${TILE[3]}">${I('music', 70)}</div><h4>Beat</h4><p>Tito’s grow-room music.</p><button class="btn small wide ${s.music ? '' : 'ghost'}" data-action="music">${s.music ? 'ON' : 'OFF'}</button><label class="vol">Music<input type="range" min="0" max="100" step="5" data-vol="music" aria-label="Music volume"><b></b></label></div>
         <div class="card"><div class="art" style="--tile:${TILE[1]}">${I('fast', 70)}</div><h4>Game speed</h4><p>Speed up the clock.</p><button class="btn small wide gold" data-action="speed">${s.speed}x</button></div>
         <div class="card"><div class="art" style="--tile:${TILE[0]}">${I('save', 70)}</div><h4>Save</h4><p>Your farm autosaves.</p><button class="btn small wide" data-action="save">Save now</button></div>
       </div>`,

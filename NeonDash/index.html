@@ -221,6 +221,53 @@
             #hud { left: 10px; right: 124px; }
             #controls { display: none; }
         }
+        /* ---- Caleb's Arcade: its pause button takes the far-right slot, the speaker moves into the old pause slot ---- */
+        body.sdk #pause-btn { display: none !important; }
+        body.sdk #mute-btn { right: 76px; }
+        body.sdk #hud { right: 136px; }
+        html body #arcade-sdk-btn { top: 20px !important; right: 20px !important; width: 44px; height: 44px; border-radius: 22px;
+            background: rgba(0,0,0,0.6); border: 1px solid #0ff; box-shadow: 0 0 15px #0ff; cursor: pointer; padding: 0;
+            display: flex; align-items: center; justify-content: center; }
+        html body #arcade-sdk-btn rect { fill: #0ff; }
+        @media (max-width: 768px) {
+            body.sdk #mute-btn { right: 62px; }
+            html body #arcade-sdk-btn { top: 10px !important; right: 10px !important; }
+        }
+        .pill-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 6px 0 2px; pointer-events: auto; }
+        .pill { min-width: 88px; min-height: 44px; padding: 0 16px; border-radius: 22px; background: rgba(0,0,0,0.6); border: 1px solid #0ff;
+            color: #0ff; font-weight: bold; letter-spacing: 2px; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+        .pill[aria-pressed="true"] { background: #0ff; color: #000; box-shadow: 0 0 20px #0ff; }
+        .pill.small { min-width: 0; font-size: 0.8rem; border-color: #f0f; color: #f6c6ff; }
+        .btn:focus-visible, .pill:focus-visible, #mute-btn:focus-visible { outline: 3px solid #ff00ff; outline-offset: 3px; }
+        .legend { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 10px 12px 4px; color: #ccc; font-size: 0.85rem; letter-spacing: 1px; }
+        .legend b { display: inline-block; width: 12px; height: 12px; margin-right: 6px; transform: rotate(45deg); vertical-align: -1px; }
+        .top { list-style: none; margin: 6px auto 4px; padding: 0; min-width: 220px; color: #cfe9ff; font-size: 1rem; letter-spacing: 1px; }
+        .top li { display: flex; justify-content: space-between; gap: 24px; padding: 2px 10px; border-bottom: 1px solid rgba(0,255,255,0.18); }
+        .top li.me { color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.6); }
+        .top-h { margin-top: 8px; font-size: 0.85rem; letter-spacing: 3px; color: #0ff; }
+        #codes-on { position: absolute; left: 20px; top: 118px; font-size: 0.8rem; font-weight: bold; letter-spacing: 2px; color: #000;
+            background: #ff00ff; border-radius: 12px; padding: 3px 10px; box-shadow: 0 0 12px #f0f; display: none; }
+        #level-toast { position: absolute; left: 50%; top: 32%; transform: translateX(-50%); font-size: 2.2rem; font-weight: bold;
+            letter-spacing: 6px; color: #0ff; text-shadow: 0 0 20px #0ff, 0 0 40px #f0f; display: none; white-space: nowrap; }
+        #coach { position: absolute; left: 50%; top: 130px; transform: translateX(-50%); width: min(420px, calc(100vw - 32px));
+            background: rgba(0,0,0,0.72); border: 1px solid #0ff; border-radius: 20px; box-shadow: 0 0 20px #0ff;
+            padding: 12px 16px; text-align: center; display: none; pointer-events: none; }
+        #coach .k { font-size: 0.8rem; letter-spacing: 3px; color: #f0f; }
+        #coach .big { font-size: 1.6rem; font-weight: bold; letter-spacing: 4px; color: #fff; margin: 4px 0; }
+        #coach .t { font-size: 1rem; color: #cfe9ff; }
+        #coach .steps { font-size: 0.8rem; color: #8f9fc0; letter-spacing: 3px; margin-top: 4px; }
+        #coach .pill { margin-top: 8px; pointer-events: auto; }
+        @media (max-width: 768px) { #codes-on { left: 10px; top: 104px; } #coach { top: 150px; } }
+        @media (max-height: 620px) {   /* the arcade's short desktop frame: keep the whole title card on screen */
+            #title-screen h1 { font-size: 3.2rem; margin-bottom: 6px; letter-spacing: 8px; }
+            #title-screen p { margin: 2px; }
+            #title-screen .btn { margin: 10px; padding: 8px 36px; }
+            .legend { margin: 4px 12px 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #title-screen h1 { animation: none; }
+            .btn { transition: none; }
+        }
     </style>
     <!-- Classic script, NOT an ES module: browsers refuse to load modules over
          file:// ("blocked by CORS policy ... origin 'null'"), so the previous
@@ -236,8 +283,18 @@
             <div class="stat">COINS <span id="coins">0</span></div>
             <div class="stat">COMBO <span id="combo">x1</span></div>
             <div class="stat">DIST <span id="dist">0</span>m</div>
+            <div class="stat">LVL <span id="lvl">1</span></div>
         </div>
         <div id="powerup-timer"></div>
+        <div id="codes-on">CODES ON</div>
+        <div id="level-toast"></div>
+        <div id="coach" role="status" aria-live="polite">
+            <div class="k" id="coach-k">FIRST RUN · NO CRASHES FOR 20 S</div>
+            <div class="big" id="coach-big">CHANGE LANES</div>
+            <div class="t" id="coach-t"></div>
+            <div class="steps" id="coach-steps">1 / 3</div>
+            <button class="pill small" id="coach-skip">SKIP</button>
+        </div>
         <div id="controls">← → / A D move | ↑ / W / SPACE jump | ↓ / S slide | ESC pause</div>
         <button id="pause-btn">II</button>
         <button id="mute-btn">🔊</button>
@@ -247,8 +304,19 @@
         <h1>NEON DASH</h1>
         <p>Dodge · Slide · Collect</p>
         <button class="btn" id="play-btn">▶ START</button>
-        <p style="margin-top:20px; font-size:1rem;">← → / A D move | ↑ / W jump | ↓ / S slide</p>
+        <div class="pill-row" id="diff-row" role="group" aria-label="Difficulty">
+            <button class="pill" data-diff="easy" aria-pressed="false">EASY</button>
+            <button class="pill" data-diff="normal" aria-pressed="true">NORMAL</button>
+            <button class="pill" data-diff="hard" aria-pressed="false">HARD</button>
+        </div>
+        <div class="legend" id="legend" aria-label="Power-ups">
+            <span><b style="background:#00ff00;box-shadow:0 0 8px #0f0"></b>MAGNET pulls coins</span>
+            <span><b style="background:#00ffff;box-shadow:0 0 8px #0ff"></b>SHIELD blocks a hit</span>
+            <span><b style="background:#ff8800;box-shadow:0 0 8px #f80"></b>BOOST dash, untouchable</span>
+        </div>
+        <p id="title-keys" style="margin-top:10px; font-size:1rem;">← → / A D move | ↑ / W jump | ↓ / S slide</p>
         <p style="font-size:0.9rem; opacity:0.7;">Best: <span id="best-display">0</span></p>
+        <div class="pill-row"><button class="pill small" id="gfx-btn" aria-label="Graphics quality">GFX: HIGH</button></div>
     </div>
 
     <div id="gameover-screen">
@@ -257,6 +325,8 @@
         <div class="final-stats">SCORE <span id="final-score">0</span></div>
         <div class="final-stats">COINS <span id="final-coins">0</span></div>
         <div class="final-stats">DISTANCE <span id="final-dist">0</span>m</div>
+        <div class="top-h" id="top-h">TOP RUNS · NORMAL</div>
+        <ol class="top" id="top-list"></ol>
         <button class="btn" id="restart-btn">↻ RESTART</button>
         <p style="font-size:0.9rem; opacity:0.6;">Press SPACE or ENTER</p>
         <button class="btn" id="btnShare" style="font-size:1.05rem;padding:10px 28px;margin:6px">SAVE THE SCORE CARD</button>
@@ -267,9 +337,10 @@
 
         // ============ CONFIG ============
         const LANES = [-2.5, 0, 2.5];
-        const PLAYER_SPEED_START = 6;
-        const PLAYER_SPEED_MAX = 28;
-        const SPEED_RAMP = 0.22;
+        // start speed, top speed and ramp come from the difficulty picked on the title (Normal = the original curve)
+        let PLAYER_SPEED_START = 6;
+        let PLAYER_SPEED_MAX = 28;
+        let SPEED_RAMP = 0.22;
         const GRAVITY = 22;
         const JUMP_VELOCITY = 8.5;
         const COYOTE_TIME = 0.1;
@@ -301,6 +372,26 @@
             return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
         }
 
+        // ============ ARCADE WIRING, DIFFICULTY, CODES, QUALITY ============
+        const SDK = window.ArcadeSDK || null;
+        const sdk = (fn, a) => { try { if (SDK) SDK[fn](a); } catch (e) {} };
+        const cheated = () => !!(SDK && SDK.cheated);
+        const RM = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+        const ls = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } },
+                     set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+        const DIFF = { easy:   { v0: 5, max: 20, ramp: 0.15, key: 'neonDashBestEasy', name: 'EASY' },
+                       normal: { v0: 6, max: 28, ramp: 0.22, key: 'neonDashBest',     name: 'NORMAL' },
+                       hard:   { v0: 8, max: 34, ramp: 0.30, key: 'neonDashBestHard', name: 'HARD' } };
+        let diff = ls.get('neonDashDiff', 'normal'); if (!DIFF[diff]) diff = 'normal';
+        function bestKey() { return DIFF[diff].key; }
+        function applyDiff() { const D = DIFF[diff]; PLAYER_SPEED_START = D.v0; PLAYER_SPEED_MAX = D.max; SPEED_RAMP = D.ramp; }
+        applyDiff();
+        let GFX = ls.get('neonDashGfx', 'high') === 'low' ? 'low' : 'high';
+        const CHEAT = { god: false, magnet: false, slow: false, bighead: false };
+        let runT = 0, level = 1, levelT = 0;
+        let tut = 0;               // first run coach: 0 off, 1 lanes, 2 jump, 3 slide, 4 done
+        let coachTimer = null;
+
         // ============ STATE ============
         let gameState = 'title';
         let score = 0;
@@ -310,7 +401,7 @@
         let coins = 0;
         let combo = 1;
         let comboResetTimer = 0;
-        let bestScore = parseInt(localStorage.getItem('neonDashBest') || '0');
+        let bestScore = parseInt(ls.get(bestKey(), '0')) || 0;
         document.getElementById('best-display').textContent = bestScore;
 
         let speed = PLAYER_SPEED_START;
@@ -345,6 +436,8 @@
         camera.lookAt(0, 1.5, -8);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
+        // GFX: HIGH renders at the screen's pixel ratio (up to 2x), LOW at 1x with fewer particles
+        renderer.setPixelRatio(GFX === 'high' ? Math.min(window.devicePixelRatio || 1, 2) : 1);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = false;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -717,6 +810,7 @@
         }
 
         function emitParticles(pos, color, count) {
+            if (GFX === 'low') count = Math.ceil(count / 2);
             for (let i = 0; i < count; i++) {
                 const p = getParticle(color);
                 p.position.copy(pos);
@@ -737,7 +831,7 @@
             masterGain.connect(audioCtx.destination);
         }
         function playTone(freq, dur, type='sine', vol=0.3, slideTo=null) {
-            if (!audioCtx || muted) return;
+            if (!audioCtx || muted || (SDK && SDK.muted)) return;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = type;
@@ -1022,11 +1116,13 @@
         const keys = {};
         let touchStartX = 0, touchStartY = 0;
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape') {   // with the arcade SDK, P and Esc open its pause menu instead (it catches them first)
+                if (SDK) return;
                 if (gameState === 'play') pauseGame();
                 else if (gameState === 'pause') resumeGame();
                 return;
             }
+            if (e.target && e.target.tagName === 'BUTTON' && (e.key === ' ' || e.key === 'Enter')) return;   // focused buttons click themselves
             if (gameState === 'dead' && (e.key === ' ' || e.key === 'Enter')) {
                 restartGame();
                 return;
@@ -1037,25 +1133,26 @@
             }
             if (gameState !== 'play') return;
             if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-                if (targetLane > 0) targetLane--;
+                if (targetLane > 0) { targetLane--; coachDid('lane'); }
             }
             if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-                if (targetLane < 2) targetLane++;
+                if (targetLane < 2) { targetLane++; coachDid('lane'); }
             }
             if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') {
-                jumpBufferTimer = INPUT_BUFFER;
+                jumpBufferTimer = INPUT_BUFFER; coachDid('jump');
             }
             if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
                 if (isGrounded && !isSliding) {
                     isSliding = true;
                     slideTimer = SLIDE_TIME;
-                    playSlide();
+                    playSlide(); coachDid('slide');
                 }
             }
         });
         window.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
+            if (e.target && e.target.closest && e.target.closest('button')) return;   // title buttons (difficulty, GFX) are not a tap-to-start
             if (gameState === 'title') startGame();
             if (gameState === 'dead') restartGame();
         });
@@ -1064,26 +1161,44 @@
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
             if (Math.abs(dx) > Math.abs(dy)) {
-                if (dx > 30 && targetLane < 2) targetLane++;
-                else if (dx < -30 && targetLane > 0) targetLane--;
+                if (dx > 30 && targetLane < 2) { targetLane++; coachDid('lane'); }
+                else if (dx < -30 && targetLane > 0) { targetLane--; coachDid('lane'); }
             } else {
-                if (dy < -30) jumpBufferTimer = INPUT_BUFFER;
+                if (dy < -30) { jumpBufferTimer = INPUT_BUFFER; coachDid('jump'); }
                 else if (dy > 30 && isGrounded && !isSliding) {
                     isSliding = true;
                     slideTimer = SLIDE_TIME;
-                    playSlide();
+                    playSlide(); coachDid('slide');
                 }
             }
         });
 
         // ============ GAME FLOW ============
-        function startGame() {
+        function startGame(withTutorial) {
             initAudio();
+            applyDiff();
             document.getElementById('title-screen').style.display = 'none';
             document.getElementById('gameover-screen').style.display = 'none';
             resetGame();
             gameState = 'play';
             document.getElementById('pause-btn').style.display = 'block';
+            coachHide();
+            if (withTutorial === true || ls.get('neonDashTut', '') !== '1') coachShow();
+            sdk('state', { scene: 'play' });
+        }
+        function toTitle() {
+            coachHide();
+            resetGame();
+            gameState = 'title';
+            document.getElementById('gameover-screen').style.display = 'none';
+            document.getElementById('pause-btn').style.display = 'none';
+            document.getElementById('powerup-timer').style.display = 'none';
+            const ts = document.getElementById('title-screen');
+            ts.querySelector('h1').textContent = 'NEON DASH';
+            document.getElementById('play-btn').textContent = '▶ START';
+            ts.style.display = 'flex';
+            paintTitle();
+            sdk('state', { scene: 'title' });
         }
 
         function resetGame() {
@@ -1120,6 +1235,10 @@
             playerGroup.rotation.x = 0;
             playerGroup.scale.y = 1;
             playerGroup.position.set(0, 0, 0);
+            runT = 0; level = 1; levelT = 0;
+            document.getElementById('level-toast').style.display = 'none';
+            document.getElementById('lvl').textContent = '1';
+            document.getElementById('codes-on').style.display = cheated() ? 'block' : 'none';
             obstacleGroup.children.forEach(o => releaseObstacle(o));
             coinGroup.children.forEach(c => releaseCoin(c));
             chunkStartZ = 0;
@@ -1151,13 +1270,18 @@
             dead = true;
             document.getElementById('pause-btn').style.display = 'none';
             playCrash();
-            shakeAmount = 1;
+            shakeAmount = RM.matches ? 0 : 1;
+            coachHide();
             const finalScore = Math.floor(score);
-            if (finalScore > bestScore) {
+            // a run with codes on is just for fun: it never touches the best score or the table
+            if (!cheated() && finalScore > bestScore) {
                 bestScore = finalScore;
-                localStorage.setItem('neonDashBest', bestScore);
+                ls.set(bestKey(), bestScore);
                 document.getElementById('newbest').style.display = 'block';
             }
+            const rank = cheated() ? -1 : addTop(finalScore);
+            paintTop(rank);
+            sdk('state', { scene: 'over', score: finalScore });
             document.getElementById('final-score').textContent = finalScore;
             document.getElementById('final-coins').textContent = Math.floor(coins);
             document.getElementById('final-dist').textContent = Math.floor(distance);
@@ -1169,6 +1293,8 @@
             resetGame();
             gameState = 'play';
             document.getElementById('gameover-screen').style.display = 'none';
+            document.getElementById('pause-btn').style.display = 'block';
+            sdk('state', { scene: 'play' });
         }
 
         // ============ COLLISION ============
@@ -1225,6 +1351,10 @@
         }
 
         function hitObstacle() {
+            if (CHEAT.god || (tut > 0 && tut < 4 && runT < 20)) {   // GODMODE, or the first 20 s of the first-run lesson: bounce off, no crash
+                if (!RM.matches) shakeAmount = 0.3;
+                return;
+            }
             if (invulnerable || shieldTimer > 0) {
                 if (shieldTimer > 0) {
                     shieldTimer = 0;
@@ -1237,7 +1367,7 @@
             }
             hitStop = 0.08;
             dead = true;
-            shakeAmount = 1;
+            shakeAmount = RM.matches ? 0 : 1;   // reduced motion: no camera shake
             emitParticles(playerGroup.position, 0xff0040, 30);
             gameOver();
         }
@@ -1245,7 +1375,7 @@
         // ============ POWER-UPS ============
         function applyPowerup(type) {
             playPowerup();
-            if (type === 'magnet') magnetTimer = 8;
+            if (type === 'magnet') magnetTimer = Math.max(magnetTimer, 8);
             else if (type === 'shield') {
                 shieldTimer = 8;
                 shield.visible = true;
@@ -1282,8 +1412,9 @@
         function animate() {
             requestAnimationFrame(animate);
             const now = performance.now();
-            const delta = Math.min((now - lastTime) / 1000, 0.05);
+            const delta = Math.min((now - lastTime) / 1000, 0.05) * (CHEAT.slow && gameState === 'play' ? 0.5 : 1);
             lastTime = now;
+            syncMuteIcon();
 
             if (gameState !== 'play') {
                 renderer.render(scene, camera);
@@ -1296,6 +1427,14 @@
                 return;
             }
 
+            // level counter: one level per 20 s of running, while the pace keeps rising
+            runT += delta;
+            if (CHEAT.magnet) magnetTimer = Math.max(magnetTimer, 1);
+            const lv = 1 + Math.floor(runT / 20);
+            if (lv !== level) { level = lv; levelT = 1.4; document.getElementById('lvl').textContent = level;
+                const lt = document.getElementById('level-toast'); lt.textContent = 'LEVEL ' + level; lt.style.display = 'block'; }
+            if (levelT > 0) { levelT -= delta; if (levelT <= 0) document.getElementById('level-toast').style.display = 'none'; }
+            if (tut > 0 && tut < 4 && runT >= 20) document.getElementById('coach-k').textContent = 'FIRST RUN · CRASHES COUNT NOW';
             // Speed ramp
             const elapsed = distance / speed;
             if (elapsed < 15) {
@@ -1485,7 +1624,7 @@
             camera.fov = 70 + (speed - PLAYER_SPEED_START) * 0.4;
             camera.updateProjectionMatrix();
 
-            if (shakeAmount > 0) {
+            if (shakeAmount > 0 && !RM.matches) {
                 camera.position.x += (Math.random() - 0.5) * shakeAmount * 0.3;
                 camera.position.y += (Math.random() - 0.5) * shakeAmount * 0.3;
                 shakeAmount *= 0.95;
@@ -1497,7 +1636,7 @@
             document.getElementById('dist').textContent = Math.floor(distance);
 
             let timerText = '';
-            if (magnetTimer > 0) timerText += `MAGNET ${Math.ceil(magnetTimer)}s `;
+            if (magnetTimer > 0) timerText += CHEAT.magnet ? 'MAGNET ∞ ' : `MAGNET ${Math.ceil(magnetTimer)}s `;
             if (shieldTimer > 0) timerText += `SHIELD ${Math.ceil(shieldTimer)}s `;
             if (boostTimer > 0) timerText += `BOOST ${Math.ceil(boostTimer)}s`;
             const pt = document.getElementById('powerup-timer');
@@ -1514,13 +1653,21 @@
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
+            renderer.setPixelRatio(GFX === 'high' ? Math.min(window.devicePixelRatio || 1, 2) : 1);
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
+        // the speaker drives the arcade's remembered mute when the SDK is there
         document.getElementById('mute-btn').addEventListener('click', () => {
-            muted = !muted;
-            document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
+            if (SDK) SDK.setMuted(!SDK.muted); else muted = !muted;
+            syncMuteIcon();
         });
+        let shownMuted = null;
+        function syncMuteIcon() {
+            const m = SDK ? SDK.muted : muted;
+            if (m !== shownMuted) { shownMuted = m; document.getElementById('mute-btn').textContent = m ? '🔇' : '🔊';
+                document.getElementById('mute-btn').setAttribute('aria-label', m ? 'Sound off' : 'Sound on'); }
+        }
 
         // The button reads RESUME while paused, but used to call startGame() -- a silent
         // full restart. With an on-screen pause target that trap had to go first.
@@ -1534,6 +1681,105 @@
             startGame();
         });
         document.getElementById('restart-btn').addEventListener('click', restartGame);
+
+        // ============ TITLE: difficulty pills, GFX toggle ============
+        function paintTitle() {
+            document.querySelectorAll('[data-diff]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.diff === diff)));
+            bestScore = parseInt(ls.get(bestKey(), '0')) || 0;
+            document.getElementById('best-display').textContent = bestScore + ' (' + DIFF[diff].name.toLowerCase() + ')';
+            document.getElementById('gfx-btn').textContent = 'GFX: ' + GFX.toUpperCase();
+        }
+        document.querySelectorAll('[data-diff]').forEach(b => b.addEventListener('click', () => {
+            diff = b.dataset.diff; ls.set('neonDashDiff', diff); applyDiff(); paintTitle();
+        }));
+        document.getElementById('gfx-btn').addEventListener('click', () => {
+            GFX = GFX === 'high' ? 'low' : 'high'; ls.set('neonDashGfx', GFX);
+            renderer.setPixelRatio(GFX === 'high' ? Math.min(window.devicePixelRatio || 1, 2) : 1);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            paintTitle();
+        });
+        paintTitle();
+
+        // ============ HIGH-SCORE TABLE: top 5 runs per difficulty ============
+        function readTop() { try { return JSON.parse(ls.get('neonDashTop', '{}')) || {}; } catch (e) { return {}; } }
+        function addTop(sc) {
+            const all = readTop(), list = all[diff] || [], me = { s: sc, d: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) };
+            list.push(me); list.sort((a, b) => b.s - a.s); all[diff] = list.slice(0, 5);
+            ls.set('neonDashTop', JSON.stringify(all));
+            return all[diff].indexOf(me);
+        }
+        function paintTop(rank) {
+            const list = readTop()[diff] || [];
+            document.getElementById('top-h').textContent = 'TOP RUNS · ' + DIFF[diff].name + (cheated() ? ' · CODES ON, NOT SAVED' : '');
+            document.getElementById('top-list').innerHTML = list.length ? list.map((r, i) =>
+                `<li class="${i === rank ? 'me' : ''}"><span>${i + 1}. ${r.s}</span><span>${r.d}</span></li>`).join('') : '<li><span>No runs yet</span></li>';
+        }
+
+        // ============ FIRST-RUN COACH: lanes, jump, slide, by doing each one ============
+        const COARSE = window.matchMedia ? matchMedia('(pointer: coarse)').matches : false;
+        const STEPS = {
+            1: ['CHANGE LANES', COARSE ? 'Swipe left or right.' : 'Press ← or → (or A / D).', 'lane'],
+            2: ['JUMP', COARSE ? 'Swipe up to hop red barriers.' : 'Press ↑, W or SPACE to hop red barriers.', 'jump'],
+            3: ['SLIDE', COARSE ? 'Swipe down to slide under yellow beams.' : 'Press ↓ or S to slide under yellow beams.', 'slide'] };
+        function coachPaint() {
+            const st = STEPS[tut];
+            document.getElementById('coach-big').textContent = st[0];
+            document.getElementById('coach-t').textContent = st[1];
+            document.getElementById('coach-steps').textContent = tut + ' / 3';
+            document.getElementById('coach').style.display = 'block';
+        }
+        function coachShow() { tut = 1; clearTimeout(coachTimer); document.getElementById('coach-k').textContent = 'FIRST RUN · NO CRASHES FOR 20 S'; coachPaint(); }
+        function coachDid(what) {
+            if (!tut || tut > 3 || STEPS[tut][2] !== what) return;
+            if (tut < 3) { tut++; coachPaint(); return; }
+            tut = 4; ls.set('neonDashTut', '1'); sdk('event', 'tutorial-done');
+            document.getElementById('coach-big').textContent = 'YOU GOT IT';
+            document.getElementById('coach-t').textContent = 'Crashes count from now. Chain coins for combo, grab the glowing diamonds.';
+            document.getElementById('coach-steps').textContent = '';
+            coachTimer = setTimeout(coachHide, 3000);
+        }
+        function coachHide() { tut = 0; clearTimeout(coachTimer); document.getElementById('coach').style.display = 'none'; }
+        document.getElementById('coach-skip').addEventListener('click', () => { coachHide(); ls.set('neonDashTut', '1'); });
+
+        // ============ HINT: reads the lane ahead ============
+        function hint() {
+            if (gameState !== 'play') return 'Press START. Left and right change lanes, up jumps red barriers and pink drones, down slides under yellow beams; orange walls need a lane change.';
+            let near = null;
+            obstacleGroup.children.forEach(o => {
+                if (!o.visible || !o.inUse || o.position.z > 0.5) return;
+                if (Math.abs(o.position.x - LANES[targetLane]) > 1.3) return;
+                if (!near || o.position.z > near.position.z) near = o;
+            });
+            if (near) {
+                const what = { barrier: 'a red barrier, so jump it', beam: 'a yellow beam, so slide under it', wall: 'an orange wall, so change lanes',
+                               drone: 'a pink drone, so jump it or change lanes' }[near.type] || 'an obstacle';
+                return 'Next in your lane, ' + Math.max(1, Math.round(-near.position.z)) + ' m ahead: ' + what + '.';
+            }
+            return 'Your lane is clear. Chain coins for a combo up to x' + MAX_COMBO + ' and grab the glowing diamonds.';
+        }
+
+        // ============ CODES (the arcade's Codes box): a run with codes on never saves ============
+        const CODES = { GODMODE: 'Invincible: obstacles bounce off you', MAGNETMAN: 'Permanent coin magnet',
+                        SLOWMO: 'Half-speed world', BIGHEAD: 'Big-head runner' };
+        function code(c) {
+            c = String(c || '').toUpperCase(); if (!CODES[c]) return { ok: false };
+            if (c === 'GODMODE') CHEAT.god = true;
+            if (c === 'MAGNETMAN') CHEAT.magnet = true;
+            if (c === 'SLOWMO') CHEAT.slow = true;
+            if (c === 'BIGHEAD') { CHEAT.bighead = true; head.scale.setScalar(2.2); head.position.y = 2.1;
+                visor.scale.setScalar(2.2); visor.position.set(0, 2.2, -0.72); }
+            document.getElementById('codes-on').style.display = 'block';
+            return { ok: true, message: CODES[c] };
+        }
+
+        // ============ Caleb's Arcade: restart, exit, tutorial, hints and codes go through the SDK ============
+        if (SDK) {
+            document.body.classList.add('sdk');
+            document.getElementById('controls').textContent = '← → / A D move | ↑ / W / SPACE jump | ↓ / S slide | P / ESC pause';
+            ArcadeSDK.init({ pauseKeys: 'p+esc', onRestart: () => startGame(), onExit: toTitle,
+                       onTutorial: () => startGame(true), onHint: hint, onCheat: code });
+        }
+        sdk('state', { scene: 'title' });
 
         animate();
 
@@ -1560,7 +1806,7 @@
         var e=document.querySelector(map[i][1]);
         if(e) out.push([map[i][0],scText(e.textContent)+map[i][2]]);
       }
-      var bt=null; try{ bt=localStorage.getItem('neonDashBest'); }catch(e){}
+      var bt=null; try{ bt=localStorage.getItem(typeof bestKey==='function'?bestKey():'neonDashBest'); }catch(e){}
       if(bt!==null&&bt!=='') out.push(['All-time best',scFmt(bt)]);
       return out;
     }

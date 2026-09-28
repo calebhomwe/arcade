@@ -189,16 +189,66 @@
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "A plank swings above your treehouse. Tap to drop it.",
+    "Only the part that lands on the stack stays; the overhang is sawn off.",
+    "Miss the stack completely and the build is over. Stack as high as you can."
+   ],
+   "tips": [
+    "Watch the plank's edges, not the owl: tap when they line up with the plank below.",
+    "Four PERFECT drops in a row make your plank 18 px wider.",
+    "The swing speeds up with every plank, so the first ten are the time to bank PERFECTs.",
+    "The dotted rust line in the sky marks your best height."
+   ],
+   "controls": {
+    "keyboard": "Space or Enter drops the plank (and starts a build). P or Esc pauses. M switches the game's sound.",
+    "touch": "Tap anywhere to drop the plank. The pause tab is top right."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "WIDEPLANK",
+     "effect": "Planks swing in twice as wide"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "Half-speed swing"
+    },
+    {
+     "code": "GLUEGUN",
+     "effect": "Wood glue: every drop that touches the stack lands PERFECT"
+    },
+    {
+     "code": "BIGOWL",
+     "effect": "Big owl mode"
+    }
+   ],
+   "difficulty": "Pick the saw speed on the title card: Easy starts slow, never passes a medium swing and forgives 10 px on a PERFECT; Normal is the classic curve; Hard starts fast and only forgives 5 px. The swing speeds up with every plank, and each setting keeps its own best.",
+   "features": {
+    "one-tap-start": "Start building on the title card, or Space or Enter; the saw speed tabs sit under it",
+    "instant-restart": "Build another on the results card (or Space), and Restart in the pause menu",
+    "best-score-badge": "BEST in the top-left scoreboard, plus a dotted BEST line across the sky at your record height",
+    "tutorial-card": "First play: a foreman's note with a swinging-plank animation says Tap to drop and slows the first plank; it praises the first drop and can be skipped or replayed from How to play",
+    "results": "Results card with planks, height, perfects, best combo and the best for this saw speed, plus NEW BEST"
+   },
+   "start": "#play",
+   "saves": [
+    "hn_rec"
+   ],
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "market-merge": {
    "title": "Market Merge",
@@ -232,16 +282,67 @@
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Aim the fruit above the crate and drop it in.",
+    "Two of the same fruit that touch squash into the next size up; quick chains score extra.",
+    "Keep everything below the dashed rim: fruit resting above it for a moment closes the stall."
+   ],
+   "tips": [
+    "Keep the big fruit in one corner and feed the small ones in beside them.",
+    "Check NEXT before you drop so you know where the following fruit will go.",
+    "Two watermelons that meet are sold for +200.",
+    "Undo takes back your last drop: Easy gives 5 per crate, Normal 3 and Hard 1."
+   ],
+   "controls": {
+    "keyboard": "Mouse or arrow keys aim; click, Space or Enter drops. U undoes, H shows a hint, P or Esc pauses, M switches the game's sound.",
+    "touch": "Touch the crate and drag to aim, lift your finger to drop. Undo and Hint sit bottom left; the pause tab is top right."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "NORIM",
+     "effect": "The rim never overflows"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "Slow-motion crate: fruit falls and rolls at half speed"
+    },
+    {
+     "code": "BIGMELON",
+     "effect": "The fruit in your hand becomes a pumpkin"
+    },
+    {
+     "code": "UNDOALL",
+     "effect": "Unlimited undos"
+    }
+   ],
+   "difficulty": "Stall rules on the title card: Easy only drops cherries to apricots, gives 5 undos and a longer grace at the rim; Normal drops up to oranges with 3 undos; Hard drops up to apples with 1 undo and a short grace. Each keeps its own best. The daily crate plays Normal rules.",
+   "features": {
+    "hints": "Hint button (bottom left), H, or Hint in the pause menu: rings the open fruit of the same kind to drop onto, or the lowest free spot, and says why",
+    "undo": "Undo button (bottom left) or U takes back the last drop, score and supplier order included; Easy 5, Normal 3, Hard 1 per crate",
+    "level-select-or-daily": "Daily crate on the title card: the same seeded fruit order for everyone today, with its own best",
+    "results": "Overflow card with score, best for the rules played, fruits merged, biggest fruit and best chain, plus NEW BEST",
+    "tutorial": "First crate: three coach notes teach aim, drop and merge by doing each one (the first two fruits are cherries); skippable, and replayed from How to play"
+   },
+   "start": "#play",
+   "saves": [
+    "mm_rec",
+    "mm_daily"
+   ],
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "survivor-wave": {
    "title": "Survivor Wave",
@@ -364,16 +465,70 @@
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Steer the hole around the city and swallow anything smaller than it.",
+    "Every bite makes the hole wider, so cones, benches, trees, cars, buses and houses become food in turn.",
+    "A rival hole that grows bigger than you swallows you. When the clock runs out your score is banked as coins for upgrades and new districts."
+   ],
+   "tips": [
+    "Watch NEXT in the top-left panel: it says how big you must be to swallow the next kind of prop.",
+    "Early on, sweep up coins and cones; they add up fast.",
+    "GRAVITY WELL drags nearby food into you, a strong first buy.",
+    "Beat a district's quota to clear it; later districts pay up to x3.20 per bite."
+   ],
+   "controls": {
+    "keyboard": "WASD or the arrow keys steer, or hold the mouse button and the hole rolls toward the pointer. P or Esc pauses.",
+    "touch": "Hold a finger on the screen and the hole rolls toward it. The pause button is top right."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "BLACKHOLE",
+     "effect": "Start every run three times as wide"
+    },
+    {
+     "code": "GHOSTHOLE",
+     "effect": "Rival holes can't swallow you"
+    },
+    {
+     "code": "MONEYPIT",
+     "effect": "+50,000 coins to spend (this session only)"
+    },
+    {
+     "code": "UNLOCKALL",
+     "effect": "Every district unlocked (this session only)"
+    }
+   ],
+   "difficulty": "Each district is a harder band: more rival holes (1 in Suburb up to 5 in The Void) and a bigger quota. Rivals are sized from your own mass, so they keep pace as you grow: harmless in Suburb, hunters by Skyline. A wave of bigger props lands every 12 seconds, and coin upgrades make later runs easier.",
+   "features": {
+    "one-tap-start": "DROP IN on the hub starts a run in the chosen district",
+    "instant-restart": "RUN AGAIN on the results card, and Restart in the pause menu",
+    "best-score-badge": "BEST RUN tile in the hub, and a ★ BEST mark on the results score",
+    "tutorial-card": "First run: an animated STEER THE HOLE card; the clock waits until you have swallowed 3 things, then a GROW card follows. Skippable, and replayed from How to play",
+    "results": "TIME UP or SWALLOWED card with score, coins, XP, props swallowed, final size and quota progress"
+   },
+   "settings": {
+    "quality": "Hub > GRAPHICS: HIGH / LOW (Low draws at 1x resolution, drops prop shadows and thins the particles)"
+   },
+   "start": "#btnPlay",
+   "saves": [
+    "holegrind.save.v2"
+   ],
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "balloon-bust": {
    "title": "Balloon Bust",
@@ -410,14 +565,60 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick Math Pop (sums within 20) or Word Pop (first words), and a speed. Tapping the sky starts the highlighted (pink) mode.",
+    "The blimp asks a question and answer balloons float up. Tap the balloon with the answer.",
+    "Right pops earn stars; a wrong pop just shows a hint. Every 10 stars become a sticker in your sticker book."
+   ],
+   "tips": [
+    "Three right pops in a row double your stars, and the combo climbs up to x4.",
+    "Missed one? The hint card shows how to count it, or which letter the word starts with.",
+    "Balloons that float away come back from the bottom, so take your time.",
+    "Chill speed gives little hands more time to aim."
+   ],
+   "controls": {
+    "keyboard": "Click a balloon, or press 1 to 4 to pop the balloons counted from the left. On the title, 1 picks Math Pop, 2 Word Pop, Enter plays. P or Esc pauses.",
+    "touch": "Tap Math Pop or Word Pop (or anywhere on the sky) to start, then tap a balloon. The pause button is top right."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "PARTY",
+     "effect": "Party mode: rainbow confetti on every pop"
+    },
+    {
+     "code": "BIGBALLOON",
+     "effect": "Giant balloons, easier to tap"
+    },
+    {
+     "code": "SLOWSKY",
+     "effect": "Balloons float up at half speed"
+    }
+   ],
+   "difficulty": "Pick Chill, Normal or Zoom on the title to set how fast the balloons rise. Sums stay within 20 and the words are first-grade words, made for ages 4 to 8. Nothing ever ends a round early.",
+   "features": {
+    "one-tap-start": "Tap Math Pop or Word Pop, or tap anywhere on the sky to play the highlighted mode (keys: 1, 2 or Enter)",
+    "instant-restart": "Play again on the results card, Enter, or Restart in the pause menu",
+    "best-score-badge": "Stars and streak top left while you play; the title shows the sticker book and your best streak",
+    "tutorial-card": "First round: a Tap the balloon with the answer card, a bouncing arrow over the right balloon and a slower sky until the first right pop; skippable, and replayed from How to play",
+    "results": "Great popping! card with stars, best streak, right pops, wiggles and any new stickers",
+    "hints": "A wrong pop shows the question's hint (count on from 7, it begins with c); Hint in the pause menu shows it any time"
+   },
+   "start": "#c",
+   "saves": [
+    "balloonbust_v1"
+   ],
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "long-way-home": {
    "title": "The Long Way Home",
@@ -2931,16 +3132,74 @@
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Your runner dashes down a three-lane neon road that keeps speeding up.",
+    "Change lanes around orange walls, jump red barriers and pink drones, slide under yellow beams.",
+    "Grab coins to build a combo (up to x8) and glowing diamonds for power-ups. One crash ends the run."
+   ],
+   "tips": [
+    "Coins in a row build your combo; five seconds without one resets it to x1.",
+    "A SHIELD soaks up exactly one hit, so it is safe to take a risky line while it glows.",
+    "BOOST makes you untouchable for 3 seconds: ride it straight through the traffic.",
+    "Pink drones sweep sideways across the lanes: jump them or pick another lane."
+   ],
+   "controls": {
+    "keyboard": "← → or A / D change lanes, ↑, W or Space jumps, ↓ or S slides. P or Esc pauses; Space or Enter restarts after a crash.",
+    "touch": "Swipe left or right to change lanes, up to jump, down to slide. Tap START to run; the pause button is top right."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "GODMODE",
+     "effect": "Invincible: obstacles bounce off you"
+    },
+    {
+     "code": "MAGNETMAN",
+     "effect": "Permanent coin magnet"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "Half-speed world"
+    },
+    {
+     "code": "BIGHEAD",
+     "effect": "Big-head runner"
+    }
+   ],
+   "difficulty": "EASY, NORMAL or HARD on the title sets the start speed, the top speed and how fast the pace climbs (EASY 5 to 20, NORMAL 6 to 28, HARD 8 to 34). Each keeps its own best and top-5 table. The LVL counter ticks up every 20 seconds while the pace keeps rising.",
+   "features": {
+    "difficulty": "EASY / NORMAL / HARD pills on the title: start speed, top speed and ramp; separate bests and tables",
+    "power-up-list": "Power-up legend on the title (green MAGNET pulls coins, cyan SHIELD blocks a hit, orange BOOST dash and untouchable), plus live timers at the bottom while one is active",
+    "wave-or-level-counter": "LVL in the HUD goes up every 20 seconds of running, with a LEVEL flash",
+    "high-score-table": "TOP RUNS on the crash screen: the 5 best runs for the chosen difficulty, with dates, this run highlighted",
+    "results": "CRASHED screen with score, coins, distance, NEW BEST and the top-5 table; RESTART or Space",
+    "tutorial": "First run: three coach steps (change lanes, jump, slide) each wait for you to do it; crashes don't count for the first 20 seconds while you learn. Skippable, and replayed from How to play"
+   },
+   "settings": {
+    "quality": "Title screen > GFX: HIGH / LOW (HIGH renders at up to 2x resolution; LOW at 1x with half the particles)"
+   },
+   "start": "#play-btn",
+   "saves": [
+    "neonDashBest",
+    "neonDashBestEasy",
+    "neonDashBestHard",
+    "neonDashTop"
+   ],
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "critter-rush": {
    "title": "Critter Rush 3D",
@@ -3766,14 +4025,64 @@
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Tap an empty pot to plant, tap a growing plant to water it (double speed), and tap a ripe pepper to harvest. Swipe across a row to do the whole row.",
+    "The big button always does the next useful thing: HARVEST, PLANT ALL, WATER ALL or SELL ALL.",
+    "Spend your cash on seeds, crew, upgrades, land and new businesses. Your crew keeps the farm earning while you are away."
+   ],
+   "tips": [
+    "Walk-in buyers pay 1.3 to 1.7x market price, so keep a little stock on the shelf for them.",
+    "Water right after planting: watered plants grow twice as fast.",
+    "Ripe peppers left too long wilt and give half the yield.",
+    "Hire a Farmhand early: the crew plants and harvests for you, even while you are away.",
+    "The quest chip under the money always shows your next goal and its reward.",
+    "Too loud? The gear button has separate Music and Effects volume sliders."
+   ],
+   "controls": {
+    "keyboard": "Click pots or drag across a row. 1 to 9 pick a strain, Space presses the big button, ← → change rooms, Esc closes a panel, P pauses.",
+    "touch": "Tap pots or swipe across a row; the big button and the dock sit at the bottom. Pause is the fourth round button at the top."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "HOTMONEY",
+     "effect": "+$1,000,000 (this session only)"
+    },
+    {
+     "code": "GREENTHUMB",
+     "effect": "Every growing plant ripens right now"
+    },
+    {
+     "code": "SEEDVAULT",
+     "effect": "Every chili strain unlocked (this session only)"
+    }
+   ],
+   "difficulty": "No difficulty modes: it is an idle farm that paces itself. Costs and prices climb with each strain, room and business, the story missions set the next goal, and the 1x / 2x / 4x button sets the pace.",
+   "features": {
+    "offline-earnings": "WELCOME BACK card with the cash your crew made while you were away, and a COLLECT button",
+    "upgrade-tree": "Upgrades and R&D in the lab, Crew hiring and training, new rooms of land, and four Empire businesses (jerky, streetwear, chili-salt mine, TV network)",
+    "big-number-format": "Money reads $12.5K, $3.40M and $1.20B in the HUD and panels",
+    "prestige-or-next-goal": "The quest chip always shows the next story mission and its reward; finishing the story unlocks the Legacy bonus (+10% prices, +15% yield)",
+    "results": "Level-up, trophy, new-business and WELCOME BACK celebration cards; Trophies > Ledger keeps the farm's totals",
+    "tutorial": "First play: Tito coaches plant, water, harvest and sell, each after you do the last one. How to play > Replay tutorial runs the walkthrough again on your current farm",
+    "hints": "Hint in the pause menu names the most useful move right now (harvest, storage full, empty pots, thirsty plants, stock to sell) or the next goal",
+    "sound": "Recorded music (a laid-back theme, and a faster rush track that crossfades in when the shop is busy), Tito Scorch's voice lines at key moments (at most one every 25 s, always shown in his speech bubble too) and recorded water, pluck, register and door-bell effects. Settings (gear) has Beat and Sound effects on/off plus separate Music and Effects volume sliders, saved on this device"
+   },
+   "start": ".playbtn",
+   "saves": [
+    "chili_firm2_save"
+   ],
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "chef-chloe-kitchen": {
    "title": "Chef Chloe: Viral Kitchen",
