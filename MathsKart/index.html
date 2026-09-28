@@ -44,6 +44,29 @@ button.big:hover{background:#8f4cba}
 #newbest{color:#5ee0a0;font-weight:700;height:22px}
 .kbd{background:#26325a;border-radius:5px;padding:1px 7px;font-size:12.5px;border:1px solid #3a4c85}
 .hidden{display:none!important}
+button:focus-visible{outline:3px solid #ffd257;outline-offset:2px}
+#bands{margin:4px 0}
+#bands button{padding:9px 16px;font-size:14px;min-height:44px}
+#menu button,#results button,#grown button{min-height:44px}
+.lk{background:#10152a;border:1px solid #26325a;border-radius:10px;padding:10px 16px;margin:12px auto 0;text-align:left;max-width:520px}
+.lk h3{font-size:14px;color:#ffd257;letter-spacing:1px;margin-bottom:4px}
+.lk-p{font-size:14px;color:#c6d2f0;margin:4px 0;line-height:1.5}
+.lk-p b{color:#ffd257}
+.lk-next{color:#5ee0a0}
+.lk-t{width:100%;border-collapse:collapse;font-size:14px;color:#eef2ff;margin:4px 0}
+.lk-t td{padding:3px 4px;border-bottom:1px solid #26325a;text-align:left}
+.lk-t td+td{text-align:right;width:56px;color:#8fa1cc}
+#grown .panel{max-height:92vh;overflow:auto}
+#results .panel{max-height:94vh;overflow:auto}
+#hintBtn{position:fixed;left:14px;z-index:9;min-width:64px;min-height:44px;padding:8px 14px;font-size:15px;
+  background:rgba(16,22,44,.8);border-color:#ffd257;color:#ffd257}
+#coach{position:fixed;left:50%;transform:translateX(-50%);z-index:9;width:min(520px,calc(100vw - 24px));
+  background:rgba(20,26,46,.94);border:2px solid #3a4c85;border-radius:12px;padding:10px 12px;color:#eef2ff;
+  font-size:15px;line-height:1.45;display:flex;gap:10px;align-items:center}
+#coach b{color:#ffd257}
+#coach small{display:block;font-size:12px;color:#8fa1cc;letter-spacing:1px}
+#coach button{flex:none;padding:8px 14px;min-height:44px}
+@media (prefers-reduced-motion: reduce){ button{transition:none} }
 </style>
 </head>
 <body>
@@ -63,6 +86,7 @@ button.big:hover{background:#8f4cba}
       <button id="bMath" class="sel">MATH MODE</button>
       <button id="bSpell">SPELLING MODE</button>
     </div>
+    <div class="row" id="bands" role="group" aria-label="Age band"></div>
     <div class="row" id="trackRow">
       <button id="bT0" class="sel">SUNSET SPEEDWAY</button>
       <button id="bT1">CANYON CIRCUIT</button>
@@ -70,6 +94,11 @@ button.big:hover{background:#8f4cba}
     <div class="row">
       <button id="bPlay" class="big">PLAY &ndash; 3 LAPS</button>
       <button id="bHow">HOW TO PLAY</button>
+    </div>
+    <div class="row">
+      <button id="bTut">TUTORIAL</button>
+      <button id="bGrown">FOR GROWN-UPS</button>
+      <button id="bGfx" aria-label="Graphics quality">GRAPHICS: HIGH</button>
     </div>
     <div id="howto" class="howto">
       <b>Drive:</b> <span class="kbd">&uarr;</span>/<span class="kbd">W</span> accelerate &nbsp;
@@ -97,12 +126,25 @@ button.big:hover{background:#8f4cba}
       <tr><td>Answer streak</td><td id="rStreak"></td></tr>
       <tr><td>Correct / asked</td><td id="rScore"></td></tr>
     </table>
+    <div class="lk"><h3>FOR GROWN-UPS · THIS RACE</h3><div id="rReport"></div></div>
     <div class="row">
       <button id="bAgain" class="big">RACE AGAIN</button>
       <button id="bMenu">MENU</button>
     </div>
   </div>
 </div>
+
+<div id="grown" class="ovl hidden" role="dialog" aria-label="For grown-ups">
+  <div class="panel">
+    <h2 style="font-size:28px;color:#ffd257;letter-spacing:2px">FOR GROWN-UPS</h2>
+    <div class="sub">what has been practised, how accurate it was, and what to practise next</div>
+    <div class="lk" id="grownBody"></div>
+    <div class="row"><button id="bGrownBack" class="big">BACK</button></div>
+  </div>
+</div>
+<button id="hintBtn" class="hidden" aria-label="Hint">HINT</button>
+<div id="coach" class="hidden" role="status" aria-live="polite"><div style="flex:1"><small id="coachStep"></small><span id="coachText"></span></div>
+  <button id="coachSkip">SKIP</button></div>
 
 <script>
 "use strict";
@@ -119,6 +161,188 @@ const lerp=(a,b,t)=>a+(b-a)*t;
 const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a}
+
+/* ═══════════ LEARNING KIT — age bands, teaching hints, a report for grown-ups ═══════════
+   Hints teach the rule or the next step; they never hand over the answer.
+   Every answer is logged against the skill it practised, so a grown-up can read
+   what was practised, how accurate it was and what to practise next. */
+const LEARN=(function(){
+  const BANDS=[
+    {id:'5-7', label:'Ages 5–7',  math:[1,2], word:[1,2]},
+    {id:'7-9', label:'Ages 7–9',  math:[2,3], word:[2,3]},
+    {id:'9-11',label:'Ages 9–11', math:[3,4], word:[3,5]}];
+  const SPELL=['','Spelling short words','Spelling everyday words','Spelling longer words',
+               'Spelling tricky words','Spelling advanced words'];
+  const TIPS={
+    'Adding within 20':'Start at the bigger number and count on, or make a ten first (8 + 5 = 8 + 2 + 3).',
+    'Adding bigger numbers':'Add the tens, then the ones, then put the two parts together.',
+    'Taking away within 20':'Count up from the smaller number to the bigger one on a number line.',
+    'Taking away bigger numbers':'Take away the tens first, then the ones.',
+    'Times tables to 9 × 9':'Skip-count out loud (3, 6, 9, 12…) and learn one table at a time.',
+    'Times tables to 12 × 12':'Practise the 6, 7, 8 and 12 times tables; use 10 × then adjust.',
+    'Dividing into equal groups':'Turn it round: 24 ÷ 6 means 6 × ? = 24.',
+    'Multiply before adding':'In a two-step sum, do the × part first, then the +.',
+    'Fractions of amounts':'Divide by the bottom number, then multiply by the top number.',
+    'Percentages of amounts':'10% is ÷ 10, 50% is a half, 25% is a quarter.',
+    'Number bonds':'Learn the pairs that make 10 by heart, then use them for 20 and 100.',
+    'Checking sums (true or false)':'Work the sum out first, then compare it with the one shown.'};
+  const SPELL_TIP='Say the word slowly, look at it, cover it, write it, then check it.';
+  const VOW='AEIOU';
+  const TEAMS={SH:'sh',CH:'ch',TH:'th',WH:'w',PH:'f',CK:'k',NG:'ng'}, SILENT={KN:'n',WR:'r'};
+  const clampN=(v,a,b)=>v<a?a:v>b?b:v;
+
+  /* ---- what a math prompt practises, and how to teach it ---- */
+  function parseMath(prompt,note){
+    const p=String(prompt||'').replace(/\s*=\s*\?\s*$/,'').replace(/-/g,'−').trim();
+    let m;
+    if((m=p.match(/^(\d+) \+ (\d+) × (\d+)$/)))return{k:'two',a:+m[1],b:+m[2],c:+m[3]};
+    if((m=p.match(/^(\d+)\/(\d+) of (\d+)$/)))return{k:'frac',n:+m[1],d:+m[2],t:+m[3]};
+    if((m=p.match(/^(\d+)% of (\d+)$/)))return{k:'pct',p:+m[1],t:+m[2]};
+    if((m=p.match(/^(\d+) \+ \?(?: = (\d+))?$/))){
+      const t=m[2]?+m[2]:+(String(note||'').match(/(\d+)/)||[0,0])[1];
+      return{k:'bond',a:+m[1],t:t};}
+    if((m=p.match(/^(.+) = (\d+)$/))){const inner=parseMath(m[1]);if(inner)return{k:'tf',q:inner,s:+m[2],text:m[1]};}
+    if((m=p.match(/^(\d+) ([+−×÷]) (\d+)$/)))return{k:m[2],a:+m[1],b:+m[3]};
+    return null;
+  }
+  function mathSkill(prompt,note){
+    const q=parseMath(prompt,note); if(!q)return 'Mental maths';
+    if(q.k==='+')return q.a+q.b<=20?'Adding within 20':'Adding bigger numbers';
+    if(q.k==='−')return q.a<=20?'Taking away within 20':'Taking away bigger numbers';
+    if(q.k==='×')return (q.a<=9&&q.b<=9)?'Times tables to 9 × 9':'Times tables to 12 × 12';
+    if(q.k==='÷')return 'Dividing into equal groups';
+    if(q.k==='two')return 'Multiply before adding';
+    if(q.k==='frac')return 'Fractions of amounts';
+    if(q.k==='pct')return 'Percentages of amounts';
+    if(q.k==='bond')return 'Number bonds';
+    return 'Checking sums (true or false)';
+  }
+  function skip(n,times){const s=[];for(let i=1;i<=Math.min(3,times-1);i++)s.push(n*i);return s.join(', ')+'…';}
+  function mathHint(prompt,note){
+    const q=parseMath(prompt,note);
+    if(!q)return 'Read the question twice, then work it out one step at a time.';
+    const big=Math.max(q.a,q.b),small=Math.min(q.a,q.b);
+    switch(q.k){
+      case '+':
+        if(q.a+q.b<=20){
+          if(big<10&&big+small>10)return `Make a ten: ${big} needs ${10-big} more to reach 10. Take ${10-big} from the ${small}, then add what is left on to 10.`;
+          return `Number line: start at ${big} and hop ${small} to the right. Count the hops out loud.`;}
+        if(small<10){const up=Math.ceil((big+1)/10)*10-big;
+          return small>up?`Start at ${big}. Hop ${up} to reach ${big+up}, then hop on the other ${small-up}.`
+                         :`Start at ${big} and count on ${small} more, one hop at a time.`;}
+        return `Split into tens and ones: add ${Math.floor(q.a/10)*10} + ${Math.floor(q.b/10)*10} first, then ${q.a%10} + ${q.b%10}, then put them together.`;
+      case '−':
+        if(q.a<=20)return `Number line: start at ${q.b} and count up to ${q.a}. How many hops did you make?`;
+        if(q.b<10){const down=q.a%10;
+          return down&&q.b>down?`Count back from ${q.a}: hop back ${down} to reach ${q.a-down}, then hop back the other ${q.b-down}.`
+                               :`Count back ${q.b} from ${q.a}, one hop at a time.`;}
+        if(q.b%10===0)return `Take away ${q.b/10} tens: count back from ${q.a} in tens.`;
+        return `Take away the tens first: ${q.a} − ${Math.floor(q.b/10)*10}. Then take away the ${q.b%10} ones that are left.`;
+      case '×':
+        if(q.a===10||q.b===10)return `Times 10: put a zero on the end of the other number.`;
+        if(q.a===2||q.b===2)return `Times 2 is doubling: add ${q.a===2?q.b:q.a} to itself.`;
+        if(q.a===5||q.b===5)return `Times 5 is half of times 10: work out ${q.a===5?q.b:q.a} × 10, then halve it.`;
+        if(q.a===9||q.b===9){const o=q.a===9?q.b:q.a;return `Times 9: work out ${o} × 10, then take away one ${o}.`;}
+        return `${q.a} × ${q.b} is ${q.b} groups of ${q.a}. Skip-count by ${q.a}: ${skip(q.a,q.b)} and stop after ${q.b} jumps.`;
+      case '÷':
+        return `How many groups of ${q.b} make ${q.a}? Think ${q.b} × ? = ${q.a}, or skip-count by ${q.b} until you reach ${q.a}.`;
+      case 'two':
+        return `Multiply first: work out ${q.b} × ${q.c}, then add ${q.a} to that.`;
+      case 'frac':
+        return q.n===1?`Split ${q.t} into ${q.d} equal groups. One group is the answer.`
+                      :`Split ${q.t} into ${q.d} equal groups, then take ${q.n} of the groups.`;
+      case 'pct':
+        if(q.p===50)return `50% means half. What is half of ${q.t}?`;
+        if(q.p===25)return `25% is a quarter: halve ${q.t}, then halve it again.`;
+        if(q.p===75)return `75% is three quarters: find a quarter of ${q.t}, then take three of them.`;
+        if(q.p===10)return `10% means one tenth: share ${q.t} into 10 equal parts (${q.t} ÷ 10).`;
+        return `${q.p}% is ${q.p/10} lots of 10%. First find 10% of ${q.t} (that is ${q.t} ÷ 10), then multiply by ${q.p/10}.`;
+      case 'bond':
+        return q.t===10||q.t===20?`Count up from ${q.a} to ${q.t} on your fingers or a number line.`
+                                 :`Count up from ${q.a} to the next ten, then on in tens to ${q.t}.`;
+      case 'tf':
+        return `Work out ${q.text} yourself first, then check: is it really ${q.s}?`;
+    }
+    return '';
+  }
+
+  /* ---- spelling: the first letter, the length, then sound-by-sound nudges ---- */
+  function spellHint(word,idx,clue){
+    const W=String(word).toUpperCase(), n=W.length; idx=clampN(idx|0,0,n-1);
+    const c=W[idx], prev=W[idx-1]||'', so=W.slice(0,idx), tail=clue?` Clue: “${String(clue).replace('~','___')}”`:'';
+    if(idx===0)return `It starts with the letter ${c} and has ${n} letters. Say the word slowly and listen to each sound.`+tail;
+    const pair=prev+c;
+    if(TEAMS[pair])return `After “${so}”, ${prev} teams up with the next letter to make one sound: /${TEAMS[pair]}/.`;
+    if(SILENT[pair])return `The ${prev} is silent here: the sound you hear is /${SILENT[pair]}/.`;
+    if(prev==='Q')return `Rule: the letter Q nearly always has the same vowel straight after it, and together they say /kw/.`;
+    if(c===prev)return `After “${so}”, the same letter comes again: this word has a double letter here.`;
+    if(c==='E'&&idx===n-1)return `Last letter: it is a silent e at the end. It makes the vowel before it say its name.`;
+    if(VOW.includes(c)&&VOW.includes(prev))return `After “${so}”, another vowel joins in: two vowels team up to make one sound here.`;
+    if(VOW.includes(c)||(c==='Y'&&idx===n-1))return `After “${so}” comes a vowel sound (a, e, i, o, u${c==='Y'?' or y':''}). Say “${so.toLowerCase()}…” slowly: which vowel do you hear?`;
+    return `After “${so}” comes a consonant. Say “${so.toLowerCase()}…” slowly and listen for the next sound. ${n-idx} letter${n-idx>1?'s':''} to go.`;
+  }
+
+  /* ---- the record ---- */
+  function create(key){
+    let R={bands:{},skills:{},missWords:[],sessions:0,answered:0,correct:0,since:new Date().toISOString().slice(0,10)};
+    try{const s=JSON.parse(localStorage.getItem(key));if(s&&typeof s==='object')R=Object.assign(R,s);}catch(e){}
+    let S={skills:{},answered:0,correct:0,missWords:[]};   /* this session */
+    const save=()=>{try{localStorage.setItem(key,JSON.stringify(R));}catch(e){}};
+    const bump=(o,skill,ok)=>{const s=o[skill]||(o[skill]={r:0,w:0});ok?s.r++:s.w++;};
+    const api={
+      BANDS,
+      band(){return BANDS.find(b=>b.id===R.band)||null;},
+      bandIndex(){const i=BANDS.findIndex(b=>b.id===R.band);return i<0?1:i;},
+      setBand(id){R.band=id;save();},
+      /* a tier inside the band: the band's easiest tier plus the ramp, capped at the band's hardest */
+      tier(kind,ramp){const b=BANDS[api.bandIndex()],r=kind==='word'?b.word:b.math;return clampN(r[0]+(ramp|0),r[0],r[1]);},
+      startSession(){S={skills:{},answered:0,correct:0,missWords:[]};R.sessions++;save();},
+      note(skill,ok,word){
+        bump(R.skills,skill,ok);bump(S.skills,skill,ok);
+        R.answered++;S.answered++;if(ok){R.correct++;S.correct++;}
+        if(word&&!ok){const w=String(word).toLowerCase();
+          if(!S.missWords.includes(w))S.missWords.push(w);
+          R.missWords=[w].concat(R.missWords.filter(x=>x!==w)).slice(0,12);}
+        if(word&&ok)R.missWords=R.missWords.filter(x=>x!==String(word).toLowerCase());
+        save();
+      },
+      noteMath(prompt,ok,note){api.note(mathSkill(prompt,note),ok);},
+      noteSpell(level,ok,word){api.note(SPELL[clampN(level|0,1,5)],ok,word);},
+      session(){return S;},
+      /* the grown-up report: {lines:[...], next:'...'} for this session and all time */
+      report(scope){
+        const src=scope==='session'?S:R, rows=Object.keys(src.skills).map(k=>{const s=src.skills[k];
+          return{skill:k,n:s.r+s.w,acc:Math.round(100*s.r/Math.max(1,s.r+s.w))};}).sort((a,b)=>b.n-a.n);
+        const acc=Math.round(100*src.correct/Math.max(1,src.answered));
+        let weak=rows.filter(r=>r.n>=3).sort((a,b)=>a.acc-b.acc)[0]||rows.slice().sort((a,b)=>a.acc-b.acc)[0];
+        let next;
+        if(!rows.length)next='Play a round to start the record.';
+        else if(weak&&weak.acc<85)next=`${weak.skill} (${weak.acc}% right). ${TIPS[weak.skill]||SPELL_TIP}`;
+        else{const bi=api.bandIndex();
+          next=bi<BANDS.length-1&&src.answered>=10?`Everything practised is 85% or better: try ${BANDS[bi+1].label} next.`
+                                                   :'Keep going at this level: accuracy is strong.';}
+        const words=(scope==='session'?S.missWords:R.missWords).slice(0,8);
+        return{rows,acc,answered:src.answered,correct:src.correct,next,words,
+               sessions:R.sessions,since:R.since,band:BANDS[api.bandIndex()].label};
+      },
+      /* plain HTML, styled by each game */
+      reportHTML(scope){
+        const r=api.report(scope), esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+        if(!r.answered)return `<p class="lk-p">No answers yet${scope==='session'?' this round':''}. Play a round and the report fills in.</p>`;
+        return `<p class="lk-p"><b>${r.answered}</b> answer${r.answered>1?'s':''}, <b>${r.acc}%</b> right`+
+          (scope==='session'?'':` · ${r.sessions} round${r.sessions>1?'s':''} since ${esc(r.since)} · level ${esc(r.band)}`)+`</p>`+
+          `<table class="lk-t">${r.rows.slice(0,8).map(x=>`<tr><td>${esc(x.skill)}</td><td>${x.n}</td><td>${x.acc}%</td></tr>`).join('')}</table>`+
+          (r.words.length?`<p class="lk-p">Words to practise: <b>${r.words.map(esc).join(', ')}</b></p>`:'')+
+          `<p class="lk-p lk-next">Practise next: ${esc(r.next)}</p>`;
+      },
+      mathSkill,mathHint,spellHint,SPELL,
+    };
+    return api;
+  }
+  return{create,mathSkill,mathHint,spellHint,BANDS};
+})();
+const LK=LEARN.create('mk_learn');
+const RM=matchMedia('(prefers-reduced-motion: reduce)');   /* steady CORRECT / SPIN-OUT banners, no flame flicker */
 
 /* ═══════════ QUESTION CORE — inlined from Spell & Maths Galaxy ═══════════ */
 const WORDS={
@@ -446,10 +670,18 @@ function startRace(mode,trackIdx){
   G.camAng=Math.atan2(look.ty,look.tx);
   document.getElementById('menu').classList.add('hidden');
   document.getElementById('results').classList.add('hidden');
+  document.getElementById('grown').classList.add('hidden');
+  document.getElementById('hintBtn').classList.remove('hidden');
   AU.init();
+  LK.startSession();
+  sdkState({scene:'play'});
+  coachMaybe();
 }
 function toMenu(){
-  G.phase='menu';renderStats();
+  G.phase='menu';renderStats();renderBands();coachEnd(false);
+  document.getElementById('hintBtn').classList.add('hidden');
+  document.getElementById('grown').classList.add('hidden');
+  sdkState({scene:'title'});
   document.getElementById('menu').classList.remove('hidden');
   document.getElementById('results').classList.add('hidden');
 }
@@ -458,7 +690,7 @@ function toMenu(){
 function armQuestion(){
   if(G.question)return;
   if(G.shield){G.shield=false;G.hint='SHIELD! question skipped';G.hintT=2;AU.item();return;}
-  const d=clamp(1+(player.lap-1),1,G.mode==='math'?4:5);   /* difficulty ramps per lap */
+  const d=LK.tier(G.mode==='math'?'math':'word',player.lap-1);   /* the age band sets the range; each lap steps up inside it */
   let q;
   if(G.mode==='math'){
     q=Math.random()<.75?qQuick(d):qBonds(d);
@@ -471,16 +703,21 @@ function armQuestion(){
        gates:letterGates(w.t,0),
        hint:clueSentence(w,w.t.length)};
   }
+  q.tier=d;
   G.question=q;
   placeBalloons(q,player.s+300);
 }
 function placeBalloons(q,bs){
-  G.qBalloons=q.gates.map((g,i)=>({s:bs,lat:(i-1.5)*(ROAD_HALF*0.55),txt:String(g),
+  /* every balloon gets its lane's colour: the colour must never tell you which answer is right */
+  const LANE=['#d95757','#e0a040','#5e9fe0','#b05ee0'];
+  G.qBalloons=q.gates.map((g,i)=>({s:bs,lat:(i-1.5)*(ROAD_HALF*0.55),txt:String(g),col:LANE[i%4],
     ok:String(g)===String(q.answer)}));
 }
 function resolveBalloon(b){
   const q=G.question;if(!q||!b)return;
   G.asked++;
+  if(q.kind==='math')LK.noteMath(q.prompt,b.ok);
+  else if(!b.ok||q.idx>=q.word.t.length-1)LK.noteSpell(q.tier,b.ok,q.word.t);   /* a word counts once: when finished or missed */
   if(b.ok){
     G.correct++;G.streak++;player.boostT=2.3;G.flashGood=1;AU.good(G.streak);
     if(q.kind==='spell'&&q.idx<q.word.t.length-1){
@@ -605,7 +842,10 @@ function finishRace(){
   document.getElementById('rStreak').textContent=String(G.streak);
   document.getElementById('rScore').textContent=G.correct+' / '+G.asked;
   document.getElementById('newbest').textContent=G.newBest?'★ NEW BEST LAP ★':'';
+  document.getElementById('rReport').innerHTML=LK.reportHTML('session');
+  document.getElementById('hintBtn').classList.add('hidden');
   document.getElementById('results').classList.remove('hidden');
+  sdkState({scene:'over',score:G.correct,outcome:'place '+G.place+' of 4'});
 }
 
 function update(dt){
@@ -724,6 +964,7 @@ function shade(hex,amt){
 }
 function draw(){
   const tr=G.tr;
+  ctx.setTransform(KX,0,0,KY,0,0);
   /* sky */
   const sk=TRACKS[G.trackIdx].sky;
   const g=ctx.createLinearGradient(0,0,0,HORIZON+60);
@@ -838,7 +1079,7 @@ function drawStartLine(){
 function drawPad(gs){
   const a=proj2(gs,-60),b=proj2(gs,60),c=proj2(gs+46,60),d=proj2(gs+46,-60);
   if(!(a&&b&&c&&d))return;
-  const pulse=.55+.45*Math.sin(G.t*6+gs*.01);
+  const pulse=RM.matches?.8:.55+.45*Math.sin(G.t*6+gs*.01);
   ctx.fillStyle='rgba(90,220,140,'+(.35+.4*pulse)+')';
   ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();ctx.fill();
   if(a.scale>.18){
@@ -875,7 +1116,7 @@ function drawBalloon(b){
   ctx.save();ctx.translate(p.x,p.y-r*1.2+bob);
   ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(0,r*1.15);ctx.lineTo(0,r*2);ctx.stroke();
-  const col=b.ok?'#57d98a':'#d95757';
+  const col=b.col||'#d95757';
   const grd=ctx.createRadialGradient(-r*.3,-r*.4,r*.15,0,0,r);
   grd.addColorStop(0,'#ffffff');grd.addColorStop(.25,col);grd.addColorStop(1,shade(col,-.35));
   ctx.fillStyle=grd;
@@ -965,11 +1206,12 @@ function drawHUD(){
   ctx.fillStyle='#eef2ff';ctx.font='bold 20px system-ui';
   ctx.fillText('PLACE '+G.place+'/4    CP '+Math.min(player.cpGot+1,NCP)+'/'+NCP,28,58);
   ctx.fillStyle='rgba(10,13,26,.72)';
-  roundRect(W-264,12,250,86,10);ctx.fill();
+  const PB=Math.round(54*W/Math.max(1,innerWidth));   /* the arcade pause button's corner, in drawing units */
+  roundRect(W-264-PB,12,250,86,10);ctx.fill();
   ctx.fillStyle='#5ee0a0';ctx.font='bold 26px system-ui';ctx.textAlign='right';
-  ctx.fillText(Math.round(player.speed*(player.boostT>0?1.85:1))+' km/h',W-28,20);
+  ctx.fillText(Math.round(player.speed*(player.boostT>0?1.85:1))+' km/h',W-28-PB,20);
   ctx.font='bold 18px system-ui';ctx.fillStyle=G.shield?'#5ee0a0':'#8fa1cc';
-  ctx.fillText(G.shield?'SHIELD READY':'no item',W-28,60);
+  ctx.fillText(G.shield?'SHIELD READY':'no item',W-28-PB,60);
   if(G.streak>0){
     ctx.textAlign='left';ctx.fillStyle='#ffd257';ctx.font='bold 20px system-ui';
     ctx.fillText('STREAK ×'+G.streak,20,H-40);
@@ -990,18 +1232,21 @@ function drawHUD(){
   }
   if(G.hintT>0&&G.hint){
     ctx.textAlign='center';ctx.textBaseline='top';ctx.font='bold 20px system-ui';
-    const tw=ctx.measureText(G.hint).width;
-    ctx.fillStyle='rgba(120,20,20,.85)';
-    roundRect(W/2-tw/2-16,H-92,tw+32,40,9);ctx.fill();
-    ctx.fillStyle='#ffe0e0';ctx.fillText(G.hint,W/2,H-84);
+    const lines=wrapLines(G.hint,W-80).slice(0,3), tw=Math.max.apply(null,lines.map(function(l){return ctx.measureText(l).width;}));
+    const top=H-60-lines.length*26;
+    const teach=G.hintTeach===G.hint;
+    ctx.fillStyle=teach?'rgba(20,40,90,.9)':'rgba(120,20,20,.85)';
+    roundRect(W/2-tw/2-16,top-8,tw+32,lines.length*26+14,9);ctx.fill();
+    ctx.fillStyle=teach?'#dfe8ff':'#ffe0e0';
+    lines.forEach(function(l,i){ctx.fillText(l,W/2,top+i*26);});
   }
   if(G.flashGood>0){
-    ctx.fillStyle='rgba(94,224,160,'+(G.flashGood*.7)+')';
+    ctx.fillStyle='rgba(94,224,160,'+(RM.matches?.7:G.flashGood*.7)+')';
     ctx.font='bold 40px system-ui';ctx.textAlign='center';
     ctx.fillText('CORRECT! ROCKET BOOST',W/2,H*.34);
   }
   if(G.flashBad>0){
-    ctx.fillStyle='rgba(224,94,94,'+(G.flashBad*.7)+')';
+    ctx.fillStyle='rgba(224,94,94,'+(RM.matches?.7:G.flashBad*.7)+')';
     ctx.font='bold 40px system-ui';ctx.textAlign='center';
     ctx.fillText('SPIN-OUT!',W/2,H*.34);
   }
@@ -1038,6 +1283,93 @@ document.getElementById('bAgain').onclick=function(){startRace();};
 document.getElementById('bMenu').onclick=toMenu;
 renderStats();
 
+
+/* ═══════════ arcade glue: hints, age bands, grown-up report, graphics, first-run coach ═══════════ */
+function sdkState(o){try{window.ArcadeSDK&&ArcadeSDK.state(o);}catch(e){}}
+var GFX_LOW=false; try{GFX_LOW=localStorage.getItem('mk_gfx')==='low';}catch(e){}
+function wrapLines(t,maxW){
+  const words=String(t).split(' '),out=[];let line='';
+  for(const w of words){const tryL=line?line+' '+w:w;if(ctx.measureText(tryL).width>maxW&&line){out.push(line);line=w;}else line=tryL;}
+  if(line)out.push(line);return out;
+}
+/* a hint that teaches the step in front of the driver, never names the answer */
+function currentHint(){
+  if(G.phase==='menu')return 'Pick your age band, a mode and a track, then PLAY.';
+  if(G.phase==='results')return 'RACE AGAIN to beat your lap; the grown-ups report shows what to practise.';
+  const q=G.question;
+  if(q){
+    if(q.kind==='math')return LK.mathHint(q.prompt)+' Then drive through that balloon.';
+    return LK.spellHint(q.word.t,q.idx,q.word.h)+' Drive through that letter.';
+  }
+  return 'Green boost pads ask a question: steer through the balloon with the right answer for a rocket boost.';
+}
+function showHint(){const t=currentHint();if(G.phase==='playing'||G.phase==='countdown'){G.hint=t;G.hintTeach=t;G.hintT=7;}return t;}
+document.getElementById('hintBtn').addEventListener('click',function(e){e.stopPropagation();showHint();});
+addEventListener('keydown',function(e){if((e.key==='h'||e.key==='H')&&G.phase==='playing')showHint();});
+
+function renderBands(){
+  const box=document.getElementById('bands');box.innerHTML='';
+  const cur=LK.bandIndex();
+  LK.BANDS.forEach(function(b,i){const el=document.createElement('button');
+    el.textContent=b.label.toUpperCase();if(i===cur)el.className='sel';el.setAttribute('aria-pressed',String(i===cur));
+    el.onclick=function(){LK.setBand(b.id);renderBands();};box.appendChild(el);});
+}
+renderBands();
+document.getElementById('bGrown').onclick=function(){
+  document.getElementById('grownBody').innerHTML=LK.reportHTML('all');
+  document.getElementById('menu').classList.add('hidden');
+  document.getElementById('grown').classList.remove('hidden');document.getElementById('bGrownBack').focus();
+};
+document.getElementById('bGrownBack').onclick=function(){
+  document.getElementById('grown').classList.add('hidden');document.getElementById('menu').classList.remove('hidden');
+};
+function paintGfx(){document.getElementById('bGfx').textContent='GRAPHICS: '+(GFX_LOW?'LOW':'HIGH');}
+document.getElementById('bGfx').onclick=function(){
+  GFX_LOW=!GFX_LOW;try{localStorage.setItem('mk_gfx',GFX_LOW?'low':'high');}catch(e){}paintGfx();fit();
+};
+paintGfx();
+
+/* first-run coach: learn to race by racing; skippable, replayable */
+const COARSE=matchMedia('(pointer: coarse)').matches;
+const COACH=[
+  {t:function(){return COARSE?'Hold <b>▲</b> to accelerate and steer with <b>◀ ▶</b>.':'Hold <b>↑</b> (or W) to accelerate and steer with <b>← →</b> (or A D).';},done:function(){return player.speed>230;}},
+  {t:function(){return 'A green <b>boost pad</b> puts a question at the top of the screen and four balloons on the road ahead.';},done:function(){return !!G.question||G.asked>0;}},
+  {t:function(){return 'Drive through the balloon with the <b>right answer</b> for a rocket boost. Stuck? <b>HINT</b> teaches the step.';},done:function(){return G.asked>0;}},
+  {t:function(){return 'Item boxes: a <b>shield</b> skips a question, <b>oil</b> slows the other karts. Three laps to finish!';},done:function(){return coachT>7;}},
+];
+let coachIx=-1,coachT=0;
+function coachPaint(){
+  const el=document.getElementById('coach');
+  if(coachIx<0||coachIx>=COACH.length||G.phase==='menu'||G.phase==='results'){el.classList.add('hidden');return;}
+  document.getElementById('coachStep').textContent='TUTORIAL · '+(coachIx+1)+' OF '+COACH.length;
+  document.getElementById('coachText').innerHTML=COACH[coachIx].t();
+  el.style.top=Math.round(128*innerHeight/H)+'px';
+  el.classList.remove('hidden');
+}
+function coachStart(){if(G.phase==='menu'||G.phase==='results')startRace();coachIx=0;coachT=0;coachPaint();}
+function coachEnd(done){const was=coachIx>=0;coachIx=-1;coachPaint();
+  if(was&&done!==false){try{localStorage.setItem('mk_tut','1');}catch(e){}try{window.ArcadeSDK&&ArcadeSDK.event('tutorial-done');}catch(e){}}}
+function coachMaybe(){let seen=false;try{seen=localStorage.getItem('mk_tut')==='1';}catch(e){}if(!seen&&coachIx<0){coachIx=0;coachT=0;coachPaint();}}
+function coachTick(dt){
+  if(coachIx<0)return;
+  if(G.phase==='results'){coachEnd(false);return;}
+  if(coachIx===COACH.length-1)coachT+=dt;
+  const was=coachIx;
+  while(coachIx<COACH.length&&COACH[coachIx].done()){coachIx++;coachT=0;}
+  if(coachIx>=COACH.length)coachEnd();else if(was!==coachIx)coachPaint();
+}
+document.getElementById('coachSkip').onclick=function(){coachEnd();};
+document.getElementById('bTut').onclick=coachStart;
+
+if(window.ArcadeSDK)ArcadeSDK.init({
+  pauseButton:'tr',
+  onRestart:function(){startRace();},
+  onExit:toMenu,
+  onTutorial:coachStart,
+  onHint:function(){return showHint();},
+});
+sdkState({scene:'title'});
+
 /* ---------- main loop ---------- */
 let last=performance.now(),fps=60,fAcc=0,fN=0;
 function frame(now){
@@ -1045,18 +1377,25 @@ function frame(now){
   fAcc+=dt;fN++;if(fAcc>.5){fps=fN/fAcc;fAcc=0;fN=0;}
   update(dt);
   draw();
+  coachTick(dt);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
 /* ---------- resize: fill the whole window, aspect-matched ---------- */
+/* the drawing keeps its own W×H units; the backing store is the screen size × min(devicePixelRatio, 2)
+   (Graphics: Low draws at 3/4 size for slow devices) so the road and text stay crisp */
+let KX=1,KY=1;
 function fit(){
   const ar=Math.max(.55,Math.min(2.3,innerWidth/Math.max(1,innerHeight)));
   W=Math.round(Math.max(720,Math.min(1700,600*ar)));
   H=Math.round(W/ar);
-  cv.width=W;cv.height=H;
+  const d=GFX_LOW?.75:Math.min(devicePixelRatio||1,2);   /* Low: 3/4 of the CSS size, far fewer pixels to fill */
+  cv.width=Math.round(innerWidth*d);cv.height=Math.round(innerHeight*d);
+  KX=cv.width/W;KY=cv.height/H;
   HORIZON=Math.round(H*.30);
   cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';
+  const hb=document.getElementById('hintBtn'); if(hb)hb.style.top=Math.round((12+86+12)*innerHeight/H)+'px';
 }
 addEventListener('resize',fit);fit();
 

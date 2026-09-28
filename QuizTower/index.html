@@ -9,11 +9,51 @@
 <style>
   html,body{margin:0;padding:0;background:#0b0e13;color:#e8e2d0;font-family:system-ui,Segoe UI,sans-serif;height:100%;overflow:hidden}
   #wrap{display:flex;align-items:center;justify-content:center;height:100vh}
-  canvas{background:#141a22;box-shadow:0 0 40px #000a;max-width:100vw;max-height:100vh}
+  canvas{background:#141a22;box-shadow:0 0 40px #000a;max-width:100vw;max-height:100vh;touch-action:manipulation}
+  /* grown-up report and first-run coach: DOM panels in the tower's colours */
+  .qpanel{position:fixed;z-index:12;background:#16202e;border:2px solid #2a3a4c;border-radius:12px;color:#e8e2d0;
+    font:14px/1.5 system-ui,Segoe UI,sans-serif;box-shadow:0 10px 40px #000a}
+  #grown{display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100vw - 24px));
+    max-height:calc(100vh - 24px);overflow:auto;padding:16px 18px}
+  #grown.show{display:block}
+  #grown h2{margin:0 0 4px;color:#ffd76a;font-size:22px}
+  .lk-p{margin:6px 0;color:#c8d0e0;font-size:14px}
+  .lk-p b{color:#ffd76a}
+  .lk-next{color:#8fe8a0}
+  .lk-t{width:100%;border-collapse:collapse;font-size:14px}
+  .lk-t td{padding:4px;border-bottom:1px solid #2a3a4c}
+  .lk-t td+td{text-align:right;width:56px;color:#8a94a8}
+  .qbtn{min-height:44px;min-width:44px;padding:8px 18px;font:bold 16px system-ui,Segoe UI,sans-serif;color:#fff;cursor:pointer;
+    background:#3a7d4f;border:2px solid #8fe8a0;border-radius:10px}
+  .qbtn.dim{background:#1a2436;border-color:#39435a;color:#c8d0e0}
+  .qbtn:focus-visible{outline:3px solid #ffd76a;outline-offset:2px}
+  #hintBox{display:none;left:50%;transform:translateX(-50%);width:min(600px,calc(100vw - 24px));padding:10px 14px;border-color:#cbb99b;color:#f0e6cc}
+  #hintBox.show{display:block}
+  #hintBox b{color:#ffd76a}
+  #coach{display:none;left:50%;transform:translateX(-50%);width:min(560px,calc(100vw - 24px));padding:10px 12px;gap:10px;align-items:center}
+  #coach.show{display:flex}
+  #coach b{color:#ffd76a}
+  #coach small{display:block;font-size:12px;color:#8a94a8;letter-spacing:1px}
+  /* a phone held upright would shrink the 960x640 board to 5px type: ask to turn it */
+  #rotate{display:none;position:fixed;inset:0;z-index:20;background:#0b0e13;color:#e8e2d0;text-align:center;
+    font:16px/1.5 system-ui,Segoe UI,sans-serif;padding:24px;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+  #rotate h2{color:#ffd76a;font-size:24px;margin:0}
+  #rotate .ph{width:54px;height:88px;border:4px solid #ffd76a;border-radius:10px;transform:rotate(90deg);margin:10px}
+  @media (orientation:portrait) and (max-width:700px){ body:not(.anyway) #rotate{display:flex} }
+  @media (prefers-reduced-motion: reduce){ .qbtn{transition:none} }
 </style>
 </head>
 <body>
 <div id="wrap"><canvas id="c" width="960" height="640"></canvas></div>
+<div id="rotate" role="dialog" aria-label="Turn your phone"><div class="ph" aria-hidden="true"></div>
+  <h2>Turn your phone sideways</h2><p>The battlefield needs the width: sideways, every tower and answer is big enough to tap.</p>
+  <button class="qbtn dim" id="anyway">PLAY UPRIGHT ANYWAY</button></div>
+<div id="hintBox" class="qpanel" role="status" aria-live="polite"></div>
+<div id="coach" class="qpanel" role="status" aria-live="polite"><div style="flex:1"><small id="coachStep"></small><span id="coachText"></span></div>
+  <button class="qbtn dim" id="coachSkip">SKIP</button></div>
+<div id="grown" class="qpanel" role="dialog" aria-label="For grown-ups"><h2>For grown-ups</h2>
+  <div class="lk-p" style="color:#8a94a8">What was practised, how accurate it was, and what to practise next.</div>
+  <div id="grownBody"></div><div style="text-align:center;margin-top:10px"><button class="qbtn" id="grownBack">BACK</button></div></div>
 <script>
 'use strict';
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -26,7 +66,7 @@
 /* ─────────────────────────── utils ─────────────────────────── */
 const CVS = document.getElementById('c');
 const CTX = CVS.getContext('2d');
-const W = CVS.width, H = CVS.height;
+const W = 960, H = 640;   /* the board's own units; the backing store is sized for the screen in fit() */
 const TAU = Math.PI * 2;
 
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -40,6 +80,188 @@ function dist(ax,ay,bx,by){return Math.hypot(bx-ax,by-ay);}
 
 /* seeded RNG per map (the "3 map paths (seeded)" contract) */
 function mapRng(seed){return mulberry32(seed*7919+13);}
+
+/* ═══════════ LEARNING KIT — age bands, teaching hints, a report for grown-ups ═══════════
+   Hints teach the rule or the next step; they never hand over the answer.
+   Every answer is logged against the skill it practised, so a grown-up can read
+   what was practised, how accurate it was and what to practise next. */
+const LEARN=(function(){
+  const BANDS=[
+    {id:'5-7', label:'Ages 5–7',  math:[1,2], word:[1,2]},
+    {id:'7-9', label:'Ages 7–9',  math:[2,3], word:[2,3]},
+    {id:'9-11',label:'Ages 9–11', math:[3,4], word:[3,5]}];
+  const SPELL=['','Spelling short words','Spelling everyday words','Spelling longer words',
+               'Spelling tricky words','Spelling advanced words'];
+  const TIPS={
+    'Adding within 20':'Start at the bigger number and count on, or make a ten first (8 + 5 = 8 + 2 + 3).',
+    'Adding bigger numbers':'Add the tens, then the ones, then put the two parts together.',
+    'Taking away within 20':'Count up from the smaller number to the bigger one on a number line.',
+    'Taking away bigger numbers':'Take away the tens first, then the ones.',
+    'Times tables to 9 × 9':'Skip-count out loud (3, 6, 9, 12…) and learn one table at a time.',
+    'Times tables to 12 × 12':'Practise the 6, 7, 8 and 12 times tables; use 10 × then adjust.',
+    'Dividing into equal groups':'Turn it round: 24 ÷ 6 means 6 × ? = 24.',
+    'Multiply before adding':'In a two-step sum, do the × part first, then the +.',
+    'Fractions of amounts':'Divide by the bottom number, then multiply by the top number.',
+    'Percentages of amounts':'10% is ÷ 10, 50% is a half, 25% is a quarter.',
+    'Number bonds':'Learn the pairs that make 10 by heart, then use them for 20 and 100.',
+    'Checking sums (true or false)':'Work the sum out first, then compare it with the one shown.'};
+  const SPELL_TIP='Say the word slowly, look at it, cover it, write it, then check it.';
+  const VOW='AEIOU';
+  const TEAMS={SH:'sh',CH:'ch',TH:'th',WH:'w',PH:'f',CK:'k',NG:'ng'}, SILENT={KN:'n',WR:'r'};
+  const clampN=(v,a,b)=>v<a?a:v>b?b:v;
+
+  /* ---- what a math prompt practises, and how to teach it ---- */
+  function parseMath(prompt,note){
+    const p=String(prompt||'').replace(/\s*=\s*\?\s*$/,'').replace(/-/g,'−').trim();
+    let m;
+    if((m=p.match(/^(\d+) \+ (\d+) × (\d+)$/)))return{k:'two',a:+m[1],b:+m[2],c:+m[3]};
+    if((m=p.match(/^(\d+)\/(\d+) of (\d+)$/)))return{k:'frac',n:+m[1],d:+m[2],t:+m[3]};
+    if((m=p.match(/^(\d+)% of (\d+)$/)))return{k:'pct',p:+m[1],t:+m[2]};
+    if((m=p.match(/^(\d+) \+ \?(?: = (\d+))?$/))){
+      const t=m[2]?+m[2]:+(String(note||'').match(/(\d+)/)||[0,0])[1];
+      return{k:'bond',a:+m[1],t:t};}
+    if((m=p.match(/^(.+) = (\d+)$/))){const inner=parseMath(m[1]);if(inner)return{k:'tf',q:inner,s:+m[2],text:m[1]};}
+    if((m=p.match(/^(\d+) ([+−×÷]) (\d+)$/)))return{k:m[2],a:+m[1],b:+m[3]};
+    return null;
+  }
+  function mathSkill(prompt,note){
+    const q=parseMath(prompt,note); if(!q)return 'Mental maths';
+    if(q.k==='+')return q.a+q.b<=20?'Adding within 20':'Adding bigger numbers';
+    if(q.k==='−')return q.a<=20?'Taking away within 20':'Taking away bigger numbers';
+    if(q.k==='×')return (q.a<=9&&q.b<=9)?'Times tables to 9 × 9':'Times tables to 12 × 12';
+    if(q.k==='÷')return 'Dividing into equal groups';
+    if(q.k==='two')return 'Multiply before adding';
+    if(q.k==='frac')return 'Fractions of amounts';
+    if(q.k==='pct')return 'Percentages of amounts';
+    if(q.k==='bond')return 'Number bonds';
+    return 'Checking sums (true or false)';
+  }
+  function skip(n,times){const s=[];for(let i=1;i<=Math.min(3,times-1);i++)s.push(n*i);return s.join(', ')+'…';}
+  function mathHint(prompt,note){
+    const q=parseMath(prompt,note);
+    if(!q)return 'Read the question twice, then work it out one step at a time.';
+    const big=Math.max(q.a,q.b),small=Math.min(q.a,q.b);
+    switch(q.k){
+      case '+':
+        if(q.a+q.b<=20){
+          if(big<10&&big+small>10)return `Make a ten: ${big} needs ${10-big} more to reach 10. Take ${10-big} from the ${small}, then add what is left on to 10.`;
+          return `Number line: start at ${big} and hop ${small} to the right. Count the hops out loud.`;}
+        if(small<10){const up=Math.ceil((big+1)/10)*10-big;
+          return small>up?`Start at ${big}. Hop ${up} to reach ${big+up}, then hop on the other ${small-up}.`
+                         :`Start at ${big} and count on ${small} more, one hop at a time.`;}
+        return `Split into tens and ones: add ${Math.floor(q.a/10)*10} + ${Math.floor(q.b/10)*10} first, then ${q.a%10} + ${q.b%10}, then put them together.`;
+      case '−':
+        if(q.a<=20)return `Number line: start at ${q.b} and count up to ${q.a}. How many hops did you make?`;
+        if(q.b<10){const down=q.a%10;
+          return down&&q.b>down?`Count back from ${q.a}: hop back ${down} to reach ${q.a-down}, then hop back the other ${q.b-down}.`
+                               :`Count back ${q.b} from ${q.a}, one hop at a time.`;}
+        if(q.b%10===0)return `Take away ${q.b/10} tens: count back from ${q.a} in tens.`;
+        return `Take away the tens first: ${q.a} − ${Math.floor(q.b/10)*10}. Then take away the ${q.b%10} ones that are left.`;
+      case '×':
+        if(q.a===10||q.b===10)return `Times 10: put a zero on the end of the other number.`;
+        if(q.a===2||q.b===2)return `Times 2 is doubling: add ${q.a===2?q.b:q.a} to itself.`;
+        if(q.a===5||q.b===5)return `Times 5 is half of times 10: work out ${q.a===5?q.b:q.a} × 10, then halve it.`;
+        if(q.a===9||q.b===9){const o=q.a===9?q.b:q.a;return `Times 9: work out ${o} × 10, then take away one ${o}.`;}
+        return `${q.a} × ${q.b} is ${q.b} groups of ${q.a}. Skip-count by ${q.a}: ${skip(q.a,q.b)} and stop after ${q.b} jumps.`;
+      case '÷':
+        return `How many groups of ${q.b} make ${q.a}? Think ${q.b} × ? = ${q.a}, or skip-count by ${q.b} until you reach ${q.a}.`;
+      case 'two':
+        return `Multiply first: work out ${q.b} × ${q.c}, then add ${q.a} to that.`;
+      case 'frac':
+        return q.n===1?`Split ${q.t} into ${q.d} equal groups. One group is the answer.`
+                      :`Split ${q.t} into ${q.d} equal groups, then take ${q.n} of the groups.`;
+      case 'pct':
+        if(q.p===50)return `50% means half. What is half of ${q.t}?`;
+        if(q.p===25)return `25% is a quarter: halve ${q.t}, then halve it again.`;
+        if(q.p===75)return `75% is three quarters: find a quarter of ${q.t}, then take three of them.`;
+        if(q.p===10)return `10% means one tenth: share ${q.t} into 10 equal parts (${q.t} ÷ 10).`;
+        return `${q.p}% is ${q.p/10} lots of 10%. First find 10% of ${q.t} (that is ${q.t} ÷ 10), then multiply by ${q.p/10}.`;
+      case 'bond':
+        return q.t===10||q.t===20?`Count up from ${q.a} to ${q.t} on your fingers or a number line.`
+                                 :`Count up from ${q.a} to the next ten, then on in tens to ${q.t}.`;
+      case 'tf':
+        return `Work out ${q.text} yourself first, then check: is it really ${q.s}?`;
+    }
+    return '';
+  }
+
+  /* ---- spelling: the first letter, the length, then sound-by-sound nudges ---- */
+  function spellHint(word,idx,clue){
+    const W=String(word).toUpperCase(), n=W.length; idx=clampN(idx|0,0,n-1);
+    const c=W[idx], prev=W[idx-1]||'', so=W.slice(0,idx), tail=clue?` Clue: “${String(clue).replace('~','___')}”`:'';
+    if(idx===0)return `It starts with the letter ${c} and has ${n} letters. Say the word slowly and listen to each sound.`+tail;
+    const pair=prev+c;
+    if(TEAMS[pair])return `After “${so}”, ${prev} teams up with the next letter to make one sound: /${TEAMS[pair]}/.`;
+    if(SILENT[pair])return `The ${prev} is silent here: the sound you hear is /${SILENT[pair]}/.`;
+    if(prev==='Q')return `Rule: the letter Q nearly always has the same vowel straight after it, and together they say /kw/.`;
+    if(c===prev)return `After “${so}”, the same letter comes again: this word has a double letter here.`;
+    if(c==='E'&&idx===n-1)return `Last letter: it is a silent e at the end. It makes the vowel before it say its name.`;
+    if(VOW.includes(c)&&VOW.includes(prev))return `After “${so}”, another vowel joins in: two vowels team up to make one sound here.`;
+    if(VOW.includes(c)||(c==='Y'&&idx===n-1))return `After “${so}” comes a vowel sound (a, e, i, o, u${c==='Y'?' or y':''}). Say “${so.toLowerCase()}…” slowly: which vowel do you hear?`;
+    return `After “${so}” comes a consonant. Say “${so.toLowerCase()}…” slowly and listen for the next sound. ${n-idx} letter${n-idx>1?'s':''} to go.`;
+  }
+
+  /* ---- the record ---- */
+  function create(key){
+    let R={bands:{},skills:{},missWords:[],sessions:0,answered:0,correct:0,since:new Date().toISOString().slice(0,10)};
+    try{const s=JSON.parse(localStorage.getItem(key));if(s&&typeof s==='object')R=Object.assign(R,s);}catch(e){}
+    let S={skills:{},answered:0,correct:0,missWords:[]};   /* this session */
+    const save=()=>{try{localStorage.setItem(key,JSON.stringify(R));}catch(e){}};
+    const bump=(o,skill,ok)=>{const s=o[skill]||(o[skill]={r:0,w:0});ok?s.r++:s.w++;};
+    const api={
+      BANDS,
+      band(){return BANDS.find(b=>b.id===R.band)||null;},
+      bandIndex(){const i=BANDS.findIndex(b=>b.id===R.band);return i<0?1:i;},
+      setBand(id){R.band=id;save();},
+      /* a tier inside the band: the band's easiest tier plus the ramp, capped at the band's hardest */
+      tier(kind,ramp){const b=BANDS[api.bandIndex()],r=kind==='word'?b.word:b.math;return clampN(r[0]+(ramp|0),r[0],r[1]);},
+      startSession(){S={skills:{},answered:0,correct:0,missWords:[]};R.sessions++;save();},
+      note(skill,ok,word){
+        bump(R.skills,skill,ok);bump(S.skills,skill,ok);
+        R.answered++;S.answered++;if(ok){R.correct++;S.correct++;}
+        if(word&&!ok){const w=String(word).toLowerCase();
+          if(!S.missWords.includes(w))S.missWords.push(w);
+          R.missWords=[w].concat(R.missWords.filter(x=>x!==w)).slice(0,12);}
+        if(word&&ok)R.missWords=R.missWords.filter(x=>x!==String(word).toLowerCase());
+        save();
+      },
+      noteMath(prompt,ok,note){api.note(mathSkill(prompt,note),ok);},
+      noteSpell(level,ok,word){api.note(SPELL[clampN(level|0,1,5)],ok,word);},
+      session(){return S;},
+      /* the grown-up report: {lines:[...], next:'...'} for this session and all time */
+      report(scope){
+        const src=scope==='session'?S:R, rows=Object.keys(src.skills).map(k=>{const s=src.skills[k];
+          return{skill:k,n:s.r+s.w,acc:Math.round(100*s.r/Math.max(1,s.r+s.w))};}).sort((a,b)=>b.n-a.n);
+        const acc=Math.round(100*src.correct/Math.max(1,src.answered));
+        let weak=rows.filter(r=>r.n>=3).sort((a,b)=>a.acc-b.acc)[0]||rows.slice().sort((a,b)=>a.acc-b.acc)[0];
+        let next;
+        if(!rows.length)next='Play a round to start the record.';
+        else if(weak&&weak.acc<85)next=`${weak.skill} (${weak.acc}% right). ${TIPS[weak.skill]||SPELL_TIP}`;
+        else{const bi=api.bandIndex();
+          next=bi<BANDS.length-1&&src.answered>=10?`Everything practised is 85% or better: try ${BANDS[bi+1].label} next.`
+                                                   :'Keep going at this level: accuracy is strong.';}
+        const words=(scope==='session'?S.missWords:R.missWords).slice(0,8);
+        return{rows,acc,answered:src.answered,correct:src.correct,next,words,
+               sessions:R.sessions,since:R.since,band:BANDS[api.bandIndex()].label};
+      },
+      /* plain HTML, styled by each game */
+      reportHTML(scope){
+        const r=api.report(scope), esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+        if(!r.answered)return `<p class="lk-p">No answers yet${scope==='session'?' this round':''}. Play a round and the report fills in.</p>`;
+        return `<p class="lk-p"><b>${r.answered}</b> answer${r.answered>1?'s':''}, <b>${r.acc}%</b> right`+
+          (scope==='session'?'':` · ${r.sessions} round${r.sessions>1?'s':''} since ${esc(r.since)} · level ${esc(r.band)}`)+`</p>`+
+          `<table class="lk-t">${r.rows.slice(0,8).map(x=>`<tr><td>${esc(x.skill)}</td><td>${x.n}</td><td>${x.acc}%</td></tr>`).join('')}</table>`+
+          (r.words.length?`<p class="lk-p">Words to practise: <b>${r.words.map(esc).join(', ')}</b></p>`:'')+
+          `<p class="lk-p lk-next">Practise next: ${esc(r.next)}</p>`;
+      },
+      mathSkill,mathHint,spellHint,SPELL,
+    };
+    return api;
+  }
+  return{create,mathSkill,mathHint,spellHint,BANDS};
+})();
+const LK=LEARN.create('qt_learn');
+const RM=matchMedia('(prefers-reduced-motion: reduce)');   /* no castle shake, no sputter flicker */
 
 /* ═══════════ QUESTION CORE (extracted from SpellMathsGalaxy) ═══════════ */
 /* words — grade-tiered bank, sentence-context clues.
@@ -256,8 +478,9 @@ function saveMeta(m){try{localStorage.setItem(META_KEY,JSON.stringify(m));}catch
 function meta(){const m=loadMeta(); m.matches=m.matches||0; m.wins=m.wins||0; m.best=m.best||{}; return m;}
 
 const WAVE_COUNT=10;
-function waveTier(w){return clamp(1+Math.floor((w-1)/3),1,4);}
-function waveSpellTier(w){return clamp(1+Math.floor((w-1)/2),1,5);}
+/* the age band sets the range of tiers; waves step up inside it */
+function waveTier(w){return LK.tier('math',Math.floor((w-1)/3));}
+function waveSpellTier(w){return LK.tier('word',Math.floor((w-1)/2));}
 
 function startGame(mode,mapIdx){
   G.mode=mode; G.map=mapIdx;
@@ -270,6 +493,8 @@ function startGame(mode,mapIdx){
   G.focusToken=false; G.selected=null; G.selTower=null;
   G.shots=0; G.kills=0; G.time=0; G.screenShake=0;
   G.stars=0; G.endMsg='';
+  LK.startSession(); closeGrown();
+  sdkState({scene:'play'});
 }
 
 function startWave(){
@@ -306,7 +531,10 @@ function summonPedestals(){
 function answerPanel(i){
   if(!G.question||G.answered||!G.waveActive)return;
   G.answered=true;
-  if(i===G.question.answerIndex){
+  const ok=i===G.question.answerIndex;
+  if(G.mode==='math')LK.noteMath(G.question.prompt,ok,G.question.note);
+  else LK.noteSpell(waveSpellTier(G.wave),ok,G.question.answer);
+  if(ok){
     setPower('overcharge');
     flash('CORRECT — TOWERS OVERCHARGED!','#ffd76a');
     burst(W/2,CMD_Y+40,'#ffd76a',26);
@@ -405,7 +633,7 @@ function damageEnemy(e,amount){
   }
 }
 function hurtCastle(n){
-  G.hp-=n; G.screenShake=10;
+  G.hp-=n; if(!RM.matches)G.screenShake=10;
   if(G.hp<=0){G.hp=0;endGame(false);}
 }
 function endGame(won){
@@ -422,6 +650,7 @@ function endGame(won){
     G.endMsg='THE CASTLE HAS FALLEN';
     const m=meta(); m.matches++; saveMeta(m);
   }
+  sdkState({scene:'over',score:Math.min(G.wave,WAVE_COUNT),outcome:won?G.stars+' stars':'castle fell'});
 }
 function killAll(){
   G.spawnQueue=[];
@@ -557,55 +786,73 @@ function hit(id,x,y,w,h,fn){hits.push({id:id,x:x,y:y,w:w,h:h,fn:fn});}
 
 function draw(){
   hits=[];
-  CTX.setTransform(1,0,0,1,0,0);
+  CTX.setTransform(SCALE,0,0,SCALE,0,0);
   if(G.screenShake>0)CTX.translate((rnd()-.5)*G.screenShake,(rnd()-.5)*G.screenShake);
   if(G.phase==='menu'){drawMenu();return;}
   drawField(); drawTowers(); drawEnemies(); drawBullets(); drawPedestals();
-  drawParticles(); drawHUD(); drawSidebar(); drawCommand(); drawTexts();
+  drawParticles(); drawHUD(); drawSidebar(); drawHintButton(); drawCommand(); drawTexts();
   if(G.phase==='shop')drawShop();
   if(G.phase==='gameover'||G.phase==='victory')drawEnd();
-  CTX.setTransform(1,0,0,1,0,0);
+  CTX.setTransform(SCALE,0,0,SCALE,0,0);
 }
 function drawMenu(){
   const g=CTX.createLinearGradient(0,0,0,H);
   g.addColorStop(0,'#101826');g.addColorStop(1,'#1a2233');
   CTX.fillStyle=g;CTX.fillRect(0,0,W,H);
+  /* the night sky twinkles while you choose (steady with reduced motion) */
   for(let i=0;i<70;i++){const x=(i*137)%W, y=(i*89)%H;
-    CTX.fillStyle='rgba(255,255,255,'+(.06+(i%5)*.03)+')';CTX.fillRect(x,y,2,2);}
+    const tw=RM.matches?0:Math.sin(G.time*(1.3+i%4*.4)+i)*.05;
+    CTX.fillStyle='rgba(255,255,255,'+Math.max(.02,.06+(i%5)*.03+tw)+')';CTX.fillRect(x,y,2,2);}
   CTX.textAlign='center';
   CTX.fillStyle='#ffd76a';CTX.font='bold 52px system-ui';
-  CTX.fillText('QUIZ TOWER DEFENSE',W/2,150);
+  CTX.fillText('QUIZ TOWER DEFENSE',W/2,112);
   CTX.fillStyle='#9aa4b8';CTX.font='18px system-ui';
-  CTX.fillText('towers only fire at full power when you feed them knowledge',W/2,190);
+  CTX.fillText('towers only fire at full power when you feed them knowledge',W/2,146);
+  /* age bands */
+  const cur=LK.bandIndex();
+  LK.BANDS.forEach(function(b,i){
+    const bw=150,bh=40,x=W/2-240+i*165,y=166,on=i===cur;
+    CTX.fillStyle=on?'#2c3a55':'#1a2233';rr(x,y,bw,bh,8);CTX.fill();
+    CTX.strokeStyle=on?'#ffd76a':'#39435a';CTX.lineWidth=2;CTX.stroke();
+    CTX.fillStyle=on?'#ffd76a':'#c8d0e0';CTX.font='bold 16px system-ui';
+    CTX.fillText(b.label.toUpperCase(),x+bw/2,y+26);
+    hit('menu_band_'+b.id,x,y,bw,bh,function(){LK.setBand(b.id);});
+  });
   const modes=[['math','MATH MODE','tiered arithmetic'],['spell','SPELLING MODE','sentence clues + word pedestals']];
   modes.forEach(function(m,i){
-    const x=W/2-240,y=250+i*90,w=480,h=70;
+    const x=W/2-240,y=222+i*76,w=480,h=64;
     const on=(G.mode===m[0]);
     CTX.fillStyle=on?'#2c3a55':'#1a2233';rr(x,y,w,h,10);CTX.fill();
     CTX.strokeStyle=on?'#ffd76a':'#39435a';CTX.lineWidth=2;CTX.stroke();
     CTX.fillStyle=on?'#ffd76a':'#c8d0e0';CTX.font='bold 22px system-ui';
-    CTX.fillText(m[1],W/2,y+30);
+    CTX.fillText(m[1],W/2,y+28);
     CTX.fillStyle='#8a94a8';CTX.font='14px system-ui';
-    CTX.fillText(m[2],W/2,y+52);
+    CTX.fillText(m[2],W/2,y+50);
     hit('menu_mode_'+m[0],x,y,w,h,function(){G.mode=m[0];});
   });
-  const mx=W/2-180,my=440,mw=360,mh=64;
+  const mx=W/2-180,my=382,mw=360,mh=56;
   CTX.fillStyle='#1a2233';rr(mx,my,mw,mh,10);CTX.fill();
   CTX.strokeStyle='#39435a';CTX.lineWidth=2;CTX.stroke();
   CTX.fillStyle='#c8d0e0';CTX.font='bold 20px system-ui';
-  CTX.fillText('MAP '+(G.map+1)+'/3 — '+MAPS[G.map].name,W/2,my+39);
+  CTX.fillText('MAP '+(G.map+1)+'/3 — '+MAPS[G.map].name,W/2,my+35);
   hit('menu_map',mx,my,mw,mh,function(){G.map=(G.map+1)%MAPS.length;});
-  const sx=W/2-130,sy=540,sw=260,sh=64;
+  const sx=W/2-160,sy=456,sw=320,sh=62;
   CTX.fillStyle='#3a7d4f';rr(sx,sy,sw,sh,12);CTX.fill();
   CTX.strokeStyle='#8fe8a0';CTX.lineWidth=2;CTX.stroke();
   CTX.fillStyle='#fff';CTX.font='bold 24px system-ui';
-  CTX.fillText('DEFEND THE CASTLE',W/2,sy+40);
+  CTX.fillText('DEFEND THE CASTLE',W/2,sy+39);
   hit('menu_start',sx,sy,sw,sh,function(){startGame(G.mode,G.map);});
+  [['HOW TO DEFEND',coachStart],['FOR GROWN-UPS',openGrown]].forEach(function(b,i){
+    const bw=200,bh=44,x=W/2-210+i*220,y=536;
+    CTX.fillStyle='#1a2233';rr(x,y,bw,bh,10);CTX.fill();
+    CTX.strokeStyle='#39435a';CTX.lineWidth=2;CTX.stroke();
+    CTX.fillStyle='#c8d0e0';CTX.font='bold 16px system-ui';
+    CTX.fillText(b[0],x+bw/2,y+28);
+    hit('menu_'+i,x,y,bw,bh,b[1]);
+  });
   const m=meta();
-  if(m.wins||m.matches){
-    CTX.fillStyle='#6a7488';CTX.font='14px system-ui';
-    CTX.fillText('wins '+m.wins+' · matches '+m.matches,W/2,625);
-  }
+  CTX.fillStyle='#6a7488';CTX.font='14px system-ui';
+  CTX.fillText('keys: Enter start · 1 / 2 mode · M map · B age band'+(m.wins||m.matches?'   ·   wins '+m.wins+' · matches '+m.matches:''),W/2,618);
   CTX.textAlign='left';
 }
 function drawField(){
@@ -649,6 +896,11 @@ function drawCastle(x,y){
   for(let i=-2;i<=2;i++)CTX.fillRect(i*11-4,-38,8,10);
   CTX.fillStyle=hpF>.5?'#4f7fb8':hpF>.25?'#c8a03a':'#c05a3a';
   CTX.beginPath();CTX.moveTo(0,-52);CTX.lineTo(16,-34);CTX.lineTo(-16,-34);CTX.closePath();CTX.fill();
+  /* the castle's pennant flies in the wind (held still with reduced motion) */
+  const wv=RM.matches?0:Math.sin(G.time*5)*3, wv2=RM.matches?0:Math.sin(G.time*5+1.3)*3;
+  CTX.strokeStyle='#3a332c';CTX.lineWidth=2;CTX.beginPath();CTX.moveTo(0,-52);CTX.lineTo(0,-72);CTX.stroke();
+  CTX.fillStyle='#ffd76a';CTX.beginPath();CTX.moveTo(0,-72);
+  CTX.quadraticCurveTo(9,-72+wv,18,-67+wv2);CTX.quadraticCurveTo(9,-62+wv,0,-62);CTX.closePath();CTX.fill();
   CTX.fillStyle='#2a323c';rr(-7,-12,14,26,6);CTX.fill();
   CTX.restore();
   CTX.fillStyle='#e05a6a';CTX.font='bold 14px system-ui';CTX.textAlign='center';
@@ -663,7 +915,7 @@ function drawTowers(){
     if(G.power==='overcharge'){
       CTX.shadowColor='#ffd76a';CTX.shadowBlur=16+Math.sin(G.time*10)*6;
     }else if(G.power==='sputter'){
-      CTX.globalAlpha=.55+Math.sin(G.time*24)*.15;
+      CTX.globalAlpha=RM.matches?.55:.55+Math.sin(G.time*24)*.15;
     }
     CTX.fillStyle='#4a4238';rr(-14,-6,28,22,4);CTX.fill();
     if(t.type==='arrow'){
@@ -832,6 +1084,14 @@ function drawSidebar(){
     hit('tower_sell',x+8,ty+56,168,24,function(){sellTower(G.selTower);});
   }
 }
+function drawHintButton(){
+  const x=PANEL_X+8,y=566,w=168,h=56, on=G.phase==='playing';
+  CTX.fillStyle='#1a2436';rr(x,y,w,h,8);CTX.fill();
+  CTX.strokeStyle=on?'#ffd76a':'#2a3648';CTX.lineWidth=2;CTX.stroke();
+  CTX.fillStyle=on?'#ffd76a':'#6a7488';CTX.font='bold 16px system-ui';CTX.textAlign='center';
+  CTX.fillText('HINT (H)',x+w/2,y+34);CTX.textAlign='left';
+  if(on)hit('hint',x,y,w,h,showHint);
+}
 function drawCommand(){
   CTX.fillStyle='#0e1420';CTX.fillRect(0,CMD_Y,FW,CMD_H);
   if(G.phase!=='playing'||!G.question){
@@ -916,7 +1176,10 @@ function drawEnd(){
   }
   const m=meta();
   CTX.fillStyle='#8a94a8';CTX.font='16px system-ui';
-  CTX.fillText('career: '+m.wins+' wins / '+m.matches+' matches',W/2,410);
+  CTX.fillText('career: '+m.wins+' wins / '+m.matches+' matches',W/2,396);
+  const rp=LK.report('session');
+  if(rp.answered){CTX.fillStyle='#c8d0e0';CTX.font='15px system-ui';
+    CTX.fillText('this game: '+rp.answered+' answers, '+rp.acc+'% right — details under FOR GROWN-UPS',W/2,428);}
   const x=W/2-160,y=460,w=320,h=62;
   CTX.fillStyle='#3a5a7d';rr(x,y,w,h,12);CTX.fill();
   CTX.strokeStyle='#8fb8e0';CTX.lineWidth=2;CTX.stroke();
@@ -928,6 +1191,12 @@ function drawEnd(){
   CTX.fillStyle='#c8d0e0';CTX.font='bold 16px system-ui';
   CTX.fillText('BACK TO MENU',W/2,my+30);
   hit('end_menu',mx,my,mw,mh,function(){G.phase='menu';});
+  const gx=W/2-160,gy=598,gw=320,gh=40;
+  CTX.fillStyle='#1a2436';rr(gx,gy,gw,gh,10);CTX.fill();
+  CTX.strokeStyle='#39435a';CTX.lineWidth=2;CTX.stroke();
+  CTX.fillStyle='#c8d0e0';CTX.font='bold 15px system-ui';
+  CTX.fillText('FOR GROWN-UPS',W/2,gy+26);
+  hit('end_grown',gx,gy,gw,gh,openGrown);
   CTX.textAlign='left';
 }
 function star(x,y,r,color){
@@ -941,9 +1210,14 @@ function star(x,y,r,color){
 
 /* ─────────────────────────── input ─────────────────────────── */
 /* scale the fixed-resolution canvas up to fill the window (clicks already map via getBoundingClientRect) */
+let SCALE=1;
 function fit(){
-  const s=Math.min(innerWidth/W,innerHeight/H);
+  const s=Math.min(innerWidth/W,innerHeight/H), d=Math.min(devicePixelRatio||1,2);
   CVS.style.width=(W*s)+'px';CVS.style.height=(H*s)+'px';
+  /* crisp: backing store = CSS size x min(devicePixelRatio, 2) */
+  const bw=Math.round(W*s*d), bh=Math.round(H*s*d);
+  if(CVS.width!==bw||CVS.height!==bh){CVS.width=bw;CVS.height=bh;}
+  SCALE=bw/W;
 }
 addEventListener('resize',fit);fit();
 
@@ -954,7 +1228,9 @@ CVS.addEventListener('mousemove',function(e){
   mouse.y=(e.clientY-r.top)*(H/r.height);
   G.hoverCell=[Math.floor((mouse.x-FX)/CELL),Math.floor((mouse.y-FY)/CELL)];
 });
-CVS.addEventListener('click',function(){
+CVS.addEventListener('click',function(e){
+  const r=CVS.getBoundingClientRect();
+  mouse.x=(e.clientX-r.left)*(W/r.width); mouse.y=(e.clientY-r.top)*(H/r.height);
   for(const h of hits){
     if(mouse.x>=h.x&&mouse.x<h.x+h.w&&mouse.y>=h.y&&mouse.y<h.y+h.h){h.fn();return;}
   }
@@ -971,6 +1247,110 @@ CVS.addEventListener('click',function(){
       }
     }
   }
+});
+
+
+/* ═══════════ arcade glue: hints, grown-up report, first-run coach ═══════════ */
+function sdkState(o){try{window.ArcadeSDK&&ArcadeSDK.state(o);}catch(e){}}
+/* a hint that teaches the rule in play, never names the answer */
+function currentHint(){
+  if(G.phase==='menu')return 'Pick an age band and a mode, then DEFEND THE CASTLE.';
+  if(G.phase==='shop')return 'Repair if your hearts are low; a Focus Token turns one wrong answer into an overcharge.';
+  if(G.phase==='gameover'||G.phase==='victory')return 'PLAY AGAIN on the same map, or try another map from the menu.';
+  const q=G.question;
+  if(q&&!G.answered&&G.waveActive){
+    if(G.mode==='math')return LK.mathHint(q.prompt,q.note);
+    const n=q.answer.length;
+    return 'Read the sentence out loud with each word in the gap: only one makes sense. The missing word has '+n+' letters.';
+  }
+  if(G.golemAlive&&G.pedestals.some(function(p){return !p.armed;}))
+    return 'A Quiz Golem is marching: choose Answer Turret, then tap the pedestal (A to D) that matches the right answer to double its loot.';
+  if(!G.waveActive)return G.towers.some(function(t){return t.type!=='answer';})
+    ?'Upgrade towers near the bends of the path, then press START.':'Choose Arrow on the right, then tap a grass square beside the path. Press START when ready.';
+  return 'Frost towers slow runners; cannons splash groups at the bends.';
+}
+let hintLeft=0;
+function showHint(){
+  const t=currentHint(), el=document.getElementById('hintBox');
+  el.innerHTML='<b>HINT</b> — '+t; el.classList.add('show'); hintLeft=9;
+  const r=CVS.getBoundingClientRect(), h=el.offsetHeight;
+  /* above the command panel, so the question and its answers stay in view */
+  el.style.top=Math.max(8,r.top+(CMD_Y-8)*r.height/H-h)+'px';
+  return t;
+}
+function hintTick(dt){if(hintLeft>0){hintLeft-=dt;if(hintLeft<=0||G.phase==='menu')document.getElementById('hintBox').classList.remove('show');}}
+addEventListener('keydown',function(e){
+  if(e.key==='h'||e.key==='H'){showHint();return;}
+  if(document.getElementById('grown').classList.contains('show')){if(e.key==='Enter')closeGrown();return;}
+  /* the menu, the armory and the end screen work from the keyboard too */
+  if(G.phase==='menu'){
+    if(e.key==='Enter'){e.preventDefault();startGame(G.mode,G.map);}
+    else if(e.key==='1')G.mode='math';
+    else if(e.key==='2')G.mode='spell';
+    else if(e.key==='m'||e.key==='M')G.map=(G.map+1)%MAPS.length;
+    else if(e.key==='b'||e.key==='B')LK.setBand(LK.BANDS[(LK.bandIndex()+1)%LK.BANDS.length].id);
+    else if(e.key==='g'||e.key==='G')openGrown();
+    else if(e.key==='t'||e.key==='T')coachStart();
+  }else if(G.phase==='shop'){
+    if(e.key==='Enter'){e.preventDefault();closeShop();}
+    else if(e.key==='1')buy('repair');else if(e.key==='2')buy('focus');else if(e.key==='3')buy('bricks');
+  }else if(G.phase==='gameover'||G.phase==='victory'){
+    if(e.key==='Enter'){e.preventDefault();startGame(G.mode,G.map);}
+  }else if(G.phase==='playing'){
+    if(e.key===' '&&!G.waveActive){e.preventDefault();startWave();}
+    else if(G.question&&!G.answered&&G.waveActive&&e.key>='1'&&e.key<='4')answerPanel(+e.key-1);
+  }
+});
+function openGrown(){
+  const end=G.phase==='gameover'||G.phase==='victory';
+  document.getElementById('grownBody').innerHTML=LK.reportHTML(end?'session':'all')+
+    (end?'<p class="lk-p" style="color:#8a94a8">All-time report: FOR GROWN-UPS on the menu.</p>':'');
+  document.getElementById('grown').classList.add('show');document.getElementById('grownBack').focus();
+}
+function closeGrown(){document.getElementById('grown').classList.remove('show');}
+document.getElementById('grownBack').addEventListener('click',closeGrown);
+document.getElementById('anyway').addEventListener('click',function(){document.body.classList.add('anyway');});
+
+/* first-run coach: learn by doing; skippable, replayable */
+const COACH=[
+  {t:'Choose <b>Arrow</b> on the right, then tap a grass square beside the path to build it.',done:function(){return G.towers.some(function(t){return t.type!=='answer';});}},
+  {t:'Press <b>START</b> (top bar) to send wave 1.',done:function(){return G.wave>=1;}},
+  {t:'Answer the <b>Command Panel</b> question at the bottom: right = OVERCHARGE, wrong = SPUTTER. Stuck? <b>HINT</b>.',done:function(){return G.answered||G.wave>=2;}},
+  {t:'Purple <b>?</b> golems take extra hits: arm the pedestal with the right answer to double their loot.',done:function(){return G.phase==='shop'||coachT>9;}},
+];
+let coachIx=-1,coachT=0;
+function coachPaint(){
+  const el=document.getElementById('coach');
+  if(coachIx<0||coachIx>=COACH.length||G.phase==='menu'){el.classList.remove('show');return;}
+  document.getElementById('coachStep').textContent='HOW TO DEFEND · '+(coachIx+1)+' OF '+COACH.length;
+  document.getElementById('coachText').innerHTML=COACH[coachIx].t;
+  el.classList.add('show');
+  const r=CVS.getBoundingClientRect(),h=el.offsetHeight;
+  el.style.top=(r.top>=h+16?r.top-h-8:r.top+70*r.height/H)+'px';
+}
+function coachStart(){if(G.phase!=='playing')startGame(G.mode,G.map);coachIx=0;coachT=0;coachPaint();}
+function coachEnd(){coachIx=-1;coachPaint();try{localStorage.setItem('qt_tut','1');}catch(e){}try{window.ArcadeSDK&&ArcadeSDK.event('tutorial-done');}catch(e){}}
+function coachTick(dt){
+  if(coachIx<0)return;
+  if(G.phase==='menu'||G.phase==='gameover'||G.phase==='victory'){coachIx=-1;coachPaint();return;}
+  if(coachIx===COACH.length-1)coachT+=dt;
+  const was=coachIx;
+  while(coachIx<COACH.length&&COACH[coachIx].done()){coachIx++;coachT=0;}
+  if(coachIx>=COACH.length)coachEnd();else if(was!==coachIx)coachPaint();
+}
+document.getElementById('coachSkip').addEventListener('click',coachEnd);
+addEventListener('resize',function(){if(coachIx>=0)coachPaint();});
+const _startGame=startGame;
+startGame=function(mode,mapIdx){_startGame(mode,mapIdx);let seen=false;try{seen=localStorage.getItem('qt_tut')==='1';}catch(e){}if(!seen&&coachIx<0){coachIx=0;coachT=0;coachPaint();}};
+let lastPhase='';
+function watchPhase(){if(G.phase===lastPhase)return;lastPhase=G.phase;if(G.phase==='menu'){closeGrown();sdkState({scene:'title'});}}
+
+if(window.ArcadeSDK)ArcadeSDK.init({
+  pauseButton:'tr',
+  onRestart:function(){closeGrown();startGame(G.mode,G.map);},
+  onExit:function(){closeGrown();coachIx=-1;coachPaint();G.phase='menu';},
+  onTutorial:coachStart,
+  onHint:function(){return showHint();},
 });
 
 /* ─────────────────────────── debug hook ─────────────────────────── */
@@ -1025,6 +1405,7 @@ function frame(now){
   const dt=Math.min(.05,(now-last)/1000); last=now;
   update(dt);
   draw();
+  coachTick(dt); hintTick(dt); watchPhase();
   G.fpsT+=dt;
   if(G.fpsT>=.5){G.fps=Math.round(G.frames/G.fpsT);G.frames=0;G.fpsT=0;}
   requestAnimationFrame(frame);

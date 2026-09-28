@@ -35,7 +35,36 @@
   .btn:active{transform:translateY(2px);box-shadow:0 1px 0 #8a5c00}
   .btn.alt{background:var(--gem);box-shadow:0 3px 0 #14795a}
   .btn.dim{background:#8b7f6a;box-shadow:0 3px 0 #4c4436}
-  .btn.small{font-size:13px;padding:8px 14px}
+  .btn.small{font-size:13px;padding:8px 14px;min-height:44px}
+  .btn.band{font-size:13px;padding:8px 12px;min-height:44px;background:#8b7f6a;box-shadow:0 3px 0 #4c4436}
+  .btn.band.on{background:var(--amber);box-shadow:0 3px 0 #8a5c00}
+  .lk{background:rgba(0,0,0,.25);border:1px solid #6b5220;border-radius:8px;padding:10px 14px;margin:12px 0;text-align:left}
+  .lk h3{font-size:14px;color:var(--amber);letter-spacing:2px;margin-bottom:6px}
+  .lk-p{font-size:13px;color:#cdb38a;line-height:1.55;margin:4px 0}
+  .lk-p b{color:var(--bone)}
+  .lk-next{color:var(--gem)}
+  .lk-t{width:100%;border-collapse:collapse;font-size:13px;color:var(--bone);margin:4px 0}
+  .lk-t td{padding:3px 4px;border-bottom:1px solid rgba(240,168,50,.2)}
+  .lk-t td+td{text-align:right;width:52px;color:#cdb38a}
+  #coach{position:absolute;left:50%;top:86px;transform:translateX(-50%);z-index:8;display:none;
+    width:min(460px,calc(100% - 24px));background:rgba(15,10,5,.92);border:2px solid var(--amber);
+    border-radius:8px;padding:10px 12px;font-size:14px;line-height:1.5;text-align:left;gap:10px;align-items:center}
+  #coach.show{display:flex}
+  #coach b{color:var(--amber)}
+  #coach .step{font-size:12px;color:#cdb38a;letter-spacing:1px}
+  #coach .btn{flex:none;margin:0}
+  /* phones: the two HUD boxes share the width instead of overlapping */
+  @media (max-width:600px){
+    #hud{gap:6px;padding:6px 8px;font-size:13px}
+    .hudbox{flex:1;min-width:0;padding:4px 8px;line-height:1.45}
+    #energyBar{width:100%}
+    #hud .btn.small{font-size:12px;padding:6px 8px;margin:4px 4px 0 0}
+    #coach{font-size:13px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .toast{animation:none}
+    .btn:hover,.btn:active{transform:none}
+  }
 
   #pzPrompt{font-size:34px;color:var(--bone);margin:10px 0;letter-spacing:2px;min-height:44px}
   #pzClue{font-size:16px;color:#cdb38a;margin-bottom:12px;line-height:1.5}
@@ -112,17 +141,25 @@
       <div id="energyBar"><div id="energyFill"></div></div>
       <span id="hDyn"></span>
       <button class="btn small alt" id="elevBtn">[E] ELEVATOR UP</button>
+      <button class="btn small" id="hudHint" style="pointer-events:auto">HINT</button>
     </div>
   </div>
   <div id="toasts"></div>
+  <div id="coach" role="status" aria-live="polite"><div style="flex:1"><div class="step" id="coachStep"></div><div id="coachText"></div></div>
+    <button class="btn small dim" id="coachSkip">SKIP</button></div>
 
   <!-- MENU -->
   <div class="overlay show" id="menu"><div class="panel">
     <h1>MATH <span>MINER</span></h1>
     <div class="sub">dig down &middot; solve the rocks &middot; haul the ore home</div>
     <div class="stats" id="menuStats"></div>
+    <div class="row" id="bands" role="group" aria-label="Age band"></div>
     <button class="btn" id="btnMath">MATH MODE</button>
     <button class="btn alt" id="btnSpell">SPELLING MODE</button>
+    <div class="row" style="margin-top:6px">
+      <button class="btn small dim" id="btnTut">HOW TO MINE</button>
+      <button class="btn small dim" id="btnGrown">FOR GROWN-UPS</button>
+    </div>
     <div id="best"></div>
     <div class="sub" style="margin-top:14px;font-size:12px">
       ARROWS / WASD to move &amp; dig &middot; walk into a cracked rock to open its puzzle<br>
@@ -136,9 +173,10 @@
     <div id="pzClue"></div>
     <div id="pzPrompt"></div>
     <div id="gems"></div>
-    <div id="pzHint"></div>
+    <div id="pzHint" aria-live="polite"></div>
     <div class="row">
-      <input id="pzType" placeholder="type answer" autocomplete="off">
+      <input id="pzType" placeholder="type answer" autocomplete="off" inputmode="numeric">
+      <button class="btn small alt" id="pzHelp">HINT</button>
       <button class="btn small" id="pzDyn">DYNAMITE</button>
       <button class="btn small dim" id="pzCancel">WALK AWAY</button>
     </div>
@@ -152,10 +190,19 @@
     <button class="btn alt" id="shopDig">DESCEND AGAIN</button>
   </div></div>
 
+  <!-- GROWN-UPS REPORT -->
+  <div class="overlay" id="grown"><div class="panel">
+    <h2>FOR GROWN-UPS</h2>
+    <div class="sub">what has been practised, how accurate it was, and what to practise next</div>
+    <div class="lk" id="grownBody"></div>
+    <button class="btn alt" id="grownBack">BACK</button>
+  </div></div>
+
   <!-- RESULTS -->
   <div class="overlay" id="results"><div class="panel">
     <h2 id="resTitle">BACK ON THE SURFACE</h2>
     <div class="stats" id="resStats"></div>
+    <div class="lk" id="resReport"><h3>FOR GROWN-UPS · THIS DESCENT</h3><div id="resReportBody"></div></div>
     <button class="btn" id="resShop">VISIT SHOP</button>
     <button class="btn alt" id="resAgain">DESCEND AGAIN</button>
   </div></div>
@@ -175,6 +222,264 @@ const KEY='mm_save';
 let SAVE=store.get(KEY,{money:30,up:{pick:0,lamp:0,tank:0,elev:0},dyn:0,best:0,
                         col:{coal:0,iron:0,gold:0,diamond:0},runs:0,solved:0});
 const saveNow=()=>store.set(KEY,SAVE);
+
+/* ═══════════ LEARNING KIT — age bands, teaching hints, a report for grown-ups ═══════════
+   Hints teach the rule or the next step; they never hand over the answer.
+   Every answer is logged against the skill it practised, so a grown-up can read
+   what was practised, how accurate it was and what to practise next. */
+const LEARN=(function(){
+  const BANDS=[
+    {id:'5-7', label:'Ages 5–7',  math:[1,2], word:[1,2]},
+    {id:'7-9', label:'Ages 7–9',  math:[2,3], word:[2,3]},
+    {id:'9-11',label:'Ages 9–11', math:[3,4], word:[3,5]}];
+  const SPELL=['','Spelling short words','Spelling everyday words','Spelling longer words',
+               'Spelling tricky words','Spelling advanced words'];
+  const TIPS={
+    'Adding within 20':'Start at the bigger number and count on, or make a ten first (8 + 5 = 8 + 2 + 3).',
+    'Adding bigger numbers':'Add the tens, then the ones, then put the two parts together.',
+    'Taking away within 20':'Count up from the smaller number to the bigger one on a number line.',
+    'Taking away bigger numbers':'Take away the tens first, then the ones.',
+    'Times tables to 9 × 9':'Skip-count out loud (3, 6, 9, 12…) and learn one table at a time.',
+    'Times tables to 12 × 12':'Practise the 6, 7, 8 and 12 times tables; use 10 × then adjust.',
+    'Dividing into equal groups':'Turn it round: 24 ÷ 6 means 6 × ? = 24.',
+    'Multiply before adding':'In a two-step sum, do the × part first, then the +.',
+    'Fractions of amounts':'Divide by the bottom number, then multiply by the top number.',
+    'Percentages of amounts':'10% is ÷ 10, 50% is a half, 25% is a quarter.',
+    'Number bonds':'Learn the pairs that make 10 by heart, then use them for 20 and 100.',
+    'Checking sums (true or false)':'Work the sum out first, then compare it with the one shown.'};
+  const SPELL_TIP='Say the word slowly, look at it, cover it, write it, then check it.';
+  const VOW='AEIOU';
+  const TEAMS={SH:'sh',CH:'ch',TH:'th',WH:'w',PH:'f',CK:'k',NG:'ng'}, SILENT={KN:'n',WR:'r'};
+  const clampN=(v,a,b)=>v<a?a:v>b?b:v;
+
+  /* ---- what a math prompt practises, and how to teach it ---- */
+  function parseMath(prompt,note){
+    const p=String(prompt||'').replace(/\s*=\s*\?\s*$/,'').replace(/-/g,'−').trim();
+    let m;
+    if((m=p.match(/^(\d+) \+ (\d+) × (\d+)$/)))return{k:'two',a:+m[1],b:+m[2],c:+m[3]};
+    if((m=p.match(/^(\d+)\/(\d+) of (\d+)$/)))return{k:'frac',n:+m[1],d:+m[2],t:+m[3]};
+    if((m=p.match(/^(\d+)% of (\d+)$/)))return{k:'pct',p:+m[1],t:+m[2]};
+    if((m=p.match(/^(\d+) \+ \?(?: = (\d+))?$/))){
+      const t=m[2]?+m[2]:+(String(note||'').match(/(\d+)/)||[0,0])[1];
+      return{k:'bond',a:+m[1],t:t};}
+    if((m=p.match(/^(.+) = (\d+)$/))){const inner=parseMath(m[1]);if(inner)return{k:'tf',q:inner,s:+m[2],text:m[1]};}
+    if((m=p.match(/^(\d+) ([+−×÷]) (\d+)$/)))return{k:m[2],a:+m[1],b:+m[3]};
+    return null;
+  }
+  function mathSkill(prompt,note){
+    const q=parseMath(prompt,note); if(!q)return 'Mental maths';
+    if(q.k==='+')return q.a+q.b<=20?'Adding within 20':'Adding bigger numbers';
+    if(q.k==='−')return q.a<=20?'Taking away within 20':'Taking away bigger numbers';
+    if(q.k==='×')return (q.a<=9&&q.b<=9)?'Times tables to 9 × 9':'Times tables to 12 × 12';
+    if(q.k==='÷')return 'Dividing into equal groups';
+    if(q.k==='two')return 'Multiply before adding';
+    if(q.k==='frac')return 'Fractions of amounts';
+    if(q.k==='pct')return 'Percentages of amounts';
+    if(q.k==='bond')return 'Number bonds';
+    return 'Checking sums (true or false)';
+  }
+  function skip(n,times){const s=[];for(let i=1;i<=Math.min(3,times-1);i++)s.push(n*i);return s.join(', ')+'…';}
+  function mathHint(prompt,note){
+    const q=parseMath(prompt,note);
+    if(!q)return 'Read the question twice, then work it out one step at a time.';
+    const big=Math.max(q.a,q.b),small=Math.min(q.a,q.b);
+    switch(q.k){
+      case '+':
+        if(q.a+q.b<=20){
+          if(big<10&&big+small>10)return `Make a ten: ${big} needs ${10-big} more to reach 10. Take ${10-big} from the ${small}, then add what is left on to 10.`;
+          return `Number line: start at ${big} and hop ${small} to the right. Count the hops out loud.`;}
+        if(small<10){const up=Math.ceil((big+1)/10)*10-big;
+          return small>up?`Start at ${big}. Hop ${up} to reach ${big+up}, then hop on the other ${small-up}.`
+                         :`Start at ${big} and count on ${small} more, one hop at a time.`;}
+        return `Split into tens and ones: add ${Math.floor(q.a/10)*10} + ${Math.floor(q.b/10)*10} first, then ${q.a%10} + ${q.b%10}, then put them together.`;
+      case '−':
+        if(q.a<=20)return `Number line: start at ${q.b} and count up to ${q.a}. How many hops did you make?`;
+        if(q.b<10){const down=q.a%10;
+          return down&&q.b>down?`Count back from ${q.a}: hop back ${down} to reach ${q.a-down}, then hop back the other ${q.b-down}.`
+                               :`Count back ${q.b} from ${q.a}, one hop at a time.`;}
+        if(q.b%10===0)return `Take away ${q.b/10} tens: count back from ${q.a} in tens.`;
+        return `Take away the tens first: ${q.a} − ${Math.floor(q.b/10)*10}. Then take away the ${q.b%10} ones that are left.`;
+      case '×':
+        if(q.a===10||q.b===10)return `Times 10: put a zero on the end of the other number.`;
+        if(q.a===2||q.b===2)return `Times 2 is doubling: add ${q.a===2?q.b:q.a} to itself.`;
+        if(q.a===5||q.b===5)return `Times 5 is half of times 10: work out ${q.a===5?q.b:q.a} × 10, then halve it.`;
+        if(q.a===9||q.b===9){const o=q.a===9?q.b:q.a;return `Times 9: work out ${o} × 10, then take away one ${o}.`;}
+        return `${q.a} × ${q.b} is ${q.b} groups of ${q.a}. Skip-count by ${q.a}: ${skip(q.a,q.b)} and stop after ${q.b} jumps.`;
+      case '÷':
+        return `How many groups of ${q.b} make ${q.a}? Think ${q.b} × ? = ${q.a}, or skip-count by ${q.b} until you reach ${q.a}.`;
+      case 'two':
+        return `Multiply first: work out ${q.b} × ${q.c}, then add ${q.a} to that.`;
+      case 'frac':
+        return q.n===1?`Split ${q.t} into ${q.d} equal groups. One group is the answer.`
+                      :`Split ${q.t} into ${q.d} equal groups, then take ${q.n} of the groups.`;
+      case 'pct':
+        if(q.p===50)return `50% means half. What is half of ${q.t}?`;
+        if(q.p===25)return `25% is a quarter: halve ${q.t}, then halve it again.`;
+        if(q.p===75)return `75% is three quarters: find a quarter of ${q.t}, then take three of them.`;
+        if(q.p===10)return `10% means one tenth: share ${q.t} into 10 equal parts (${q.t} ÷ 10).`;
+        return `${q.p}% is ${q.p/10} lots of 10%. First find 10% of ${q.t} (that is ${q.t} ÷ 10), then multiply by ${q.p/10}.`;
+      case 'bond':
+        return q.t===10||q.t===20?`Count up from ${q.a} to ${q.t} on your fingers or a number line.`
+                                 :`Count up from ${q.a} to the next ten, then on in tens to ${q.t}.`;
+      case 'tf':
+        return `Work out ${q.text} yourself first, then check: is it really ${q.s}?`;
+    }
+    return '';
+  }
+
+  /* ---- spelling: the first letter, the length, then sound-by-sound nudges ---- */
+  function spellHint(word,idx,clue){
+    const W=String(word).toUpperCase(), n=W.length; idx=clampN(idx|0,0,n-1);
+    const c=W[idx], prev=W[idx-1]||'', so=W.slice(0,idx), tail=clue?` Clue: “${String(clue).replace('~','___')}”`:'';
+    if(idx===0)return `It starts with the letter ${c} and has ${n} letters. Say the word slowly and listen to each sound.`+tail;
+    const pair=prev+c;
+    if(TEAMS[pair])return `After “${so}”, ${prev} teams up with the next letter to make one sound: /${TEAMS[pair]}/.`;
+    if(SILENT[pair])return `The ${prev} is silent here: the sound you hear is /${SILENT[pair]}/.`;
+    if(prev==='Q')return `Rule: the letter Q nearly always has the same vowel straight after it, and together they say /kw/.`;
+    if(c===prev)return `After “${so}”, the same letter comes again: this word has a double letter here.`;
+    if(c==='E'&&idx===n-1)return `Last letter: it is a silent e at the end. It makes the vowel before it say its name.`;
+    if(VOW.includes(c)&&VOW.includes(prev))return `After “${so}”, another vowel joins in: two vowels team up to make one sound here.`;
+    if(VOW.includes(c)||(c==='Y'&&idx===n-1))return `After “${so}” comes a vowel sound (a, e, i, o, u${c==='Y'?' or y':''}). Say “${so.toLowerCase()}…” slowly: which vowel do you hear?`;
+    return `After “${so}” comes a consonant. Say “${so.toLowerCase()}…” slowly and listen for the next sound. ${n-idx} letter${n-idx>1?'s':''} to go.`;
+  }
+
+  /* ---- the record ---- */
+  function create(key){
+    let R={bands:{},skills:{},missWords:[],sessions:0,answered:0,correct:0,since:new Date().toISOString().slice(0,10)};
+    try{const s=JSON.parse(localStorage.getItem(key));if(s&&typeof s==='object')R=Object.assign(R,s);}catch(e){}
+    let S={skills:{},answered:0,correct:0,missWords:[]};   /* this session */
+    const save=()=>{try{localStorage.setItem(key,JSON.stringify(R));}catch(e){}};
+    const bump=(o,skill,ok)=>{const s=o[skill]||(o[skill]={r:0,w:0});ok?s.r++:s.w++;};
+    const api={
+      BANDS,
+      band(){return BANDS.find(b=>b.id===R.band)||null;},
+      bandIndex(){const i=BANDS.findIndex(b=>b.id===R.band);return i<0?1:i;},
+      setBand(id){R.band=id;save();},
+      /* a tier inside the band: the band's easiest tier plus the ramp, capped at the band's hardest */
+      tier(kind,ramp){const b=BANDS[api.bandIndex()],r=kind==='word'?b.word:b.math;return clampN(r[0]+(ramp|0),r[0],r[1]);},
+      startSession(){S={skills:{},answered:0,correct:0,missWords:[]};R.sessions++;save();},
+      note(skill,ok,word){
+        bump(R.skills,skill,ok);bump(S.skills,skill,ok);
+        R.answered++;S.answered++;if(ok){R.correct++;S.correct++;}
+        if(word&&!ok){const w=String(word).toLowerCase();
+          if(!S.missWords.includes(w))S.missWords.push(w);
+          R.missWords=[w].concat(R.missWords.filter(x=>x!==w)).slice(0,12);}
+        if(word&&ok)R.missWords=R.missWords.filter(x=>x!==String(word).toLowerCase());
+        save();
+      },
+      noteMath(prompt,ok,note){api.note(mathSkill(prompt,note),ok);},
+      noteSpell(level,ok,word){api.note(SPELL[clampN(level|0,1,5)],ok,word);},
+      session(){return S;},
+      /* the grown-up report: {lines:[...], next:'...'} for this session and all time */
+      report(scope){
+        const src=scope==='session'?S:R, rows=Object.keys(src.skills).map(k=>{const s=src.skills[k];
+          return{skill:k,n:s.r+s.w,acc:Math.round(100*s.r/Math.max(1,s.r+s.w))};}).sort((a,b)=>b.n-a.n);
+        const acc=Math.round(100*src.correct/Math.max(1,src.answered));
+        let weak=rows.filter(r=>r.n>=3).sort((a,b)=>a.acc-b.acc)[0]||rows.slice().sort((a,b)=>a.acc-b.acc)[0];
+        let next;
+        if(!rows.length)next='Play a round to start the record.';
+        else if(weak&&weak.acc<85)next=`${weak.skill} (${weak.acc}% right). ${TIPS[weak.skill]||SPELL_TIP}`;
+        else{const bi=api.bandIndex();
+          next=bi<BANDS.length-1&&src.answered>=10?`Everything practised is 85% or better: try ${BANDS[bi+1].label} next.`
+                                                   :'Keep going at this level: accuracy is strong.';}
+        const words=(scope==='session'?S.missWords:R.missWords).slice(0,8);
+        return{rows,acc,answered:src.answered,correct:src.correct,next,words,
+               sessions:R.sessions,since:R.since,band:BANDS[api.bandIndex()].label};
+      },
+      /* plain HTML, styled by each game */
+      reportHTML(scope){
+        const r=api.report(scope), esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+        if(!r.answered)return `<p class="lk-p">No answers yet${scope==='session'?' this round':''}. Play a round and the report fills in.</p>`;
+        return `<p class="lk-p"><b>${r.answered}</b> answer${r.answered>1?'s':''}, <b>${r.acc}%</b> right`+
+          (scope==='session'?'':` · ${r.sessions} round${r.sessions>1?'s':''} since ${esc(r.since)} · level ${esc(r.band)}`)+`</p>`+
+          `<table class="lk-t">${r.rows.slice(0,8).map(x=>`<tr><td>${esc(x.skill)}</td><td>${x.n}</td><td>${x.acc}%</td></tr>`).join('')}</table>`+
+          (r.words.length?`<p class="lk-p">Words to practise: <b>${r.words.map(esc).join(', ')}</b></p>`:'')+
+          `<p class="lk-p lk-next">Practise next: ${esc(r.next)}</p>`;
+      },
+      mathSkill,mathHint,spellHint,SPELL,
+    };
+    return api;
+  }
+  return{create,mathSkill,mathHint,spellHint,BANDS};
+})();
+const LK=LEARN.create('mm_learn');
+
+/* ═══════════ audio — procedural WebAudio kit ═══════════
+   The cabinet used to be completely silent (kit from the game's source repo). Everything below is synthesised on
+   demand: no files, no network, and the AudioContext is only created on the first
+   gesture, so booting requests nothing and a browser without WebAudio stays a
+   silent no-op instead of throwing. */
+const SFX=(function(){
+  let ctx=null, master=null, noiseBuf=null, plays=0, last='';
+  let on=true;
+  try{on=localStorage.getItem('mm_snd')!=='0';}catch(e){}
+  function init(){
+    if(ctx)return ctx;
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext;
+      if(!AC)return null;
+      ctx=new AC(); master=ctx.createGain(); master.gain.value=on?0.9:0;
+      master.connect(ctx.destination);
+    }catch(e){ctx=null;}
+    if(ctx&&ctx.state==='suspended'){try{ctx.resume();}catch(e){}}
+    return ctx;
+  }
+  function tone(f,d,type,v,delay,slideTo){
+    if(!on||!init())return;
+    try{
+      const t=ctx.currentTime+(delay||0), o=ctx.createOscillator(), g=ctx.createGain();
+      o.type=type||'sine'; o.frequency.setValueAtTime(f,t);
+      if(slideTo)o.frequency.exponentialRampToValueAtTime(Math.max(24,slideTo),t+d);
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(Math.max(.0002,v||.12),t+.012);
+      g.gain.exponentialRampToValueAtTime(.0008,t+d);
+      o.connect(g); g.connect(master); o.start(t); o.stop(t+d+.05);
+    }catch(e){}
+  }
+  function noise(d,v,f0,f1,delay){
+    if(!on||!init())return;
+    try{
+      if(!noiseBuf){
+        const n=Math.floor(ctx.sampleRate*.5); noiseBuf=ctx.createBuffer(1,n,ctx.sampleRate);
+        const ch=noiseBuf.getChannelData(0); for(let i=0;i<n;i++)ch[i]=Math.random()*2-1;
+      }
+      const t=ctx.currentTime+(delay||0), s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true;
+      const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.setValueAtTime(f0||900,t);
+      if(f1)lp.frequency.exponentialRampToValueAtTime(Math.max(40,f1),t+d);
+      const g=ctx.createGain(); g.gain.setValueAtTime(v||.2,t);
+      g.gain.exponentialRampToValueAtTime(.0008,t+d);
+      s.connect(lp); lp.connect(g); g.connect(master); s.start(t); s.stop(t+d+.03);
+    }catch(e){}
+  }
+  function hit(name){plays++;last=name;}
+  return {
+    init:init,
+    isOn:function(){return on;},
+    setOn:function(v){on=!!v;try{localStorage.setItem('mm_snd',on?'1':'0');}catch(e){}
+      if(master)master.gain.value=on?0.9:0; if(on){init();hit('click');tone(660,.09,'triangle',.1);} },
+    stats:function(){return {on:on,ctx:!!ctx,state:ctx?ctx.state:'none',plays:plays,last:last};},
+    /* the shovel bites rock */
+    dig:function(hard){hit('dig');noise(hard?.16:.11,hard?.3:.22,1400,320);
+      tone(hard?150:120,hard?.16:.11,'sine',hard?.22:.16,0,hard?70:60);},
+    /* a rock folds and a gem pops out */
+    crack:function(){hit('crack');noise(.3,.28,2600,180);
+      tone(392,.18,'triangle',.13);tone(587,.22,'triangle',.12,.07);tone(784,.3,'triangle',.1,.14);},
+    /* one ore collected */
+    ore:function(){hit('ore');tone(880,.12,'sine',.13);tone(1320,.2,'sine',.1,.07);},
+    /* wrong answer */
+    miss:function(){hit('miss');tone(196,.32,'sawtooth',.14,0,110);tone(147,.4,'sawtooth',.1,.05,90);},
+    /* cave-in rumble */
+    rumble:function(){hit('rumble');noise(.7,.34,420,60);tone(58,.7,'sine',.2,0,34);},
+    /* the winch hauls you out */
+    winch:function(){hit('winch');tone(520,.5,'triangle',.11,0,190);noise(.5,.12,900,300,.05);},
+    /* wallet */
+    coin:function(){hit('coin');tone(1046,.1,'square',.07);tone(1568,.18,'square',.06,.06);},
+    boom:function(){hit('boom');noise(.55,.36,900,70);tone(70,.5,'sine',.22,0,40);},
+    click:function(){hit('click');tone(660,.09,'triangle',.1);}
+  };
+})();
+window.__SFX=SFX;   /* test hook: shows whether the kit really fired */
+
+const RM=matchMedia('(prefers-reduced-motion: reduce)');   /* no cave-in shake, no toast slide */
 
 /* ═══════════ QUESTION CORE — extracted from SpellMathsGalaxy ═══════════ */
 /* one-line teaching hints, shown after a miss */
@@ -341,8 +646,9 @@ function clueSentence(w,idx){
 }
 
 /* question at a depth (tiles below surface). the tier ramp IS the descent */
-const mathTierAt = dep=>clamp(1+Math.floor(dep/25),1,4);
-const wordLevelAt= dep=>clamp(1+Math.floor(dep/22),1,5);
+/* the age band sets the easiest and hardest tier; depth ramps between them */
+const mathTierAt = dep=>LK.tier('math',Math.floor(dep/25));
+const wordLevelAt= dep=>LK.tier('word',Math.floor(dep/22));
 function makeQuestion(mode,dep){
   if(mode==='math'){
     const q=qQuick(mathTierAt(dep));
@@ -368,7 +674,9 @@ const oreAt=dep=>{for(const k of ORE_KINDS){const o=ORE[k];if(dep>=o.lo&&dep<=o.
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 const wrap=document.getElementById('wrap');
 let VW=0,VH=0;
-function resize(){VW=cv.width=wrap.clientWidth;VH=cv.height=wrap.clientHeight;}
+/* crisp on every screen: backing store = CSS size × min(devicePixelRatio, 2) */
+function resize(){VW=wrap.clientWidth;VH=wrap.clientHeight;const d=Math.min(devicePixelRatio||1,2);
+  cv.width=Math.round(VW*d);cv.height=Math.round(VH*d);ctx.setTransform(d,0,0,d,0,0);}
 addEventListener('resize',resize);resize();
 
 /* tile codes: 0 empty, 1 dirt, 2 puzzle rock, 3 hard rock, 10..13 ore */
@@ -402,6 +710,7 @@ function startRun(mode){
   G.maxEnergy=20+SAVE.up.tank*10; G.energy=G.maxEnergy;
   G.cargo={coal:0,iron:0,gold:0,diamond:0}; G.score=0; G.rocksBroken=0;
   G.wrong=0; G.dug=0; G.maxDepth=0; G.particles=[]; G.lastHint=''; G.curRock=null; G.hp={};
+  G.answered=0; G.over=false;
   G.px=Math.floor(W_TILES/2);
   const elev=SAVE.up.elev*15;
   G.usedElev=elev; G.py=0;
@@ -411,11 +720,14 @@ function startRun(mode){
       for(let x=G.px-1;x<=G.px+1;x++) setTile(x,y,T_EMPTY);
   }
   SAVE.runs++; saveNow();
+  SFX.init(); SFX.click();
+  LK.startSession(); badgeReset();
   hideAll(); document.getElementById('hud').classList.add('show');
+  sdkState({scene:'play'});
   toast(elev>0?`ELEVATOR DOWN TO ${elev}m — ${mode==='math'?'MATH':'SPELLING'} ROCKS BELOW`
               :`${mode==='math'?'MATH':'SPELLING'} MODE — DIG!`);
 }
-function hideAll(){ for(const id of['menu','puzzle','shop','results'])
+function hideAll(){ for(const id of['menu','puzzle','shop','results','grown'])
   document.getElementById(id).classList.remove('show'); }
 
 /* ═══════════ digging ═══════════ */
@@ -425,7 +737,7 @@ function bump(x,y){
   if(t===T_ROCK){ openPuzzle(x,y); return; }
   const hpKey=y+'_'+x;
   G.hp[hpKey]=(G.hp[hpKey]===undefined?hardness(t,y):G.hp[hpKey]) - (1+SAVE.up.pick);
-  digFx(x,y);
+  digFx(x,y); SFX.dig(t===T_HARD);
   if(G.hp[hpKey]<=0){ clearTile(x,y,t); delete G.hp[hpKey]; }
   else spendEnergy(1);
 }
@@ -433,7 +745,7 @@ const hardness=(t,y)=> t===T_HARD ? 2+Math.floor(y/28) : 1;
 function clearTile(x,y,t){
   setTile(x,y,T_EMPTY); G.dug++;
   if(t>=10){ const kind=ORE_KINDS[t-10];
-    G.cargo[kind]++; toast(`+1 ${kind.toUpperCase()} ore`); }
+    G.cargo[kind]++; SFX.ore(); toast(`+1 ${kind.toUpperCase()} ore`); }
   burst(x,y, t>=10?ORE[ORE_KINDS[t-10]].gl:'#6b4a2a', 10);
   spendEnergy(1);
   maybeCaveIn(y);
@@ -444,7 +756,8 @@ function spendEnergy(n){
 }
 function maybeCaveIn(y){
   if(y>15 && Math.random()<.05){
-    G.shake=.5; toast('CAVE-IN! −1 energy'); burst(G.px,G.py,'#a8846b',18);
+    if(!RM.matches) G.shake=.5;   /* reduced motion: the toast and dust tell the story, no shake */
+    SFX.rumble(); toast('CAVE-IN! −1 energy'); burst(G.px,G.py,'#a8846b',18);
     spendEnergy(1);
   }
 }
@@ -455,6 +768,7 @@ function forcedSurface(){
 function endRun(reason){
   if(!G.running && !G.over) return;
   G.running=false; hideAll(); document.getElementById('hud').classList.remove('show');
+  SFX.winch();
   let earned=0; const lines=[];
   for(const k of ORE_KINDS){
     if(G.cargo[k]){ earned+=G.cargo[k]*ORE[k].v; lines.push(`${G.cargo[k]}× ${k} @$${ORE[k].v}`); }
@@ -470,8 +784,10 @@ function endRun(reason){
     `${reason}<br><br>ORE SOLD: <b>$${earned}</b>${lines.length?'<br>'+lines.join(' &middot;'):''}<br>`+
     `Rocks solved: <b>${G.rocksBroken}</b> &middot; Tiles dug: <b>${G.dug}</b> &middot; Misses: <b>${G.wrong}</b><br>`+
     `Deepest point: <b>${depth}m</b> &middot; Wallet: <b>$${SAVE.money}</b>`;
+  document.getElementById('resReportBody').innerHTML=LK.reportHTML('session');
   document.getElementById('results').classList.add('show');
-  refreshMenu();
+  refreshMenu(); coachAdvance();
+  sdkState({scene:'over',score:depth,outcome:reason});
 }
 
 /* movement */
@@ -556,7 +872,9 @@ document.getElementById('pzType').addEventListener('keydown',e=>{
 });
 function submitMath(v){
   if(!G.curQ||G.curQ.kind!=='math') return;
-  if(String(v)===G.curQ.answer) solveRock();
+  const ok=String(v)===G.curQ.answer;
+  LK.noteMath(G.curQ.prompt,ok,G.curQ.note); G.answered=(G.answered||0)+1;
+  if(ok) solveRock();
   else wrongAnswer(`not quite — ${G.curQ.hint}`);
 }
 function submitLetter(i){
@@ -567,21 +885,21 @@ function submitLetter(i){
     document.getElementById('pzClue').innerHTML=
       `&ldquo;${clueSentence({t:q.word,h:q.clue},G.spellIdx)}&rdquo;`;
     if(btns[i]) btns[i].style.visibility='hidden';
-    if(G.spellIdx>=q.word.length) solveRock();
-  } else wrongAnswer(q.hint);
+    if(G.spellIdx>=q.word.length){ LK.noteSpell(wordLevelAt(G.curRock.y),true,q.word); G.answered=(G.answered||0)+1; solveRock(); }
+  } else { LK.noteSpell(wordLevelAt(G.curRock.y),false,q.word); G.answered=(G.answered||0)+1; wrongAnswer(q.hint); }
 }
 function solveRock(){
   const r=G.curRock; if(!r) return;
   setTile(r.x,r.y,T_EMPTY); G.rocksBroken++; G.score+=10;
   delete G.hp['r'+r.x+'_'+r.y];
-  burst(r.x,r.y,'#37d6a0',14);
-  if(Math.random()<.30){ const kind=oreAt(r.y); G.cargo[kind]++;
+  burst(r.x,r.y,'#37d6a0',14); SFX.crack();
+  if(Math.random()<.30){ const kind=oreAt(r.y); G.cargo[kind]++; SFX.ore();
     toast(`ROCK SHATTERED — +1 ${kind.toUpperCase()}!`); }
   else toast('ROCK SHATTERED');
   closePuzzle();
 }
 function wrongAnswer(hint){
-  G.wrong++; G.lastHint=hint;
+  G.wrong++; G.lastHint=hint; SFX.miss();
   G.hardenUntil=performance.now()+2000;
   G.hp['r'+G.curRock.x+'_'+G.curRock.y]=G.hardenUntil;
   document.getElementById('pzHint').textContent='>> '+hint;
@@ -593,7 +911,7 @@ function wrongAnswer(hint){
 }
 document.getElementById('pzDyn').addEventListener('click',()=>{
   if(SAVE.dyn<=0||!G.curRock) return;
-  SAVE.dyn--; saveNow(); toast('DYNAMITE! the rock folds instantly'); solveRock();
+  SAVE.dyn--; saveNow(); SFX.boom(); toast('DYNAMITE! the rock folds instantly'); solveRock();
 });
 
 /* ═══════════ shop ═══════════ */
@@ -632,6 +950,7 @@ function buyItem(id){
   if(SAVE.money<cost) return false;
   SAVE.money-=cost;
   if(id==='dyn') SAVE.dyn++; else SAVE.up[id]=lv+1;
+  SFX.coin();
   saveNow(); openShop(); return true;
 }
 document.getElementById('resShop').addEventListener('click',openShop);
@@ -668,6 +987,10 @@ function draw(){
     grd.addColorStop(0,'#8fd3f0'); grd.addColorStop(1,'#d9b982');
     ctx.fillStyle=grd; ctx.fillRect(0,skyTop,VW,skyBot-skyTop);
     ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.arc(VW-90,sy(-4)+30,26,0,7); ctx.fill();
+    /* slow clouds: the surface is alive while you choose a mode */
+    ctx.fillStyle='rgba(255,255,255,.7)';
+    for(let i=0;i<3;i++){ const cx=((i*331+G.t*(9+i*4))%(VW+160))-80, cy=sy(-5)+18+i*26;
+      ctx.beginPath(); ctx.arc(cx,cy,14,0,7); ctx.arc(cx+18,cy-7,17,0,7); ctx.arc(cx+38,cy,13,0,7); ctx.fill(); }
     /* shop shack */
     ctx.fillStyle='#5a3b22'; ctx.fillRect(sx(1),sy(0)-54,TILE*3,54);
     ctx.fillStyle='#c1543a'; ctx.beginPath();
@@ -740,7 +1063,8 @@ function draw(){
   }
 }
 /* stable badge text carved on each rock (no per-frame RNG churn) */
-const badgeCache={};
+let badgeCache={};
+function badgeReset(){ badgeCache={}; }
 function rockBadge(x,y){
   const k=y*W_TILES+x;
   if(!badgeCache[k]){
@@ -782,6 +1106,108 @@ function refreshMenu(){
     `collection — ${SAVE.col.coal} coal · ${SAVE.col.iron} iron · ${SAVE.col.gold} gold · ${SAVE.col.diamond} diamond`;
 }
 refreshMenu();
+
+
+addEventListener('pointerdown',()=>SFX.init(),{once:true});
+addEventListener('keydown',()=>SFX.init(),{once:true});
+
+/* ═══════════ arcade glue: hints, age bands, grown-up report, first-run coach ═══════════ */
+function sdkState(s){ try{ window.ArcadeSDK&&ArcadeSDK.state(s); }catch(e){} }
+/* a hint that teaches the step in front of the player, never the answer itself */
+function currentHint(){
+  const q=G.curQ;
+  if(q&&document.getElementById('puzzle').classList.contains('show')){
+    if(q.kind==='math') return LK.mathHint(q.prompt,q.note)+(q.note?' ('+q.note+')':'');
+    return LK.spellHint(q.word,G.spellIdx,q.clue);
+  }
+  if(G.running&&!G.over){
+    if(G.energy<=4) return `Energy is low (${G.energy} left): press E or ELEVATOR UP now to sell your ore before the winch drags you home.`;
+    if(!G.answered) return 'Rocks with a sum carved on them are puzzles: walk into one to open it. Plain dirt just costs energy.';
+    return 'Dig towards the carved rocks: each one you solve is +10 and may drop ore. Deeper bands pay more but ask harder questions.';
+  }
+  if(document.getElementById('shop').classList.contains('show')) return 'A BATTERY TANK gives more energy per descent; a HEADLAMP lets you spot rocks further away.';
+  return 'Pick your age band, then MATH MODE or SPELLING MODE. Arrows or the dig pad move you; walk into a carved rock to answer it.';
+}
+function showHint(){
+  const t=currentHint();
+  if(document.getElementById('puzzle').classList.contains('show')) document.getElementById('pzHint').textContent='>> '+t;
+  else toast(t);
+  return t;
+}
+document.getElementById('pzHelp').addEventListener('click',showHint);
+document.getElementById('hudHint').addEventListener('click',showHint);
+
+/* age bands on the title */
+function renderBands(){
+  const box=document.getElementById('bands'); box.innerHTML='';
+  const cur=LK.bandIndex();
+  LK.BANDS.forEach((b,i)=>{ const el=document.createElement('button');
+    el.className='btn band'+(i===cur?' on':''); el.textContent=b.label.toUpperCase();
+    el.setAttribute('aria-pressed',String(i===cur));
+    el.addEventListener('click',()=>{ LK.setBand(b.id); badgeReset(); renderBands(); });
+    box.appendChild(el); });
+}
+renderBands();
+function openGrown(){
+  hideAll(); document.getElementById('grownBody').innerHTML=LK.reportHTML('all');
+  document.getElementById('grown').classList.add('show');
+}
+document.getElementById('btnGrown').addEventListener('click',openGrown);
+document.getElementById('grownBack').addEventListener('click',()=>{ hideAll(); document.getElementById('menu').classList.add('show'); });
+
+/* first-run coach: learn to mine by mining; skippable, replayable */
+const COACH=[
+  {t:'Dig down: press <b>↓</b> or <b>S</b> (on a phone, the <b>▼</b> pad).', done:()=>G.maxDepth>=1},
+  {t:'Rocks with a sum carved on them are puzzles. Walk into one: there is one right below you.', done:()=>!!G.curQ||G.answered>0},
+  {t:'Tap the gem with the right answer. Stuck? Press <b>HINT</b> for a clue that teaches the step.', done:()=>G.answered>0},
+  {t:'Every dig costs energy. Press <b>E</b> or <b>ELEVATOR UP</b> to sell your ore before it runs out.', done:()=>!G.running},
+];
+let coachIx=-1;
+function coachStart(){
+  if(!G.running) startRun(G.mode||'math');
+  coachIx=0;
+  /* put a puzzle rock two tiles under the miner so step 2 is right there */
+  if(tileAt(G.px,G.py+2)!==T_ROCK){ setTile(G.px,G.py+1,T_DIRT); setTile(G.px,G.py+2,T_ROCK); }
+  coachPaint();
+}
+function coachPaint(){
+  const el=document.getElementById('coach');
+  if(coachIx<0||coachIx>=COACH.length){ el.classList.remove('show'); return; }
+  document.getElementById('coachStep').textContent='HOW TO MINE · '+(coachIx+1)+' OF '+COACH.length;
+  document.getElementById('coachText').innerHTML=COACH[coachIx].t;
+  const hb=document.getElementById('hud').getBoundingClientRect();
+  el.style.top=Math.max(12,hb.bottom+8)+'px';   /* sits just under the HUD on any screen */
+  el.classList.add('show');
+}
+function coachEnd(){ coachIx=-1; coachPaint(); try{localStorage.setItem('mm_tut','1');}catch(e){} try{window.ArcadeSDK&&ArcadeSDK.event('tutorial-done');}catch(e){} }
+function coachAdvance(){
+  if(coachIx<0) return;
+  while(coachIx<COACH.length&&COACH[coachIx].done()) coachIx++;
+  if(coachIx>=COACH.length) coachEnd(); else coachPaint();
+}
+document.getElementById('coachSkip').addEventListener('click',coachEnd);
+document.getElementById('btnTut').addEventListener('click',coachStart);
+setInterval(coachAdvance,250);
+/* the very first descent runs the coach automatically */
+for(const id of ['btnMath','btnSpell']) document.getElementById(id).addEventListener('click',()=>{
+  let seen=false; try{seen=localStorage.getItem('mm_tut')==='1';}catch(e){}
+  if(!seen&&coachIx<0) coachStart();
+});
+
+function toTitle(){
+  G.running=false; G.over=false; closePuzzle(); coachIx=-1; coachPaint();
+  hideAll(); document.getElementById('hud').classList.remove('show');
+  refreshMenu(); renderBands(); document.getElementById('menu').classList.add('show');
+  sdkState({scene:'title'});
+}
+if(window.ArcadeSDK) ArcadeSDK.init({
+  pauseButton:'bl',
+  onRestart(){ closePuzzle(); startRun(G.mode||'math'); },
+  onExit: toTitle,
+  onTutorial: coachStart,
+  onHint(){ return currentHint(); },
+});
+sdkState({scene:'title'});
 
 /* ═══════════ test hook ═══════════ */
 window.__DEBUG={

@@ -37,23 +37,19 @@
         box-shadow:5px 5px 0 rgba(0,0,0,.45)}
   .cell{padding:7px 13px;border-right:2px solid var(--bone);display:flex;gap:7px;align-items:baseline}
   .cell:last-child{border-right:none}
-  .cell .lab{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dust);font-weight:700}
+  .cell .lab{font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dust);font-weight:700}
   .cell .val{font-family:var(--display);font-size:1.05rem;line-height:1}
   #hull{letter-spacing:3px;color:var(--rust)}
   #mult.hot{color:var(--ochre)}
   .hudtop{display:flex;align-items:flex-start;gap:10px}
   .spacer{flex:1}
-  #pause{pointer-events:auto;cursor:pointer;font-family:var(--display);font-size:.95rem;
-         color:var(--cream);background:var(--ink);border:2px solid var(--bone);padding:9px 15px;
-         box-shadow:5px 5px 0 rgba(0,0,0,.45)}
-  #pause:active{transform:translate(4px,4px);box-shadow:1px 1px 0 rgba(0,0,0,.45)}
 
   /* ── the brief: a mission card printed on paper ── */
   #brief{margin:16px auto 0;max-width:min(92vw,620px);text-align:center;
          background:var(--cream);color:var(--ink);border:2px solid var(--ink);
          box-shadow:6px 6px 0 rgba(0,0,0,.45);padding:16px 22px;position:relative}
   #brief:before{content:'';position:absolute;left:0;right:0;top:0;height:6px;background:var(--rust)}
-  #tag{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--rust);font-weight:700}
+  #tag{font-size:.75rem;letter-spacing:.24em;text-transform:uppercase;color:var(--rust);font-weight:700}
   #ask{font-family:var(--display);font-size:clamp(1.7rem,6.5vw,2.9rem);line-height:1.05;
        margin-top:6px;letter-spacing:-.01em}
   #note{font-size:.86rem;color:#6b5a52;margin-top:5px;font-weight:600}
@@ -65,12 +61,12 @@
   #kit{margin-top:auto;display:flex;gap:14px;justify-content:center;padding-bottom:4px}
   .tool{pointer-events:auto;cursor:pointer;width:64px;height:64px;background:var(--ink);
         border:2px solid var(--bone);box-shadow:4px 4px 0 rgba(0,0,0,.45);color:var(--cream);
-        display:grid;place-items:center;position:relative;font-family:var(--display);font-size:.6rem;
+        display:grid;place-items:center;position:relative;font-family:var(--display);font-size:.75rem;
         letter-spacing:.06em;text-align:center;padding:4px}
   .tool:active{transform:translate(3px,3px);box-shadow:1px 1px 0 rgba(0,0,0,.45)}
   .tool:disabled{opacity:.28}
   .tool b{position:absolute;top:-9px;right:-9px;background:var(--rust);color:var(--cream);
-          width:20px;height:20px;display:grid;place-items:center;font-size:.64rem;border:2px solid var(--ink)}
+          width:22px;height:22px;display:grid;place-items:center;font-size:.75rem;border:2px solid var(--ink)}
   #typer{position:fixed;bottom:0;left:0;width:2px;height:2px;opacity:0;border:0;
          background:transparent;color:transparent;font-size:16px} /* 16px: iOS refuses to zoom-focus smaller */
 
@@ -81,7 +77,7 @@
   .panel{width:min(540px,100%);text-align:center}
   .title{font-family:var(--display);font-size:clamp(2rem,8.5vw,3.4rem);line-height:.92;
          letter-spacing:-.02em;text-transform:uppercase;color:var(--cream)}
-  .kicker{font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:var(--ochre);font-weight:700}
+  .kicker{font-size:.75rem;letter-spacing:.34em;text-transform:uppercase;color:var(--ochre);font-weight:700}
   .lede{color:var(--bone);margin-top:12px;line-height:1.6;font-size:.94rem;max-width:34em;
         margin-left:auto;margin-right:auto}
   .list{display:grid;margin-top:22px;border:2px solid var(--bone);box-shadow:6px 6px 0 rgba(0,0,0,.45)}
@@ -102,7 +98,7 @@
   .btn.quiet{background:var(--ink)}
   .segs{display:flex;margin-top:18px;border:2px solid var(--bone);box-shadow:5px 5px 0 rgba(0,0,0,.45)}
   .seg{pointer-events:auto;cursor:pointer;flex:1;padding:11px 4px;background:var(--ink);color:var(--dust);
-       border:none;border-right:2px solid var(--bone);font-family:var(--display);font-size:.7rem;
+       border:none;border-right:2px solid var(--bone);font-family:var(--display);font-size:.75rem;min-height:44px;
        letter-spacing:.1em;text-transform:uppercase}
   .seg:last-child{border-right:none}
   .seg.on{background:var(--cream);color:var(--ink)}
@@ -110,13 +106,13 @@
        border-bottom:2px solid rgba(203,185,155,.28);font-size:.84rem;font-weight:600;color:var(--bone)}
   .log b{font-family:var(--display);color:var(--cream)}
   .log span{max-width:70%;text-align:left}
-  .revhead{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rust);
+  .revhead{font-size:.75rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rust);
            font-weight:700;margin:16px 0 4px;text-align:center}
-  .modehead{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ochre);
+  .modehead{font-size:.75rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ochre);
             font-weight:700;margin:14px 0 4px;text-align:center}
   .marks{font-family:var(--display);font-size:1.6rem;letter-spacing:.4em;color:var(--ochre);margin:14px 0}
   .stamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:14px}
-  .stamp{border:2px solid var(--bone);padding:9px 4px;font-size:.56rem;letter-spacing:.08em;
+  .stamp{border:2px solid var(--bone);padding:9px 4px;font-size:.75rem;letter-spacing:.08em;
          text-transform:uppercase;font-weight:700;color:var(--bone)}
   .stamp b{display:block;font-family:var(--display);font-size:1.1rem;color:var(--ochre);margin-bottom:3px}
   .stamp.locked{opacity:.22}
@@ -129,6 +125,27 @@
                   100%{opacity:0;transform:translate(-50%,-78px)}}
   #jolt{position:fixed;inset:0;pointer-events:none;z-index:15;opacity:0;transition:opacity .1s}
 
+  .seg small{display:block;font-family:var(--text);font-size:.75rem;letter-spacing:.04em;text-transform:none;margin-top:2px;font-weight:600}
+  #coach{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:12;
+    width:min(92vw,520px);background:var(--cream);color:var(--ink);border:2px solid var(--ink);box-shadow:6px 6px 0 rgba(0,0,0,.45);
+    padding:12px 14px 12px;display:none;gap:12px;align-items:center;text-align:left;font-weight:600;font-size:.9rem;line-height:1.45}
+  #coach.on{display:flex}
+  #coach:before{content:'';position:absolute;left:0;right:0;top:0;height:5px;background:var(--rust)}
+  #coach small{display:block;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--rust);font-weight:700}
+  #coach button{pointer-events:auto;flex:none;min-height:44px;padding:0 14px;font-family:var(--display);font-size:.8rem;
+    background:var(--ink);color:var(--cream);border:2px solid var(--ink);cursor:pointer}
+  .lk-p{color:var(--bone);font-size:.88rem;line-height:1.55;margin:8px 0;font-weight:600}
+  .lk-p b{color:var(--cream);font-family:var(--display);font-weight:400}
+  .lk-next{color:var(--ochre)}
+  .lk-t{width:100%;border-collapse:collapse;font-size:.84rem;font-weight:600;color:var(--bone)}
+  .lk-t td{padding:8px 10px;border-bottom:2px solid rgba(203,185,155,.28)}
+  .lk-t td+td{text-align:right;width:60px;font-family:var(--display);color:var(--cream);font-weight:400}
+  button:focus-visible{outline:3px solid var(--ochre);outline-offset:2px}
+  @media (prefers-reduced-motion: reduce){
+    .cry{animation:none;opacity:.95;transform:translate(-50%,-30px)}
+    #jolt{display:none}
+    #boot .bar i{animation:none;width:100%}
+  }
   #boot{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:var(--ink);
         text-align:center;padding:24px}
   #boot .bar{width:180px;height:3px;background:rgba(203,185,155,.25);margin:18px auto 0;overflow:hidden}
@@ -143,7 +160,7 @@
   <div class="kicker">Deep Range Transit Authority</div>
   <div class="title" style="font-size:1.9rem;margin-top:8px">THE LONG WAY HOME</div>
   <div class="bar"><i></i></div>
-  <div id="bootmsg" style="color:var(--dust);font-size:.7rem;letter-spacing:.2em;
+  <div id="bootmsg" style="color:var(--dust);font-size:.75rem;letter-spacing:.2em;
        text-transform:uppercase;margin-top:14px">plotting course</div>
 </div></div>
 
@@ -160,7 +177,6 @@
         <div class="cell"><span class="lab">Leg</span><span class="val" id="prog">0/12</span></div>
       </div>
       <div class="spacer"></div>
-      <button id="pause">II</button>
     </div>
 
     <div id="brief">
@@ -176,6 +192,7 @@
       <button class="tool" id="t-clear">CLEAR<b id="n-clear">2</b></button>
       <button class="tool" id="t-patch">PATCH<b id="n-patch">1</b></button>
       <button class="tool" id="t-type" style="display:none">TYPE<br>WORD</button>
+      <button class="tool" id="t-hint" aria-label="Hint">HINT</button>
     </div>
   </div>
 </div>
@@ -190,9 +207,9 @@
      Every ring you pass asks you something. You answer with your flight path.</p>
 
   <div class="segs" id="grade">
-    <button class="seg" data-dif="1">Cadet</button>
-    <button class="seg on" data-dif="2">Pilot</button>
-    <button class="seg" data-dif="3">Master</button>
+    <button class="seg" data-dif="1">Cadet<small>ages 5–7</small></button>
+    <button class="seg on" data-dif="2">Pilot<small>ages 7–9</small></button>
+    <button class="seg" data-dif="3">Master<small>ages 9–11</small></button>
   </div>
 
   <div class="list">
@@ -211,9 +228,12 @@
   </div>
 
   <button class="btn quiet" id="openLog">Flight Log</button>
+  <button class="btn quiet" id="openGrown">For Grown-ups</button>
+  <div style="display:flex;gap:10px"><button class="btn quiet" id="openTut">How to Fly</button>
+    <button class="btn quiet" id="gfx">Graphics: High</button></div>
   <button class="btn quiet" data-snd>Sound: On</button>
-  <p class="lede" style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
-     margin-top:16px;color:var(--dust)">Steer · mouse, drag or arrows &nbsp;·&nbsp; 1 2 3 · kit &nbsp;·&nbsp; M · sound</p>
+  <p class="lede" style="font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+     margin-top:16px;color:var(--dust)">Steer · mouse, drag or arrows &nbsp;·&nbsp; 1 2 3 · kit &nbsp;·&nbsp; H · hint &nbsp;·&nbsp; M · sound</p>
 </div></div>
 
 <div class="screen" id="s-stats"><div class="panel">
@@ -226,6 +246,18 @@
   <div class="stamps" id="stamplist"></div>
   <button class="btn quiet" data-back="1">Back to hangar</button>
 </div></div>
+
+<div class="screen" id="s-grown"><div class="panel">
+  <div class="kicker">Form 9 · For Grown-ups</div>
+  <div class="title" style="font-size:2rem;margin-top:6px">Progress Report</div>
+  <div class="rule"></div>
+  <p class="lede" style="margin-top:4px">What has been practised, how accurate it was, and what to practise next.</p>
+  <div id="grownBody" style="text-align:left;margin-top:10px"></div>
+  <button class="btn quiet" data-back="1">Back to hangar</button>
+</div></div>
+
+<div id="coach" role="status" aria-live="polite"><div style="flex:1"><small id="coachStep"></small><span id="coachText"></span></div>
+  <button id="coachSkip">Skip</button></div>
 
 <div class="screen" id="s-pause"><div class="panel">
   <div class="kicker">Engines idle</div>
@@ -242,6 +274,8 @@
   <div class="marks" id="endMarks">★★★</div>
   <div id="endStats" style="text-align:left"></div>
   <div id="endReview" style="text-align:left"></div>
+  <div class="revhead" style="color:var(--ochre)">For grown-ups · this leg</div>
+  <div id="endReport" style="text-align:left"></div>
   <button class="btn" id="again">Fly it again</button>
   <button class="btn quiet" id="menu2">Return to hangar</button>
 </div></div>
@@ -4191,6 +4225,189 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 let REC=store.get('tlwh_rec',{runs:0,best:0,marks:0,bestRun:0,clean:0,correct:0,ly:0});
 const saveRec=()=>store.set('tlwh_rec',REC);
 
+/* ═══════════ LEARNING KIT — age bands, teaching hints, a report for grown-ups ═══════════
+   Hints teach the rule or the next step; they never hand over the answer.
+   Every answer is logged against the skill it practised, so a grown-up can read
+   what was practised, how accurate it was and what to practise next. */
+const LEARN=(function(){
+  const BANDS=[
+    {id:'5-7', label:'Ages 5–7',  math:[1,2], word:[1,2]},
+    {id:'7-9', label:'Ages 7–9',  math:[2,3], word:[2,3]},
+    {id:'9-11',label:'Ages 9–11', math:[3,4], word:[3,5]}];
+  const SPELL=['','Spelling short words','Spelling everyday words','Spelling longer words',
+               'Spelling tricky words','Spelling advanced words'];
+  const TIPS={
+    'Adding within 20':'Start at the bigger number and count on, or make a ten first (8 + 5 = 8 + 2 + 3).',
+    'Adding bigger numbers':'Add the tens, then the ones, then put the two parts together.',
+    'Taking away within 20':'Count up from the smaller number to the bigger one on a number line.',
+    'Taking away bigger numbers':'Take away the tens first, then the ones.',
+    'Times tables to 9 × 9':'Skip-count out loud (3, 6, 9, 12…) and learn one table at a time.',
+    'Times tables to 12 × 12':'Practise the 6, 7, 8 and 12 times tables; use 10 × then adjust.',
+    'Dividing into equal groups':'Turn it round: 24 ÷ 6 means 6 × ? = 24.',
+    'Multiply before adding':'In a two-step sum, do the × part first, then the +.',
+    'Fractions of amounts':'Divide by the bottom number, then multiply by the top number.',
+    'Percentages of amounts':'10% is ÷ 10, 50% is a half, 25% is a quarter.',
+    'Number bonds':'Learn the pairs that make 10 by heart, then use them for 20 and 100.',
+    'Checking sums (true or false)':'Work the sum out first, then compare it with the one shown.'};
+  const SPELL_TIP='Say the word slowly, look at it, cover it, write it, then check it.';
+  const VOW='AEIOU';
+  const TEAMS={SH:'sh',CH:'ch',TH:'th',WH:'w',PH:'f',CK:'k',NG:'ng'}, SILENT={KN:'n',WR:'r'};
+  const clampN=(v,a,b)=>v<a?a:v>b?b:v;
+
+  /* ---- what a math prompt practises, and how to teach it ---- */
+  function parseMath(prompt,note){
+    const p=String(prompt||'').replace(/\s*=\s*\?\s*$/,'').replace(/-/g,'−').trim();
+    let m;
+    if((m=p.match(/^(\d+) \+ (\d+) × (\d+)$/)))return{k:'two',a:+m[1],b:+m[2],c:+m[3]};
+    if((m=p.match(/^(\d+)\/(\d+) of (\d+)$/)))return{k:'frac',n:+m[1],d:+m[2],t:+m[3]};
+    if((m=p.match(/^(\d+)% of (\d+)$/)))return{k:'pct',p:+m[1],t:+m[2]};
+    if((m=p.match(/^(\d+) \+ \?(?: = (\d+))?$/))){
+      const t=m[2]?+m[2]:+(String(note||'').match(/(\d+)/)||[0,0])[1];
+      return{k:'bond',a:+m[1],t:t};}
+    if((m=p.match(/^(.+) = (\d+)$/))){const inner=parseMath(m[1]);if(inner)return{k:'tf',q:inner,s:+m[2],text:m[1]};}
+    if((m=p.match(/^(\d+) ([+−×÷]) (\d+)$/)))return{k:m[2],a:+m[1],b:+m[3]};
+    return null;
+  }
+  function mathSkill(prompt,note){
+    const q=parseMath(prompt,note); if(!q)return 'Mental maths';
+    if(q.k==='+')return q.a+q.b<=20?'Adding within 20':'Adding bigger numbers';
+    if(q.k==='−')return q.a<=20?'Taking away within 20':'Taking away bigger numbers';
+    if(q.k==='×')return (q.a<=9&&q.b<=9)?'Times tables to 9 × 9':'Times tables to 12 × 12';
+    if(q.k==='÷')return 'Dividing into equal groups';
+    if(q.k==='two')return 'Multiply before adding';
+    if(q.k==='frac')return 'Fractions of amounts';
+    if(q.k==='pct')return 'Percentages of amounts';
+    if(q.k==='bond')return 'Number bonds';
+    return 'Checking sums (true or false)';
+  }
+  function skip(n,times){const s=[];for(let i=1;i<=Math.min(3,times-1);i++)s.push(n*i);return s.join(', ')+'…';}
+  function mathHint(prompt,note){
+    const q=parseMath(prompt,note);
+    if(!q)return 'Read the question twice, then work it out one step at a time.';
+    const big=Math.max(q.a,q.b),small=Math.min(q.a,q.b);
+    switch(q.k){
+      case '+':
+        if(q.a+q.b<=20){
+          if(big<10&&big+small>10)return `Make a ten: ${big} needs ${10-big} more to reach 10. Take ${10-big} from the ${small}, then add what is left on to 10.`;
+          return `Number line: start at ${big} and hop ${small} to the right. Count the hops out loud.`;}
+        if(small<10){const up=Math.ceil((big+1)/10)*10-big;
+          return small>up?`Start at ${big}. Hop ${up} to reach ${big+up}, then hop on the other ${small-up}.`
+                         :`Start at ${big} and count on ${small} more, one hop at a time.`;}
+        return `Split into tens and ones: add ${Math.floor(q.a/10)*10} + ${Math.floor(q.b/10)*10} first, then ${q.a%10} + ${q.b%10}, then put them together.`;
+      case '−':
+        if(q.a<=20)return `Number line: start at ${q.b} and count up to ${q.a}. How many hops did you make?`;
+        if(q.b<10){const down=q.a%10;
+          return down&&q.b>down?`Count back from ${q.a}: hop back ${down} to reach ${q.a-down}, then hop back the other ${q.b-down}.`
+                               :`Count back ${q.b} from ${q.a}, one hop at a time.`;}
+        if(q.b%10===0)return `Take away ${q.b/10} tens: count back from ${q.a} in tens.`;
+        return `Take away the tens first: ${q.a} − ${Math.floor(q.b/10)*10}. Then take away the ${q.b%10} ones that are left.`;
+      case '×':
+        if(q.a===10||q.b===10)return `Times 10: put a zero on the end of the other number.`;
+        if(q.a===2||q.b===2)return `Times 2 is doubling: add ${q.a===2?q.b:q.a} to itself.`;
+        if(q.a===5||q.b===5)return `Times 5 is half of times 10: work out ${q.a===5?q.b:q.a} × 10, then halve it.`;
+        if(q.a===9||q.b===9){const o=q.a===9?q.b:q.a;return `Times 9: work out ${o} × 10, then take away one ${o}.`;}
+        return `${q.a} × ${q.b} is ${q.b} groups of ${q.a}. Skip-count by ${q.a}: ${skip(q.a,q.b)} and stop after ${q.b} jumps.`;
+      case '÷':
+        return `How many groups of ${q.b} make ${q.a}? Think ${q.b} × ? = ${q.a}, or skip-count by ${q.b} until you reach ${q.a}.`;
+      case 'two':
+        return `Multiply first: work out ${q.b} × ${q.c}, then add ${q.a} to that.`;
+      case 'frac':
+        return q.n===1?`Split ${q.t} into ${q.d} equal groups. One group is the answer.`
+                      :`Split ${q.t} into ${q.d} equal groups, then take ${q.n} of the groups.`;
+      case 'pct':
+        if(q.p===50)return `50% means half. What is half of ${q.t}?`;
+        if(q.p===25)return `25% is a quarter: halve ${q.t}, then halve it again.`;
+        if(q.p===75)return `75% is three quarters: find a quarter of ${q.t}, then take three of them.`;
+        if(q.p===10)return `10% means one tenth: share ${q.t} into 10 equal parts (${q.t} ÷ 10).`;
+        return `${q.p}% is ${q.p/10} lots of 10%. First find 10% of ${q.t} (that is ${q.t} ÷ 10), then multiply by ${q.p/10}.`;
+      case 'bond':
+        return q.t===10||q.t===20?`Count up from ${q.a} to ${q.t} on your fingers or a number line.`
+                                 :`Count up from ${q.a} to the next ten, then on in tens to ${q.t}.`;
+      case 'tf':
+        return `Work out ${q.text} yourself first, then check: is it really ${q.s}?`;
+    }
+    return '';
+  }
+
+  /* ---- spelling: the first letter, the length, then sound-by-sound nudges ---- */
+  function spellHint(word,idx,clue){
+    const W=String(word).toUpperCase(), n=W.length; idx=clampN(idx|0,0,n-1);
+    const c=W[idx], prev=W[idx-1]||'', so=W.slice(0,idx), tail=clue?` Clue: “${String(clue).replace('~','___')}”`:'';
+    if(idx===0)return `It starts with the letter ${c} and has ${n} letters. Say the word slowly and listen to each sound.`+tail;
+    const pair=prev+c;
+    if(TEAMS[pair])return `After “${so}”, ${prev} teams up with the next letter to make one sound: /${TEAMS[pair]}/.`;
+    if(SILENT[pair])return `The ${prev} is silent here: the sound you hear is /${SILENT[pair]}/.`;
+    if(prev==='Q')return `Rule: the letter Q nearly always has the same vowel straight after it, and together they say /kw/.`;
+    if(c===prev)return `After “${so}”, the same letter comes again: this word has a double letter here.`;
+    if(c==='E'&&idx===n-1)return `Last letter: it is a silent e at the end. It makes the vowel before it say its name.`;
+    if(VOW.includes(c)&&VOW.includes(prev))return `After “${so}”, another vowel joins in: two vowels team up to make one sound here.`;
+    if(VOW.includes(c)||(c==='Y'&&idx===n-1))return `After “${so}” comes a vowel sound (a, e, i, o, u${c==='Y'?' or y':''}). Say “${so.toLowerCase()}…” slowly: which vowel do you hear?`;
+    return `After “${so}” comes a consonant. Say “${so.toLowerCase()}…” slowly and listen for the next sound. ${n-idx} letter${n-idx>1?'s':''} to go.`;
+  }
+
+  /* ---- the record ---- */
+  function create(key){
+    let R={bands:{},skills:{},missWords:[],sessions:0,answered:0,correct:0,since:new Date().toISOString().slice(0,10)};
+    try{const s=JSON.parse(localStorage.getItem(key));if(s&&typeof s==='object')R=Object.assign(R,s);}catch(e){}
+    let S={skills:{},answered:0,correct:0,missWords:[]};   /* this session */
+    const save=()=>{try{localStorage.setItem(key,JSON.stringify(R));}catch(e){}};
+    const bump=(o,skill,ok)=>{const s=o[skill]||(o[skill]={r:0,w:0});ok?s.r++:s.w++;};
+    const api={
+      BANDS,
+      band(){return BANDS.find(b=>b.id===R.band)||null;},
+      bandIndex(){const i=BANDS.findIndex(b=>b.id===R.band);return i<0?1:i;},
+      setBand(id){R.band=id;save();},
+      /* a tier inside the band: the band's easiest tier plus the ramp, capped at the band's hardest */
+      tier(kind,ramp){const b=BANDS[api.bandIndex()],r=kind==='word'?b.word:b.math;return clampN(r[0]+(ramp|0),r[0],r[1]);},
+      startSession(){S={skills:{},answered:0,correct:0,missWords:[]};R.sessions++;save();},
+      note(skill,ok,word){
+        bump(R.skills,skill,ok);bump(S.skills,skill,ok);
+        R.answered++;S.answered++;if(ok){R.correct++;S.correct++;}
+        if(word&&!ok){const w=String(word).toLowerCase();
+          if(!S.missWords.includes(w))S.missWords.push(w);
+          R.missWords=[w].concat(R.missWords.filter(x=>x!==w)).slice(0,12);}
+        if(word&&ok)R.missWords=R.missWords.filter(x=>x!==String(word).toLowerCase());
+        save();
+      },
+      noteMath(prompt,ok,note){api.note(mathSkill(prompt,note),ok);},
+      noteSpell(level,ok,word){api.note(SPELL[clampN(level|0,1,5)],ok,word);},
+      session(){return S;},
+      /* the grown-up report: {lines:[...], next:'...'} for this session and all time */
+      report(scope){
+        const src=scope==='session'?S:R, rows=Object.keys(src.skills).map(k=>{const s=src.skills[k];
+          return{skill:k,n:s.r+s.w,acc:Math.round(100*s.r/Math.max(1,s.r+s.w))};}).sort((a,b)=>b.n-a.n);
+        const acc=Math.round(100*src.correct/Math.max(1,src.answered));
+        let weak=rows.filter(r=>r.n>=3).sort((a,b)=>a.acc-b.acc)[0]||rows.slice().sort((a,b)=>a.acc-b.acc)[0];
+        let next;
+        if(!rows.length)next='Play a round to start the record.';
+        else if(weak&&weak.acc<85)next=`${weak.skill} (${weak.acc}% right). ${TIPS[weak.skill]||SPELL_TIP}`;
+        else{const bi=api.bandIndex();
+          next=bi<BANDS.length-1&&src.answered>=10?`Everything practised is 85% or better: try ${BANDS[bi+1].label} next.`
+                                                   :'Keep going at this level: accuracy is strong.';}
+        const words=(scope==='session'?S.missWords:R.missWords).slice(0,8);
+        return{rows,acc,answered:src.answered,correct:src.correct,next,words,
+               sessions:R.sessions,since:R.since,band:BANDS[api.bandIndex()].label};
+      },
+      /* plain HTML, styled by each game */
+      reportHTML(scope){
+        const r=api.report(scope), esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+        if(!r.answered)return `<p class="lk-p">No answers yet${scope==='session'?' this round':''}. Play a round and the report fills in.</p>`;
+        return `<p class="lk-p"><b>${r.answered}</b> answer${r.answered>1?'s':''}, <b>${r.acc}%</b> right`+
+          (scope==='session'?'':` · ${r.sessions} round${r.sessions>1?'s':''} since ${esc(r.since)} · level ${esc(r.band)}`)+`</p>`+
+          `<table class="lk-t">${r.rows.slice(0,8).map(x=>`<tr><td>${esc(x.skill)}</td><td>${x.n}</td><td>${x.acc}%</td></tr>`).join('')}</table>`+
+          (r.words.length?`<p class="lk-p">Words to practise: <b>${r.words.map(esc).join(', ')}</b></p>`:'')+
+          `<p class="lk-p lk-next">Practise next: ${esc(r.next)}</p>`;
+      },
+      mathSkill,mathHint,spellHint,SPELL,
+    };
+    return api;
+  }
+  return{create,mathSkill,mathHint,spellHint,BANDS};
+})();
+const LK=LEARN.create('tlwh_learn');
+const RM=matchMedia('(prefers-reduced-motion: reduce)');   /* no camera shake, no red jolt, still paper grain */
+let GFX_LOW=store.get('tlwh_gfx','high')==='low';          /* Graphics: Low = 1x pixels and no grain pass */
+
 /* palette shared with the CSS above */
 const C={ ink:0x241b2f, cream:0xf4ead8, bone:0xcbb99b, rust:0xc1543a, ochre:0xd99a3c,
           sage:0x7d9470, dust:0xa8846b, plum:0x4a3550, wine:0x7d4550 };
@@ -4434,7 +4651,7 @@ function ambience(){
 /* ═══════════ renderer ═══════════ */
 $('#bootmsg').textContent='raising the sails';
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setPixelRatio(GFX_LOW?1:Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth,innerHeight);
 renderer.toneMapping=THREE.NoToneMapping;      /* flat poster colour, not filmic mush */
 document.body.appendChild(renderer.domElement);
@@ -4680,7 +4897,7 @@ function cry(txt,color,y){
   d.style.color=color; d.style.left='50%'; d.style.top=(y??innerHeight*.56)+'px';
   $('#shout').appendChild(d); setTimeout(()=>d.remove(),950);
 }
-function jolt(color,a){const j=$('#jolt');j.style.background=color;j.style.opacity=a;
+function jolt(color,a){if(RM.matches)return;const j=$('#jolt');j.style.background=color;j.style.opacity=a;
   setTimeout(()=>j.style.opacity=0,90);}
 function hud(){
   $('#score').textContent=state.score;
@@ -4703,14 +4920,15 @@ function nextQuestion(){
   /* difficulty ramps within a run: every 4 answered questions, +1 tier (max 4).
      A Cadet run sees tiers 1-3; a Pilot run reaches tier 3 early; Master hits
      tier 4 (two-step, fractions, percentages) for the last third. */
-  const d=Math.min(5, state.dif+Math.floor(state.q/4));  /* math caps at tier 4; words reach 5 */
+  /* the age band (Cadet 5–7, Pilot 7–9, Master 9–11) sets the range; every 4 answers steps up inside it */
+  const ramp=Math.floor(state.q/4), dm=LK.tier('math',ramp), dw=LK.tier('word',ramp);
 
   if(mode==='spell'||mode==='scramble'){
     if(!state.question||state.question.kind!=='word'||state.question.done)
-      { state.question=qWord(d,mode==='scramble'); state.question.typed=''; }
+      { state.question=qWord(dw,mode==='scramble'); state.question.typed=''; state.question.tier=dw; }
     const q=state.question,w=q.word.t.toUpperCase(),right=w[q.idx];
     const pool='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(c=>c!==right);
-    const g=shuf([right,...shuf(pool).slice(0,d<=1?1:d===2?2:3)]);
+    const g=shuf([right,...shuf(pool).slice(0,dw<=1?1:dw===2?2:3)]);
     q.answer=right;
     $('#tag').textContent  = q.scr?'the beacon arrived scrambled':'complete the word';
     $('#ask').textContent  = q.scr? q.shown : clueSentence(q.word,q.idx);
@@ -4719,7 +4937,7 @@ function nextQuestion(){
     $('#trace').textContent= w.split('').map((c,i)=>i<q.idx?c:'·').join(' ');
     spawnGates(g,right);
   } else {
-    const q=(mode==='quick'?qQuick:mode==='bonds'?qBonds:qTF)(d);
+    const q=(mode==='quick'?qQuick:mode==='bonds'?qBonds:qTF)(dm);
     q.kind='math'; state.question=q;
     $('#tag').textContent  = mode==='truefalse'?'instrument check':'choose your heading';
     $('#ask').textContent  = q.prompt;
@@ -4743,6 +4961,9 @@ function spawnGates(texts,answer){
 /* ═══════════ resolution ═══════════ */
 function resolve(ok,gate){
   if(state.locked)return; state.locked=true;
+  { const lq=state.question;
+    if(lq&&lq.kind==='math') LK.noteMath(lq.prompt,ok,lq.note);
+    else if(lq&&lq.kind==='word'&&(!ok||lq.idx>=lq.word.t.length-1)) LK.noteSpell(lq.tier||1,ok,lq.word.t); }
   const at=gate?gate.position.clone():ship.position.clone();
   if(ok){
     state.run++; state.bestRun=Math.max(state.bestRun,state.run);
@@ -4764,7 +4985,7 @@ function resolve(ok,gate){
     if(m.kind==='word') state.missed.push({q:clueSentence(m.word,m.word.t.length),
       a:m.word.t.toUpperCase(),h:'it begins with “'+m.word.t[m.idx].toUpperCase()+'”'});
     else state.missed.push({q:m.prompt,a:m.answer,h:m.hint||''});
-    AU.bad(); state.shake=1; state.strain=1;
+    AU.bad(); state.shake=RM.matches?0:1; state.strain=1;
     scatter(at,[C.rust,C.wine,C.dust],110,26);
     jolt('rgba(193,84,58,.42)',.5);
     cry('= '+state.question.answer,'#c1543a');
@@ -4832,6 +5053,7 @@ function startRun(mode){
     drift:0,shake:0,strain:0,kit:{drift:3,clear:2,patch:1}});
   typer.value='';
   show(null); $('#hud').style.display='flex'; nextQuestion(); hud();
+  LK.startSession(); sdkState({scene:'play'}); coachMaybe();
 }
 function endRun(made){
   state.running=false; clearGates(); $('#hud').style.display='none';
@@ -4857,7 +5079,10 @@ function endRun(made){
         `<div class="log"><span>${m.q}${m.h?'<br><small style="color:#6b5a52">'+m.h+'</small>':''}</span><b>${m.a}</b></div>`).join('')
     : '';
   made?AU.arrive():AU.bad();
+  $('#endReport').innerHTML=LK.reportHTML('session');
+  coachEnd(false);
   show('#s-end');
+  sdkState({scene:'over',score:state.score,outcome:made?'made it':'adrift'});
 }
 
 /* ═══════════ log ═══════════ */
@@ -4886,8 +5111,9 @@ function toggleSnd(){AU.on=!AU.on;store.set('tlwh_snd',AU.on);syncSnd();if(AU.on
 document.querySelectorAll('[data-snd]').forEach(b=>b.onclick=toggleSnd);
 syncSnd();
 /* tab away mid-transit = hold position, do not lose the leg */
+/* tab away mid-transit: the arcade SDK holds everything (frames, clock, audio) and resumes on return */
 document.addEventListener('visibilitychange',()=>{
-  if(document.hidden&&state.running&&!state.paused)hold();});
+  if(!window.ArcadeSDK&&document.hidden&&state.running&&!state.paused)hold();});
 
 const aim=(cx,cy)=>{input.tx=(cx/innerWidth*2-1)*11.5; input.ty=-(cy/innerHeight*2-1)*5.6;};
 addEventListener('pointermove',e=>{if(state.running&&!state.paused)aim(e.clientX,e.clientY)});
@@ -4946,18 +5172,22 @@ addEventListener('keydown',e=>{
   $('#trace').textContent=q.word.t.toUpperCase().split('').map((c,i)=>i<q.idx?c:'·').join(' ')
                    +'  ⟨'+q.typed+'⟩';
 });
-function hold(){if(!state.running)return; state.paused=!state.paused; show(state.paused?'#s-pause':null);}
-$('#pause').onclick=hold; $('#resume').onclick=hold;
-$('#quit').onclick=()=>{state.paused=false;state.running=false;clearGates();
-  $('#hud').style.display='none';show('#s-menu')};
+function hold(){if(!state.running)return;
+  if(window.ArcadeSDK){ArcadeSDK.pause();return;}   /* one pause menu: the arcade's (Resume, Restart, How to play, Sound, Exit) */
+  state.paused=!state.paused; show(state.paused?'#s-pause':null);}
+$('#resume').onclick=hold;
+$('#quit').onclick=()=>toHangar();
+const BAND_OF=['','5-7','7-9','9-11'];
+function paintDif(){document.querySelectorAll('[data-dif]').forEach(x=>{const on=+x.dataset.dif===state.dif;
+  x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on));});}
+state.dif=LK.bandIndex()+1; paintDif();
 document.querySelectorAll('[data-dif]').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('[data-dif]').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on'); state.dif=+b.dataset.dif; AU.init(); AU.tick();});
+  state.dif=+b.dataset.dif; LK.setBand(BAND_OF[state.dif]); paintDif(); AU.init(); AU.tick();});
 document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>startRun(b.dataset.play));
 $('#openLog').onclick=()=>{renderLog();show('#s-stats')};
 document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>show('#s-menu'));
 $('#again').onclick=()=>startRun(state.mode);
-$('#menu2').onclick=()=>show('#s-menu');
+$('#menu2').onclick=()=>{show('#s-menu');sdkState({scene:'title'});};
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
   renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);});
 
@@ -5051,12 +5281,84 @@ function tick(){
   /* post */
   state.strain=Math.max(0,state.strain-raw*.9);
   const hullStrain=state.running?(3-state.hull)/3*.45:0;
-  grainPass.uniforms.time.value=T;
+  grainPass.uniforms.time.value=RM.matches?0:T;   /* reduced motion: the grain holds still */
   grainPass.uniforms.strain.value=Math.max(state.strain*.8,hullStrain);
   grainPass.uniforms.grain.value=.05+state.strain*.06;
 
   composer.render();
 }
+
+
+/* ═══════════ arcade glue: hints, grown-up report, graphics, first-run coach ═══════════ */
+function sdkState(o){try{window.ArcadeSDK&&ArcadeSDK.state(o);}catch(e){}}
+/* a hint that teaches the step for the ring question in front of you, never names the answer */
+function currentHint(){
+  if(!state.running) return 'Pick Cadet, Pilot or Master for the age band, then a leg. Steer through the ring with the right answer.';
+  const q=state.question;
+  if(q&&q.kind==='word'&&!q.done){
+    return (q.scr?'The letters are all there, just mixed up. ':'')+LK.spellHint(q.word.t,q.idx,q.word.h)+' Fly through that letter (or type the word).';
+  }
+  if(q&&q.kind==='math') return LK.mathHint(q.prompt,q.note)+' Then fly through that ring.';
+  return 'Steer towards the next set of rings.';
+}
+function showHint(){
+  const t=currentHint();
+  if(state.running){ $('#note').textContent='Hint: '+t; }
+  return t;
+}
+$('#t-hint').onclick=showHint;
+addEventListener('keydown',e=>{
+  if(e.target===typer||!(e.key==='h'||e.key==='H')||!state.running)return;
+  const q=state.question; if(q&&q.kind==='word'&&!q.done)return;   /* h is a letter while spelling */
+  showHint();
+});
+/* grown-up report */
+$('#openGrown').onclick=()=>{$('#grownBody').innerHTML=LK.reportHTML('all');show('#s-grown');};
+/* graphics quality */
+function paintGfx(){$('#gfx').textContent='Graphics: '+(GFX_LOW?'Low':'High');}
+function applyGfx(){renderer.setPixelRatio(GFX_LOW?1:Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);
+  composer.setPixelRatio&&composer.setPixelRatio(GFX_LOW?1:Math.min(devicePixelRatio,2));composer.setSize(innerWidth,innerHeight);
+  grainPass.enabled=!GFX_LOW;}
+$('#gfx').onclick=()=>{GFX_LOW=!GFX_LOW;store.set('tlwh_gfx',GFX_LOW?'low':'high');paintGfx();applyGfx();};
+paintGfx(); if(GFX_LOW)applyGfx();
+
+/* first-run coach: learn to fly by flying; skippable, replayable */
+const COARSE=matchMedia('(pointer: coarse)').matches;
+const COACH=[
+  {t:()=>COARSE?'Drag your finger to <b>steer</b>: the ship follows it.':'Move the mouse (or use the <b>arrows</b>) to <b>steer</b>: the ship follows.',done:()=>Math.abs(input.x)>2.5||Math.abs(input.y)>1.8},
+  {t:()=>'Read the card at the top, then fly <b>through the ring</b> with the right answer.',done:()=>state.q>0||(state.question&&state.question.kind==='word'&&state.question.idx>0)||state.hull<3},
+  {t:()=>'Stuck? <b>HINT</b> teaches the step. Kit: <b>DRIFT</b> slows time, <b>CLEAR</b> removes wrong rings, <b>PATCH</b> mends the hull.',done:()=>coachT>8},
+];
+let coachIx=-1,coachT=0;
+function coachPaint(){
+  const el=$('#coach');
+  if(coachIx<0||coachIx>=COACH.length||!state.running){el.classList.remove('on');return;}
+  $('#coachStep').textContent='How to fly · '+(coachIx+1)+' of '+COACH.length;
+  $('#coachText').innerHTML=COACH[coachIx].t();
+  el.classList.add('on');
+}
+function coachStart(){if(!state.running)startRun(state.mode||'quick');coachIx=0;coachT=0;coachPaint();}
+function coachEnd(done){const was=coachIx>=0;coachIx=-1;coachPaint();
+  if(was&&done!==false){store.set('tlwh_tut',1);try{window.ArcadeSDK&&ArcadeSDK.event('tutorial-done');}catch(e){}}}
+function coachMaybe(){if(!store.get('tlwh_tut',0)&&coachIx<0){coachIx=0;coachT=0;coachPaint();}}
+setInterval(()=>{ if(coachIx<0||state.paused)return;
+  if(coachIx===COACH.length-1)coachT+=.25;
+  const was=coachIx; while(coachIx<COACH.length&&COACH[coachIx].done()){coachIx++;coachT=0;}
+  if(coachIx>=COACH.length)coachEnd();else if(was!==coachIx)coachPaint(); },250);
+$('#coachSkip').onclick=()=>coachEnd();
+$('#openTut').onclick=coachStart;
+
+function toHangar(){state.paused=false;state.running=false;clearGates();coachEnd(false);
+  $('#hud').style.display='none';show('#s-menu');sdkState({scene:'title'});}
+if(window.ArcadeSDK)ArcadeSDK.init({
+  pauseButton:'tr',
+  onPause(){state.paused=true;},
+  onResume(){state.paused=false;},
+  onRestart(){startRun(state.mode||'quick');},
+  onExit:toHangar,
+  onTutorial:coachStart,
+  onHint(){return showHint();},
+});
 
 /* ═══════════ test hook — read-mostly, used by tools/playtest.py ═══════════ */
 window.__tlwh_debug={
@@ -5087,6 +5389,7 @@ window.__tlwh_debug={
 
 renderer.compile(scene,camera);
 $('#boot').style.display='none';
+sdkState({scene:'title'});
 tick();
 addEventListener('pointerdown',()=>{AU.init();
   if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume(); ambience();},{once:true});

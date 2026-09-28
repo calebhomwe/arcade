@@ -135,7 +135,7 @@
     "engine": "three",
     "render": "three-3d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": true,
     "touch": true,
@@ -143,7 +143,7 @@
     "usesEsc": true,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "",
    "pauseButton": "tr",
@@ -179,7 +179,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -187,7 +187,7 @@
     "usesEsc": true,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -222,7 +222,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -230,7 +230,7 @@
     "usesEsc": true,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -266,7 +266,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": true,
     "touch": true,
@@ -274,9 +274,9 @@
     "usesEsc": false,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -310,7 +310,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
@@ -318,9 +318,9 @@
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -354,7 +354,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
@@ -362,7 +362,7 @@
     "usesEsc": true,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -398,7 +398,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -406,9 +406,9 @@
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -441,7 +441,7 @@
     "engine": "three",
     "render": "three-3d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -449,18 +449,57 @@
     "usesEsc": true,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick Cadet (ages 5–7), Pilot (7–9) or Master (9–11), then a leg: Arithmetic, Ballast Trim, Instrument Check, Signal Repair, Scrambled Beacon or the Long Haul.",
+    "Read the question on the paper card at the top.",
+    "Steer your ship through the ring with the right answer; a wrong ring costs a hull point and shows the answer with a teaching hint.",
+    "In word legs, fly through the letters in order, or type the whole word.",
+    "Reach the end of the leg before the hull gives out; three hull points left earns three marks."
+   ],
+   "tips": [
+    "HINT teaches the step for the ring in front of you: make a ten, count up on a number line, skip-count, or the next sound of the word.",
+    "Every three right answers in a row raises your multiplier; every five earns a free kit item.",
+    "CLEAR removes all but one wrong ring; DRIFT slows time; PATCH mends one hull point.",
+    "Every four answers the questions step up inside your age band.",
+    "The end card lists every miss with its answer and hint: read it before the next leg."
+   ],
+   "controls": {
+    "keyboard": "Mouse or arrows steer; 1, 2, 3 use Drift, Clear, Patch; type letters to spell the whole word; H shows a hint in number legs; M toggles sound; Esc, Space (between rings) or P pauses.",
+    "touch": "Drag to steer; tap DRIFT, CLEAR, PATCH and HINT under the ship; TYPE WORD opens the keyboard in word legs."
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Three age bands: Cadet (ages 5–7), Pilot (7–9) and Master (9–11). Each band has its own range of question tiers and every four answers steps up inside it: from adding within 20 up to fractions and percentages, and from short words up to tricky words.",
+   "features": {
+    "age-or-level-bands": "Cadet · ages 5–7 / Pilot · 7–9 / Master · 9–11 in the hangar; the tier ramps inside the band",
+    "hints": "HINT in the kit (H, or the arcade Hint) writes a teaching nudge on the question card; a wrong ring shows the answer with its hint",
+    "grown-up-progress-report": "For Grown-ups in the hangar (all time) and on the end card (this leg): skills practised, accuracy, words to practise and what to practise next",
+    "tutorial": "How to Fly coach on the first leg (steer, fly through the right ring, hint and kit); skip it or replay it from the hangar",
+    "results": "End card with marks, log, answers, longest run, accuracy, distance, the missed-question review and the grown-up report"
+   },
+   "settings": {
+    "quality": "Hangar > Graphics: High / Low (Low renders at 1× pixels without the paper-grain pass; the choice is remembered)"
+   },
+   "saves": [
+    "tlwh_rec",
+    "tlwh_learn"
+   ],
+   "start": "[data-play=\"quick\"]",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "maths-kart": {
    "title": "Maths Kart GP",
@@ -484,7 +523,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -492,18 +531,57 @@
     "usesEsc": true,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick your age band, Math or Spelling, and a track, then Play.",
+    "Hold accelerate and steer to stay on the road.",
+    "Green boost pads put a question at the top and four balloons on the road ahead.",
+    "Drive through the balloon with the right answer for a rocket boost; a wrong one spins you out and shows a hint.",
+    "In Spelling, drive through the word's letters in order. Finish three laps."
+   ],
+   "tips": [
+    "HINT teaches the step for the balloon question: make a ten, count up on a number line, skip-count, or the next sound of the word.",
+    "A shield item skips your next question; oil slows the other karts for a few seconds.",
+    "Each lap the questions step up inside your age band, so the last lap is the hardest.",
+    "A wrong balloon costs speed, not the race: read the hint and nail it next time.",
+    "Checkpoints count in order: cut across the grass and the lap will not count."
+   ],
+   "controls": {
+    "keyboard": "Up or W accelerates, Down or S brakes, Left/Right or A/D steer; H shows a hint; R restarts; Esc returns to the menu; P pauses.",
+    "touch": "Hold ▲ to accelerate and ▼ to brake, ◀ ▶ steer; HINT sits top left."
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Three age bands (5–7, 7–9, 9–11). Each band has its own range of question tiers, and every lap steps up inside that range: from adding within 20 up to fractions and percentages, and from short words up to tricky words.",
+   "features": {
+    "age-or-level-bands": "Ages 5–7 / 7–9 / 9–11 buttons on the menu; each lap ramps the tier inside the band",
+    "hints": "HINT button (H, or the arcade Hint): a make-a-ten, number-line, skip-count or next-sound nudge for the current balloon question; a wrong balloon also shows one",
+    "grown-up-progress-report": "FOR GROWN-UPS on the menu (all time) and on the Race Complete card (this race): skills practised, accuracy, words to practise and what to practise next",
+    "tutorial": "Four-step coach on the first race (drive, boost pads, answer balloons, items); skip it or replay it from the menu",
+    "results": "Race Complete card: placement, best lap, answer streak, correct / asked and the grown-up report"
+   },
+   "settings": {
+    "quality": "Menu > GRAPHICS: HIGH / LOW (Low draws at three-quarter resolution for slower devices; the choice is remembered)"
+   },
+   "saves": [
+    "mathskart_meta_v1",
+    "mk_learn"
+   ],
+   "start": "#bPlay",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "math-miner": {
    "title": "Math Miner",
@@ -527,26 +605,60 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
-    "audio": false,
+    "reducedMotion": true,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseKeys": "p+esc",
+   "pauseButton": "bl",
+   "howto": [
+    "Pick your age band, then Math Mode or Spelling Mode.",
+    "Dig down with the arrows (or the dig pad). Every dig costs energy.",
+    "Walk into a rock with a sum carved on it and pick the gem with the right answer (in Spelling, tap the letters in order).",
+    "Ride the elevator up (E) to sell your ore, then spend it in the shop."
+   ],
+   "tips": [
+    "Stuck on a rock? HINT teaches the step: make a ten, count up on a number line, or the next sound in the word.",
+    "A wrong answer hardens the rock for two seconds and costs one energy, so read the hint before trying again.",
+    "Go up before your energy hits zero: the winch drags you home and the run ends.",
+    "Deeper bands pay more for ore (coal, iron, gold, diamond) but ask harder questions.",
+    "A Battery Tank gives more energy per descent; the Elevator Shaft starts you deeper."
+   ],
+   "controls": {
+    "keyboard": "Arrows or WASD move and dig; type an answer and press Enter, or click a gem; E rides the elevator up; P or Esc pauses.",
+    "touch": "Dig pad (bottom right) moves and digs; tap a gem to answer; ELEVATOR UP and HINT sit in the top bar."
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Three age bands (5–7, 7–9, 9–11). Each band has its own range of question tiers, and the questions step up inside that range as you dig deeper: from adding within 20 up to fractions and percentages, and from short words up to tricky words.",
+   "features": {
+    "age-or-level-bands": "Ages 5–7 / 7–9 / 9–11 buttons on the title; depth ramps the tier inside the band",
+    "hints": "HINT in the puzzle panel and the top bar (and the arcade Hint): a number-line, make-a-ten, skip-count or next-sound nudge for the question in front of you",
+    "grown-up-progress-report": "FOR GROWN-UPS on the title (all time) and on the results card (this descent): skills practised, accuracy, words to practise and what to practise next",
+    "tutorial": "How to Mine coach runs on the first descent (dig, open a rock, answer, ride up); skip it or replay it from the title",
+    "results": "Back on the Surface card: ore sold, rocks solved, misses, deepest point and the grown-up report"
+   },
+   "saves": [
+    "mm_save",
+    "mm_learn"
+   ],
+   "start": "#btnMath",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "word-dungeon": {
    "title": "Word Dungeon",
@@ -570,7 +682,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -578,18 +690,52 @@
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick your age band, then Math or Spelling.",
+    "Run right, jump over spikes and stomp slimes from above.",
+    "Locked chests and doors ask a question: jump on the floor runes in order to spell the answer.",
+    "Take the key from the rune door and walk into the EXIT to go one level deeper."
+   ],
+   "tips": [
+    "A wrong rune pops spikes and costs a heart, but the hint that appears teaches the step: read it before you jump again.",
+    "Stuck on a lock? The free hint (/ key or the ? button) gives a number-line or next-sound nudge; a hint scroll lights the next rune.",
+    "Every fourth depth the Slime King asks three quick questions, so buy a heart in the shop first.",
+    "Jump twice for a double jump: you need it for the twin towers.",
+    "Coins buy hearts (12) and hint scrolls (6) between depths."
+   ],
+   "controls": {
+    "keyboard": "Arrows or A/D move; Up, W or Space jumps (twice to double-jump); H uses a hint scroll; / shows a free hint; 1 and 2 pick a mode; B changes the age band; P or Esc pauses.",
+    "touch": "◀ ▶ move, ▲ jumps, ✦ uses a hint scroll, ? shows a hint; tap a mode card to start and the buttons under the title for band, tutorial and the grown-ups report."
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Three age bands (5–7, 7–9, 9–11). Each band has its own range of question tiers, and every two depths the questions step up inside that range: from adding within 20 up to fractions and percentages, and from short words up to tricky words.",
+   "features": {
+    "age-or-level-bands": "Ages 5–7 / 7–9 / 9–11 buttons on the title (B on a keyboard); depth ramps the tier inside the band",
+    "hints": "The ? button, the / key or the arcade Hint: a make-a-ten, skip-count or next-sound nudge for the lock you face; a wrong rune also shows one; hint scrolls light the next rune",
+    "grown-up-progress-report": "FOR GROWN-UPS on the title (all time) and on the game-over screen (this run): skills practised, accuracy, words to practise and what to practise next",
+    "tutorial": "Four-step coach on the first run (move and jump, reach the chest, jump the runes, take the key to the exit); skip it or replay it from the title",
+    "results": "Depth-cleared shop screen and the You Fell screen with the depth reached, best depth and this run's accuracy"
+   },
+   "saves": [
+    "worddungeon.meta.v1",
+    "wd_learn"
+   ],
+   "start": "key:Digit1",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "fishing-for-words": {
    "title": "Fishing for Words",
@@ -613,26 +759,61 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
-    "audio": false,
+    "reducedMotion": true,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseKeys": "p+esc",
+   "pauseButton": "br",
+   "howto": [
+    "Pick your age band, then Play: Spelling or Play: Maths.",
+    "Tap (or Space) to start the power meter, tap again to cast.",
+    "When a fish bites, tap as the gold ring meets the green circle.",
+    "Keep the fish only if it is the next letter of the clue word (or weighs the answer to the sum); release the rest.",
+    "Meet the day's quota before your casts run out, then spend your coins on better gear."
+   ],
+   "tips": [
+    "HINT teaches the next step: the first letter and length of the word, the next sound, or a number-line nudge for the sum.",
+    "Keeping a wrong fish muddies the bucket and costs 2 coins; releasing it is free.",
+    "A better rod widens the strike window; a better lure brings silver and golden fish.",
+    "Golden fish are worth five times as much and go on your trophy shelf.",
+    "Every two days the words and sums step up inside your age band."
+   ],
+   "controls": {
+    "keyboard": "Space or click: charge, cast and strike; K keeps and R releases a hooked fish; H shows a hint; P or Esc pauses.",
+    "touch": "Tap anywhere to charge, cast and strike; KEEP and RELEASE buttons appear when a fish is hooked; HINT sits bottom right."
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Three age bands (5–7, 7–9, 9–11). Each band has its own range of word and sum tiers, and every two days the questions step up inside that range.",
+   "features": {
+    "age-or-level-bands": "Ages 5–7 / 7–9 / 9–11 buttons on the title; the day count ramps the tier inside the band",
+    "hints": "HINT button (and H, and the arcade Hint): first letter and length, next-sound and silent-e nudges for words; make-a-ten, number-line and skip-count nudges for sums",
+    "grown-up-progress-report": "FOR GROWN-UPS on the title (all time) and on the Day Complete card (today): skills practised, accuracy, words to practise and what to practise next",
+    "tutorial": "How to Fish coach on the first day (cast, strike, keep or release, use a hint); skip it or replay it from the title",
+    "results": "Day Complete card: earnings, good catches, muddied fish, coin bank, the grown-up report and the gear shop"
+   },
+   "saves": [
+    "wordfishing_meta_v1",
+    "wf_learn"
+   ],
+   "start": "#btn-spell",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "quiz-tower": {
    "title": "Quiz Tower Defense",
@@ -656,7 +837,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": false,
@@ -664,18 +845,53 @@
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick your age band, a mode (Math or Spelling) and a map, then Defend the Castle.",
+    "Choose a tower on the right (Arrow, Cannon or Frost) and tap a grass square beside the path.",
+    "Press START to send a wave; answer the Command Panel question at the bottom.",
+    "A right answer OVERCHARGES every tower; a wrong one makes them sputter and shows a hint.",
+    "Survive ten waves to win up to three stars."
+   ],
+   "tips": [
+    "HINT (H) teaches the step for the question in front of you: make a ten, count up on a number line, skip-count, or read the sentence with each word in the gap.",
+    "When a purple Quiz Golem marches, arm the pedestal (A to D) that matches the right answer to double its loot.",
+    "Frost towers slow runners, cannons splash groups at the bends, arrows are cheap and fast.",
+    "Tap a tower to upgrade it or sell it for 60% back.",
+    "A Focus Token from the armory turns one wrong answer into an overcharge."
+   ],
+   "controls": {
+    "keyboard": "Mouse: click a tower card, then a grass square; Space starts a wave; 1 to 4 answer the Command Panel; H shows a hint; on the menu Enter starts, 1/2 pick the mode, M the map, B the age band; P or Esc pauses.",
+    "touch": "Tap a tower card, then a grass square; tap an answer; HINT sits bottom right. Hold the phone sideways (upright play is optional)."
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Three age bands (5–7, 7–9, 9–11). Each band has its own range of question tiers, and the questions step up inside that range as the waves go on (every three waves in Math, every two in Spelling); enemies grow tougher each wave.",
+   "features": {
+    "age-or-level-bands": "Ages 5–7 / 7–9 / 9–11 buttons on the menu; waves ramp the tier inside the band",
+    "hints": "HINT button in the sidebar (H, or the arcade Hint): a teaching nudge for the current question; a wrong answer also shows one in the Command Panel",
+    "grown-up-progress-report": "FOR GROWN-UPS on the menu (all time) and on the victory or game-over screen (this game): skills practised, accuracy, words to practise and what to practise next",
+    "tutorial": "How to Defend coach on the first game (build, start a wave, answer, golems); skip it or replay it from the menu",
+    "results": "Victory screen with 1 to 3 stars, or Game Over, with waves survived, kills, career record and this game's accuracy"
+   },
+   "saves": [
+    "quiztower_meta_v1",
+    "qt_learn"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "mini-mart": {
    "title": "QuickStop Mini Mart",
@@ -708,7 +924,7 @@
     "usesEsc": true,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -744,7 +960,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -752,9 +968,9 @@
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -798,7 +1014,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1096,14 +1312,14 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": true,
     "usesEsc": true,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "",
@@ -1147,7 +1363,7 @@
     "usesP": true,
     "usesEsc": true,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "",
@@ -1191,7 +1407,7 @@
     "usesP": true,
     "usesEsc": true,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "",
@@ -1235,10 +1451,10 @@
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1271,17 +1487,17 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1314,17 +1530,17 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1357,17 +1573,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1400,17 +1616,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1443,17 +1659,17 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1487,17 +1703,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1530,17 +1746,17 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1580,7 +1796,7 @@
     "usesP": false,
     "usesEsc": true,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p",
@@ -1616,17 +1832,17 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1659,17 +1875,17 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1703,17 +1919,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": true,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1747,17 +1963,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1791,17 +2007,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1834,17 +2050,17 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1887,7 +2103,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1930,7 +2146,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -1973,7 +2189,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2016,7 +2232,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2059,7 +2275,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2102,7 +2318,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2145,7 +2361,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2188,7 +2404,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2231,7 +2447,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2275,7 +2491,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2319,7 +2535,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2363,7 +2579,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2407,7 +2623,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2451,7 +2667,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2495,7 +2711,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2539,7 +2755,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2583,7 +2799,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2627,7 +2843,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2661,17 +2877,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2705,7 +2921,7 @@
     "engine": "three",
     "render": "three-3d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -2713,7 +2929,7 @@
     "usesEsc": true,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -2749,17 +2965,17 @@
     "engine": "three",
     "render": "three-3d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": true,
+    "usesEsc": false,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "p",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2793,17 +3009,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": true,
+    "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "p",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2837,17 +3053,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2881,7 +3097,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
@@ -2889,9 +3105,9 @@
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2935,7 +3151,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -2979,7 +3195,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3023,7 +3239,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "",
+   "pauseKeys": "esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3057,7 +3273,7 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -3065,9 +3281,9 @@
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3109,7 +3325,7 @@
     "usesEsc": true,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -3145,7 +3361,7 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -3153,9 +3369,9 @@
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3197,7 +3413,7 @@
     "usesEsc": true,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -3241,9 +3457,9 @@
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3277,7 +3493,7 @@
     "engine": "three",
     "render": "three-3d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
@@ -3285,9 +3501,9 @@
     "usesEsc": false,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3330,7 +3546,7 @@
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [
     "You are X. Tap an empty square.",
@@ -3369,6 +3585,9 @@
     "undo": "Undo takes back your last move and the bot's reply",
     "results": "The status line says who won, the winning line pulses, and the score board updates"
    },
+   "saves": [
+    "ttt_scores"
+   ],
    "authored": [
     "cheats",
     "controls",
@@ -3376,6 +3595,7 @@
     "features",
     "howto",
     "pauseButton",
+    "saves",
     "tips"
    ]
   },
@@ -3401,17 +3621,17 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3454,7 +3674,7 @@
     "usesEsc": true,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -3542,7 +3762,7 @@
     "usesEsc": true,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -3588,7 +3808,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3631,16 +3851,49 @@
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseKeys": "p+esc",
+   "pauseButton": "br",
+   "howto": [
+    "Pick your level on the home page: Rookie, Pro or Legend.",
+    "Training: read a short lesson, then answer its quiz.",
+    "Arcade: mic games listen and score your timing on the beat; Bar Builder, Syllable Counter, Faith Bars and Cypher Battle work without a mic.",
+    "Every lesson and game earns XP towards your rank; the Practice next card shows where to go after each game."
+   ],
+   "tips": [
+    "💡 Hint teaches the idea on screen: it points back to the right paragraph of the lesson, the rhyme sound to match, or how to count the beats.",
+    "Land your stressed syllables on the snare, beats 2 and 4.",
+    "Triplets are three even syllables per beat: 'ba-na-na, ba-na-na'.",
+    "Breathe at the end of a line, on beat 4, never in the middle of a word.",
+    "The grown-ups report on the home page shows quiz accuracy by topic and what to practise next."
+   ],
+   "controls": {
+    "keyboard": "Tab to any button and press Enter; the mic games listen to your voice; P or Esc pauses.",
+    "touch": "Tap lessons, answers and games; the mic games listen to your voice; 💡 Hint sits bottom left."
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Three level bands (Rookie, Pro, Legend). The band sets the lessons recommended next (1–6, 7–11, 12–16) and where the games start: Pocket Check's tempo and grid, Breath Control's bar count, Triplet Trainer's BPM, Rhyme or Reason's answer time and the marked Bar Builder tier.",
+   "features": {
+    "age-or-level-bands": "Your level card on the home page: Rookie / Pro / Legend",
+    "hints": "💡 Hint button (and the arcade Hint): lesson-quiz paragraph pointers with one option ruled out, rhyme-sound nudges, syllable-counting and timing technique for the game on screen",
+    "grown-up-progress-report": "For grown-ups on the home page: level, lessons finished, quiz accuracy by topic, games practised and what to practise next",
+    "tutorial": "Four-step tour on the first visit (pick a level, open Training, answer a quiz question, visit the Arcade); skip it or replay it with Take the tour",
+    "results": "Each game ends on a results screen with score and coaching; each lesson quiz ends with a score card and next-lesson button"
+   },
+   "saves": [
+    "rap-academy-progress-v1"
+   ],
+   "start": ".hero-cta .btn-primary",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "godot-claire-big-life": {
    "title": "Claire's Big Life Adventure",
@@ -3670,9 +3923,9 @@
     "gamepad": false,
     "usesP": true,
     "usesEsc": true,
-    "ownPause": false,
+    "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "",
    "pauseButton": "tr",
@@ -3717,7 +3970,7 @@
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3760,7 +4013,7 @@
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3891,7 +4144,7 @@
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -3978,7 +4231,7 @@
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4065,7 +4318,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4109,7 +4362,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4153,7 +4406,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4196,7 +4449,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4240,7 +4493,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4284,7 +4537,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4328,7 +4581,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4371,7 +4624,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4415,7 +4668,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4459,7 +4712,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4502,7 +4755,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4545,7 +4798,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4589,7 +4842,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4633,7 +4886,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4677,7 +4930,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4721,7 +4974,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4765,7 +5018,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4809,7 +5062,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4853,7 +5106,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4897,7 +5150,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4941,7 +5194,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],
@@ -4985,7 +5238,7 @@
     "sdk": false,
     "sdkInit": false
    },
-   "pauseKeys": "esc",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [],
    "tips": [],

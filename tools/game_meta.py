@@ -15,6 +15,7 @@ Sources, merged in this order:
     python3 tools/game_meta.py            # writes assets/game-meta.json
     python3 tools/game_meta.py --report   # also prints what each game is missing
     EXT_ROOT=/path/to/clones python3 tools/game_meta.py --out /tmp/meta.json   # test other branches
+    python3 tools/game_meta.py --tracked  # only content files in git (use before committing the site's copy)
 
 Nothing here is invented: a field that nobody wrote stays empty, and the harness
 reports it as missing.
@@ -217,7 +218,13 @@ def cheat_policy(gid, genre):
     if genre == 'rhythm': return 'rhythm'
     return 'eligible'
 
+TRACKED = None
 def main():
+    global TRACKED
+    if '--tracked' in sys.argv:   # build only from content files git knows about (staged or committed)
+        import subprocess
+        names = subprocess.run(['git', '-C', ROOT, 'ls-files', 'qa/standard/meta'], capture_output=True, text=True).stdout.split()
+        TRACKED = {os.path.basename(n)[:-5] for n in names if n.endswith('.json')}
     cat = load_catalog()
     thumbs = {g['id']: (g['thumb'], g.get('thumb2x', '')) for g in cat}
     # Where a game's source is not on this machine (CI has no access to the private Godot
@@ -247,6 +254,8 @@ def main():
             'features': {},   # genre-module feature -> where it lives in the game (written by the game's author)
         }
         p = os.path.join(META_DIR, gid + '.json')
+        if TRACKED is not None and os.path.exists(p) and gid not in TRACKED:
+            p = p + '.untracked'   # --tracked: ignore content files that are not in git yet (another author's work in progress)
         if not os.path.exists(p) and g['ext']:
             # External games may keep their content next to their code: <repo>/standard-meta/<id>.json
             for pre, repo in EXT_REPOS.items():

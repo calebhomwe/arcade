@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <script src="../assets/arcade-sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<link rel="icon" href="data:,">
 <title>FISHING FOR WORDS</title>
 <style>
   html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0d2740;
@@ -14,7 +15,7 @@
   .ovr h1{font-size:52px;margin:0 0 6px;letter-spacing:5px;color:#ffd257}
   .ovr h2{font-size:26px;margin:0 0 10px;letter-spacing:2px;color:#bfe3f5}
   .ovr p{margin:4px 0;font-size:16px;color:#bcd8cf;max-width:640px;text-align:center}
-  .ovr button{margin:10px 6px 0;font-size:19px;letter-spacing:1px;padding:11px 30px;
+  .ovr button{margin:10px 6px 0;font-size:19px;letter-spacing:1px;padding:11px 30px;min-height:44px;
     border:0;border-radius:8px;background:#ffd257;color:#2c3d2e;font-weight:700;cursor:pointer}
   .ovr button:hover{background:#ffe07f}
   .ovr button:disabled{background:#5a6a60;color:#9aa89e;cursor:default}
@@ -30,6 +31,29 @@
   .shopcol p{font-size:13px;margin:2px 0}
   .shopcol button{font-size:14px;padding:7px 14px;margin-top:6px}
   .trophy{margin-top:14px;font-size:14px;color:#ffdf8a;max-width:640px;text-align:center}
+  .shopcol button{min-height:44px}
+  .ovr .quiet{background:transparent;color:#bfe3f5;border:2px solid #5cc8e8;font-size:15px;padding:9px 18px}
+  .ovr .quiet:hover{background:rgba(92,200,232,.15)}
+  .ovr button.band{background:rgba(255,255,255,.08);color:#bfe3f5;font-size:15px;padding:9px 16px}
+  .ovr button.band.on{background:#ffd257;color:#2c3d2e}
+  .ovr button:focus-visible,#hintBtn:focus-visible,#coach button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .lk{background:rgba(255,255,255,.06);border-radius:10px;padding:10px 16px;margin-top:14px;max-width:560px;width:calc(100% - 32px);text-align:left}
+  .lk h3{margin:0 0 4px;font-size:14px;color:#ffd257;letter-spacing:1px}
+  .lk .lk-p{font-size:14px;color:#bcd8cf;margin:4px 0;text-align:left;max-width:none}
+  .lk-p b{color:#fff}
+  .lk-next{color:#a8e6a0}
+  .lk-t{width:100%;border-collapse:collapse;font-size:14px;color:#eaf5f0}
+  .lk-t td{padding:3px 4px;border-bottom:1px solid rgba(255,255,255,.1)}
+  .lk-t td+td{text-align:right;width:56px;color:#9fbfae}
+  #hintBtn{position:fixed;right:10px;bottom:60px;z-index:9;min-width:64px;min-height:44px;border:0;border-radius:8px;
+    background:#ffd257;color:#2c3d2e;font:700 16px system-ui,Segoe UI,Arial,sans-serif;letter-spacing:1px;cursor:pointer}
+  #coach{position:fixed;left:50%;top:136px;transform:translateX(-50%);z-index:9;width:min(520px,calc(100vw - 24px));
+    background:rgba(8,20,32,.9);border:2px solid #8fd3a8;border-radius:10px;padding:10px 12px;color:#eaf5f0;
+    font-size:15px;line-height:1.45;display:flex;gap:10px;align-items:center}
+  #coach b{color:#ffd257}
+  #coach small{display:block;font-size:12px;color:#9fbfae;letter-spacing:1px}
+  #coach button{flex:none;min-height:44px;padding:0 14px;border:0;border-radius:8px;background:#5a6a60;color:#eaf5f0;font-weight:700;cursor:pointer}
+  @media (prefers-reduced-motion: reduce){ .ovr button{transition:none} }
   .hidden{display:none !important}
 </style>
 </head>
@@ -47,12 +71,28 @@
     <div><b id="m-words">0</b><span>WORDS SPELLED</span></div>
     <div><b id="m-trophies">0</b><span>TROPHIES</span></div>
   </div>
+  <div id="m-bands" role="group" aria-label="Age band"></div>
   <div>
     <button id="btn-spell" class="mode">PLAY: SPELLING</button>
     <button id="btn-math" class="mode">PLAY: MATHS</button>
   </div>
+  <div>
+    <button id="btn-tut" class="quiet">HOW TO FISH</button>
+    <button id="btn-grown" class="quiet">FOR GROWN-UPS</button>
+  </div>
   <div id="m-trophylist" class="trophy"></div>
 </div>
+
+<div id="grown" class="ovr hidden" role="dialog" aria-label="For grown-ups">
+  <h2>FOR GROWN-UPS</h2>
+  <p>What has been practised, how accurate it was, and what to practise next.</p>
+  <div class="lk" id="grown-body"></div>
+  <div><button id="grown-back">BACK</button></div>
+</div>
+
+<button id="hintBtn" class="hidden" aria-label="Hint">HINT</button>
+<div id="coach" class="hidden" role="status" aria-live="polite"><div style="flex:1"><small id="coach-step"></small><span id="coach-text"></span></div>
+  <button id="coach-skip">SKIP</button></div>
 
 <div id="dayend" class="ovr hidden">
   <h2 id="de-title">DAY COMPLETE</h2>
@@ -63,6 +103,7 @@
     <div><b id="de-mud">0</b><span>MUDDIED</span></div>
     <div><b id="de-coins">0</b><span>COIN BANK</span></div>
   </div>
+  <div class="lk" id="de-report"><h3>FOR GROWN-UPS · TODAY</h3><div id="de-report-body"></div></div>
   <div class="shoprow" id="shop"></div>
   <div>
     <button id="btn-nextday">NEXT DAY</button>
@@ -93,7 +134,7 @@ const cv = document.getElementById("cv");
 const ctx = cv.getContext("2d");
 let VW = 0, VH = 0;
 function resize(){
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);   /* crisp, capped at 2x */
   VW = window.innerWidth; VH = window.innerHeight;
   cv.width = Math.round(VW*dpr); cv.height = Math.round(VH*dpr);
   cv.style.width = VW+"px"; cv.style.height = VH+"px";
@@ -117,6 +158,188 @@ function loadMeta(){
 }
 function saveMeta(m){ try { localStorage.setItem(METakey, JSON.stringify(m)); } catch(e){} }
 let meta = loadMeta();
+
+/* ═══════════ LEARNING KIT — age bands, teaching hints, a report for grown-ups ═══════════
+   Hints teach the rule or the next step; they never hand over the answer.
+   Every answer is logged against the skill it practised, so a grown-up can read
+   what was practised, how accurate it was and what to practise next. */
+const LEARN=(function(){
+  const BANDS=[
+    {id:'5-7', label:'Ages 5–7',  math:[1,2], word:[1,2]},
+    {id:'7-9', label:'Ages 7–9',  math:[2,3], word:[2,3]},
+    {id:'9-11',label:'Ages 9–11', math:[3,4], word:[3,5]}];
+  const SPELL=['','Spelling short words','Spelling everyday words','Spelling longer words',
+               'Spelling tricky words','Spelling advanced words'];
+  const TIPS={
+    'Adding within 20':'Start at the bigger number and count on, or make a ten first (8 + 5 = 8 + 2 + 3).',
+    'Adding bigger numbers':'Add the tens, then the ones, then put the two parts together.',
+    'Taking away within 20':'Count up from the smaller number to the bigger one on a number line.',
+    'Taking away bigger numbers':'Take away the tens first, then the ones.',
+    'Times tables to 9 × 9':'Skip-count out loud (3, 6, 9, 12…) and learn one table at a time.',
+    'Times tables to 12 × 12':'Practise the 6, 7, 8 and 12 times tables; use 10 × then adjust.',
+    'Dividing into equal groups':'Turn it round: 24 ÷ 6 means 6 × ? = 24.',
+    'Multiply before adding':'In a two-step sum, do the × part first, then the +.',
+    'Fractions of amounts':'Divide by the bottom number, then multiply by the top number.',
+    'Percentages of amounts':'10% is ÷ 10, 50% is a half, 25% is a quarter.',
+    'Number bonds':'Learn the pairs that make 10 by heart, then use them for 20 and 100.',
+    'Checking sums (true or false)':'Work the sum out first, then compare it with the one shown.'};
+  const SPELL_TIP='Say the word slowly, look at it, cover it, write it, then check it.';
+  const VOW='AEIOU';
+  const TEAMS={SH:'sh',CH:'ch',TH:'th',WH:'w',PH:'f',CK:'k',NG:'ng'}, SILENT={KN:'n',WR:'r'};
+  const clampN=(v,a,b)=>v<a?a:v>b?b:v;
+
+  /* ---- what a math prompt practises, and how to teach it ---- */
+  function parseMath(prompt,note){
+    const p=String(prompt||'').replace(/\s*=\s*\?\s*$/,'').replace(/-/g,'−').trim();
+    let m;
+    if((m=p.match(/^(\d+) \+ (\d+) × (\d+)$/)))return{k:'two',a:+m[1],b:+m[2],c:+m[3]};
+    if((m=p.match(/^(\d+)\/(\d+) of (\d+)$/)))return{k:'frac',n:+m[1],d:+m[2],t:+m[3]};
+    if((m=p.match(/^(\d+)% of (\d+)$/)))return{k:'pct',p:+m[1],t:+m[2]};
+    if((m=p.match(/^(\d+) \+ \?(?: = (\d+))?$/))){
+      const t=m[2]?+m[2]:+(String(note||'').match(/(\d+)/)||[0,0])[1];
+      return{k:'bond',a:+m[1],t:t};}
+    if((m=p.match(/^(.+) = (\d+)$/))){const inner=parseMath(m[1]);if(inner)return{k:'tf',q:inner,s:+m[2],text:m[1]};}
+    if((m=p.match(/^(\d+) ([+−×÷]) (\d+)$/)))return{k:m[2],a:+m[1],b:+m[3]};
+    return null;
+  }
+  function mathSkill(prompt,note){
+    const q=parseMath(prompt,note); if(!q)return 'Mental maths';
+    if(q.k==='+')return q.a+q.b<=20?'Adding within 20':'Adding bigger numbers';
+    if(q.k==='−')return q.a<=20?'Taking away within 20':'Taking away bigger numbers';
+    if(q.k==='×')return (q.a<=9&&q.b<=9)?'Times tables to 9 × 9':'Times tables to 12 × 12';
+    if(q.k==='÷')return 'Dividing into equal groups';
+    if(q.k==='two')return 'Multiply before adding';
+    if(q.k==='frac')return 'Fractions of amounts';
+    if(q.k==='pct')return 'Percentages of amounts';
+    if(q.k==='bond')return 'Number bonds';
+    return 'Checking sums (true or false)';
+  }
+  function skip(n,times){const s=[];for(let i=1;i<=Math.min(3,times-1);i++)s.push(n*i);return s.join(', ')+'…';}
+  function mathHint(prompt,note){
+    const q=parseMath(prompt,note);
+    if(!q)return 'Read the question twice, then work it out one step at a time.';
+    const big=Math.max(q.a,q.b),small=Math.min(q.a,q.b);
+    switch(q.k){
+      case '+':
+        if(q.a+q.b<=20){
+          if(big<10&&big+small>10)return `Make a ten: ${big} needs ${10-big} more to reach 10. Take ${10-big} from the ${small}, then add what is left on to 10.`;
+          return `Number line: start at ${big} and hop ${small} to the right. Count the hops out loud.`;}
+        if(small<10){const up=Math.ceil((big+1)/10)*10-big;
+          return small>up?`Start at ${big}. Hop ${up} to reach ${big+up}, then hop on the other ${small-up}.`
+                         :`Start at ${big} and count on ${small} more, one hop at a time.`;}
+        return `Split into tens and ones: add ${Math.floor(q.a/10)*10} + ${Math.floor(q.b/10)*10} first, then ${q.a%10} + ${q.b%10}, then put them together.`;
+      case '−':
+        if(q.a<=20)return `Number line: start at ${q.b} and count up to ${q.a}. How many hops did you make?`;
+        if(q.b<10){const down=q.a%10;
+          return down&&q.b>down?`Count back from ${q.a}: hop back ${down} to reach ${q.a-down}, then hop back the other ${q.b-down}.`
+                               :`Count back ${q.b} from ${q.a}, one hop at a time.`;}
+        if(q.b%10===0)return `Take away ${q.b/10} tens: count back from ${q.a} in tens.`;
+        return `Take away the tens first: ${q.a} − ${Math.floor(q.b/10)*10}. Then take away the ${q.b%10} ones that are left.`;
+      case '×':
+        if(q.a===10||q.b===10)return `Times 10: put a zero on the end of the other number.`;
+        if(q.a===2||q.b===2)return `Times 2 is doubling: add ${q.a===2?q.b:q.a} to itself.`;
+        if(q.a===5||q.b===5)return `Times 5 is half of times 10: work out ${q.a===5?q.b:q.a} × 10, then halve it.`;
+        if(q.a===9||q.b===9){const o=q.a===9?q.b:q.a;return `Times 9: work out ${o} × 10, then take away one ${o}.`;}
+        return `${q.a} × ${q.b} is ${q.b} groups of ${q.a}. Skip-count by ${q.a}: ${skip(q.a,q.b)} and stop after ${q.b} jumps.`;
+      case '÷':
+        return `How many groups of ${q.b} make ${q.a}? Think ${q.b} × ? = ${q.a}, or skip-count by ${q.b} until you reach ${q.a}.`;
+      case 'two':
+        return `Multiply first: work out ${q.b} × ${q.c}, then add ${q.a} to that.`;
+      case 'frac':
+        return q.n===1?`Split ${q.t} into ${q.d} equal groups. One group is the answer.`
+                      :`Split ${q.t} into ${q.d} equal groups, then take ${q.n} of the groups.`;
+      case 'pct':
+        if(q.p===50)return `50% means half. What is half of ${q.t}?`;
+        if(q.p===25)return `25% is a quarter: halve ${q.t}, then halve it again.`;
+        if(q.p===75)return `75% is three quarters: find a quarter of ${q.t}, then take three of them.`;
+        if(q.p===10)return `10% means one tenth: share ${q.t} into 10 equal parts (${q.t} ÷ 10).`;
+        return `${q.p}% is ${q.p/10} lots of 10%. First find 10% of ${q.t} (that is ${q.t} ÷ 10), then multiply by ${q.p/10}.`;
+      case 'bond':
+        return q.t===10||q.t===20?`Count up from ${q.a} to ${q.t} on your fingers or a number line.`
+                                 :`Count up from ${q.a} to the next ten, then on in tens to ${q.t}.`;
+      case 'tf':
+        return `Work out ${q.text} yourself first, then check: is it really ${q.s}?`;
+    }
+    return '';
+  }
+
+  /* ---- spelling: the first letter, the length, then sound-by-sound nudges ---- */
+  function spellHint(word,idx,clue){
+    const W=String(word).toUpperCase(), n=W.length; idx=clampN(idx|0,0,n-1);
+    const c=W[idx], prev=W[idx-1]||'', so=W.slice(0,idx), tail=clue?` Clue: “${String(clue).replace('~','___')}”`:'';
+    if(idx===0)return `It starts with the letter ${c} and has ${n} letters. Say the word slowly and listen to each sound.`+tail;
+    const pair=prev+c;
+    if(TEAMS[pair])return `After “${so}”, ${prev} teams up with the next letter to make one sound: /${TEAMS[pair]}/.`;
+    if(SILENT[pair])return `The ${prev} is silent here: the sound you hear is /${SILENT[pair]}/.`;
+    if(prev==='Q')return `Rule: the letter Q nearly always has the same vowel straight after it, and together they say /kw/.`;
+    if(c===prev)return `After “${so}”, the same letter comes again: this word has a double letter here.`;
+    if(c==='E'&&idx===n-1)return `Last letter: it is a silent e at the end. It makes the vowel before it say its name.`;
+    if(VOW.includes(c)&&VOW.includes(prev))return `After “${so}”, another vowel joins in: two vowels team up to make one sound here.`;
+    if(VOW.includes(c)||(c==='Y'&&idx===n-1))return `After “${so}” comes a vowel sound (a, e, i, o, u${c==='Y'?' or y':''}). Say “${so.toLowerCase()}…” slowly: which vowel do you hear?`;
+    return `After “${so}” comes a consonant. Say “${so.toLowerCase()}…” slowly and listen for the next sound. ${n-idx} letter${n-idx>1?'s':''} to go.`;
+  }
+
+  /* ---- the record ---- */
+  function create(key){
+    let R={bands:{},skills:{},missWords:[],sessions:0,answered:0,correct:0,since:new Date().toISOString().slice(0,10)};
+    try{const s=JSON.parse(localStorage.getItem(key));if(s&&typeof s==='object')R=Object.assign(R,s);}catch(e){}
+    let S={skills:{},answered:0,correct:0,missWords:[]};   /* this session */
+    const save=()=>{try{localStorage.setItem(key,JSON.stringify(R));}catch(e){}};
+    const bump=(o,skill,ok)=>{const s=o[skill]||(o[skill]={r:0,w:0});ok?s.r++:s.w++;};
+    const api={
+      BANDS,
+      band(){return BANDS.find(b=>b.id===R.band)||null;},
+      bandIndex(){const i=BANDS.findIndex(b=>b.id===R.band);return i<0?1:i;},
+      setBand(id){R.band=id;save();},
+      /* a tier inside the band: the band's easiest tier plus the ramp, capped at the band's hardest */
+      tier(kind,ramp){const b=BANDS[api.bandIndex()],r=kind==='word'?b.word:b.math;return clampN(r[0]+(ramp|0),r[0],r[1]);},
+      startSession(){S={skills:{},answered:0,correct:0,missWords:[]};R.sessions++;save();},
+      note(skill,ok,word){
+        bump(R.skills,skill,ok);bump(S.skills,skill,ok);
+        R.answered++;S.answered++;if(ok){R.correct++;S.correct++;}
+        if(word&&!ok){const w=String(word).toLowerCase();
+          if(!S.missWords.includes(w))S.missWords.push(w);
+          R.missWords=[w].concat(R.missWords.filter(x=>x!==w)).slice(0,12);}
+        if(word&&ok)R.missWords=R.missWords.filter(x=>x!==String(word).toLowerCase());
+        save();
+      },
+      noteMath(prompt,ok,note){api.note(mathSkill(prompt,note),ok);},
+      noteSpell(level,ok,word){api.note(SPELL[clampN(level|0,1,5)],ok,word);},
+      session(){return S;},
+      /* the grown-up report: {lines:[...], next:'...'} for this session and all time */
+      report(scope){
+        const src=scope==='session'?S:R, rows=Object.keys(src.skills).map(k=>{const s=src.skills[k];
+          return{skill:k,n:s.r+s.w,acc:Math.round(100*s.r/Math.max(1,s.r+s.w))};}).sort((a,b)=>b.n-a.n);
+        const acc=Math.round(100*src.correct/Math.max(1,src.answered));
+        let weak=rows.filter(r=>r.n>=3).sort((a,b)=>a.acc-b.acc)[0]||rows.slice().sort((a,b)=>a.acc-b.acc)[0];
+        let next;
+        if(!rows.length)next='Play a round to start the record.';
+        else if(weak&&weak.acc<85)next=`${weak.skill} (${weak.acc}% right). ${TIPS[weak.skill]||SPELL_TIP}`;
+        else{const bi=api.bandIndex();
+          next=bi<BANDS.length-1&&src.answered>=10?`Everything practised is 85% or better: try ${BANDS[bi+1].label} next.`
+                                                   :'Keep going at this level: accuracy is strong.';}
+        const words=(scope==='session'?S.missWords:R.missWords).slice(0,8);
+        return{rows,acc,answered:src.answered,correct:src.correct,next,words,
+               sessions:R.sessions,since:R.since,band:BANDS[api.bandIndex()].label};
+      },
+      /* plain HTML, styled by each game */
+      reportHTML(scope){
+        const r=api.report(scope), esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+        if(!r.answered)return `<p class="lk-p">No answers yet${scope==='session'?' this round':''}. Play a round and the report fills in.</p>`;
+        return `<p class="lk-p"><b>${r.answered}</b> answer${r.answered>1?'s':''}, <b>${r.acc}%</b> right`+
+          (scope==='session'?'':` · ${r.sessions} round${r.sessions>1?'s':''} since ${esc(r.since)} · level ${esc(r.band)}`)+`</p>`+
+          `<table class="lk-t">${r.rows.slice(0,8).map(x=>`<tr><td>${esc(x.skill)}</td><td>${x.n}</td><td>${x.acc}%</td></tr>`).join('')}</table>`+
+          (r.words.length?`<p class="lk-p">Words to practise: <b>${r.words.map(esc).join(', ')}</b></p>`:'')+
+          `<p class="lk-p lk-next">Practise next: ${esc(r.next)}</p>`;
+      },
+      mathSkill,mathHint,spellHint,SPELL,
+    };
+    return api;
+  }
+  return{create,mathSkill,mathHint,spellHint,BANDS};
+})();
+const LK = LEARN.create("wf_learn");
+const RM = matchMedia("(prefers-reduced-motion: reduce)");   /* still water and clouds */
 
 /* ═══════════ word bank — grade-tiered, sentence-context clues ═══════════
    [word, 'sentence with ~ where the word goes'] — extracted from
@@ -294,12 +517,12 @@ let hookedFish = null;    // {label, rarity, name, correct}
 let hint = "", hintT = 0, toast = "", toastT = 0, toastCol = "#fff";
 let lastResult = null;
 let dayEarnings = 0, dayKept = 0, dayMud = 0;
-let TS = 1, frames = 0, fps = 0, fpsT = 0, matchT = 0;
+let TS = 1, frames = 0, fps = 0, fpsT = 0, matchT = 0, ambT = 0;   /* ambT: water and clouds keep moving on the title */
 let dbgForce = null, dbgRarity = null;   // playtest forcing
 let keepBtn = null, relBtn = null;       // canvas button hit-rects
 
-const tierFor = ()=> mode==="spell" ? clamp(1+Math.floor((day-1)/2),1,5)
-                                    : clamp(1+Math.floor((day-1)/2),1,4);
+/* the age band sets the range of tiers; every two days steps up inside it */
+const tierFor = ()=> LK.tier(mode==="spell" ? "word" : "math", Math.floor((day-1)/2));
 
 function needLetter(){ return word ? (word.t[wordIdx]||"").toUpperCase() : ""; }
 function answerNow(){ return question ? question.answer : ""; }
@@ -363,22 +586,40 @@ function newQuestion(){
   mathTier = tierFor();
   question = qQuick(mathTier);
 }
+let answeredToday = 0;
 function startDay(m){
   mode = m || mode;
+  LK.startSession(); answeredToday = 0;
   day = 1; castsUsed = 0; bucket = []; wordsDone = 0; mathCorrect = 0;
   dayEarnings = 0; dayKept = 0; dayMud = 0; hint = ""; toast = "";
   if (mode==="spell") newWord(); else newQuestion();
   refreshSchool();
   phase = "ready";
   showOverlay(null);
+  sdkState({scene:"play"});
+  coachMaybe();
 }
 function nextDay(){
+  LK.startSession(); answeredToday = 0;
   day++; castsUsed = 0; bucket = []; wordsDone = 0; mathCorrect = 0;
   dayEarnings = 0; dayKept = 0; dayMud = 0; hint = "";
   if (mode==="spell") newWord(); else newQuestion();
   refreshSchool();
   phase = "ready";
   showOverlay(null);
+  sdkState({scene:"play"});
+}
+/* restart the current day without moving on (arcade Restart) */
+function restartDay(){
+  if (phase==="menu") return startDay(mode);
+  LK.startSession(); answeredToday = 0;
+  castsUsed = 0; bucket = []; wordsDone = 0; mathCorrect = 0; hookedFish = null;
+  dayEarnings = 0; dayKept = 0; dayMud = 0; hint = ""; toast = "";
+  if (mode==="spell") newWord(); else newQuestion();
+  refreshSchool();
+  phase = "ready";
+  showOverlay(null);
+  sdkState({scene:"play"});
 }
 
 /* ═══════════ casting / striking ═══════════ */
@@ -391,10 +632,12 @@ function castLine(p){
   phase = "waiting";
   biteT = R(1.0, 2.6);
   refreshSchool();
+  sfx.cast();
 }
 function biteNow(){
   if (phase!=="waiting") return;
   phase = "strike"; ring = {r:130, target:24, closing:true};
+  sfx.bite();
 }
 function tapStrike(){
   if (phase!=="strike") return;
@@ -430,6 +673,11 @@ function decideKeep(keepIt){
   if (phase!=="hooked" || !hookedFish) return;
   const f = hookedFish; hookedFish = null;
   castsUsed++; meta.casts++;
+  /* every keep-or-release is an answer: keep the right fish, release the wrong one */
+  const rightCall = keepIt === f.correct;
+  if (mode==="spell" && word) LK.noteSpell(wordTier, rightCall, word.t);
+  else if (question) LK.noteMath(question.prompt, rightCall, question.note);
+  answeredToday++;
   if (!keepIt){
     lastResult = {ok:false, msg:"Released the "+f.label+" fish"};
     toast = "Released — the "+f.name+" swims away"; toastT = 1.4; toastCol = "#cfe3cf";
@@ -458,8 +706,10 @@ function decideKeep(keepIt){
       toast = "Weighed "+f.label+" — correct catch!"; toastT=1.6; toastCol="#a8e6a0";
       if (mathCorrect < QUOTA.math) newQuestion();
     }
+    sfx.good();
     lastResult = {ok:true, label:f.label};
   } else {
+    sfx.bad();
     bucket.push({good:false, label:f.label, value:0, rarity:f.rarity, name:f.name});
     dayMud++;
     meta.coins = Math.max(0, meta.coins-2);
@@ -497,6 +747,7 @@ function endDay(){
   if (dayEarnings > meta.bestDay) meta.bestDay = dayEarnings;
   saveMeta(meta);
   phase = "dayend";
+  sfx.day();
   document.getElementById("de-title").textContent = "DAY "+day+" COMPLETE";
   const quotaDone = mode==="spell" ? wordsDone>=QUOTA.spell : mathCorrect>=QUOTA.math;
   document.getElementById("de-line").textContent =
@@ -511,7 +762,9 @@ function endDay(){
   const tt = document.getElementById("de-trophy");
   tt.textContent = meta.trophies.length
     ? "Trophy shelf: "+meta.trophies.slice(-4).map(t=>t.name+" '"+t.label+"'").join(" · ") : "";
+  document.getElementById("de-report-body").innerHTML = LK.reportHTML("session");
   showOverlay("dayend");
+  sdkState({scene:"over", score:dayEarnings, outcome: quotaDone ? "quota met" : "day over"});
 }
 
 /* ═══════════ shop ═══════════ */
@@ -552,7 +805,9 @@ function buildShop(){
 
 /* ═══════════ overlays / menu ═══════════ */
 function showOverlay(which){
-  for (const id of ["menu","dayend"])
+  document.getElementById("hintBtn").classList.toggle("hidden", !!which);
+  try{ coachPaint(); }catch(e){}   /* the coach hides behind overlays */
+  for (const id of ["menu","dayend","grown"])
     document.getElementById(id).classList.toggle("hidden", id!==which);
   if (which==="menu"){
     document.getElementById("m-coins").textContent = meta.coins;
@@ -567,7 +822,47 @@ function showOverlay(which){
 document.getElementById("btn-spell").addEventListener("click", ()=>startDay("spell"));
 document.getElementById("btn-math").addEventListener("click", ()=>startDay("math"));
 document.getElementById("btn-nextday").addEventListener("click", ()=>nextDay());
-document.getElementById("btn-menu").addEventListener("click", ()=>{ phase="menu"; showOverlay("menu"); });
+document.getElementById("btn-menu").addEventListener("click", toTitle);
+
+/* ═══════════ sound — lazy procedural SFX (no files, no network), from the game's source repo ═══════════
+   The AudioContext is only built on the first real gesture, and every path is
+   guarded, so this can never throw and never requests anything at boot. */
+let actx = null;
+function audio(){
+  try {
+    if (!actx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      actx = new AC();
+    }
+    if (actx.state === "suspended" && actx.resume) actx.resume();
+    return actx;
+  } catch(e){ return null; }
+}
+function beep(freq, dur, type, vol, slideTo){
+  try {
+    const a = audio(); if (!a) return;
+    const o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
+    o.type = type || "sine";
+    o.frequency.setValueAtTime(freq, t);
+    if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t+dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol || 0.14, t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.connect(g); g.connect(a.destination);
+    o.start(t); o.stop(t+dur+0.02);
+  } catch(e){}
+}
+/* build the context on the first tap or key so the first cast is heard (iOS only unlocks audio inside a gesture) */
+window.addEventListener("pointerdown", ()=>audio(), {once:true});
+window.addEventListener("keydown", ()=>audio(), {once:true});
+const sfx = {
+  cast(){ beep(220, 0.18, "sine", 0.10, 620); },
+  bite(){ beep(880, 0.09, "square", 0.09); setTimeout(()=>beep(1320, 0.12, "square", 0.07, 1180), 70); },
+  good(){ beep(523, 0.10, "triangle", 0.12); setTimeout(()=>beep(784, 0.16, "triangle", 0.12), 90); },
+  bad(){ beep(180, 0.26, "sawtooth", 0.11, 90); },
+  day(){ [523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f, 0.18, "triangle", 0.10), i*110)); },
+};
 
 /* ═══════════ input ═══════════ */
 function actionTap(){
@@ -604,6 +899,7 @@ function frame(now){
   frames++; fpsT += dt;
   if (fpsT>=1){ fps=frames; frames=0; fpsT=0; }
   if (phase!=="menu" && phase!=="dayend") matchT += dt;
+  if (!RM.matches) ambT += dt;
 
   if (phase==="charging"){
     power += powerDir*dt*1.4;
@@ -626,6 +922,7 @@ function frame(now){
   }
   if (toastT>0) toastT -= dt;
   if (hintT>0) hintT -= dt;
+  coachTick(dt);
 
   // fish always drift while a day is on
   if (phase!=="menu" && phase!=="dayend"){
@@ -670,7 +967,7 @@ function draw(){
   // clouds
   ctx.fillStyle = "rgba(255,255,255,.75)";
   for (let i=0;i<4;i++){
-    const cx = ((i*397 + matchT*8 + i*i*53) % (VW+200)) - 100;
+    const cx = ((i*397 + ambT*8 + i*i*53) % (VW+200)) - 100;
     const cy = 40 + i*34;
     ctx.beginPath();
     ctx.arc(cx,cy,16,0,7); ctx.arc(cx+20,cy-8,20,0,7); ctx.arc(cx+44,cy,15,0,7);
@@ -683,13 +980,13 @@ function draw(){
   ctx.fillStyle = wg; ctx.fillRect(0,wl,VW,VH-wl);
   ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(0,wl);
-  for (let x=0;x<=VW;x+=24) ctx.lineTo(x, wl + Math.sin(x*0.02 + matchT*1.6)*2.4);
+  for (let x=0;x<=VW;x+=24) ctx.lineTo(x, wl + Math.sin(x*0.02 + ambT*1.6)*2.4);
   ctx.stroke();
   ctx.strokeStyle = "rgba(255,255,255,.08)";
   for (let i=1;i<5;i++){
     const y = wl + (VH-wl)*i/5;
     ctx.beginPath();
-    for (let x=0;x<=VW;x+=32) ctx.lineTo(x, y + Math.sin(x*0.015 + matchT + i)*3);
+    for (let x=0;x<=VW;x+=32) ctx.lineTo(x, y + Math.sin(x*0.015 + ambT + i)*3);
     ctx.stroke();
   }
 
@@ -905,18 +1202,108 @@ function drawHUD(wl){
   // hint bottom-center
   if (hintT>0 && hint){
     ctx.font = "16px system-ui"; ctx.textAlign = "center";
-    ctx.fillStyle = "rgba(8,20,32,.6)";
-    const hw = ctx.measureText(hint).width;
-    ctx.fillRect(VW/2-hw/2-12, VH-46, hw+24, 30);
+    const lines = wrapLines(hint, Math.min(640, VW-40)).slice(0,4);
+    const hw = Math.max(...lines.map(l=>ctx.measureText(l).width)), top = VH-24-lines.length*22;
+    ctx.fillStyle = "rgba(8,20,32,.78)";
+    ctx.fillRect(VW/2-hw/2-12, top-18, hw+24, lines.length*22+12);
     ctx.fillStyle = "#ffd9a0"; ctx.globalAlpha = clamp(hintT,0,1);
-    ctx.fillText(hint, VW/2, VH-25);
+    lines.forEach((l,i)=>ctx.fillText(l, VW/2, top+i*22));
     ctx.globalAlpha = 1;
   }
-  // controls bottom-right
+  // controls bottom-right (keyboard players only: touch players get the coach and the on-screen prompts)
+  if (COARSE) return;
   ctx.textAlign = "right"; ctx.font = "13px system-ui"; ctx.fillStyle = "rgba(255,255,255,.6)";
-  ctx.fillText("SPACE/click: charge · cast · strike", VW-16, VH-40);
-  ctx.fillText("K keep / R release when hooked", VW-16, VH-20);
+  ctx.fillText("SPACE/click: charge · cast · strike", VW-86, VH-40);
+  ctx.fillText("K keep / R release when hooked", VW-86, VH-20);
 }
+
+
+/* ═══════════ arcade glue: hints, age bands, grown-up report, first-run coach ═══════════ */
+const COARSE = matchMedia("(pointer: coarse)").matches;
+function sdkState(o){ try{ window.ArcadeSDK && ArcadeSDK.state(o); }catch(e){} }
+function toTitle(){ phase="menu"; hookedFish=null; coachEnd(false); showOverlay("menu"); renderBands(); sdkState({scene:"title"}); }
+/* a hint that teaches the step in front of the player, never hands over the answer */
+function currentHint(){
+  if (phase==="menu") return "Pick your age band, then PLAY: SPELLING or PLAY: MATHS.";
+  if (phase==="dayend") return "The report above shows what to practise; NEXT DAY carries on with the same band.";
+  if (phase==="strike") return "Tap the moment the gold ring touches the green circle.";
+  if (phase==="ready" || phase==="charging")
+    return (phase==="ready" ? "Tap once to start the power meter, then tap again to cast. " : "Tap again to cast. ")
+         + (mode==="spell" && word ? LK.spellHint(word.t, wordIdx, word.h) : question ? LK.mathHint(question.prompt, question.note) : "");
+  if (mode==="spell" && word) return LK.spellHint(word.t, wordIdx, word.h) + " Keep a fish only if it has that letter.";
+  if (question) return LK.mathHint(question.prompt, question.note) + " Keep a fish only if its weight is the answer.";
+  return "Wait for a bite, then tap when the ring meets the circle.";
+}
+function showHint(){
+  const t = currentHint();
+  if (phase!=="menu" && phase!=="dayend"){ hint = t; hintT = 9; }
+  return t;
+}
+document.getElementById("hintBtn").addEventListener("click", e=>{ e.stopPropagation(); showHint(); });
+window.addEventListener("keydown", e=>{ if (e.key==="h"||e.key==="H") showHint(); });
+
+/* the hint line wraps on narrow screens */
+function wrapLines(t, maxW){
+  const words = String(t).split(" "), out = []; let line = "";
+  for (const w of words){ const tryL = line ? line+" "+w : w;
+    if (ctx.measureText(tryL).width > maxW && line){ out.push(line); line = w; } else line = tryL; }
+  if (line) out.push(line); return out;
+}
+
+/* age bands on the title */
+function renderBands(){
+  const box = document.getElementById("m-bands"); box.innerHTML = "";
+  const cur = LK.bandIndex();
+  LK.BANDS.forEach((b,i)=>{ const el = document.createElement("button");
+    el.className = "band"+(i===cur?" on":""); el.textContent = b.label.toUpperCase();
+    el.setAttribute("aria-pressed", String(i===cur));
+    el.addEventListener("click", ()=>{ LK.setBand(b.id); renderBands(); });
+    box.appendChild(el); });
+}
+renderBands();
+document.getElementById("btn-grown").addEventListener("click", ()=>{
+  document.getElementById("grown-body").innerHTML = LK.reportHTML("all");
+  showOverlay("grown"); document.getElementById("grown-back").focus();
+});
+document.getElementById("grown-back").addEventListener("click", ()=>showOverlay("menu"));
+
+/* first-run coach: learn to fish by fishing; skippable, replayable */
+const COACH = [
+  {t:()=> (COARSE?"<b>Tap</b>":"Press <b>Space</b> or click")+" to start the power meter, then again to <b>cast</b>.", done:()=>phase==="waiting"||phase==="strike"||phase==="hooked"||phase==="result"&&castsUsed>0},
+  {t:()=> "A fish bites: a <b>gold ring</b> closes in. "+(COARSE?"Tap":"Tap Space")+" when it meets the <b>green circle</b>.", done:()=>phase==="hooked"||castsUsed>0},
+  {t:()=> mode==="spell" ? "<b>KEEP</b> the fish only if it is the <b>next letter</b> of the word; otherwise <b>RELEASE</b> it."
+                          : "<b>KEEP</b> the fish only if its <b>weight is the answer</b>; otherwise <b>RELEASE</b> it.", done:()=>answeredToday>0},
+  {t:()=> "Meet the quota before the sun sets. Stuck? <b>HINT</b> teaches the next letter or the sum.", done:()=>coachT>7},
+];
+let coachIx = -1, coachT = 0;
+function coachPaint(){
+  const el = document.getElementById("coach");
+  if (coachIx<0 || coachIx>=COACH.length || phase==="menu" || phase==="dayend"){ el.classList.add("hidden"); return; }
+  document.getElementById("coach-step").textContent = "HOW TO FISH · "+(coachIx+1)+" OF "+COACH.length;
+  document.getElementById("coach-text").innerHTML = COACH[coachIx].t();
+  el.classList.remove("hidden");
+}
+function coachStart(){ if (phase==="menu"||phase==="dayend") startDay(mode); coachIx = 0; coachT = 0; coachPaint(); }
+function coachEnd(done){ const was = coachIx>=0; coachIx = -1; coachPaint();
+  if (was && done!==false){ try{ localStorage.setItem("wf_tut","1"); }catch(e){} try{ window.ArcadeSDK && ArcadeSDK.event("tutorial-done"); }catch(e){} } }
+function coachMaybe(){ let seen=false; try{ seen = localStorage.getItem("wf_tut")==="1"; }catch(e){} if (!seen && coachIx<0){ coachIx = 0; coachT = 0; coachPaint(); } }
+function coachTick(dt){
+  if (coachIx<0) return;
+  if (coachIx===COACH.length-1) coachT += dt;
+  const was = coachIx;
+  while (coachIx<COACH.length && COACH[coachIx].done()){ coachIx++; coachT = 0; }
+  if (coachIx>=COACH.length) coachEnd(); else if (was!==coachIx) coachPaint();
+}
+document.getElementById("coach-skip").addEventListener("click", e=>{ e.stopPropagation(); coachEnd(); });
+document.getElementById("btn-tut").addEventListener("click", coachStart);
+
+if (window.ArcadeSDK) ArcadeSDK.init({
+  pauseButton: "br",
+  onRestart: restartDay,
+  onExit: toTitle,
+  onTutorial: coachStart,
+  onHint(){ return showHint(); },
+});
 
 /* ═══════════ debug hook (playtest gate) ═══════════ */
 window.__fish_debug = {
@@ -953,6 +1340,7 @@ window.__fish_debug = {
   speed(x){ TS = clamp(x,0.25,6); },
 };
 showOverlay("menu");
+sdkState({scene:"title"});
 </script>
 </body>
 </html>
