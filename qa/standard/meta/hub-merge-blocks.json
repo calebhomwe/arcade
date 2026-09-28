@@ -1,0 +1,20 @@
+{
+  "howto": ["Pick Easy, Normal, Hard or Daily drops and press Play.", "Tap a column (or press 1 to 6) to drop the Next block into it.", "Two touching blocks with the same number merge into one twice as big; merges can chain.", "The game ends when every column is full."],
+  "tips": ["Keep your biggest numbers along the bottom row.", "A drop that sets off a chain scores every merge in it.", "Every 8th drop brings a golden 8.", "Hint plays every column in a copy of the board and picks the best one.", "Undo takes back a drop and every merge it caused."],
+  "controls": {"keyboard": "1 to 6 drop in a column, Z undoes, H hints. P or Esc pauses.", "touch": "Tap a column. Undo and Hint sit in the top bar."},
+  "difficulty": "Easy gives 3 undos, Normal 1 and Hard none, and on Hard the next block can also be an 8. Daily drops is Normal with the same blocks for everyone today.",
+  "cheats": [
+    {"code": "UNDOALL", "effect": "Undo all: unlimited undos"},
+    {"code": "BIGDROP", "effect": "Big drop: every new block is an 8"},
+    {"code": "CLEARTOP", "effect": "Clear top: the top two rows are wiped"}
+  ],
+  "features": {
+    "hints": "Hint button (or H, or Pause > Hint): simulates every column with all its merges, highlights the best one and says what it scores",
+    "undo": "Undo button (or Z): 3 on Easy, 1 on Normal and Daily, none on Hard",
+    "level-select-or-daily": "Easy, Normal and Hard on the title, plus Daily drops with the same blocks for everyone each day",
+    "results": "Game Over card with score, best, megas, level, streak, medals and lifetime blocks"
+  },
+  "saves": ["mergeBest", "mergeXp"],
+  "start": "#playBtn",
+  "pauseButton": "br"
+}

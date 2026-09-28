@@ -1830,15 +1830,62 @@
     "sdkInit": false
    },
    "pauseKeys": "",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Press Play: the bird hovers until your first tap.",
+    "Tap, click or press Space to flap. Each flap lifts the bird.",
+    "Fly through the gaps between the pipes. Each pipe is 1 point, a star 2, a feather 3."
+   ],
+   "tips": [
+    "Short, steady taps beat big panicky ones.",
+    "A feather gives you a shield that saves you from one crash.",
+    "Three close shaves in a row also earn a shield.",
+    "The pipes speed up as your score climbs, up to about 30 points.",
+    "Sprint mode ends after 20 pipes and pays a bonus for every close shave."
+   ],
+   "controls": {
+    "keyboard": "Space or Up arrow to flap. P or Esc pauses.",
+    "touch": "Tap anywhere to flap"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "GHOSTBIRD",
+     "effect": "Ghost bird: fly through pipes and bounce off the ground"
+    },
+    {
+     "code": "WIDEGAP",
+     "effect": "Wide gaps: every pipe gap is 40% taller"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "Slow motion: the whole sky runs at 60% speed"
+    }
+   ],
+   "difficulty": "An adaptive curve: the pipes scroll faster with every point until about 30. Gale mode makes every pipe sway up and down; Sprint mode is a 20-pipe dash.",
+   "features": {
+    "one-tap-start": "Play, then one tap flaps and starts the run",
+    "instant-restart": "Play Again, a tap on the results card or Space goes straight back to the hovering bird",
+    "best-score-badge": "BEST under the score at the top of the screen, and on the title",
+    "tutorial-card": "Get-ready card with a tapping finger; the first run explains stars, feathers and shields",
+    "results": "Game Over card with score, best, medal, feathers and rank"
+   },
+   "saves": [
+    "flappyBest",
+    "flappyPipes"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-dino-dash": {
    "title": "Dino Dash",
@@ -1874,15 +1921,63 @@
     "sdkInit": false
    },
    "pauseKeys": "",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Press Play: the dino jogs on the spot until your first jump.",
+    "Tap or press Space to jump; tap again in the air for a double jump.",
+    "Swipe down or press the Down arrow to duck under low birds.",
+    "Run as far as you can: distance is your score."
+   ],
+   "tips": [
+    "High birds fly over your head: just keep running.",
+    "A feather gives you a shield that takes one hit.",
+    "The magnet pulls bones to you and each one counts double while it lasts.",
+    "Clear a cactus by a whisker for a +10 close bonus.",
+    "Every 500 m earns a medal; the sky turns to night every 400 m."
+   ],
+   "controls": {
+    "keyboard": "Space or Up to jump, Down to duck. P or Esc pauses.",
+    "touch": "Tap to jump, tap again for a double jump, swipe down to duck"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "IRONHIDE",
+     "effect": "Iron hide: cacti and birds bounce off you"
+    },
+    {
+     "code": "BONEMAGNET",
+     "effect": "Bone magnet stays on for the whole run"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "Slow motion: the desert runs at 60% speed"
+    }
+   ],
+   "difficulty": "An adaptive curve: the desert speeds up the further you run, and obstacles come closer together, but never faster than you can react.",
+   "features": {
+    "one-tap-start": "Play, then one tap jumps and starts the run",
+    "instant-restart": "Play Again or Space on the results card goes straight back to the start line",
+    "best-score-badge": "BEST under the distance, top right of the game",
+    "tutorial-card": "Get-ready card with a tapping finger; the first run explains double jump, ducking and pick-ups",
+    "results": "Game Over card with distance, obstacles cleared, bones, medals, lifetime totals and best"
+   },
+   "saves": [
+    "dinoBest",
+    "dinoYards"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-color-switch": {
    "title": "Color Switch",
@@ -1919,14 +2014,61 @@
    },
    "pauseKeys": "",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Press Play: the ball waits at the top of the circle until your first tap.",
+    "Tap or press Space to spin the ball round the circle; it slows down on its own.",
+    "When a ring closes in, be on the segment that matches your ball's colour.",
+    "Your colour changes after every ring. A wrong colour costs a heart."
+   ],
+   "tips": [
+    "Taps stack: two quick taps spin the ball about twice as far.",
+    "Passing through the middle of a segment keeps a Bullseye streak going.",
+    "Hearts come back at 10, 25 and 40 rings.",
+    "Gold rings are worth 2 extra points.",
+    "Chaos mode flickers your colour every second: watch the ball, not the ring."
+   ],
+   "controls": {
+    "keyboard": "Space or Up arrow to spin. P or Esc pauses.",
+    "touch": "Tap anywhere to spin"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "ANYCOLOR",
+     "effect": "Any colour: every segment lets the ball through"
+    },
+    {
+     "code": "SLOWRINGS",
+     "effect": "Slow rings: rings close in 40% slower"
+    },
+    {
+     "code": "NINELIVES",
+     "effect": "Nine lives: runs start with 9 hearts"
+    }
+   ],
+   "difficulty": "An adaptive curve: rings arrive more often, spin faster and close in quicker as your score climbs. Chaos mode is the hard mode.",
+   "features": {
+    "one-tap-start": "Play, then one tap spins the ball and starts the run",
+    "instant-restart": "Play Again or Space on the results card goes straight back to the ball at the top",
+    "best-score-badge": "BEST under the score at the top of the screen, and on the title",
+    "tutorial-card": "Get-ready card with a tapping finger; the first run explains colours, rings and gold rings",
+    "results": "Game Over card with score, best, Bullseye best, Chaos best and lifetime rings"
+   },
+   "saves": [
+    "colorBest"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-brick-breaker": {
    "title": "Brick Breaker",
@@ -1962,15 +2104,63 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick Easy, Normal or Hard, then press Play.",
+    "Drag anywhere, or use the arrow keys, to move the paddle.",
+    "Tap or press Space to launch the ball, and keep it bouncing into the bricks.",
+    "Clear every brick to reach the next level. Lose every ball and the run ends."
+   ],
+   "tips": [
+    "Where the ball hits the paddle sets its angle: the edges send it sideways.",
+    "Bricks with a white chevron take two hits (three on the top row from level 6).",
+    "Breaking bricks without touching the paddle builds a combo worth extra points.",
+    "A shield power-up saves one ball that would have been lost.",
+    "Catch Slow ball when things get hectic: the ball moves at 62% speed for 8 seconds."
+   ],
+   "controls": {
+    "keyboard": "Left and Right (or A and D) move the paddle, Space or Enter launches. P or Esc pauses.",
+    "touch": "Drag anywhere to move the paddle, tap to launch"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "FLOORSHIELD",
+     "effect": "Floor shield: the ball bounces off the bottom, so you never lose one"
+    },
+    {
+     "code": "BIGPADDLE",
+     "effect": "Big paddle: the wide paddle all the time"
+    },
+    {
+     "code": "MULTIBALL",
+     "effect": "Multi-ball: every serve launches three balls"
+    }
+   ],
+   "difficulty": "Easy, Normal and Hard on the title: Easy has a wider paddle, a 15% slower ball and 5 lives; Hard has a narrow paddle and a 15% faster ball. Every level adds a row of bricks and a little ball speed.",
+   "features": {
+    "difficulty": "Easy, Normal and Hard buttons on the title (remembered)",
+    "power-up-list": "The title lists the four power-ups with their badges: 3x Multi-ball, W Wide paddle, S Slow ball, star Shield",
+    "wave-or-level-counter": "LV in the top bar; LEVEL n pops up on every clear",
+    "high-score-table": "Top 5 scores with level and difficulty on the Game Over card (runs with codes on are left out)",
+    "results": "Game Over card with score, best, level, bricks, best combo, power-ups and the top-5 table"
+   },
+   "saves": [
+    "brickBest",
+    "brickTop"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-game-2048": {
    "title": "2048",
@@ -2005,15 +2195,62 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick a board (Easy 5x5, Normal 4x4, Hard 3x3) and Classic or the Daily board, then press Play.",
+    "Swipe, or press an arrow key, to slide every tile as far as it goes.",
+    "Two tiles with the same number merge into one: 2 + 2 makes 4.",
+    "Build a 2048 tile (512 on the 3x3 board) before the board fills up."
+   ],
+   "tips": [
+    "Keep your biggest tile in one corner and build towards it.",
+    "Try not to swipe away from your corner: a stray 2 can get stuck there.",
+    "Hint looks two moves ahead and names the swipe that keeps the most space free.",
+    "Undo (or the Z key) takes back a move, even from the Game Over card.",
+    "Every 12 merges earns a hammer that smashes one tile."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys slide the tiles, Z or U undoes. P or Esc pauses.",
+    "touch": "Swipe on the board. Undo, Hint, 50/50 and Hammer sit under it."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "HAMMERTIME",
+     "effect": "Hammer time: three hammers, ready to smash"
+    },
+    {
+     "code": "ALLFOURS",
+     "effect": "All fours: every new tile is a 4"
+    },
+    {
+     "code": "BIGTILE",
+     "effect": "Big tile: a 256 drops into an empty square"
+    }
+   ],
+   "difficulty": "Board size is the difficulty: Easy is 5x5 (lots of room), Normal is the classic 4x4, Hard is 3x3 with a 512 goal.",
+   "features": {
+    "hints": "Hint button under the board (and Pause > Hint): a two-move look-ahead names the best swipe and why",
+    "undo": "Undo button, the Z key, and Undo last move on the Game Over card",
+    "level-select-or-daily": "Board size (5x5, 4x4, 3x3) on the title, plus a Daily board where everyone gets the same tiles today",
+    "results": "Game Over card with score, best tile, best combo, 2048 wins, lifetime merges and club tier; a You Win card at the goal tile"
+   },
+   "saves": [
+    "best2048",
+    "bestTile2048"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-memory-match": {
    "title": "Memory Match",
@@ -2048,15 +2285,62 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick Easy (6 pairs), Normal (8) or Hard (10) and press Play.",
+    "Tap a card to flip it, then tap a second card.",
+    "Two matching cards stay face up; two different cards flip back.",
+    "Find every pair in as few moves as you can: fewer moves earn more stars."
+   ],
+   "tips": [
+    "Flip a new card first, then think: have you seen its twin already?",
+    "Three matches in a row earn a Peek, which shows every card for a moment.",
+    "A game with no misses is Flawless and adds a bonus star to your bank.",
+    "Shuffle mode reshuffles the face-down cards after every miss: pure short-term memory.",
+    "Hint only uses cards you have already seen."
+   ],
+   "controls": {
+    "keyboard": "Tab or the arrow keys pick a card, Enter or Space flips it. P or Esc pauses.",
+    "touch": "Tap a card to flip it. Hint, Peek and Shuffle sit above the cards."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "PEEKABOO",
+     "effect": "Peekaboo: three extra peeks"
+    },
+    {
+     "code": "AUTOPAIR",
+     "effect": "Auto pair: one pair matches itself (enter it again for more)"
+    },
+    {
+     "code": "SLOWFLIP",
+     "effect": "Slow flip: a wrong pair stays face up for 3 seconds"
+    }
+   ],
+   "difficulty": "Three levels on the title: Easy has 6 pairs, Normal 8 and Hard 10; the star targets grow with the deck.",
+   "features": {
+    "hints": "The bulb button (and Pause > Hint) points at a twin you have already seen, or at a card you have not tried yet, and makes it glow",
+    "undo": "Not offered: a flipped card cannot be un-seen, so Hint and Peek help instead",
+    "level-select-or-daily": "Easy, Normal and Hard decks on the title, each with its own best",
+    "results": "You Win card with stars, moves, time, new-best badge, star bank and flawless streak"
+   },
+   "saves": [
+    "memBest",
+    "memStars"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-sudoku": {
    "title": "Sudoku",
@@ -2091,15 +2375,64 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick Easy, Medium, Hard or the Daily puzzle and press Play.",
+    "Tap an empty square, then tap a number (or type 1 to 9).",
+    "Every row, every column and every 3x3 box must hold 1 to 9 exactly once.",
+    "Yellow numbers are given; a red number is a mistake."
+   ],
+   "tips": [
+    "Look for a square whose row, column and box already hold eight different numbers.",
+    "Pick a number and scan: if it can only go in one square of a row, it goes there.",
+    "Turn on notes (the pencil) to jot down every candidate in a hard square.",
+    "Hint names the next move that logic proves, and why; tap it again to fill that square.",
+    "Undo takes back a number, a note or an erase, but a mistake still counts."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys move, 1 to 9 fill, Backspace erases, N toggles notes, Z undoes, H hints. P or Esc pauses.",
+    "touch": "Tap a square, then a number. Erase, notes, undo, hint and New sit under the pad."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "AUTONOTES",
+     "effect": "Auto notes: every empty square gets its candidates pencilled in"
+    },
+    {
+     "code": "FILLBOX",
+     "effect": "Fill box: one unfinished 3x3 box fills itself"
+    },
+    {
+     "code": "FREEZETIME",
+     "effect": "Freeze time: the clock stops"
+    }
+   ],
+   "difficulty": "Easy starts with 42 numbers, Medium 34 and Hard 28, and every puzzle has exactly one solution. The Daily puzzle is a Medium grid that is the same for everyone today.",
+   "features": {
+    "hints": "The bulb button: explains the next logically forced square (a naked or hidden single), points at it, and fills it on a second tap; also in Pause > Hint",
+    "undo": "The undo button (or Z) takes back numbers, notes and erases",
+    "level-select-or-daily": "Easy, Medium and Hard on the title, plus a Daily puzzle that is the same for everyone each day",
+    "results": "Solved card with mistakes, time, best time, streak, hints used, badges, rank and daily streak"
+   },
+   "saves": [
+    "sudoBest_easy",
+    "sudoBest_medium",
+    "sudoBest_hard",
+    "sudo_solved"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-block-blast": {
    "title": "Block Blast",
@@ -2135,14 +2468,61 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Choose Classic or the Daily blocks and press Play.",
+    "Tap one of the three blocks under the grid to pick it up.",
+    "Tap the grid: the block lands with its top-left corner on that square.",
+    "Fill a whole row or column to blast it. The game ends when none of your blocks fits."
+   ],
+   "tips": [
+    "Blocks never rotate, so keep room for long bars and the big L.",
+    "Clearing lines on back-to-back moves builds a combo that multiplies the points.",
+    "Every clear charges the Blast meter; at 5 you get a bomb that wipes a 3x3 area.",
+    "Hint tries every block in every spot and shows a ghost where the best one goes.",
+    "Undo takes back your last drop, as often as you like."
+   ],
+   "controls": {
+    "keyboard": "1, 2 or 3 picks a block, arrow keys move it, Enter drops it, Z undoes. P or Esc pauses.",
+    "touch": "Tap a block, then tap the grid. Undo, Hint and New Game sit under the tray."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "BOMBSQUAD",
+     "effect": "Bomb squad: a bomb joins your tray right now"
+    },
+    {
+     "code": "TINYBLOCKS",
+     "effect": "Tiny blocks: every new block is 3 squares or fewer"
+    },
+    {
+     "code": "FRESHTRAY",
+     "effect": "Fresh tray: swap your blocks for three new ones"
+    }
+   ],
+   "difficulty": "An adaptive curve: the first eight blocks are small, blocks get smaller again when the grid is crowded, and a new tray is re-rolled toward small pieces when nothing would fit.",
+   "features": {
+    "hints": "Hint button (and Pause > Hint): tries every block in every spot, picks the drop that clears most and leaves the fewest gaps, and shows it as a ghost on the grid",
+    "undo": "Undo button (or Z) takes back the last drop, any number of times",
+    "level-select-or-daily": "Daily blocks on the title: everyone gets the same blocks in the same order today, with its own daily best",
+    "results": "The grid shows GAME OVER with the run's points, clears and best combo in a card, and the score board updates"
+   },
+   "saves": [
+    "blockblast_best",
+    "blockblast_clears"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-minesweeper": {
    "title": "Minesweeper",
@@ -2177,15 +2557,62 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick Easy (8 mines), Normal (10), Hard (16) or the Daily board, then press Play.",
+    "Tap a square to open it. Your first tap is always safe.",
+    "A number tells you how many mines touch that square, diagonals included.",
+    "Hold a square (or right-click) to flag a mine. Open every safe square to win."
+   ],
+   "tips": [
+    "A 1 with only one hidden neighbour: that neighbour is a mine.",
+    "When a number already has all its mines flagged, tap it to open the rest around it.",
+    "Compare two numbers side by side: the difference often proves a square safe.",
+    "Hint only uses the numbers and flags on the board, and names the square it proves.",
+    "Took a mine? Take back that move: the game goes on, but it will not count for your records."
+   ],
+   "controls": {
+    "keyboard": "Tab or the arrow keys pick a square, Enter opens it, F flags it. P or Esc pauses.",
+    "touch": "Tap to open, hold to flag (or turn on Flag mode). Tap a number to open around it."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "SAFEPATH",
+     "effect": "Safe path: five safe squares open for you"
+    },
+    {
+     "code": "MINERADAR",
+     "effect": "Mine radar: hidden mines show faintly"
+    },
+    {
+     "code": "EXTRALIFE",
+     "effect": "Extra life: the next mine you tap is flagged instead"
+    }
+   ],
+   "difficulty": "Easy has 8 mines, Normal 10 and Hard 16 on the 9x9 board. The Daily board has 12 mines, is the same for everyone today and starts already opened.",
+   "features": {
+    "hints": "Hint button (and Pause > Hint): proves a safe square or a mine from the numbers, says which numbers prove it and makes the square glow; if nothing is certain it names the least risky square",
+    "undo": "Undo button takes back any flag or opening; Take back that move on the Boom card undoes a mine (that game then keeps no record)",
+    "level-select-or-daily": "Easy, Normal and Hard on the title, plus a Daily board that is the same for everyone each day",
+    "results": "Cleared or Boom card with time, best, flag accuracy, stars, rank and achievements"
+   },
+   "saves": [
+    "minesBest",
+    "minesWins"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-tower-stack": {
    "title": "Tower Stack",
@@ -2221,15 +2648,63 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Press Play: a block slides back and forth above the tower.",
+    "Tap, click or press Space to drop it.",
+    "Only the part that lands on the tower stays, so the blocks get narrower.",
+    "Stack as high as you can. Miss the tower completely and the run ends."
+   ],
+   "tips": [
+    "Drop when the block's middle crosses the dashed centre line: within 3 px is a PERFECT (+2).",
+    "Three PERFECTs in a row widen the block again.",
+    "Every 10th block is gold and worth 3 extra points.",
+    "Every 12 blocks earns a heart (up to 3); a heart saves one complete miss.",
+    "Your best run's tower shows as a faint ghost to beat."
+   ],
+   "controls": {
+    "keyboard": "Space or Enter drops the block. P or Esc pauses.",
+    "touch": "Tap anywhere to drop the block"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "SLOWMO",
+     "effect": "Slow motion: the block slides at 55% speed"
+    },
+    {
+     "code": "MAGNET",
+     "effect": "Magnet: anything within 14 px of centre counts as PERFECT"
+    },
+    {
+     "code": "FULLHEARTS",
+     "effect": "Full hearts: three hearts, topped up after every save"
+    }
+   ],
+   "difficulty": "An adaptive curve: the block slides a little faster with every block on the tower, up to nearly twice its starting speed.",
+   "features": {
+    "one-tap-start": "Play starts the run; the first tap drops the first block",
+    "instant-restart": "Play Again (or Space) on the results card starts a new tower at once",
+    "best-score-badge": "BEST under the height at the top of the screen, and on the title",
+    "tutorial-card": "First-run card with a tapping finger that stays until your first drop",
+    "results": "Game Over card with height, best and best PERFECT chain"
+   },
+   "saves": [
+    "towerBest",
+    "towerGhost"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-connect-four": {
    "title": "Connect Four",
@@ -2264,15 +2739,62 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick Pass & Play or a CPU (Easy, Normal or Hard) and press Play.",
+    "Tap a column to drop a disc: it falls to the lowest free hole.",
+    "Red always goes first, then Yellow.",
+    "Four in a row across, down or diagonally wins. A full board is a draw."
+   ],
+   "tips": [
+    "The middle column is part of the most possible fours: start there.",
+    "Before you drop, check the hole above your disc: could it hand the other player a win?",
+    "Build two threats at once; the other player can only block one.",
+    "Drop a disc in the gold ⚡ column to earn a hint coin.",
+    "Undo takes back your move and the CPU's reply."
+   ],
+   "controls": {
+    "keyboard": "1 to 7 drop in a column, or Left/Right then Enter. Z undoes, N starts a new round. P or Esc pauses.",
+    "touch": "Tap a column. New Round, Undo and Hint sit under the board."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "CPUNAP",
+     "effect": "The CPU naps: you move twice, three times"
+    },
+    {
+     "code": "XRAY",
+     "effect": "X-ray: a yellow ring shows the column the CPU wants"
+    },
+    {
+     "code": "EXTRACOINS",
+     "effect": "Ten extra ⚡ coins for hints"
+    }
+   ],
+   "difficulty": "Easy CPU always takes a win but otherwise plays a random column almost half the time; Normal always takes a win, blocks yours and avoids handing you one; Hard searches six moves ahead.",
+   "features": {
+    "rules-screen": "The title card lists the three rules; Pause > How to play has them too, and Replay tutorial brings the card back",
+    "ai-difficulty": "Easy, Normal and Hard CPU on the title (Hard uses a six-move search)",
+    "undo": "Undo button (or Z) takes back your last move and the CPU's reply; in Pass & Play one move at a time",
+    "results": "Win, lose or draw card with the score, streak and totals; the winning four glow and a line is drawn through them"
+   },
+   "saves": [
+    "c4Best",
+    "c4Wins"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-chess": {
    "title": "Chess",
@@ -2308,14 +2830,61 @@
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick an opponent (Easy, Medium or Hard bot, or 2 players) and a time control, then press Play.",
+    "You are White and move first. Tap a piece to see its moves, then tap a dot (or drag the piece).",
+    "Checkmate the black king: attack it so it has no escape.",
+    "The rules card (the ? key, or Replay tutorial) explains how every piece moves, castling and en passant."
+   ],
+   "tips": [
+    "Control the centre early with pawns and knights.",
+    "Castle early to tuck your king away.",
+    "Before every move, check what your opponent is attacking.",
+    "Hint arrows the engine's move and says why; Undo takes a move back.",
+    "The Learn academy has openings, traps, endgames and a quiz."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys move the cursor, Enter or Space picks up and drops a piece, U undoes, R redoes, H hints, F flips, ? opens the rules. P pauses.",
+    "touch": "Tap or drag pieces; long-press to draw an arrow. The buttons beside the board do the rest."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "EXTRAQUEEN",
+     "effect": "Extra queen: a white queen drops onto your side of the board"
+    },
+    {
+     "code": "BOTNAP",
+     "effect": "The bot naps: its next 3 moves are random"
+    },
+    {
+     "code": "AUTOHINT",
+     "effect": "Auto hint: the best move is arrowed on every turn"
+    }
+   ],
+   "difficulty": "Easy bot picks among near-best moves one move deep, Medium searches two moves and Hard three, each with an opening book. Clocks from 1 to 10 minutes or unlimited.",
+   "features": {
+    "rules-screen": "The Rules card (goal, how each piece moves, castling, en passant) opens with the ? key, the help button and Pause > Replay tutorial",
+    "ai-difficulty": "Easy, Medium and Hard bots on the start screen, plus bot personalities in the game",
+    "undo": "Undo and Redo buttons (U and R keys)",
+    "results": "Result card (win, loss, draw, resign or time) with moves played, plus Rematch, Share PGN and Review"
+   },
+   "saves": [
+    "chessj__stats",
+    "chessMetaW"
+   ],
+   "start": "#ssPlay",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-tic-tac-toe": {
    "title": "Tic Tac Toe",
@@ -2350,15 +2919,62 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick 2 Players, Easy CPU, Hard CPU or Misère and press Play.",
+    "You are X and go first. Tap an empty square.",
+    "Three in a row across, down or corner to corner wins; a full board is a draw.",
+    "In Misère, making three in a row loses."
+   ],
+   "tips": [
+    "The centre sits on four lines: take it when you can.",
+    "If the CPU takes the centre, answer with a corner, not an edge.",
+    "Two open lines at once (a fork) is the only way to beat anyone who blocks.",
+    "Hard CPU plays perfectly, so a draw is a good result.",
+    "Hint names the best square and says whether it wins, blocks or keeps lines open."
+   ],
+   "controls": {
+    "keyboard": "1 to 9 play a square (or Tab/arrows then Enter), Z undoes. P or Esc pauses.",
+    "touch": "Tap a square. New Round, Undo and Hint sit under the board."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "CPUNAP",
+     "effect": "The CPU naps: you move twice, three times"
+    },
+    {
+     "code": "XRAY",
+     "effect": "X-ray: see the square the CPU wants next (pink outline)"
+    },
+    {
+     "code": "CLEANSLATE",
+     "effect": "Clean slate: the score board goes back to 0-0"
+    }
+   ],
+   "difficulty": "Easy CPU picks any square that does not hand you a win; Hard CPU looks ahead through every move and never loses. Misère turns the rules upside down.",
+   "features": {
+    "rules-screen": "The title card lists the rules; Pause > How to play has them too, and Replay tutorial brings the card back",
+    "ai-difficulty": "Easy CPU and Hard CPU (perfect play), plus a Misère CPU",
+    "undo": "Undo button (or Z) takes back your move and the CPU's reply; in 2 Players one move at a time",
+    "results": "Win, lose or draw card with the score; the winning line glows and a line is drawn through it"
+   },
+   "saves": [
+    "tttBest",
+    "tttRecW"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-simon-says": {
    "title": "Simon Says",
@@ -2393,15 +3009,62 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Choose which round to start at (1, 5 or 10) and press Play.",
+    "Watch Simon light up the pads and play their notes.",
+    "Repeat the whole sequence by tapping the pads in the same order.",
+    "Each round adds one more colour. One wrong tap ends the game."
+   ],
+   "tips": [
+    "Say the colours in your head, or hum the notes: sound is easier to remember.",
+    "Group long sequences into chunks of three or four.",
+    "Replay shows the sequence again once per game.",
+    "The flashes speed up every round, so stay focused.",
+    "Missed one? Undo that tap once per game, right from the Game Over card."
+   ],
+   "controls": {
+    "keyboard": "1 red, 2 green, 3 blue, 4 yellow (or Tab to a pad and Enter). R replays. P or Esc pauses.",
+    "touch": "Tap the pads. Replay sits above them."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "SLOWSIMON",
+     "effect": "Slow Simon: flashes last almost twice as long"
+    },
+    {
+     "code": "SHOWNEXT",
+     "effect": "Show next: the pad to tap next is outlined"
+    },
+    {
+     "code": "ENDLESSREPLAY",
+     "effect": "Endless replay: replay the sequence as often as you like"
+    }
+   ],
+   "difficulty": "An adaptive curve: every round adds a colour and the flashes get quicker. Starting at round 5 or 10 skips the easy part; Mirror mode (tap the opposite pad) is the expert setting.",
+   "features": {
+    "hints": "Replay button shows the sequence again once per game; Pause > Hint names the next colour (and the mirrored pad in Mirror mode)",
+    "undo": "Undo that tap on the Game Over card takes back one wrong tap per game and lets you carry on",
+    "level-select-or-daily": "Start at round 1, 5 or 10 on the title",
+    "results": "Game Over card with the round reached, score, best, pads collected and the correct sequence played back"
+   },
+   "saves": [
+    "simonBest",
+    "simonScore"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-snake": {
    "title": "Snake",
@@ -2438,14 +3101,62 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick Easy, Normal or Hard speed and press Play.",
+    "The snake waits until your first swipe or arrow key.",
+    "Steer to the apples: each one makes you longer and a little faster.",
+    "Don't hit the walls, your own tail or the rocks that appear as you grow."
+   ],
+   "tips": [
+    "Grab ⭐ gold before it fades: +5, and it blasts a rock away.",
+    "A 👻 orb lets you slide through rocks for 5 seconds.",
+    "Eat apples quickly one after another to build an eat streak.",
+    "Every 5 apples is a new level; the snake speeds up a little with every apple.",
+    "When you get long, run along the edges so your tail can't box you in."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys or WASD steer; Space starts. P or Esc pauses.",
+    "touch": "Swipe on the board to steer"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "NOWALLS",
+     "effect": "No walls: the snake wraps round to the other side"
+    },
+    {
+     "code": "SLOWSNAKE",
+     "effect": "Slow snake: 60% speed"
+    },
+    {
+     "code": "GOLDRUSH",
+     "effect": "Gold rush: a gold star appears after every apple"
+    }
+   ],
+   "difficulty": "Easy, Normal and Hard set the starting speed; on every level the snake gets faster, up to more than twice its starting speed.",
+   "features": {
+    "difficulty": "Easy, Normal and Hard speed on the title (remembered)",
+    "power-up-list": "The title card lists the pick-ups: apples grow you, gold stars (+5) blast a rock, ghost orbs let you pass rocks for 5 s",
+    "wave-or-level-counter": "LV in the top bar goes up every 5 apples, as the snake speeds up",
+    "high-score-table": "Top 5 scores (with the speed) on the Game Over card; runs with codes on are left out",
+    "results": "Game Over card with score, best, medal, gold, streak, level, rank and the top 5"
+   },
+   "saves": [
+    "snakeBest",
+    "snakeTop"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-whack-a-mole": {
    "title": "Whack-a-Mole",
@@ -2482,14 +3193,62 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Press Play: a 30-second round starts.",
+    "Tap each 🐹 mole as it pops up, before it ducks back down.",
+    "⭐ gold moles are worth 5, 👑 crowns 10; a 🎃 boss takes three taps for 25.",
+    "Don't tap the 💣: it rumbles before it pops up and costs 3 points."
+   ],
+   "tips": [
+    "Five hits in a row without letting one escape raises the multiplier (up to x3).",
+    "A hit within 350 ms of a mole popping up earns a +1 speed bonus.",
+    "A boss appears every 100 points.",
+    "Moles pop up faster and stay up for less time as the clock runs down.",
+    "On a keyboard, the number pad layout (7 8 9 / 4 5 6 / 1 2 3) matches the holes."
+   ],
+   "controls": {
+    "keyboard": "Number keys 1 to 9 whack the matching hole (number-pad layout); Space starts. P or Esc pauses.",
+    "touch": "Tap the moles"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "BIGHAMMER",
+     "effect": "Big hammer: a whack also hits the moles next door"
+    },
+    {
+     "code": "NOBOMBS",
+     "effect": "No bombs: only moles pop up"
+    },
+    {
+     "code": "EXTRATIME",
+     "effect": "Extra time: rounds last 45 seconds"
+    }
+   ],
+   "difficulty": "An adaptive curve inside each round: moles appear faster and hide sooner as the timer runs down, and bosses arrive every 100 points.",
+   "features": {
+    "one-tap-start": "Play starts the 30-second round at once",
+    "instant-restart": "Play Again (or Space) on the results card starts a new round",
+    "best-score-badge": "🏆 best in the top bar next to the score",
+    "tutorial-card": "First-round card with a tapping finger that stays until your first whack",
+    "results": "Time's Up card with score, best, new-best badge and rank"
+   },
+   "saves": [
+    "whackBest",
+    "whackTWhacks"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-bubble-pop": {
    "title": "Bubble Pop",
@@ -2526,14 +3285,62 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Press Play: a 45-second round starts.",
+    "Tap bubbles to pop them before they float off the top.",
+    "Bigger bubbles score more; ⭐ bubbles split in two, gold bubbles add 4 seconds.",
+    "Never tap a 💣: it ends the round at once."
+   ],
+   "tips": [
+    "Pop quickly one after another to build a combo: every 4 pops raises the multiplier.",
+    "Gold bubbles buy time: +4 seconds each.",
+    "Bombs never appear in the first 8 seconds or the last 7.",
+    "Bubbles rise faster as the round goes on.",
+    "A ⭐ bubble needs two taps: the first splits it."
+   ],
+   "controls": {
+    "keyboard": "Space or Enter on Play; the round is played with the mouse. P or Esc pauses.",
+    "touch": "Tap the bubbles"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "NOBOMBS",
+     "effect": "No bombs: only bubbles float up"
+    },
+    {
+     "code": "SLOWBUBBLES",
+     "effect": "Slow bubbles: everything rises at 60% speed"
+    },
+    {
+     "code": "BIGBUBBLES",
+     "effect": "Big bubbles: every bubble is a big one"
+    }
+   ],
+   "difficulty": "An adaptive curve inside each round: bubbles come more often and rise faster, and bombs become more likely as time runs down.",
+   "features": {
+    "one-tap-start": "Play starts the 45-second round at once",
+    "instant-restart": "Play Again on the results card starts a new round",
+    "best-score-badge": "🏆 best in the top bar next to the score",
+    "tutorial-card": "First-round card with a tapping finger that stays until your first pop",
+    "results": "Time's Up or Boomed card with score, best, run stats, rank, lifetime pops and badges"
+   },
+   "saves": [
+    "bubbleBest",
+    "bubblePops"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-merge-blocks": {
    "title": "Merge Blocks",
@@ -2568,15 +3375,62 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick Easy, Normal, Hard or Daily drops and press Play.",
+    "Tap a column (or press 1 to 6) to drop the Next block into it.",
+    "Two touching blocks with the same number merge into one twice as big; merges can chain.",
+    "The game ends when every column is full."
+   ],
+   "tips": [
+    "Keep your biggest numbers along the bottom row.",
+    "A drop that sets off a chain scores every merge in it.",
+    "Every 8th drop brings a golden 8.",
+    "Hint plays every column in a copy of the board and picks the best one.",
+    "Undo takes back a drop and every merge it caused."
+   ],
+   "controls": {
+    "keyboard": "1 to 6 drop in a column, Z undoes, H hints. P or Esc pauses.",
+    "touch": "Tap a column. Undo and Hint sit in the top bar."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "UNDOALL",
+     "effect": "Undo all: unlimited undos"
+    },
+    {
+     "code": "BIGDROP",
+     "effect": "Big drop: every new block is an 8"
+    },
+    {
+     "code": "CLEARTOP",
+     "effect": "Clear top: the top two rows are wiped"
+    }
+   ],
+   "difficulty": "Easy gives 3 undos, Normal 1 and Hard none, and on Hard the next block can also be an 8. Daily drops is Normal with the same blocks for everyone today.",
+   "features": {
+    "hints": "Hint button (or H, or Pause > Hint): simulates every column with all its merges, highlights the best one and says what it scores",
+    "undo": "Undo button (or Z): 3 on Easy, 1 on Normal and Daily, none on Hard",
+    "level-select-or-daily": "Easy, Normal and Hard on the title, plus Daily drops with the same blocks for everyone each day",
+    "results": "Game Over card with score, best, megas, level, streak, medals and lifetime blocks"
+   },
+   "saves": [
+    "mergeBest",
+    "mergeXp"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-word-scramble": {
    "title": "Word Scramble",
@@ -3396,14 +4250,61 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Type a name, pick a look and press Set Sail.",
+    "Walk with WASD or the arrow keys, or drag anywhere; tap a thing to walk to it and use it.",
+    "Pick a tool (1 to 6): net for bugs, rod for fish, shovel to dig, watering can, axe, slingshot.",
+    "Tap villagers for requests, sell finds at the shop and donate new ones to the museum."
+   ],
+   "tips": [
+    "Shake fruit trees: fruit sells well and some requests ask for it.",
+    "Dig the sparkle spots ⭐ for fossils and treasure.",
+    "Plant in the soil by your house and water with 🚿 to grow twice as fast.",
+    "Pop balloons with the slingshot for presents.",
+    "A day lasts 8 minutes; crops keep growing while you are away."
+   ],
+   "controls": {
+    "keyboard": "WASD or arrows walk, Space or E acts, 1 to 6 pick tools, B opens the bag, T cycles tools. P or Esc pauses.",
+    "touch": "Drag to walk, tap to walk to a thing and use it; the tool bar sits along the bottom."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "BELLRAIN",
+     "effect": "Bell rain: 10,000 bells"
+    },
+    {
+     "code": "ALLTOOLS",
+     "effect": "All tools: rod, axe and slingshot unlocked"
+    },
+    {
+     "code": "QUICKGROW",
+     "effect": "Quick grow: every planted crop ripens now"
+    }
+   ],
+   "difficulty": "Cozy and self-paced: nothing can be lost. Requests grow in size as you go, the shop's better tools cost more, and the museum has four collections to fill.",
+   "features": {
+    "autosave": "The island saves on this device every 8 seconds and after every change (not while codes are on); the Journal can export and import a backup",
+    "goals-or-quests": "Villager requests (catch, fish, dig, harvest, shake, decorate) with bells and furniture as rewards; the quest chip in the top bar shows progress",
+    "day-time-ui": "Clock, day number, day/night and rain in the top bar; a Day summary card at the end of each day",
+    "inventory": "The 🎒 bag (20 slots), furniture at home and the museum collections",
+    "results": "The Day summary card (bells, bugs, fish, digs, harvests and vibe for the day) and the Islander's Journal"
+   },
+   "saves": [
+    "isleOfBells_v1"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "neon-dash": {
    "title": "Neon Dash",
