@@ -121,7 +121,7 @@ Anything it can't observe is REVIEW, never PASS.
 | File | What it is |
 | ---- | ---------- |
 | `qa/standard/standard.json` | The checks above, machine-readable. |
-| `qa/standard/meta/<game-id>.json` | Hand-written content for one game: `howto`, `tips`, `controls`, `tricks`, `cheats`, `difficulty`, `settings`, `features`, and overrides such as `pauseKeys` or `pauseButton`. |
+| `qa/standard/meta/<game-id>.json` | Hand-written content for one game: `howto`, `tips`, `controls`, `tricks`, `cheats`, `difficulty`, `settings`, `features`, `saves` (the storage keys that hold progress), `start` (how the harness gets from the title into play: a CSS selector such as `#playBtn`, or `key:Space`), and overrides such as `pauseKeys` or `pauseButton`. |
 | `tools/game_meta.py` | Merges the catalogue, the genre and tier tables, a scan of each game's code and the files above into `assets/game-meta.json`. `--report` lists what each game is missing. |
 | `assets/arcade-sdk.js` | The SDK every game loads first. Its header shows the whole API. |
 | `tools/inject_sdk.py` | Adds the SDK to every local game; run it again after re-vendoring a game or re-exporting a Godot build. `--check` fails if one is missing. |

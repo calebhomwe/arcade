@@ -340,6 +340,8 @@
     else if (m.type === 'howto') { pause('user'); showMenu('howto'); }
     else if (m.type === 'menu') pause('user');
     else if (m.type === 'restart') restart();
+    else if (m.type === 'exit') exitToTitle();
+    else if (m.type === 'tutorial') act('tutorial');
     else if (m.type === 'cheat') { var r = tryCode(m.code); post('ack', { of: 'cheat', ok: !!r.ok, message: r.message || '' }); }
     else if (m.type === 'hint') { var h = currentHint(); if (h) log('hint'); post('ack', { of: 'hint', ok: !!h, message: h }); }
   });

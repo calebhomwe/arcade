@@ -134,7 +134,13 @@ async function checkGame(g, browser) {
     const d0 = await dbg();
     const hasSdk = !!d0;
     if (heavy(g)) await wait(8000);
-    // Get past a title screen where one obvious button says so, the way a player would.
+    // Get into play: the game's meta may name its start control ("start": "#playBtn" or "key:Space");
+    // otherwise press one obvious Play/Start button, the way a player would.
+    if (meta.start) {
+      if (/^key:/.test(meta.start)) await page.keyboard.press(meta.start.slice(4)).catch(() => {});
+      else await f.locator(meta.start).first().click({ timeout: 3000 }).catch(() => {});
+      await wait(900);
+    }
     for (let n = 0; n < 2; n++) {
       const b = f.getByRole('button', { name: /^(?:[▶►]\s*)?(?:play(?: now)?|start(?: game)?|new game|let.s (?:go|play)|begin|tap to (?:play|start))\s*[!▶►]?$/i });
       let clicked = false;
@@ -156,15 +162,20 @@ async function checkGame(g, browser) {
       let btn = await f.locator('#arcade-sdk-btn').isVisible().catch(() => false);
       if (!btn) {
         // A game may keep its own pause button (pauseButton 'none') wired to ArcadeSDK.showMenu() or gamePaused().
-        const own = f.locator('button, [role=button]').filter({ hasText: /pause|❚❚|⏸|II/i }).or(f.locator('[aria-label*="ause" i], [title*="ause" i]')).first();
-        if (await own.isVisible().catch(() => false)) {
+        const cands = f.locator('button, [role=button]').filter({ hasText: /pause|❚❚|⏸|^\s*II\s*$/i }).or(f.locator('[aria-label*="ause" i], [title*="ause" i]'));
+        let own = null;
+        for (let i = 0; i < Math.min(await cands.count().catch(() => 0), 8); i++) if (await cands.nth(i).isVisible().catch(() => false)) { own = cands.nth(i); break; }
+        if (own) {
           await own.click({ timeout: 3000 }).catch(() => {}); await wait(300);
           const dp = await dbg();
           if (dp?.paused) { btn = true; notes.push('the game\'s own pause button opens the arcade menu'); await page.locator('#gpause').click().catch(() => {}); await wait(250); }
-          else notes.push('the game\'s own pause button does not pause through the arcade');
+          else { btn = null; fails.push('the game\'s own pause button did not pause through the arcade on this screen (wire it to ArcadeSDK.showMenu(), or hide it where it does nothing)'); }
         }
       }
-      if (!btn && !d0.caps.ownPauseUI) fails.push('no on-screen pause button');
+      if (btn === false && !d0.caps.ownPauseUI) {
+        const seen = await f.evaluate(() => [...document.querySelectorAll('button,[role=button]')].filter(e => { const b = e.getBoundingClientRect(), cs = getComputedStyle(e); return b.width && b.height && cs.visibility !== 'hidden' && cs.display !== 'none'; }).map(e => (e.getAttribute('aria-label') || e.textContent || e.id).trim().slice(0, 16)).slice(0, 6)).catch(() => []);
+        fails.push('no on-screen pause button' + (seen.length ? ' (visible buttons: ' + seen.join(', ') + ')' : ''));
+      }
       const c0 = (await dbg()).clock;
       await page.locator('#gpause').click({ timeout: 3000 }).catch(() => fails.push('the arcade Pause button was not clickable'));
       await wait(350);
@@ -196,10 +207,12 @@ async function checkGame(g, browser) {
       set('U05', rf.length ? 'FAIL' : (animating ? 'PASS' : 'REVIEW'), rf.length ? rf.join('; ') : animating ? 'Resumed where it stopped: no time jump (' + (drift == null ? '?' : Math.round(drift)) + ' ms), and the picture moves again.' : 'Resumed and the clock is in step, but the scene was not moving, so continuity was not seen.');
       // ---- keys and hidden tab ----
       const keyNote = [];
-      if (meta.pauseKeys) {
-        await f.evaluate(() => document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'p', bubbles: true, cancelable: true })));
+      const keys = d0.pauseKeys || '';   // what the SDK really bound (the game's init can override the metadata)
+      if (keys) {
+        const openKey = keys === 'esc' ? 'Escape' : 'p';
+        await f.evaluate(k => document.body.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true })), openKey);
         await wait(200); const k1 = await dbg();
-        if (!k1?.paused) fails.push('P did not pause'); else keyNote.push('P pauses');
+        if (!k1?.paused) fails.push((openKey === 'p' ? 'P' : 'Esc') + ' did not pause'); else keyNote.push((keys === 'p+esc' ? 'P and Esc pause' : openKey === 'p' ? 'P pauses' : 'Esc pauses'));
         await f.evaluate(() => document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })));
         await wait(200); const k2 = await dbg();
         if (k2?.paused) { fails.push('Esc did not close the menu'); await page.locator('#gpause').click().catch(() => {}); }
@@ -233,11 +246,10 @@ async function checkGame(g, browser) {
       set('U10', tips >= 3 && tipShown ? 'PASS' : 'FAIL', tips >= 3 ? (tipShown ? `${tips} tips; the pause menu shows one.` : `${tips} tips written but the pause menu did not show one.`) : `${tips} tips written; 3 needed.`);
       // ---- H01 tutorial ----
       if (d0.caps.tutorial) {
-        const tb = f.locator('#arcade-sdk [data-a="tutorial"]');
-        if (await tb.count()) { await tb.click().catch(() => {}); await wait(500); }
+        await post({ type: 'tutorial' }); await wait(500);
         const dt = await dbg();
         const ran = (dt?.events || []).some(e => e.name === 'tutorial');
-        set('H01', ran ? 'PASS' : 'FAIL', ran ? 'Replay tutorial ran from the How to play panel.' : 'The game declares a tutorial but it did not run.');
+        set('H01', ran ? 'PASS' : 'FAIL', ran ? 'The arcade asked for the tutorial and the game replayed it.' : 'The game declares a tutorial, but its handler threw or did not run.');
       } else set('H01', 'FAIL', 'The game does not offer a tutorial replay (ArcadeSDK onTutorial).');
       if ((await dbg())?.paused) { await page.locator('#gpause').click().catch(() => {}); await wait(200); }
       // ---- H02 hints ----
@@ -264,10 +276,9 @@ async function checkGame(g, browser) {
       } else set('T01', 'N/A', 'Only board-sports games need a trick list.');
       // ---- U07 exit, U06 restart (last: they change the game) ----
       if (d0.caps.exit) {
-        await page.locator('#gpause').click().catch(() => {}); await wait(250);
-        await f.locator('#arcade-sdk [data-a="exit"]').click().catch(() => {}); await wait(600);
-        const de = await dbg();
-        set('U07', (de?.events || []).some(e => e.name === 'exit') ? 'PASS' : 'FAIL', 'Exit to title handled by the game.');
+        await post({ type: 'exit' }); await wait(600);
+        const de = await dbg(), exited = (de?.events || []).some(e => e.name === 'exit');
+        set('U07', exited ? 'PASS' : 'FAIL', exited ? 'Exit to title handled by the game, in place.' : 'The game declares an exit, but its handler threw or did not run.');
       } else set('U07', 'FAIL', 'Exit to title falls back to reloading the game (add ArcadeSDK onExit).');
       if (d0.caps.restart) {
         await post({ type: 'restart' }); await wait(600);
