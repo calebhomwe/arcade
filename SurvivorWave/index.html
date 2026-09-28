@@ -26,7 +26,18 @@ body{background:#0c1020;display:flex;align-items:center;justify-content:center;f
 
 canvas{display:block;position:absolute;inset:0}
 
-.back{position:fixed;top:10px;left:12px;color:rgba(255,255,255,.9);text-decoration:none;font-size:15px;font-weight:800;z-index:20;text-shadow:0 2px 4px rgba(0,0,0,.8)}
+.back{position:fixed;top:4px;left:6px;color:rgba(255,255,255,.9);text-decoration:none;font-size:15px;font-weight:800;z-index:20;text-shadow:0 2px 4px rgba(0,0,0,.8);min-height:40px;min-width:40px;padding:0 6px;display:inline-flex;align-items:center}
+/* inside the arcade its own Back button leads out; the hub link would load the hub inside the game frame */
+html.in-arcade .back{display:none}
+/* the title menu is taller than a laptop screen: let it scroll instead of cutting off the logo */
+#start{overflow-y:auto;justify-content:safe center}
+/* the small title controls added over time: 12px text and 40px tap targets on a phone */
+#kscDiff button,#saveIo .btn,#ironBtn{font-size:12px!important;min-height:40px}
+/* arcade standard: the codes label, in the gold-chip look */
+#codesOn{position:fixed;top:56px;right:12px;z-index:20;font-family:'Luckiest Guy',cursive;font-size:14px;letter-spacing:1px;color:#5a3a02;
+  background:linear-gradient(180deg,#ffe14d,#ffb020);border-radius:999px;padding:5px 12px 3px;box-shadow:0 3px 0 #b45309;pointer-events:none}
+#codesOn[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){.ultBtn.full{animation:none}.btn,.hcard{transition:none}}
 
 .mute{position:fixed;top:8px;right:12px;z-index:20;width:42px;height:42px;border:none;border-radius:12px;background:rgba(10,14,30,.55);border:2px solid rgba(255,255,255,.18);color:#fff;font-size:18px;cursor:pointer}
 
@@ -66,7 +77,7 @@ canvas{display:block;position:absolute;inset:0}
 
 .hcard .hn{font-family:'Luckiest Guy',cursive;font-size:14px;color:#ffd23f;letter-spacing:.5px;margin-top:2px}
 
-.hcard .hd{font-size:11px;color:#a8b6ce;font-weight:600;line-height:1.35;margin-top:2px}
+.hcard .hd{font-size:12px;color:#a8b6ce;font-weight:600;line-height:1.35;margin-top:2px}
 
 .hcard.sel{border-color:#ffd23f;background:linear-gradient(168deg,#7a5a10,#3a2906);box-shadow:0 0 20px rgba(255,210,63,.45);transform:translateY(-3px)}
 
@@ -418,9 +429,11 @@ background-repeat:no-repeat}
 
 <a class="back" href="../index.html">← Hub</a>
 
-<button class="mute" id="muteBtn">🔊</button>
+<button class="mute" id="muteBtn" style="right:62px" aria-label="Sound on or off">🔊</button>
 
-<button class="mute" id="setBtn" style="right:62px">⚙</button>
+<button class="mute" id="setBtn" style="right:112px" aria-label="Settings">⚙</button>
+
+<div id="codesOn" hidden>CODES ON</div>
 
 <button class="dashBtn" id="dashBtn">⚡</button>
 
@@ -1773,6 +1786,8 @@ settings.sfxVol=isFinite(+settings.sfxVol)?Math.min(1,Math.max(0,+settings.sfxVo
 settings.musicVol=isFinite(+settings.musicVol)?Math.min(1,Math.max(0,+settings.musicVol)):0.6;
 
 try{Object.assign(settings,JSON.parse(localStorage.getItem('survivorSettings')||'{}'));}catch(_){}
+/* prefers-reduced-motion: screen shake and flash effects start off (Settings can still turn them on) */
+try{if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){settings.shake=false;settings.flash=false;}}catch(_){}
 
 function saveSettings(){try{localStorage.setItem('survivorSettings',JSON.stringify(settings));}catch(_){}}
 
@@ -2429,9 +2444,9 @@ window.addEventListener('keydown',e=>{
 
 window.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
 
-window.addEventListener('blur',()=>{if(state==='play')togglePause();});
+window.addEventListener('blur',()=>{if(state==='play'&&!(window.ArcadeSDK&&ArcadeSDK.paused))togglePause();});
 
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='play')togglePause();});
+document.addEventListener('visibilitychange',()=>{if(window.ArcadeSDK)return;/*the SDK pauses a hidden tab itself*/if(document.hidden&&state==='play')togglePause();});
 
 function tStart(e){
 
@@ -2684,6 +2699,7 @@ function startGame(){
   state='play';
   Music.start();
   hideEl('start');hideEl('over');hideEl('win');hideEl('lvlup');hideEl('pause');hideEl('chestOv');
+  swScene('play');
 
 }
 
@@ -2864,7 +2880,7 @@ function gameOver(){
 
   const sc=finalScore();
 
-  const isNew=sc>best;
+  const isNew=sc>best&&!swCheated();/*a run with codes on never replaces the best*/
 
   if(isNew){best=sc;localStorage.setItem('survivorBest2',sc);}
 
@@ -2897,6 +2913,7 @@ function gameOver(){
   rv.classList.toggle('hidden',(usedRevive||(player.revives<=0&&gold<150)));
 
   showEl('over');
+  swScene('over',finalScore());
 
   try{if(typeof lifeRecord==='function')lifeRecord('death');}catch(_){}/*B053 lifetime agg*/
 
@@ -2911,7 +2928,7 @@ function victory(){
 
   const sc=finalScore()+2000;
 
-  const isNew=sc>best;
+  const isNew=sc>best&&!swCheated();
 
   if(isNew){best=sc;localStorage.setItem('survivorBest2',sc);}
 
@@ -2980,6 +2997,7 @@ function victory(){
   Music.stop();
 
   showEl('win');
+  swScene('over',finalScore()+2000);
 
   for(let i=0;i<80;i++)spawnConfetti();
 
@@ -2996,6 +3014,9 @@ function finalScore(){
 function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
 
 function togglePause(){
+  /* In the arcade the SDK's pause menu (Resume, Restart, How to play, Sound, Codes, Exit) is the one
+     pause menu: it freezes the loop, timers and audio together. */
+  if(window.ArcadeSDK){ if(ArcadeSDK.paused) ArcadeSDK.resume(); else if(state==='play') ArcadeSDK.pause(); return; }
 
   if(state==='paused'&&typeof echoOv!=='undefined'&&document.getElementById('echoOv')&&!document.getElementById('echoOv').classList.contains('hidden'))return;
 
@@ -5164,6 +5185,7 @@ if(dist2(e.x,e.y,fb.x,fb.y)<(e.r+13)*(e.r+13)){dealDamage(e,fb.dmg,player.x,play
 }
 
 function hurtPlayer(dmg){
+  if(typeof SWC!=='undefined'&&SWC.god)return;/*GODMODE code*/
 
   /* DAILY-PATCH-R2 */if(dailyActive&&dailyMod&&dailyMod.dm)dmg*=dailyMod.dm;
 
@@ -5186,7 +5208,7 @@ function hurtFx(){
 
   sfx('hit');
 
-  if(player.hp<=0){player.hp=0;gameOver();}
+  if(player.hp<=0){if(typeof SWC!=='undefined'&&SWC.god){player.hp=1;return;}player.hp=0;gameOver();}
 
 }
 
@@ -13783,7 +13805,7 @@ function loop(now){
 
   /*B030*/let b30dt=dt; if(hitStopT>0){hitStopT-=dt;b30dt=0;gameTime+=dt;} /*40ms hit-stop: freeze sim, keep clock*/
 
-  update(b30dt);
+  update(b30dt*(typeof SWC!=='undefined'&&SWC.slow?0.5:1));/*SLOWMO code*/
 
   saveAcc=(saveAcc||0)+dt;if(saveAcc>5){saveAcc=0;try{saveMeta();}catch(_){}}
   render();
@@ -16829,8 +16851,11 @@ gameOver=function(){
   try{
     var r=_go2.apply(null,arguments);
     var el=document.getElementById('winGold')||document.querySelector('.shopBox h2');
-    var p2=[...document.querySelectorAll('div,span,p')].find(d=>d.textContent&&d.textContent.indexOf('Gold earned')>=0);
-    if(p2&&!p2._oil){p2._oil=1;p2.innerHTML+=' \u00b7 \uD83D\uDD37 '+Math.round(window.oil||0)+' oil held';}
+    /* the gold line itself: searching every div for 'Gold earned' matched the whole #over card, and
+       innerHTML+= on it rebuilt the card and dropped the Try Again and Revive click handlers */
+    var gl=document.getElementById('finGold'), p2=gl&&gl.parentNode;
+    if(p2){var oi=p2.querySelector('.xOil');if(!oi){oi=document.createElement('span');oi.className='xOil';p2.appendChild(oi);}
+      oi.textContent=' \u00b7 \uD83D\uDD37 '+Math.round(window.oil||0)+' oil held';}
     return r;
   }catch(_){return _go2.apply(null,arguments);}
 };
@@ -17144,7 +17169,7 @@ setInterval(function(){
       if(!start)window.__gpStart=0;
       if(a&&!window.__gpA){window.__gpA=1;
         if(state==='levelup'){var bs=[...document.querySelectorAll('#lvlup button')];if(bs[0])bs[0].click();}
-        else if(state==='ready'){var f=[...document.querySelectorAll('button')].find(x=>x.textContent.includes('FIGHT'));if(f)f.click();}
+        else if(state==='ready'){var f=document.getElementById('playBtn');if(f)f.click();}
       }
       if(!a)window.__gpA=0;
     }
@@ -17158,7 +17183,7 @@ setInterval(function(){
     if(cards.length>=2){
       window.__heroHintDone=true;
       var note=document.createElement('div');
-      note.style.cssText='text-align:center;color:#8fa1c7;font-size:11px;margin:4px 0';
+      note.style.cssText='text-align:center;color:#8fa1c7;font-size:12px;margin:4px 0';
       note.textContent='\u2726 New heroes join your roster automatically \u2014 Crimson drinks, Bolt builds.';
       var pb2=document.getElementById('playBtn');
       if(pb2)pb2.parentNode.insertBefore(note,pb2);
@@ -17866,7 +17891,7 @@ setInterval(function(){
     if(window.__verFoot||state!=='ready')return;
     var f=document.createElement('div');
     f.textContent='KINGDOM SURVIVOR CLASH \u00b7 v1.1 \u00b7 70 iterations \u00b7 web build';
-    f.style.cssText='position:fixed;bottom:6px;left:10px;font-size:10px;color:rgba(143,161,199,0.6);z-index:5;pointer-events:none';
+    f.style.cssText='position:fixed;bottom:6px;left:10px;font-size:12px;color:rgba(143,161,199,0.6);z-index:5;pointer-events:none';
     document.body.appendChild(f);window.__verFoot=1;
   }catch(_){}
 },1500);
@@ -18002,15 +18027,16 @@ setInterval(function(){
   try{
     if(state!=='over'&&state!=='win')return;
     if(window.__tbDone)return;
-    var p2=[...document.querySelectorAll('div,span,p')].find(d=>d.textContent&&d.textContent.indexOf('Gold earned')>=0);
-    if(p2&&!p2._tb){
-      p2._tb=1;
+    var gl=document.getElementById(state==='win'?'winGold':'finGold'), p2=gl&&gl.parentNode;   /* the gold line, not the whole card */
+    if(p2){
+      window.__tbDone=1;
       var par=0;try{for(var i=0;i<window.TOWERSYS.towers.length;i++)if((window.TOWERSYS.towers[i].tier||0)>=4)par++;}catch(_){}
-      p2.innerHTML+=' \u00b7 \uD83C\uDFF0 '+window.TOWERSYS.placed+' towers'+(par?' \u00b7 \u2B50 '+par+' paragons':'');
+      var tb=p2.querySelector('.xTow');if(!tb){tb=document.createElement('span');tb.className='xTow';p2.appendChild(tb);}
+      tb.textContent=' \u00b7 \uD83C\uDFF0 '+window.TOWERSYS.placed+' towers'+(par?' \u00b7 \u2B50 '+par+' paragons':'');
     }
   }catch(_){}
 },500);
-setInterval(function(){try{if(state==='ready')window.__tbDone=0;}catch(_){}},1200);
+setInterval(function(){try{if(state==='ready'||state==='play')window.__tbDone=0;}catch(_){}},1200);
 /* G8: M mute */
 document.addEventListener('keydown',function(ev){
   try{
@@ -18046,4 +18072,57 @@ togglePause=function(){
   return r;
 };
 })();
+</script>
+
+<script>
+/* ============================== ARCADE STANDARD ==============================
+   Caleb's Arcade hooks: scenes, restart, exit, tutorial replay, hints and codes.
+   Pause is the arcade's menu (see togglePause). A session with codes on is not saved. */
+(function(){ var f=false; try{ f=window.parent!==window; }catch(e){ f=true; } if(f) document.documentElement.classList.add('in-arcade'); })();
+var SWC={god:false,slow:false};
+function swCheated(){ return !!(window.ArcadeSDK&&window.ArcadeSDK.cheated); }
+function swScene(scene,score){ try{ if(window.ArcadeSDK) ArcadeSDK.state(score==null?{scene:scene}:{scene:scene,score:score}); }catch(e){} }
+/* Codes on = an unsaved session: nothing this page writes to localStorage sticks until a reload
+   (the arcade's own mute switch still does). That covers best score, the Hall of Valor board,
+   gold, armory levels and achievements in one place. */
+var SW_FREEZE=false;
+(function(){ try{ var raw=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k){ if(SW_FREEZE&&this===window.localStorage&&!/^arcade_/.test(String(k))) return; return raw.apply(this,arguments); };
+}catch(e){} })();
+var SW_CODES={GODMODE:'You take no damage',LEVELUP:'Instant level up',SLOWMO:'The whole fight runs at half speed',FULLHEAL:'Health refilled'};
+function swCode(c){
+  c=String(c||'').trim().toUpperCase();
+  if(!SW_CODES[c]) return {ok:false};
+  SW_FREEZE=true;
+  if(c==='GODMODE') SWC.god=true;
+  if(c==='SLOWMO') SWC.slow=true;
+  if(c==='FULLHEAL'&&player) player.hp=player.maxHp;
+  if(c==='LEVELUP'&&player&&state==='play'){ var pm=1; try{ pm=xpPaceMul()||1; }catch(e){} gainXP((player.xpNext-player.xp)/pm+1); }
+  document.getElementById('codesOn').hidden=false;
+  return {ok:true,message:SW_CODES[c]+'. Codes on: this session is not saved.'};
+}
+function swHint(){
+  if(state==='ready') return 'Press FIGHT. Pick a hero card first: each one starts with a different weapon.';
+  if(state==='levelup') return 'Pick an upgrade. A weapon at Lv5 plus its matching passive unlocks an EVO form.';
+  if(state==='chest') return 'Take the chest reward: elites drop chests.';
+  if(state==='over'||state==='win') return 'Spend gold in the ARMORY between runs: its upgrades are permanent.';
+  if(player&&player.hp<player.maxHp*0.35) return 'Low health: dash (Space or the lightning button) out of the crowd and look for a chicken drop.';
+  var left=Math.max(0,Math.ceil((typeof runGoal==='number'?runGoal:600)-(gameTime||0)));
+  return 'Survive '+Math.floor(left/60)+':'+String(left%60).padStart(2,'0')+' more. Keep moving in wide circles so the horde trails into your weapons.';
+}
+function swToTitle(){
+  ['pause','over','win','lvlup','chestOv','settingsOv','shopOv'].forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.add('hidden'); });
+  try{ Music.stop(); }catch(e){}
+  state='ready'; showEl('start'); try{ renderHeroes(); }catch(e){}
+  swScene('title');
+}
+if(window.ArcadeSDK) ArcadeSDK.init({
+  pauseButton:'tr',            // sound and settings moved one slot left
+  onRestart:function(){ startGame(); },
+  onExit:swToTitle,
+  onTutorial:function(){ tutDone=false; tutGem=false; tutPick=false; try{ localStorage.removeItem('survivorTut'); }catch(e){} startGame(); },
+  onHint:swHint,
+  onCheat:swCode
+});
+if(state==='ready') swScene('title');
 </script>

@@ -379,14 +379,70 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a hero card, then press FIGHT. Your weapons fire on their own.",
+    "Move to dodge the horde and pick up the XP gems enemies drop.",
+    "Each level up, choose a new weapon, a weapon upgrade or a passive.",
+    "A weapon at Lv5 plus its matching passive evolves into an EVO form.",
+    "Survive 10 minutes to clear the stage; spend the gold you earn in the Armory."
+   ],
+   "tips": [
+    "Keep moving in wide circles: the horde trails behind you, into your weapons.",
+    "Dash (Space) gives you a moment of invulnerability: use it to slip out when you are boxed in.",
+    "Elites drop chests with free upgrades: hunt them.",
+    "The ULT meter fills as you fight: press R when it glows.",
+    "Armory upgrades are permanent, so even a short run makes the next one easier."
+   ],
+   "controls": {
+    "keyboard": "Enter or Space starts from the title. WASD or arrows to move, Space dash, R ultimate, T opens the turret build bar, Q mortar strike, P pause (Esc also pauses in the arcade).",
+    "touch": "Drag anywhere to move; tap the lightning button to dash and ULT for the ultimate.",
+    "gamepad": "Left stick to move, A to dash, Start to pause."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "GODMODE",
+     "effect": "You take no damage"
+    },
+    {
+     "code": "LEVELUP",
+     "effect": "Instant level up"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "The whole fight runs at half speed"
+    },
+    {
+     "code": "FULLHEAL",
+     "effect": "Health refilled"
+    }
+   ],
+   "difficulty": "Casual, Normal and Nightmare on the title change enemy health, speed, spawn rate, XP and gold; PERIL mode adds +30% enemy health for +50% gold. Within a run the horde grows as the clock runs, with elites and bosses.",
+   "features": {
+    "difficulty": "CASUAL / NORMAL / NIGHTMARE on the title, plus PERIL mode, and chapters that get harder",
+    "power-up-list": "The ARMORY lists every permanent upgrade with its effect and level; level-up cards show each weapon and passive with what it does",
+    "wave-or-level-counter": "The HUD shows your level, the run clock with SURVIVE 10:00 under it, and your kill count",
+    "high-score-table": "RANKINGS opens the Hall of Valor: your top ten runs with score, kills, time, hero and difficulty; the results show your best score",
+    "results": "YOU DIED or SURVIVED! card with time, kills, level, score, best and gold, with Try again",
+    "tutorial": "First run: three pills (move, collect gems, dash), each cleared by doing it, with a skip button; Replay tutorial in How to play",
+    "hints": "Hint reads your state: low health, a pending level-up, or how long is left to survive"
+   },
+   "saves": [
+    "survivorBest2",
+    "survivorMeta"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "surviv-royale": {
    "title": "Surviv Royale",
@@ -423,14 +479,68 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Sixteen players drop in; you start in the middle with an M9 pistol.",
+    "Move, aim and shoot; walk over pick-ups to grab guns, ammo, bandages and medkits.",
+    "Shoot crates open for more loot.",
+    "Stay inside the circle: the red gas outside it hurts, and the circle closes in through six zones.",
+    "Be the last one standing to win."
+   ],
+   "tips": [
+    "Swap the M9 early: crates often hold an MP5, M870 or AK-47.",
+    "Heal behind cover: a bandage (3) takes 2 s, a medkit (4) takes 4 s.",
+    "When a dashed white ring appears, that is the next circle: get inside it before the gas arrives.",
+    "Bushes hide you: bots do not spot you in one from far away.",
+    "Reload (R) between fights, not in the middle of one."
+   ],
+   "controls": {
+    "keyboard": "WASD to move, mouse to aim, left button to fire, R reload, 3 bandage, 4 medkit. P or Esc pauses.",
+    "touch": "Drag on the left half to move, drag on the right half to aim and fire; RELOAD, BANDAGE and MEDKIT buttons on the right."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "GODMODE",
+     "effect": "You take no damage"
+    },
+    {
+     "code": "FULLAUTO",
+     "effect": "AK-47 with 200 rounds"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "Everything runs at half speed"
+    },
+    {
+     "code": "MEDKITS",
+     "effect": "+3 medkits and +5 bandages"
+    }
+   ],
+   "difficulty": "Easy, Normal and Hard on the menu set how well the 15 bots aim and how fast they open fire. Every match also tightens as the gas circle shrinks and hurts more in the last zones.",
+   "features": {
+    "difficulty": "Easy / Normal / Hard buttons on the menu (bot aim and reaction time)",
+    "power-up-list": "LOOT GUIDE on the menu: every gun with damage, fire rate and magazine, plus ammo, bandage, medkit and crates",
+    "wave-or-level-counter": "The HUD shows ZONE n/6 with the gas timer, and ALIVE players left",
+    "high-score-table": "BEST MATCHES on the menu: your top five finishes by place, with kills, time and date, beside wins, kills and best place",
+    "results": "ELIMINATED or VICTORY card with place, kills, damage and time survived, and Play again",
+    "tutorial": "First match: four prompts (move, aim and fire, loot, stay in the circle), each cleared by doing it; Skip, and Replay tutorial in How to play",
+    "hints": "Hint reads the gas, the next circle, your health, ammo and the nearest bot's direction"
+   },
+   "saves": [
+    "surviv_meta_v1"
+   ],
+   "start": "#btn-play",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hole-grind": {
    "title": "Hole Grind",
@@ -3236,14 +3346,72 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a critter and race three rivals down a 900 m 3D track after the 3-2-1 countdown.",
+    "Jump rocks, logs, spikes and gaps; slide under branches and pipes.",
+    "Run into crates for an item (lightning, glove, saw, mine, boost or shield) and use it on your rivals.",
+    "First across the line wins; your best winning time is saved."
+   ],
+   "tips": [
+    "Jump again in the air for a double jump.",
+    "Bounce mushrooms launch you high: land clear of the next obstacle.",
+    "Lightning stuns everyone ahead of you, so it is best when you are behind.",
+    "Drop a mine when a rival is right on your tail.",
+    "Mud slows you for a moment; rivals behind you speed up to catch you, so keep moving."
+   ],
+   "controls": {
+    "keyboard": "Enter or Space starts a race. Space, W or Up to jump (again in the air to double jump), S or Down to slide, F or Shift to use an item, M mute. P or Esc pauses.",
+    "touch": "Jump, slide and item buttons at the bottom; tap the item slot to use an item."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "ROCKETPAW",
+     "effect": "You run 20% faster"
+    },
+    {
+     "code": "NOSTUN",
+     "effect": "Nothing can stun you"
+    },
+    {
+     "code": "ITEMRAIN",
+     "effect": "A new item the moment you use one"
+    },
+    {
+     "code": "BIGHEADS",
+     "effect": "Party-size critters"
+    }
+   ],
+   "difficulty": "Easy, Normal and Hard on the title set the rivals' pace (7% slower on Easy, 5% faster on Hard). Rivals also rubber-band around you, so the pack stays close.",
+   "features": {
+    "countdown": "3-2-1-GO! countdown before every race",
+    "position-or-lap-hud": "Place (1st to 4th) top left with a progress bar showing every racer, and the race timer top right",
+    "results-with-time": "The results list every finisher's time (or metres behind) and your place",
+    "best-time-or-ghost": "Best winning time on the title and the results, with NEW BEST TIME",
+    "results": "YOU WIN! or PLACE card with all four results, best time and Restart",
+    "tutorial": "First race: three prompts (jump, slide, use an item), each cleared by doing it; Skip, and Replay tutorial in How to play",
+    "hints": "Hint names the next obstacle and its distance, or how to use the item you hold"
+   },
+   "settings": {
+    "quality": "Title screen: GRAPHICS HIGH (sharp pixels and shadows) or LOW (faster), remembered"
+   },
+   "saves": [
+    "critterBest"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "critter-rush-2d": {
    "title": "Critter Rush 2D",
@@ -3280,14 +3448,68 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a critter, then race three rivals over a 460 m obstacle course after the 3-2-1 countdown.",
+    "Jump rocks, logs, spikes, gaps and boulders; slide under hurdles.",
+    "Run through ? crates for an item (lightning, glove, saw, mine, boost or shield) and use it to get ahead.",
+    "First across the finish wins; your best winning time is saved."
+   ],
+   "tips": [
+    "Double jump: tap jump again in the air to clear a boulder or a long gap.",
+    "Brown mud drops you to about half speed for a moment, even in the air.",
+    "Lightning stuns everyone ahead of you, so it is best when you are behind.",
+    "Drop a mine when a rival is right on your tail.",
+    "A stun always ends with a moment of safety: use it to run clear."
+   ],
+   "controls": {
+    "keyboard": "Enter or Space starts a race. Space, W or Up to jump (again in the air to double jump), S or Down to slide, F or Shift to use an item, M mute. P or Esc pauses.",
+    "touch": "Tap to jump, swipe down to slide, tap the item button to use an item."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "ROCKETPAW",
+     "effect": "You run 20% faster"
+    },
+    {
+     "code": "NOSTUN",
+     "effect": "Nothing can stun you"
+    },
+    {
+     "code": "ITEMRAIN",
+     "effect": "A new item the moment you use one"
+    },
+    {
+     "code": "BIGHEADS",
+     "effect": "Party-size critters"
+    }
+   ],
+   "difficulty": "Easy, Normal and Hard on the title set the rivals' pace (7% slower on Easy, 5% faster on Hard). Rivals also rubber-band around you, so every race stays close.",
+   "features": {
+    "countdown": "3-2-1-GO! countdown before every race",
+    "position-or-lap-hud": "Place badge (1st to 4th) top left and a progress bar with every racer's marker",
+    "results-with-time": "The results list every racer's finishing time (or metres to go) and your place",
+    "best-time-or-ghost": "Best winning time on the title and the results, with NEW BEST TIME",
+    "results": "YOU WIN! or YOU PLACED card with all four times, best time and Race again",
+    "tutorial": "First race: three prompts (jump, slide, use an item), each cleared by doing it; Skip, and Replay tutorial in How to play",
+    "hints": "Hint names the next hazard and its distance, or how to use the item you hold"
+   },
+   "saves": [
+    "critterRush2dBest"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "dominion": {
    "title": "Dominion",
@@ -3631,15 +3853,68 @@
     "sdkInit": true
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "bl",
+   "howto": [
+    "Hold down to drill into the rock below your rig.",
+    "Dig into coloured ore to load it into your cargo hold.",
+    "Climb back to the surface: the load sells itself, and the tank and hull refill.",
+    "Spend cash in the surface shop on a faster drill, a bigger hold, more fuel and armour, then dig deeper."
+   ],
+   "tips": [
+    "Fuel burns faster while you drill; turn back when the gold bar drops below a third.",
+    "Ore dug in a quick streak is worth up to 60% more: keep the STREAK counter going.",
+    "Lava first shows up in the Granite below 120 m and gets far more common deeper down. A Radiator from the shop cuts its burn.",
+    "Out of fuel you can still crawl, but the strain eats your hull. Climb, do not dig.",
+    "A wreck keeps your cash and upgrades; it only costs half the cargo you were carrying."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys or WASD to drill and move. Enter or Space starts from the title. P or Esc pauses.",
+    "touch": "Hold the arrows on the on-screen pad. Tap a shop row to buy it."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "FULLTANK",
+     "effect": "Fuel never runs out"
+    },
+    {
+     "code": "IRONHULL",
+     "effect": "The hull takes no damage"
+    },
+    {
+     "code": "GOLDRUSH",
+     "effect": "+$25,000 cash"
+    },
+    {
+     "code": "XRAYLAMP",
+     "effect": "The lamp lights the whole mine"
+    }
+   ],
+   "difficulty": "Easy, Normal and Hard on the title: Easy makes the tank last longer and hazards hit softer, Hard drinks fuel faster and hits harder. The mine itself also gets harder with depth: tougher rock, more lava and gas.",
+   "features": {
+    "difficulty": "Easy / Normal / Hard buttons on the title, plus rock, lava and gas that get worse with depth",
+    "power-up-list": "The surface shop lists all six upgrades (Drill, Cargo, Fuel tank, Hull, Radiator, Lamp) with level, effect and price",
+    "wave-or-level-counter": "The HUD shows your depth and the rock layer you are in (Topsoil to Void)",
+    "high-score-table": "Best hauls: the top five loads you have sold, with depth and date, on the title",
+    "results": "A wreck opens the DRILL WRECKED card: this dive's depth, cargo lost, cash and deepest, with Dig again",
+    "tutorial": "First dive: four prompts (drill down, grab ore, sell at the surface, buy an upgrade), each cleared by doing it; Skip, and Replay tutorial in How to play",
+    "hints": "Hint names the next useful move: sell a full hold, head up on low fuel, the upgrade you can afford, or the next ore layer"
+   },
+   "saves": [
+    "deepcut_save_v1"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "cook-rush": {
    "title": "Cook Rush",
@@ -3674,16 +3949,71 @@
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Each ticket lists its steps: tap the station it needs next (PREP, COOK or PLATE).",
+    "When COOK dings, tap it again to take the food off before it burns.",
+    "When every step is done, tap the customer (or SERVE) to serve them.",
+    "Tap the coins on the ticket to bank them, and hit the day's coin target for up to 3 stars.",
+    "Spend coins on permanent kitchen upgrades between shifts."
+   ],
+   "tips": [
+    "SERVE (key 4) always serves the most impatient ready customer first.",
+    "Food left on the pan burns and the ticket starts over: take it off as soon as COOK dings.",
+    "Serving while the patience bar is still over 60% earns a PERFECT tip.",
+    "Every serve in a row raises the combo multiplier; a mistake or a walk-out resets it.",
+    "Hot Pans give a longer burn window; Comfy Seats make customers wait longer."
+   ],
+   "controls": {
+    "keyboard": "Enter or Space starts the first shift. 1 Prep, 2 Cook, 3 Plate, 4 or Space Serve. Tab and Enter reach every station and ticket. P or Esc pauses.",
+    "touch": "Tap a station, a ticket, or the coins. Everything is one tap."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "RICHCHEF",
+     "effect": "+500 coins to spend"
+    },
+    {
+     "code": "ALLDAYS",
+     "effect": "Every day unlocked"
+    },
+    {
+     "code": "NOBURN",
+     "effect": "Food never burns"
+    },
+    {
+     "code": "ZENDINER",
+     "effect": "Customers never lose patience"
+    }
+   ],
+   "difficulty": "Easy, Normal and Hard on the day menu set how long customers wait (35% longer on Easy, 20% shorter on Hard). The eight days also ramp up: bigger menus, less patience and customers arriving faster.",
+   "features": {
+    "goals-or-day-targets": "Each day has three coin targets (one per star), shown as stars and NEXT STAR in the bottom strip",
+    "economy-readout": "Coins in the HUD; on wide screens a Live shift panel shows day, stars, coins, combo, tickets and time left",
+    "upgrade-path": "UPGRADES: Sharp Knives, Hot Pans, Comfy Seats, Extra Seat and Waiter Bot, each with levels",
+    "end-of-day-summary": "The results card: stars, coins earned, day best, served and lost, with Next day, Replay and Upgrades",
+    "results": "DAY CLEARED / PERFECT DAY / SHIFT FAILED card with stars and coins",
+    "tutorial": "First shift: four prompts (tap a station, finish the steps, serve, bank the coins), each cleared by doing it; Skip, and Replay tutorial in How to play",
+    "hints": "Hint names the most urgent job: a finished pan, coins to bank, a ready ticket or the station a ticket needs"
+   },
+   "saves": [
+    "cookrush_save"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "typhoon-mine": {
    "title": "TYPHOON MINE",
@@ -3719,15 +4049,69 @@
     "sdkInit": true
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Hold down to tunnel into the mountain and break ore into your hold.",
+    "Climb back to the surface: the hold sells itself and the rig patches up.",
+    "Watch the storm ring: wind shear drops debris and the typhoon floods your tunnels.",
+    "When the Eye passes over, hazards stop and every ore is worth double.",
+    "Spend your bank in the surface shop: drill, hold, pumps, roof supports, lightning rod and lamp."
+   ],
+   "tips": [
+    "Dig in the CALM, be near the top when the TYPHOON lands, and dive again for the EYE.",
+    "In a typhoon the flood climbs almost to the surface; each Flood pumps level holds the water 5 m lower.",
+    "Falling debris stops at the first solid rock: when the wind builds, tunnel sideways under cover.",
+    "Roof supports soften debris and lightning hits and give you a little more warning.",
+    "Being carried out keeps your bank and upgrades; you only lose half of the ore you were holding."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys or WASD to tunnel and climb. Space or Enter starts from the title. P or Esc pauses.",
+    "touch": "Hold the on-screen pad arrows, or drag on the mine in the direction to dig. Tap a shop row to buy."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "IRONROOF",
+     "effect": "Debris, lightning and drowning cannot hurt you"
+    },
+    {
+     "code": "GOLDRUSH",
+     "effect": "+$10,000 banked"
+    },
+    {
+     "code": "CALMSKIES",
+     "effect": "The storm clock holds at CALM"
+    },
+    {
+     "code": "XRAYLAMP",
+     "effect": "The lamp lights the whole mine"
+    }
+   ],
+   "difficulty": "Easy, Normal and Hard on the title: Easy has the storm throw less and hit softer, Hard throws more debris and bolts and hits harder. Every storm cycle also gets longer and rougher, and the rock gets harder with depth.",
+   "features": {
+    "difficulty": "Easy / Normal / Hard buttons on the title; each storm cycle is longer and rougher than the last",
+    "power-up-list": "The surface rig shop lists all six upgrades with level, effect and price",
+    "wave-or-level-counter": "The HUD names the storm you are in and its phase (STORM 2 - TYPHOON); the ring counts down each phase",
+    "high-score-table": "Best hauls: the top five loads you sold, with depth and date, on the title, beside deepest and storms weathered",
+    "results": "Being carried out opens a results card: this dive's depth, ore lost, bank and deepest, with Dig again",
+    "tutorial": "First dive: four prompts (tunnel down, break ore, sell at the surface, upgrade), each cleared by doing it; Skip, and Replay tutorial in How to play",
+    "hints": "Hint reads the storm phase, the flood, your hold and your bank"
+   },
+   "saves": [
+    "typhoonmine_save_v1"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "clean-house": {
    "title": "Clean House",
