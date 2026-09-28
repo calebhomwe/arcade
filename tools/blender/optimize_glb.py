@@ -15,6 +15,11 @@ What it does, in order:
      half the texture size of the one before.
   7. Prints a one-line JSON report (triangles, textures, bytes) for the asset's LICENSES row.
 
+Rigged models (anything with an armature, such as Quaternius characters) keep their skeleton,
+skin weights and animations: steps 2-4 and LODs are skipped for them (joining, welding and
+decimating would break the skinning), so only the textures are shrunk before export. Use
+gltfpack afterwards if the mesh itself is too heavy.
+
 No add-ons or pip packages: only what ships with Blender 4.2 and later.
 """
 import argparse
@@ -60,6 +65,17 @@ def tris(objs):
     return n
 
 
+def shrink_textures(limit):
+    shrunk = []
+    for img in bpy.data.images:
+        if img.size[0] and max(img.size) > limit:
+            k = limit / max(img.size)
+            img.scale(max(1, int(img.size[0] * k)), max(1, int(img.size[1] * k)))
+            img.pack()
+            shrunk.append(img.name)
+    return shrunk
+
+
 def main():
     a = args()
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -67,6 +83,23 @@ def main():
     meshes = [o for o in bpy.context.scene.objects if o.type == 'MESH']
     if not meshes:
         raise SystemExit('no mesh in ' + a.src)
+    rigged = any(o.type == 'ARMATURE' for o in bpy.context.scene.objects)
+    if rigged:   # keep skeleton, skin and animations: textures only
+        shrunk = shrink_textures(a.tex)
+        os.makedirs(os.path.dirname(os.path.abspath(a.out)) or '.', exist_ok=True)
+        bpy.ops.export_scene.gltf(filepath=a.out, export_format='GLB', use_selection=False, export_animations=True,
+                                  export_skins=True, export_draco_mesh_compression_enable=a.draco,
+                                  export_image_format='WEBP' if a.webp else 'AUTO')
+        n = tris(meshes)
+        print('OPTIMIZE_GLB ' + json.dumps({'src': a.src, 'rigged': True, 'actions': len(bpy.data.actions), 'tris_in': n,
+                                            'textures_shrunk': shrunk, 'outputs': [{'file': a.out, 'tris': n, 'bytes': os.path.getsize(a.out)}],
+                                            'note': 'rigged: not joined, welded or decimated; LODs skipped'}))
+        return
+    # Kit models often reuse one mesh on several objects (a bed's two pillows): give each its own copy,
+    # or applying transforms refuses to run on multi-user data.
+    for o in meshes:
+        if o.data.users > 1:
+            o.data = o.data.copy()
     # 2. clean and join
     bpy.ops.object.select_all(action='DESELECT')
     for o in meshes:
@@ -105,13 +138,7 @@ def main():
         m.ratio = a.tris / before
         bpy.ops.object.modifier_apply(modifier=m.name)
     # 5. textures
-    shrunk = []
-    for img in bpy.data.images:
-        if img.size[0] and max(img.size) > a.tex:
-            k = a.tex / max(img.size)
-            img.scale(max(1, int(img.size[0] * k)), max(1, int(img.size[1] * k)))
-            img.pack()
-            shrunk.append(img.name)
+    shrunk = shrink_textures(a.tex)
     # 6. export LOD0..n
     outs = []
     base, _ = os.path.splitext(a.out)
