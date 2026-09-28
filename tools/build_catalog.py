@@ -47,7 +47,7 @@ L = [
  ('long-way-home','The Long Way Home','learning','Eleven thousand light years out, with a cracked hull and no navigator. Every ring you pass asks you something.','SpellMathsGalaxy','tlwh_rec','best log',('spelling','maths','space'),False),
  ('maths-kart','Maths Kart GP','learning','Answer questions on the road — right answers rocket you forward.','MathsKart','mk_rec','best lap',('maths','racing'),False),
  ('math-miner','Math Miner','learning','Dig down, solve the rocks, haul the ore home.','MathMiner','mmn_rec','best depth',('maths','mining'),False),
- ('word-dungeon','Word Dungeon','learning','Spell your way past the door or the door stays shut.','WordDungeon','wd_rec','best floor',('spelling','dungeon'),False),
+ ('word-dungeon',"The King's Locks",'learning','Jump the runes and answer what the king asks — sums or spelling.','KingsLocks','wd_rec','best floor',('spelling','maths','dungeon'),False),
  ('fishing-for-words','Fishing for Words','learning','Cast a line, tap the strike ring, land letter-fish and number-fish. Spell the clue word or weigh your catch.','WordFishing','wf_rec','best catch',('spelling','cozy'),False),
  ('quiz-tower','Quiz Tower Defense','learning','Climb by answering. Miss twice and the tower drops you.','QuizTower','qt_rec','best floor',('quiz','tower defense'),False),
  ('mini-mart','QuickStop Mini Mart','sim','Run the shop: stock, price, restock, and survive the rush.','MiniMart','mmt_rec','best day',('shop','tycoon'),False),
