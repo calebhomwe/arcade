@@ -9,7 +9,8 @@ Sources, merged in this order:
      plays audio, and which keys it already uses (so P / Esc are only bound when free).
   4. Hand-written content in qa/standard/meta/<id>.json: howto, tips, controls,
      tricks, cheats, difficulty, and any overrides. One file per game so several people
-     (or agents) can write content at once without merge conflicts.
+     (or agents) can write content at once without merge conflicts. External games may
+     instead keep theirs in their own repo at standard-meta/<id>.json.
 
     python3 tools/game_meta.py            # writes assets/game-meta.json
     python3 tools/game_meta.py --report   # also prints what each game is missing
@@ -151,6 +152,12 @@ def godot_scan(repo):
     code = '\n'.join(open(p, errors='ignore').read() for p in gd)
     return t3, code
 
+def source_available(g):
+    if g['id'] in GODOT_REPOS:
+        return os.path.isdir(os.path.join(HOME, GODOT_REPOS[g['id']]))
+    ent = entry_file(g)
+    return bool(ent and os.path.exists(ent))
+
 def scan(g):
     """What the game is today, read from its code."""
     if g['id'] in GODOT_REPOS:
@@ -209,11 +216,17 @@ def cheat_policy(gid, genre):
 def main():
     cat = load_catalog()
     thumbs = {g['id']: (g['thumb'], g.get('thumb2x', '')) for g in cat}
+    # Where a game's source is not on this machine (CI has no access to the private Godot
+    # repos), keep the scan from the last committed game-meta.json instead of guessing.
+    try:
+        previous = json.load(open(os.path.join(ROOT, 'assets', 'game-meta.json'), encoding='utf-8'))['games']
+    except (OSError, ValueError, KeyError):
+        previous = {}
     games, missing = {}, {}
     for g in cat:
         gid = g['id']
         genre = GENRE_BY_ID.get(gid) or GENRE_BY_CAT.get(g['cat'], 'arcade')
-        sc = scan(g)
+        sc = scan(g) if source_available(g) or g['id'] not in previous else previous[g['id']]['scan']
         is3d = sc.get('render', '').endswith('3d')
         tier = '3D-R' if gid in TIER_3DR else '3D-S' if (gid in TIER_3DS or is3d) else '2D-HD'
         # P / Esc may open the arcade menu only where the game does not already use them.
@@ -229,6 +242,12 @@ def main():
             'features': {},   # genre-module feature -> where it lives in the game (written by the game's author)
         }
         p = os.path.join(META_DIR, gid + '.json')
+        if not os.path.exists(p) and g['ext']:
+            # External games may keep their content next to their code: <repo>/standard-meta/<id>.json
+            for pre, repo in EXT_REPOS.items():
+                if g['src'].startswith(pre):
+                    q = os.path.join(HOME, repo, 'standard-meta', gid + '.json')
+                    if os.path.exists(q): p = q
         if os.path.exists(p):
             own = json.load(open(p, encoding='utf-8'))
             for k, v in own.items():

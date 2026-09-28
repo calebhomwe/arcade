@@ -24,6 +24,21 @@ await fs.mkdir(shots, { recursive: true });
 const STD = JSON.parse(await fs.readFile(path.join(root, 'qa/standard/standard.json'), 'utf8'));
 const META = JSON.parse(await fs.readFile(path.join(root, 'assets/game-meta.json'), 'utf8'));
 const CATALOG = vm.runInNewContext((await fs.readFile(path.join(root, 'catalog.js'), 'utf8')) + ';CATALOG');
+// Merge mode: combine the matrix.json files of several shard runs (CI), and compare with a baseline.
+//   node qa/harness/standard.mjs --merge part1 part2 ... [--baseline qa/standard-results/matrix.json]
+if (process.argv[2] === '--merge') {
+  const args = process.argv.slice(3), bi = args.indexOf('--baseline');
+  const baseFile = bi >= 0 ? args[bi + 1] : null, dirs = bi >= 0 ? args.slice(0, bi) : args;
+  const byId = new Map();
+  for (const d of dirs) { try { for (const r of JSON.parse(fss.readFileSync(path.join(d, 'matrix.json'), 'utf8')).games) byId.set(r.id, r); } catch (e) { console.error('skipped', d, e.message); } }
+  const merged = [...byId.values()].sort((a, b) => CATALOG.findIndex(g => g.id === a.id) - CATALOG.findIndex(g => g.id === b.id));
+  const summary = await writeReport(merged);
+  const regressions = baseFile ? compare(JSON.parse(fss.readFileSync(baseFile, 'utf8')).games, merged) : [];
+  await fs.writeFile(path.join(out, 'summary.md'), summaryMarkdown(summary, merged, regressions));
+  console.log(`merged ${merged.length} games; ${regressions.length} regression(s)`);
+  if (regressions.length) { regressions.forEach(r => console.log(`  ${r.id} ${r.check}: ${r.was} -> ${r.now}  ${r.note}`)); if (process.env.STRICT === '1') process.exit(1); }
+  process.exit(0);
+}
 let games = CATALOG;
 if (process.env.GAME_IDS) { const want = process.env.GAME_IDS.split(','); games = games.filter(g => want.includes(g.id)); }
 games = games.filter((g, i) => i % Number(process.env.SHARD_TOTAL || 1) === Number(process.env.SHARD_INDEX || 0));
@@ -362,12 +377,38 @@ let all = results;
 if (process.env.GAME_IDS || process.env.SHARD_TOTAL) {
   try { const old = JSON.parse(await fs.readFile(mp, 'utf8')).games || []; const ids = new Set(results.map(r => r.id)); all = [...old.filter(r => !ids.has(r.id)), ...results].sort((a, b) => CATALOG.findIndex(g => g.id === a.id) - CATALOG.findIndex(g => g.id === b.id)); } catch {}
 }
-const summary = { games: all.length, checks: STD.checks.length, generated: new Date().toISOString(),
-  byCheck: Object.fromEntries(STD.checks.map(c => [c.id, ['PASS', 'FAIL', 'REVIEW', 'N/A'].map(s => all.filter(r => r.checks[c.id]?.s === s).length)])),
-  totals: Object.fromEntries(['PASS', 'FAIL', 'REVIEW', 'N/A'].map(s => [s, all.reduce((n, r) => n + Object.values(r.checks).filter(c => c.s === s).length, 0)])) };
-await fs.writeFile(mp, JSON.stringify({ summary, standard: STD.checks, games: all }, null, 1));
-await fs.writeFile(path.join(out, 'index.html'), renderHtml(summary, all));
-console.log(`\n${all.length} games: ${Object.entries(summary.totals).map(([k, v]) => k + ' ' + v).join(', ')}\n-> ${path.relative(root, mp)}`);
+const finalSummary = await writeReport(all);
+await fs.writeFile(path.join(out, 'summary.md'), summaryMarkdown(finalSummary, all, []));
+
+async function writeReport(all) {
+  const summary = { games: all.length, checks: STD.checks.length, generated: new Date().toISOString(),
+    byCheck: Object.fromEntries(STD.checks.map(c => [c.id, ['PASS', 'FAIL', 'REVIEW', 'N/A'].map(s => all.filter(r => r.checks[c.id]?.s === s).length)])),
+    totals: Object.fromEntries(['PASS', 'FAIL', 'REVIEW', 'N/A'].map(s => [s, all.reduce((n, r) => n + Object.values(r.checks).filter(c => c.s === s).length, 0)])) };
+  await fs.mkdir(out, { recursive: true });
+  await fs.writeFile(path.join(out, 'matrix.json'), JSON.stringify({ summary, standard: STD.checks, games: all }, null, 1));
+  await fs.writeFile(path.join(out, 'index.html'), renderHtml(summary, all));
+  console.log(`\n${all.length} games: ${Object.entries(summary.totals).map(([k, v]) => k + ' ' + v).join(', ')}\n-> ${path.relative(root, path.join(out, 'matrix.json'))}`);
+  return summary;
+}
+
+// Regressions: a check that passed in the baseline and now fails. Only checks that do not depend on
+// timing or machine speed count, so a slow CI runner cannot fail a pull request.
+function compare(base, now) {
+  const STABLE = ['U02', 'U03', 'U06', 'U07', 'U10', 'U14', 'U17', 'U18', 'H01', 'H02', 'H03', 'C01', 'T01'];
+  const b = new Map(base.map(r => [r.id, r])), out = [];
+  for (const r of now) { const o = b.get(r.id); if (!o) continue; for (const id of STABLE) if (o.checks[id]?.s === 'PASS' && r.checks[id]?.s === 'FAIL') out.push({ id: r.id, check: id, was: 'PASS', now: 'FAIL', note: r.checks[id].note }); }
+  return out;
+}
+function summaryMarkdown(summary, all, regressions) {
+  const L = ['## Arcade game standard', '', `${summary.games} games x ${summary.checks} checks: ` + Object.entries(summary.totals).map(([k, v]) => `${k} ${v}`).join(', '), ''];
+  L.push(regressions.length ? `### ${regressions.length} regression(s) against the baseline` : '### No regressions against the baseline');
+  regressions.forEach(r => L.push(`- \`${r.id}\` ${r.check}: ${r.note}`));
+  L.push('', '| Check | PASS | FAIL | REVIEW | N/A |', '| --- | --- | --- | --- | --- |');
+  for (const c of STD.checks) L.push(`| ${c.id} ${c.name} | ${summary.byCheck[c.id].join(' | ')} |`);
+  L.push('', '| Game | PASS | FAIL | REVIEW |', '| --- | --- | --- | --- |');
+  for (const r of all) { const n = st => Object.values(r.checks).filter(c => c.s === st).length; L.push(`| ${r.title}${r.frozen ? ' (frozen)' : ''} | ${n('PASS')} | ${n('FAIL')} | ${n('REVIEW')} |`); }
+  return L.join('\n') + '\n';
+}
 
 function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 function renderHtml(summary, all) {
