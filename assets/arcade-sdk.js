@@ -193,10 +193,11 @@
   var soft = false;
   function pause(why) {
     if (paused) { if (why === 'user') reason = 'user'; return; }
+    var at = rawNow();   // the moment of the pause, logged as such (building the menu takes time)
     paused = true; reason = why || 'user';
     soft = !!cfg.ownPauseUI && reason !== 'hidden';
     if (!soft) {
-      pausedAt = rawNow();
+      pausedAt = at;
       ctxs.forEach(function (c) { if (c.state === 'running') { wasRunning.add(c); try { c.suspend(); } catch (e) {} } });
       media.forEach(function (el) { if (!el.paused) { mediaWasPlaying.add(el); try { el.pause(); } catch (e) {} } });
       holdTimers();
@@ -204,14 +205,14 @@
     }
     try { cfg.onPause && cfg.onPause(reason); } catch (e) {}
     if (!cfg.ownPauseUI && reason !== 'hidden') showMenu('pause');
-    post('state', { paused: true, reason: reason }); log('pause', { reason: reason, soft: soft });
+    post('state', { paused: true, reason: reason }); log('pause', { reason: reason, soft: soft }, at);
   }
   function resume(why) {
     if (!paused) return;
     if (why === 'visible' && reason !== 'hidden') return;   // never un-pause a pause the player chose
-    var wasSoft = soft; paused = false; reason = ''; soft = false;
+    var wasSoft = soft, at = rawNow(); paused = false; reason = ''; soft = false;
     if (!wasSoft) {
-      pausedTotal += rawNow() - pausedAt;
+      pausedTotal += at - pausedAt;
       wasRunning.forEach(function (c) { try { c.resume(); } catch (e) {} }); wasRunning.clear();
       mediaWasPlaying.forEach(function (el) { try { rawPlay.call(el); } catch (e) {} }); mediaWasPlaying.clear();
       frames.forEach(function (e, id) { if (!e.raw) schedule(id, e); });
@@ -220,7 +221,7 @@
     }
     try { cfg.onResume && cfg.onResume(); } catch (e) {}
     hideMenu();
-    post('state', { paused: false }); log('resume');
+    post('state', { paused: false }); log('resume', null, at);
   }
   // A game with its own pause menu reports it here, so the arcade's Pause button stays in step.
   function gamePaused(on) {
@@ -400,7 +401,7 @@
     return { sdk: V, pause: true, mute: true, menu: !cfg.ownPauseUI, ownPauseUI: !!cfg.ownPauseUI, restart: !!cfg.onRestart, exit: !!cfg.onExit,
       tutorial: !!cfg.onTutorial, hints: hasHints(), cheats: hasCheats(), tricks: (cfg.tricks || []).length, declared: !!cfg.declared };
   }
-  function log(name, data) { events.push({ t: Math.round(rawNow()), name: name, data: data || null }); if (events.length > 200) events.shift(); }
+  function log(name, data, at) { events.push({ t: Math.round(at == null ? rawNow() : at), name: name, data: data || null }); if (events.length > 200) events.shift(); }
 
   var api = {
     version: V,

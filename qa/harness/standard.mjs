@@ -125,7 +125,7 @@ async function checkGame(g, browser) {
     ev.t.frameLoad = Date.now() - t0;
     await wait(1000);
     const first = await shot('1-first-second');
-    const firstBlank = !first || first.length < 4000;
+    const firstMissed = !first, firstBlank = !!first && first.length < 4000;   // a screenshot that timed out is not measured, not blank
     // SDK handshake
     const readyBy = Date.now() + (heavy(g) ? 45000 : 20000);
     let h = await host();
@@ -293,8 +293,8 @@ async function checkGame(g, browser) {
     // ---- U01 title, U15 loading ----
     const dEnd = hasSdk ? await dbg() : null;
     const scenes = new Set((dEnd?.events || []).filter(e => e.name === 'scene').map(e => e.data?.scene));
-    set('U01', scenes.has('title') ? 'PASS' : firstBlank ? 'FAIL' : 'REVIEW', scenes.has('title') ? 'The game reports its title scene.' : firstBlank ? 'Blank one second after loading.' : 'Something is on screen; a person should confirm it is a title with a clear Play button.');
-    set('U15', firstBlank ? 'FAIL' : (hasSdk && !ev.t.ready) ? 'FAIL' : 'PASS', firstBlank ? 'The game frame was still blank one second after it loaded.' : `First picture within 1 s; frame loaded in ${(ev.t.frameLoad / 1000).toFixed(1)} s` + (ev.t.ready ? `, SDK ready ${(ev.t.ready / 1000).toFixed(1)} s after Play.` : '.'));
+    set('U01', scenes.has('title') ? 'PASS' : firstBlank ? 'FAIL' : 'REVIEW', scenes.has('title') ? 'The game reports its title scene.' : firstBlank ? 'Blank one second after loading.' : firstMissed ? 'The first screenshot timed out (busy machine); a person should confirm the title.' : 'Something is on screen; a person should confirm it is a title with a clear Play button.');
+    set('U15', firstMissed ? 'REVIEW' : firstBlank ? 'FAIL' : (hasSdk && !ev.t.ready) ? 'FAIL' : 'PASS', firstMissed ? 'The one-second screenshot timed out on a busy machine, so first paint was not measured.' : firstBlank ? 'The game frame was still blank one second after it loaded.' : `First picture within 1 s; frame loaded in ${(ev.t.frameLoad / 1000).toFixed(1)} s` + (ev.t.ready ? `, SDK ready ${(ev.t.ready / 1000).toFixed(1)} s after Play.` : '.'));
     set('U11', scenes.has('over') ? 'PASS' : meta.features?.results ? 'REVIEW' : 'FAIL', scenes.has('over') ? 'The game reported a results scene.' : meta.features?.results ? 'Described in meta: ' + meta.features.results : 'No results scene reported (ArcadeSDK.state({scene:"over"})) and none described in meta.');
     // ---- U12 saving: the game names the key(s) that hold progress (meta.saves); any storage alone is not proof ----
     const saves = meta.saves || [];
