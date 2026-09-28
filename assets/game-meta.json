@@ -5925,8 +5925,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/neon-game-arcade/games/mini-life-sim/index.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": false,
@@ -7448,14 +7448,66 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Tap an empty plot, then press Plant in the Field tab to sow a seed.",
+    "Water it for a head start; when the plot says READY, tap it to harvest.",
+    "Craft your harvest into products in the Craft tab, then sell them in Market or fill customer Orders.",
+    "Spend the profit on Upgrades, Staff and a bigger Venue, and switch between five businesses in the Theme tab."
+   ],
+   "tips": [
+    "Hired staff keep harvesting, crafting and selling while the game is closed (at 80% speed, up to two hours).",
+    "Orders pay more than the Market: keep a few products in stock for the next customer.",
+    "Premium and legendary harvests are worth much more; the Quality upgrade makes them more likely.",
+    "Each venue level adds 10% to every sale and makes new plots cheaper to unlock.",
+    "Each business keeps its own cash, plots and staff, so a new theme is a fresh start."
+   ],
+   "controls": {
+    "keyboard": "Click plots and buttons. Keys 1-6 select a plot, W waters it, E harvests it, Q opens Craft, T opens Theme. Enter or Space starts from the title.",
+    "touch": "Tap a plot to select it (a READY plot is harvested), then use the Plant, Water and Harvest buttons and the tabs along the bottom dock."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "CASH1000",
+     "effect": "+$1,000 for the current business"
+    },
+    {
+     "code": "GROWNOW",
+     "effect": "Every planted crop is ready to harvest"
+    },
+    {
+     "code": "RANKUP",
+     "effect": "Jump to the next rank"
+    }
+   ],
+   "difficulty": "A relaxed idle game with no way to lose: each business starts with $25 and gets harder to grow as upgrades, staff wages and venues cost more, and missions set the next goal.",
+   "features": {
+    "offline-earnings": "Hired staff work while you are away (80% rate, capped at two hours); a Welcome back card sums up what they did",
+    "upgrade-tree": "Upgrades tab (yield, growth, quality and more, each with levels), Staff tab and five Venue levels",
+    "big-number-format": "Money reads $950, $12.4K, $3.40M, $1.2B in the HUD, buttons and cards",
+    "prestige-or-next-goal": "Missions tab lists the next goals with cash and XP rewards; ranks climb from Seedling up, and four more businesses unlock in the Theme tab",
+    "tutorial": "A five-step guided first run (plant, water, harvest, craft, sell) with a Skip button; Replay tutorial in the arcade menu runs it again",
+    "results": "End-of-day card: harvests, crafted, sold, takings, wages, cash and rank, with a Next day button",
+    "restart": "Restart starts the current business again from day 1; the other businesses keep their progress",
+    "hints": "The arcade Hint names the next useful move: a ready plot, something you can craft, an order you can fill",
+    "codes-on": "Using a code marks the save CODES ON (a red tag under the header) for good",
+    "reduced-motion": "Follows the browser's reduced-motion setting (no cash roll-ups, particles or customer walk-ins); Menu tab has its own switch"
+   },
+   "saves": [
+    "idb:/userfs"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "godot-city-builder": {
    "title": "City Builder 2000",
@@ -7490,15 +7542,70 @@
     "sdkInit": true
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick a piece from the toolbar (Road, House, Tree or Car), then click or tap the grass to place it.",
+    "Lay roads first: houses add 4 people each, and cars only drive on road tiles.",
+    "Work through the six goals on the left; finishing them all shows your city's results.",
+    "Right-click or X removes a piece, R or the mouse wheel turns it, WASD or a one-finger drag moves the camera."
+   ],
+   "tips": [
+    "Houses score 5 points, trees 2, roads and cars 1 each.",
+    "Put roads down in loops so the cars have somewhere to go.",
+    "Your city saves as you build, so you can close the page and carry on later.",
+    "The sun rises and sets as you build: each day lasts a minute and a half.",
+    "Quality: Low turns off shadows and anti-aliasing if the game runs slowly."
+   ],
+   "controls": {
+    "keyboard": "1-4 pick Road, House, Tree or Car; click to place; right-click or X removes; R or the mouse wheel rotates; WASD pans the camera. Enter or Space starts from the title.",
+    "touch": "Tap the toolbar to pick a piece and tap the ground to place it; drag with one finger to move the camera."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "INSTANTTOWN",
+     "effect": "A ready-made block of roads, houses and trees appears"
+    },
+    {
+     "code": "CARPARTY",
+     "effect": "Ten more cars drive onto your roads"
+    },
+    {
+     "code": "BIGTREES",
+     "effect": "Every tree grows to twice its size"
+    }
+   ],
+   "difficulty": "A relaxed sandbox with no way to lose: six goals grow from 10 roads to 60 people and 200 points.",
+   "features": {
+    "autosave": "The city (every piece, cars, score, goals, day and camera) saves a moment after each change and on exit",
+    "goals-or-quests": "Six goals on the left with live progress: roads, houses, trees, cars, population and score",
+    "day-time-ui": "Day and clock in the top bar; the sun moves across the sky and dims at night",
+    "inventory": "The top bar counts what the city holds: score, population, buildings and cars",
+    "tutorial": "A four-step guided first build (road, house, tree, car) with Skip; Replay tutorial in the arcade menu runs it again",
+    "results": "City complete card when all six goals are done, with score, population and day, plus Keep building or New city",
+    "restart": "Restart clears the map for a new city",
+    "hints": "The arcade Hint names what the next goal needs",
+    "reduced-motion": "Follows the browser's reduced-motion setting (pieces land without the pop animation)"
+   },
+   "settings": {
+    "quality": "Quality button in the top bar: High (shadows, anti-aliasing) or Low"
+   },
+   "saves": [
+    "idb:/userfs"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "godot-tidebreak": {
    "title": "TIDEBREAK",
@@ -7533,16 +7640,102 @@
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p",
+   "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
-   "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "howto": [
+    "Pick a stop on the World Tour and press START EVENT to surf its heat.",
+    "Hold W to pump down the face for speed and steer with A and D.",
+    "Tap Space near the lip to launch, then spin (A/D) and flip (W) in the air; hold Q to rotate faster.",
+    "Land straight to score the trick and grow your COMBO before the heat clock runs out."
+   ],
+   "tips": [
+    "Link tricks quickly: the combo multiplier climbs to 8x and drops back when you stop.",
+    "A crooked landing is a wipeout: it costs 250 points and resets the combo.",
+    "Rocks and hazards in the water knock you off; carve around them.",
+    "Coins along the wave add to your score.",
+    "Bronze or better at a stop unlocks the next one on the tour."
+   ],
+   "controls": {
+    "keyboard": "A / D carve (arrows too), W pump, S brake, Space jump, Q or Shift trick boost, R restart the heat, M next map. On the tour: arrows and Enter.",
+    "touch": "On-screen buttons: < > carve, PUMP, JUMP and TRICK. Tap the tour cards and START EVENT.",
+    "gamepad": "Left stick carve, A jump, triggers pump and trick"
+   },
+   "tricks": [
+    {
+     "name": "Launch",
+     "input": "Space (JUMP) off the lip at speed"
+    },
+    {
+     "name": "Clean Air",
+     "input": "Launch, then land straight"
+    },
+    {
+     "name": "360 Air",
+     "input": "A or D in the air for one full spin"
+    },
+    {
+     "name": "720 Air",
+     "input": "Keep spinning: A or D, hold Q to spin faster"
+    },
+    {
+     "name": "Back Flip",
+     "input": "Hold W in the air for a full flip"
+    },
+    {
+     "name": "Double Flip",
+     "input": "Hold W + Q in the air for two flips"
+    },
+    {
+     "name": "Rodeo",
+     "input": "A or D plus W together: spin and flip"
+    }
+   ],
+   "cheats": [
+    {
+     "code": "NOWIPEOUT",
+     "effect": "Every landing counts as clean and hazards can't knock you off"
+    },
+    {
+     "code": "MOONGRAVITY",
+     "effect": "Half gravity: huge airs and easy multi-spins"
+    },
+    {
+     "code": "ENDLESS",
+     "effect": "The heat clock stops, so surf as long as you like"
+    }
+   ],
+   "difficulty": "Seven tour stops in order, each with a higher target score and bigger surf; bronze unlocks the next stop.",
+   "features": {
+    "trick-system": "Spins and flips counted in the air: 360 and 720 airs, back and double flips, rodeos, each scored on landing",
+    "trick-list": "The arcade pause menu lists all seven tricks with their inputs",
+    "combo": "COMBO multiplier up to 8x, built by linking tricks inside five seconds",
+    "land-bail-feedback": "Clean landings pop the trick name and points with a splash and a landing sound; crooked landings wipe out with a tumble, -250 and a combo reset",
+    "trick-tutorial": "A five-step guided first heat (pump, carve, launch, land a trick, combo) with Skip; Replay tutorial in the arcade menu runs it again",
+    "results": "RUN COMPLETE card with score and best; the World Tour then banks the medal, XP and tour points",
+    "restart": "Restart starts the heat again with a fresh countdown",
+    "reduced-motion": "Follows the browser's reduced-motion setting: no camera shake, speed FOV kick or trick-name pop"
+   },
+   "settings": {
+    "quality": "GRAPHICS button on the World Tour screen: High (shadows, anti-aliasing) or Low"
+   },
+   "saves": [
+    "idb:/userfs"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "settings",
+    "start",
+    "tips",
+    "tricks"
+   ]
   },
   "godot-tidebreak-world-tour": {
    "title": "TIDEBREAK World Tour",
@@ -7579,14 +7772,63 @@
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a tour stop on the map or the event cards.",
+    "Press START EVENT, then choose how your heat went: wipeout, bronze, silver or gold.",
+    "Bronze or better unlocks the next stop and earns XP, tour points and credits.",
+    "Climb the rankings and sponsor tiers across all seven stops to the Tidebreak Finals."
+   ],
+   "tips": [
+    "Gold pays the full XP and tour points; bronze pays 70% and silver 88%.",
+    "Replaying a stop only pays again when you beat your medal there.",
+    "Tour points move you up the world rankings on the right.",
+    "Each stop has a target score; its card shows the surf size and conditions.",
+    "Your tour saves after every event."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys move between stops and buttons, Enter confirms, Esc closes the result dialog.",
+    "touch": "Tap a stop or card, then tap START EVENT and a result.",
+    "gamepad": "D-pad to move, A to confirm, B to go back"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "UNLOCKALL",
+     "effect": "Every tour stop is open"
+    },
+    {
+     "code": "CREDITS5K",
+     "effect": "+5,000 credits"
+    },
+    {
+     "code": "GOLDRUN",
+     "effect": "Your next event counts as a gold-medal heat"
+    }
+   ],
+   "difficulty": "Seven stops in order with rising target scores; each one opens only after a bronze at the stop before it.",
+   "features": {
+    "tutorial": "Three coach steps on the first visit (pick a stop, start the event, choose a result) with Skip; Replay tutorial in the arcade menu runs it again",
+    "results": "A result card after each event: score, medal, XP and tour points, and any stop it unlocked",
+    "restart": "Restart opens the selected event again",
+    "hints": "The arcade Hint names the next stop and the score it needs for bronze",
+    "codes-on": "Using a code marks the tour CODES ON (top right) and a result with codes on never sets a best score",
+    "reduced-motion": "Follows the browser's reduced-motion setting (the event dialog appears without its fade)"
+   },
+   "saves": [
+    "idb:/userfs"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "godot-la-city": {
    "title": "LA City",
@@ -7622,14 +7864,69 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Press Play to drive the city, or Time trial to race seven checkpoints through downtown.",
+    "W drives, S brakes and reverses, A and D steer; hold Space to drift and Shift to boost.",
+    "In free drive, follow the blue beam to pick up a package and the green beam to deliver it before the timer ends.",
+    "Spend cash in the garage (G) on faster cars, upgrades and new districts."
+   ],
+   "tips": [
+    "Drifts pay cash: hold Space through a corner at speed.",
+    "Delivery pay grows with the distance between pickup and drop-off.",
+    "In the time trial, boost (Shift) on the straights and lift off before the turns.",
+    "R puts the car back at the start if you get stuck.",
+    "Objectives at the bottom left pay extra cash and rep."
+   ],
+   "controls": {
+    "keyboard": "W / S / A / D or the arrows to drive, Space drift, Shift boost, R reset the car, C camera, G garage.",
+    "touch": "On-screen < > steer, GAS, BRAKE, DRIFT, BOOST and a G button for the garage."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "CASHDROP",
+     "effect": "+$10,000 cash"
+    },
+    {
+     "code": "ALLCARS",
+     "effect": "Every car is in your garage (G to pick one)"
+    },
+    {
+     "code": "TURBO",
+     "effect": "Your car's top speed and acceleration go up by half"
+    }
+   ],
+   "difficulty": "Free drive has no fail state; delivery timers get tighter over longer routes, and the time trial is a race against your own best.",
+   "features": {
+    "countdown": "3-2-1-GO before the time trial; the car is held until GO",
+    "position-or-lap-hud": "Checkpoint 2 / 7 readout with the running time and distance to the next checkpoint",
+    "results-with-time": "Downtown Sprint card with your time, best time and NEW BEST",
+    "best-time-or-ghost": "Best sprint time saved with the game and shown on the title (never set with codes on)",
+    "tutorial": "A four-step first drive (throttle, steering, drifting, deliveries) with Skip; Replay tutorial in the arcade menu runs it again",
+    "restart": "Restart starts the time trial over, or puts the car back at the start in free drive",
+    "hints": "The arcade Hint gives the distance to the next checkpoint or package",
+    "reduced-motion": "Follows the browser's reduced-motion setting: no screen shake, flashes or speed FOV kick",
+    "results": "Downtown Sprint results card: time, best time and NEW BEST, with Race again or Free drive"
+   },
+   "settings": {
+    "quality": "Graphics button on the title screen: High (shadows, SSAO, reflections) or Low"
+   },
+   "saves": [
+    "idb:/userfs"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "godot-chef-chloe": {
    "title": "Chef Chloe",
@@ -7709,14 +8006,98 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
-   "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "howto": [
+    "Pick your break with the arrow keys (Q and E change board), then press Enter or tap to surf.",
+    "Hold W to pump for speed and steer with A and D to carve across the wave.",
+    "Ride the steep face, tuck into the barrel and pump off the lip for air.",
+    "Link moves to build the combo and bank your best ride before the 80-second heat ends."
+   ],
+   "tips": [
+    "Stars come from your best single ride: bank long rides, not lots of short ones.",
+    "Land airs with the board flat for a PERFECT: twice the points and the combo stays alive.",
+    "A hard flat landing from big air, or staying capsized, is a wipeout that resets the combo.",
+    "Set waves (the banner warns you) are the biggest and the only ones that barrel.",
+    "Stars unlock the harder breaks on the map; missions give each session a goal."
+   ],
+   "controls": {
+    "keyboard": "A / D carve, W pump, S brake, C cycles the camera, Enter starts. On the title: arrows pick a break, Q / E change board, G switches graphics quality.",
+    "touch": "Tap the title or results card to surf; on-screen < >, PUMP and BRAKE buttons in a heat."
+   },
+   "tricks": [
+    {
+     "name": "Carve",
+     "input": "Hold A or D hard at speed"
+    },
+    {
+     "name": "Pocket Ride",
+     "input": "Stay high on the steep face of the wave"
+    },
+    {
+     "name": "Barrel",
+     "input": "Tuck under the curling lip of a set wave"
+    },
+    {
+     "name": "Air",
+     "input": "Pump (W) up the face and fly off the lip"
+    },
+    {
+     "name": "Perfect Landing",
+     "input": "Land an air with the board flat"
+    },
+    {
+     "name": "Big Air",
+     "input": "Stay airborne 0.7 s or more"
+    },
+    {
+     "name": "Huge Air",
+     "input": "Stay airborne 1.3 s or more"
+    }
+   ],
+   "cheats": [
+    {
+     "code": "ENDLESS",
+     "effect": "The heat clock stops: surf as long as you like"
+    },
+    {
+     "code": "NOWIPEOUT",
+     "effect": "No wipeouts: capsizes and flat landings don't knock you off"
+    },
+    {
+     "code": "ALLSPOTS",
+     "effect": "Every break on the map is open"
+    }
+   ],
+   "difficulty": "Breaks unlock with stars, from the gentle first spot to heavier reef breaks; missions climb a ladder of harder goals.",
+   "features": {
+    "trick-system": "Carves, pocket time, barrels and airs all score, with bigger labels for BIG and HUGE airs",
+    "trick-list": "The arcade pause menu lists the seven scoring moves with their inputs",
+    "combo": "Combo multiplier (shown under the score) builds while you keep scoring and decays after a lull",
+    "land-bail-feedback": "PERFECT / BIG / HUGE landing pop-ups and sounds; wipeouts tumble the board, swing the camera and reset the combo",
+    "trick-tutorial": "A four-step guided first heat (pump, carve, air, perfect landing) with Skip; Replay tutorial in the arcade menu runs it again",
+    "results": "HEAT COMPLETE card: stars, wave of the day, heat total, new best, top speed, combo, longest air and missions",
+    "restart": "Restart starts the heat again with a fresh countdown",
+    "reduced-motion": "Follows the browser's reduced-motion setting: no pop-up and countdown scaling or camera banking"
+   },
+   "settings": {
+    "quality": "Press G on the title: GRAPHICS High (shadows, anti-aliasing) or Low"
+   },
+   "saves": [
+    "idb:/userfs"
+   ],
+   "start": "key:Enter",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips",
+    "tricks"
+   ]
   },
   "godot-heavens-grace": {
    "title": "Heaven's Grace",
