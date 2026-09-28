@@ -671,11 +671,11 @@
    "ext": false,
    "src": "HoleGrind/index.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
@@ -1523,14 +1523,65 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Press Play once the town has loaded.",
+    "Move with WASD, look with the mouse, hold Shift to run, and press E to use things.",
+    "Claim a brown plot with E, then build (B), furnish (F) and paint (C) your house.",
+    "Work at the blue shop for cash; check the mailbox every day for a gift."
+   ],
+   "tips": [
+    "Claim a plot first: building needs a plot of your own.",
+    "Every shift at a job promotes you, and higher levels pay more.",
+    "The mailbox gift grows with your daily streak, so come back every day.",
+    "A gem appears around town each day: find it for a cash reward.",
+    "Esc closes the build, furniture and shop panels."
+   ],
+   "controls": {
+    "keyboard": "WASD move, mouse look, Shift run, Space jump, E interact, B build, F furniture, C paint, J journal, P photo mode, Esc closes panels",
+    "touch": "Best on a desktop browser: the town needs a keyboard; on a phone you can tap Play, the tutorial and the pause button"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "FULLTUMMY",
+     "effect": "Hunger filled right up"
+    },
+    {
+     "code": "WIDEAWAKE",
+     "effect": "Energy filled right up"
+    },
+    {
+     "code": "PARTYTIME",
+     "effect": "Fun filled right up"
+    }
+   ],
+   "difficulty": "No difficulty modes: it is a relaxed sandbox where jobs pay more as you are promoted and the daily mailbox gift grows with your streak.",
+   "features": {
+    "autosave": "The town saves itself when you buy, claim or collect, and on quit; the save is kept in IndexedDB",
+    "goals-or-quests": "The tutorial's steps (claim a plot, build, work, mailbox) and the daily gem and mailbox streak",
+    "day-time-ui": "Clock and day in the HUD with a day/night cycle",
+    "inventory": "Furniture bought at the shop kiosk waits in your inventory until you place it in furniture mode (F); J opens the journal",
+    "results": "No game over: a sandbox; the HUD shows money and needs"
+   },
+   "settings": {
+    "quality": "Graphics: High / Low on the title card (Low renders at 1x pixel ratio)"
+   },
+   "saves": [
+    "idb:/idbfs"
+   ],
+   "start": "#bt-play",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "bridge-rush": {
    "title": "Bridge Rush",
@@ -1566,15 +1617,65 @@
     "sdkInit": true
    },
    "pauseKeys": "p",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "You run on your own toward the finish flag, racing a rival builder on the next span.",
+    "Snatch the floating planks: each one is material.",
+    "At a gap, hold (or Down) to lay planks across it; tap (or Space) hops the orange cones.",
+    "Run out of planks at a gap and you fall. Reach the flag first for the big bonus."
+   ],
+   "tips": [
+    "Every gap auto-builds slowly; holding builds faster and saves your lead.",
+    "Cones knock 1 to 3 planks loose, so hop them even when you are in a hurry.",
+    "Keep a few planks spare before each wide gap: later legs have longer gaps and less ground.",
+    "Finishing first is worth 500 points, second 200: the rival matters more than distance."
+   ],
+   "controls": {
+    "keyboard": "Space, W or Up to hop; hold S, Down or J to build; M mutes; P or Esc pauses",
+    "touch": "Tap to hop; press and hold at a gap to build; the pause button sits bottom right"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "LUMBERYARD",
+     "effect": "Planks cost nothing: every gap bridges itself"
+    },
+    {
+     "code": "SLOWRIVAL",
+     "effect": "The rival builder works at three-quarter speed"
+    },
+    {
+     "code": "STEELTOES",
+     "effect": "Cones cost no material and never trip you"
+    }
+   ],
+   "difficulty": "An adaptive curve: speed climbs from 10 to 22 over the first 520 m, gaps widen from 3 to 6 planks, the ground between them shrinks, and cones cost up to 3 planks in the later legs.",
+   "features": {
+    "one-tap-start": "Tap anywhere on the title (or Space) to start",
+    "instant-restart": "Race again on the results screen, Space, or Restart in the pause menu",
+    "best-score-badge": "Best on the title card and a live Best cell in the HUD (starred when you pass it)",
+    "tutorial-card": "A skippable coach card at the first gap on the first run; Replay tutorial in How to play",
+    "results": "Results screen with placing, score, distance, planks, gaps and all-time best"
+   },
+   "saves": [
+    "br_rec"
+   ],
+   "start": "#play",
+   "settings": {
+    "quality": "Graphics: High / Low button on the title card (Low renders at 1x pixel ratio for slower phones)"
+   },
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "crowd-clash": {
    "title": "Crowd Clash",
@@ -1610,15 +1711,65 @@
     "sdkInit": true
    },
    "pauseKeys": "p",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Your crowd runs forward on its own. Steer left and right.",
+    "Run through the green half of each gate (x2, +10) to grow the crowd; the red half shrinks it.",
+    "Dodge the swinging maces and bars, and keep off the gate's centre post.",
+    "Reach the boss gate with 45 or more runners to burst it and win."
+   ],
+   "tips": [
+    "A x2 gate early is worth more than a +10 gate late.",
+    "The centre post of every gate costs 3 runners: commit to one side.",
+    "A bar knocks out 6 and a mace 5, so dodging beats gambling on a bad gate.",
+    "A single bad gate can never wipe you out: it always leaves at least one runner."
+   ],
+   "controls": {
+    "keyboard": "Left / Right or A / D to steer; Space or Enter starts; M mutes; P or Esc pauses",
+    "touch": "Drag left and right to steer; tap to start; the pause button sits bottom right"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "BIGCROWD",
+     "effect": "Your crowd jumps by 40 runners (and every run starts with 48)"
+    },
+    {
+     "code": "IRONWALL",
+     "effect": "Maces, bars and gate posts knock nobody out"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "The track runs at 60% speed"
+    }
+   ],
+   "difficulty": "An adaptive curve: speed climbs from 12.5 to 24 on the way to the boss gate at 920 m, and gates and hazards come closer together (gates every 32 m at the start, every 19 m near the end).",
+   "features": {
+    "one-tap-start": "Tap anywhere on the title (or Space) to start",
+    "instant-restart": "Run again on the results screen, Space, or Restart in the pause menu",
+    "best-score-badge": "Best on the title card and a live Best cell in the HUD",
+    "tutorial-card": "A skippable coach card before the first gate on the first run; Replay tutorial in How to play",
+    "results": "Gate burst / Crowd wiped out screen with peak crowd, distance, gates, score and best"
+   },
+   "saves": [
+    "cc_rec"
+   ],
+   "start": "#play",
+   "settings": {
+    "quality": "Graphics: High / Low button on the title card (Low renders at 1x pixel ratio for slower phones)"
+   },
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "helix-drop": {
    "title": "Helix Drop",
@@ -1654,15 +1805,65 @@
     "sdkInit": true
    },
    "pauseKeys": "p",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "The ball bounces on its own. Spin the tower so it drops through the gaps.",
+    "Drag sideways, or hold Left / Right (A / D), to rotate the rings.",
+    "Never let the ball land on a red block. Gold blocks are bonuses.",
+    "Drop as deep as you can; every 8 rings is a new level."
+   ],
+   "tips": [
+    "Threading several gaps in a row builds a combo.",
+    "A near miss past a red block slows time for a moment: use it to line up the next gap.",
+    "Short taps nudge the tower; hold only for long turns.",
+    "The fall gets faster as you go deeper, so start turning before the ball lands."
+   ],
+   "controls": {
+    "keyboard": "Left / Right or A / D to spin; Space or Enter starts; M mutes; P or Esc pauses",
+    "touch": "Drag left and right to spin; tap to start; the pause button sits bottom right"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "SHIELD",
+     "effect": "Red rings bounce you instead of ending the run"
+    },
+    {
+     "code": "FEATHER",
+     "effect": "The ball falls at 60% gravity"
+    },
+    {
+     "code": "GHOSTBALL",
+     "effect": "The ball drops straight through every ring"
+    }
+   ],
+   "difficulty": "An adaptive curve: every ring deeper adds spin speed (12 up to 20 blocks a second) and gravity (up to 2.3x); red blocks start on ring 4 and one more appears every 4 rings, and past ring 16 many gaps shrink to a single block.",
+   "features": {
+    "one-tap-start": "Start the drop on the title, a tap on the tower, or Space",
+    "instant-restart": "Drop again on the results screen, Space, or Restart in the pause menu",
+    "best-score-badge": "Best depth on the title card and a Best cell in the HUD",
+    "tutorial-card": "A skippable 'Spin the tower' coach card on the first run; Replay tutorial in How to play",
+    "results": "Red ring screen with depth, level, bonuses, best combo and all-time best"
+   },
+   "saves": [
+    "hx_rec"
+   ],
+   "start": "#play",
+   "settings": {
+    "quality": "Graphics: High / Low button on the title card (Low renders at 1x pixel ratio for slower phones)"
+   },
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "rung-runner": {
    "title": "Rung Runner",
@@ -1698,15 +1899,65 @@
     "sdkInit": true
    },
    "pauseKeys": "p",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "You run forward on your own down three lanes.",
+    "Tap left or right (or the arrow keys) to change lanes and grab the gold rungs.",
+    "A wall needs as many rungs as the number on it: with enough in hand you climb over it.",
+    "Saw blades end the run: change lanes to dodge them."
+   ],
+   "tips": [
+    "Count ahead: the number on the next wall is how many rungs you need.",
+    "Rungs you spend on a wall are gone, so keep collecting after every climb.",
+    "The middle lane lets you dodge a saw either way.",
+    "The road speeds up every zone, so change lanes earlier the further you get."
+   ],
+   "controls": {
+    "keyboard": "Left / Right or A / D to change lanes; Space starts; M mutes; P or Esc pauses",
+    "touch": "Tap the left or right half, or swipe, to change lanes; the pause button sits bottom right"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "BIGSTACK",
+     "effect": "20 rungs in hand now, and every run starts with 20"
+    },
+    {
+     "code": "SAWPROOF",
+     "effect": "Saw blades pass straight through you"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "The road runs at 60% speed"
+    }
+   ],
+   "difficulty": "An adaptive curve: speed climbs from 14.5 to 31 over the first 950 m through five zones, and walls grow from about 2 rungs to 6 (higher still when you hoard rungs).",
+   "features": {
+    "one-tap-start": "Tap anywhere on the title (or Space) to start",
+    "instant-restart": "Run again on the results screen, Space, or Restart in the pause menu",
+    "best-score-badge": "Best on the title card and a live Best cell in the HUD (starred when you pass it)",
+    "tutorial-card": "A skippable 'Grab the rungs' coach card on the first run; Replay tutorial in How to play",
+    "results": "Run over screen with score, distance, zone, rungs, walls cleared and all-time best"
+   },
+   "saves": [
+    "rr_rec"
+   ],
+   "start": "#play",
+   "settings": {
+    "quality": "Graphics: High / Low button on the title card (Low renders at 1x pixel ratio for slower phones)"
+   },
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "snake-clash": {
    "title": "Snake Clash",
@@ -1742,15 +1993,61 @@
     "sdkInit": true
    },
    "pauseKeys": "p",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Your snake always moves: steer it with the mouse, a finger or Left / Right.",
+    "Eat the glowing orbs to grow longer.",
+    "Cut across a rival so its head hits your body: it bursts into orbs for you.",
+    "Touch a rival's body or the wall and you burst instead."
+   ],
+   "tips": [
+    "Grow before you fight: a longer snake wins head-on meetings.",
+    "Boost (Shift or Space) to cut a rival off, but it burns length.",
+    "Burst rivals leave a trail of orbs: sweep it straight away.",
+    "More rivals join as you grow, so keep away from the arena edge when it gets busy."
+   ],
+   "controls": {
+    "keyboard": "Mouse to aim, or Left / Right (A / D) to turn; hold Shift or Space to boost; M mutes; P or Esc pauses",
+    "touch": "Drag to steer; tap to start; the pause button sits bottom right"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "FREEBOOST",
+     "effect": "Boost burns no length"
+    },
+    {
+     "code": "GROWTH",
+     "effect": "Grow by 40 segments right now"
+    },
+    {
+     "code": "GHOSTSKIN",
+     "effect": "Slide through rival snakes; only the wall can burst you"
+    }
+   ],
+   "difficulty": "An adaptive curve: you start against 3 rivals, one more joins for every 7 segments you grow (up to 9), and they speed up as you get longer.",
+   "features": {
+    "one-tap-start": "Play on the title, a tap anywhere, or Space",
+    "instant-restart": "Play again on the results screen, Space, or Restart in the pause menu",
+    "best-score-badge": "Best length on the title card",
+    "tutorial-card": "Two skippable coach cards on the first run (steer, then boost); Replay tutorial in How to play",
+    "results": "Burst! screen with length, score, orbs, rivals burst, time and best length"
+   },
+   "saves": [
+    "sc_rec"
+   ],
+   "start": "#play",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "volt-dash": {
    "title": "Volt Dash",
@@ -1786,15 +2083,60 @@
     "sdkInit": true
    },
    "pauseKeys": "p",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "You run on your own. Your battery drains every second.",
+    "Tap (or Space) to hop the pink zapper spikes; swipe down (or hold Down) to slide under the orange conduits.",
+    "Grab the green battery cells: each one is +12 volts. At zero volts the lights go out."
+   ],
+   "tips": [
+    "A hit costs 26 volts, two whole cells: dodging matters more than collecting.",
+    "Dash (Shift or swipe right) costs 22 volts but smashes straight through a hazard.",
+    "Cells float at three heights: hop early to catch the high ones.",
+    "Every sector the run gets faster and the drain gets stronger, so bank cells early."
+   ],
+   "controls": {
+    "keyboard": "Space, W or Up to hop; S or Down to slide; Shift or X to dash; M mutes; P or Esc pauses",
+    "touch": "Tap to hop, swipe down to slide, swipe right to dash; the pause button sits bottom right"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "INFINIVOLT",
+     "effect": "Battery never drains and hits cost nothing"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "The grid runs at 60% speed"
+    },
+    {
+     "code": "MAGNET",
+     "effect": "Battery cells fly to you from any height"
+    }
+   ],
+   "difficulty": "An adaptive curve: speed climbs from 11 to 24 and the battery drain from 4 to 15 volts a second over the first 900 m, through five sectors.",
+   "features": {
+    "one-tap-start": "Tap anywhere on the title (or Space) to start a run",
+    "instant-restart": "Run again on the Blackout screen, or Space; Restart in the pause menu",
+    "best-score-badge": "Best on the title card and a live Best cell in the HUD (starred when you pass it)",
+    "tutorial-card": "Two skippable coach cards on the first run (hop and slide, then dash); Replay tutorial in How to play",
+    "results": "Blackout screen with score, distance, cells, dashes, hits and all-time best"
+   },
+   "saves": [
+    "vd_rec"
+   ],
+   "start": "#play",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-flappy-flight": {
    "title": "Flappy Flight",
@@ -5568,15 +5910,67 @@
     "sdkInit": true
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "br",
+   "howto": [
+    "Pick a difficulty and press New life.",
+    "Click an object in the house (fridge, shower, bed, TV, phone, computer) and choose what your Sim does there.",
+    "Keep all six needs out of the red; work at the computer for money and order groceries on the phone.",
+    "Tick off the three goals each day; at midnight the day summary shows how you did."
+   ],
+   "tips": [
+    "Snacks and meals use groceries from your inventory: order more on the phone before you run out.",
+    "Work pays $140 but drains energy, fun and hygiene, so shower and relax afterwards.",
+    "Every goal pays $25, and finishing all three wins a trophy.",
+    "Sleep is the only big energy refill: go to bed before energy turns red.",
+    "Turn Autonomy off to make every choice yourself, or leave it on to let your Sim look after itself."
+   ],
+   "controls": {
+    "keyboard": "Click objects and actions; keys 1-4 set the speed (1x, 5x, 15x, 60x); Space, P or Esc pauses",
+    "touch": "Tap objects and actions; the speed buttons sit in the top bar and the pause button bottom right"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "MONEYBAGS",
+     "effect": "+$1000 (and every new life starts with it)"
+    },
+    {
+     "code": "SERENITY",
+     "effect": "Needs stop dropping"
+    },
+    {
+     "code": "PANTRY",
+     "effect": "+20 groceries in the fridge"
+    }
+   ],
+   "difficulty": "Relaxed, Normal and Hard on the title card: needs drop 40% slower or faster than Normal, and groceries cost $15, $18 or $24.",
+   "features": {
+    "autosave": "Saves after every activity and every game hour (and on Exit); Continue on the title card picks it up",
+    "goals-or-quests": "Three daily goals in the side panel, $25 each, a trophy for all three",
+    "day-time-ui": "Day and clock in the top bar, speed buttons 1x to 60x, and an end-of-day summary card at midnight",
+    "inventory": "Inventory panel: groceries (used by snacks and meals, bought on the phone) and trophies",
+    "results": "End-of-day summary card: goals done, money earned, groceries left, days lived and best"
+   },
+   "saves": [
+    "miniLifeSimSave",
+    "mls_best"
+   ],
+   "start": "#newBtn",
+   "settings": {
+    "quality": "Graphics: High / Low button on the title card (Low draws the house at 1x pixel ratio)"
+   },
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "bridge-race-classic": {
    "title": "Bridge Race",
@@ -5612,15 +6006,65 @@
     "sdkInit": true
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "tl",
+   "howto": [
+    "Pick Easy, Normal or Hard and press Play.",
+    "You run on your own and pick up every plank you touch.",
+    "At a gap your planks build the bridge automatically; with too few planks you fall in.",
+    "Reach the finish flag to win. Tap, click or Space jumps."
+   ],
+   "tips": [
+    "Stay low: jumping carries you over planks you wanted.",
+    "Every finished bridge gives 5 bonus planks, so the first gaps matter most.",
+    "The more planks you carry, the faster a bridge goes up.",
+    "Your speed creeps up after the first 200 m: collect early, while it is easy."
+   ],
+   "controls": {
+    "keyboard": "Space or Up to jump; P or Esc pauses",
+    "touch": "Tap the track to jump; the pause button sits top left"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "MEGAPLANKS",
+     "effect": "+50 planks right now"
+    },
+    {
+     "code": "QUICKBUILD",
+     "effect": "Bridges build four times faster"
+    },
+    {
+     "code": "SLOWMO",
+     "effect": "Run at 60% speed"
+    }
+   ],
+   "difficulty": "Easy, Normal and Hard on the title card: Easy starts slower, tops out lower, lays 64 planks and 5 gaps; Hard is faster with 38 planks and 8 gaps.",
+   "features": {
+    "one-tap-start": "One Play button on the title card (difficulty remembered)",
+    "instant-restart": "Run again on the results card, the Restart button under the track, or Restart in the pause menu",
+    "best-score-badge": "Best distance and wins on the title card",
+    "tutorial-card": "An animated 'Tap to jump' card before the first run; Replay tutorial in How to play",
+    "results": "Results card with distance, gaps bridged, planks left, difficulty and best distance"
+   },
+   "saves": [
+    "brc_best"
+   ],
+   "start": "#brPlay",
+   "settings": {
+    "quality": "Graphics: High / Low button on the title card (Low draws at 1x pixel ratio)"
+   },
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "game-arcade-7": {
    "title": "Game Arcade — Bridge Race & Fashion Princess",
@@ -5657,14 +6101,63 @@
    },
    "pauseKeys": "esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a game card on the menu and press PLAY.",
+    "The first time you open each game a card shows its controls; press Let's play.",
+    "Bridge Race, Tetris, Snake, Breakout, Flappy and the Space Shooter end when you fall, top out or lose your lives; Chess ends on checkmate.",
+    "Your best score in every game is listed under the cards on the menu."
+   ],
+   "tips": [
+    "Neon Tetris: clearing four rows at once scores 800 times the level.",
+    "Neon Snake: plan a loop around the walls before your tail gets long.",
+    "Bridge Race: stay on the ground to pick up planks; jumping skips them.",
+    "Neon Breakout: hit the ball with the edge of the paddle to steer it.",
+    "Hyper Chess: the legal moves light up when you click a piece."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys or WASD in every game, Space to jump, flap or fire; P or Esc pauses",
+    "touch": "The on-screen arrow and action buttons under each game, or tap and drag on the canvas; the pause button sits top right"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "MEGAPLANKS",
+     "effect": "Bridge Race: +50 planks"
+    },
+    {
+     "code": "EXTRALIVES",
+     "effect": "Breakout and Space Shooter: +3 lives"
+    },
+    {
+     "code": "LINEBOMB",
+     "effect": "Neon Tetris: the bottom four rows vanish"
+    }
+   ],
+   "difficulty": "Each game ramps on its own: Tetris gets faster every 10 lines, Snake speeds up as it grows, Bridge Race speeds up after 200 m, Breakout and the Space Shooter give three lives.",
+   "features": {
+    "difficulty": "Per-game ramps: Tetris levels speed up the fall, Snake speeds up as it grows, Bridge Race speeds up after 200 m",
+    "wave-or-level-counter": "Neon Tetris shows Level and Lines; Bridge Race shows distance to the flag; Breakout and the Shooter show lives",
+    "high-score-table": "Best scores table under the game cards on the menu (one best per game, runs with codes excluded)",
+    "results": "Each game shows its own game-over or win screen with the score; the best-score table updates"
+   },
+   "saves": [
+    "arcade7_best",
+    "neonSnakeBest",
+    "neonFlappyBest",
+    "shooterBest"
+   ],
+   "start": ".game-card .card-btn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "claire-pip": {
    "title": "Claire's Big Life",
