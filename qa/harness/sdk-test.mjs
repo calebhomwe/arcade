@@ -60,7 +60,13 @@ await page.evaluate(() => { window.cancelled = 0; const a = setTimeout(() => win
 await wait(200);
 check('cleared timers never run', await page.evaluate(() => window.cancelled) === 0);
 
-// 5. Pause keys: 'esc' binds only Escape, 'p' only P, 'p+esc' both.
+// 5. Mute reaches an audio context even before anything is connected to it.
+{
+  const r = await page.evaluate(() => { const ac = new AudioContext(); ArcadeSDK.setMuted(true); const a = ArcadeSDK.debug().audio.slice(-1)[0]; ArcadeSDK.setMuted(false); const b = ArcadeSDK.debug().audio.slice(-1)[0]; ac.close(); return { muted: a && a.master, unmuted: b && b.master }; });
+  check('mute covers a context with nothing connected yet', r.muted === 0 && r.unmuted === 1, JSON.stringify(r));
+}
+
+// 6. Pause keys: 'esc' binds only Escape, 'p' only P, 'p+esc' both.
 for (const [keys, pressP, pressEsc] of [['esc', false, true], ['p', true, false], ['p+esc', true, true]]) {
   await page.evaluate(k => ArcadeSDK.init({ pauseKeys: k }), keys);
   const r = await page.evaluate(() => {

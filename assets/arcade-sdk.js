@@ -104,7 +104,7 @@
   var rawConnect = W.AudioNode && W.AudioNode.prototype.connect;
   if (AC && rawConnect) {
     try {
-      var Wrapped = class extends AC { constructor(a) { super(a); ctxs.add(this); if (paused && !soft) { try { this.suspend(); wasRunning.add(this); } catch (e) {} } } };
+      var Wrapped = class extends AC { constructor(a) { super(a); ctxs.add(this); try { masterOf(this); } catch (e) {} if (paused && !soft) { try { this.suspend(); wasRunning.add(this); } catch (e) {} } } };
       W.AudioContext = Wrapped; if (W.webkitAudioContext) W.webkitAudioContext = Wrapped;
       W.AudioNode.prototype.connect = function (dest) {
         try {

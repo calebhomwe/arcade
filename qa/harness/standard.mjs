@@ -22,7 +22,7 @@ const out = process.env.REPORT_DIR || path.join(root, 'qa/standard-results');
 const shots = path.join(out, 'shots');
 await fs.mkdir(shots, { recursive: true });
 const STD = JSON.parse(await fs.readFile(path.join(root, 'qa/standard/standard.json'), 'utf8'));
-const META = JSON.parse(await fs.readFile(path.join(root, 'assets/game-meta.json'), 'utf8'));
+const META = JSON.parse(await fs.readFile(process.env.META_FILE || path.join(root, 'assets/game-meta.json'), 'utf8'));
 const CATALOG = vm.runInNewContext((await fs.readFile(path.join(root, 'catalog.js'), 'utf8')) + ';CATALOG');
 // Merge mode: combine the matrix.json files of several shard runs (CI), and compare with a baseline.
 //   node qa/harness/standard.mjs --merge part1 part2 ... [--baseline qa/standard-results/matrix.json]
@@ -70,6 +70,8 @@ if (!BASE) {
 }
 // https://calebhomwe.github.io/<repo>/... -> ../<repo>/... (and /arcade/ -> this repo)
 async function routeExternal(ctx) {
+  // A custom META_FILE (testing another branch's content) is what the arcade page reads as well.
+  if (process.env.META_FILE) await ctx.route(/\/assets\/game-meta\.json(\?.*)?$/, async route => route.fulfill({ status: 200, body: await fs.readFile(process.env.META_FILE), headers: { 'content-type': 'application/json' } }));
   await ctx.route(/^https:\/\/calebhomwe\.github\.io\/([^/]+)\/(.*)$/, async route => {
     const m = route.request().url().match(/^https:\/\/calebhomwe\.github\.io\/([^/]+)\/(.*)$/);
     const dir = m[1] === 'arcade' ? root : path.join(extRoot, m[1]);
@@ -151,7 +153,17 @@ async function checkGame(g, browser) {
       set('U17', h.ready && d0.caps.declared ? 'PASS' : 'FAIL', h.ready ? (d0.caps.declared ? 'Ready, and the game declares what it supports.' : 'SDK ready, but the game has not called ArcadeSDK.init to declare restart, exit, tutorial, hints or codes.') : 'SDK loaded but never said ready.');
       // ---- U04 pause / U05 resume ----
       const notes = [], fails = [];
-      const btn = await f.locator('#arcade-sdk-btn').isVisible().catch(() => false);
+      let btn = await f.locator('#arcade-sdk-btn').isVisible().catch(() => false);
+      if (!btn) {
+        // A game may keep its own pause button (pauseButton 'none') wired to ArcadeSDK.showMenu() or gamePaused().
+        const own = f.locator('button, [role=button]').filter({ hasText: /pause|❚❚|⏸|II/i }).or(f.locator('[aria-label*="ause" i], [title*="ause" i]')).first();
+        if (await own.isVisible().catch(() => false)) {
+          await own.click({ timeout: 3000 }).catch(() => {}); await wait(300);
+          const dp = await dbg();
+          if (dp?.paused) { btn = true; notes.push('the game\'s own pause button opens the arcade menu'); await page.locator('#gpause').click().catch(() => {}); await wait(250); }
+          else notes.push('the game\'s own pause button does not pause through the arcade');
+        }
+      }
       if (!btn && !d0.caps.ownPauseUI) fails.push('no on-screen pause button');
       const c0 = (await dbg()).clock;
       await page.locator('#gpause').click({ timeout: 3000 }).catch(() => fails.push('the arcade Pause button was not clickable'));

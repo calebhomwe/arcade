@@ -178,8 +178,16 @@ S = {
  'stack-tower':('Stack Tower','Build the tallest tower.'),'swim-dodge':('Swim Dodge','Dodge underwater hazards.'),'traffic-run':('Traffic Run','Cross the road safely.'),
  'turret-defense':('Turret Defense','Hold the line.'),
 }
+SKY_TAGS = {  # what each quick play is, so search and "More like this" can find it
+ 'balance-tile':('balance','physics'),'breakout':('breakout','classic'),'color-match':('colour','reflex'),'cut-rope':('physics','puzzle'),
+ 'flappy-bird':('flappy','tap'),'grow-shrink':('reflex','size'),'hole-eater':('hole','io'),'key-unlock':('pull the pin','puzzle'),
+ 'lane-switcher':('runner','lanes'),'match-swipe':('match','swipe'),'maze-runner':('maze','puzzle'),'parking-puzzle':('traffic','puzzle'),
+ 'rope-swing':('swing','timing'),'slide-runner':('runner','slide'),'slingshot':('aim','physics'),'snake':('snake','classic'),
+ 'sniper-shot':('aim','shooter'),'spike-jump':('jump','timing'),'stack-tower':('stack','timing'),'swim-dodge':('dodge','underwater'),
+ 'traffic-run':('crossy','dodge'),'turret-defense':('tower defense','shooter'),
+}
 for f,(t,b) in S.items():
-    add('sky-'+f,t,'hyper',b,NEON+'skywalker-playables/'+f+'.html','sky-'+f+'.webp',ext=True,tags=('quick play',),frm='Skywalker')
+    add('sky-'+f,t,'hyper',b,NEON+'skywalker-playables/'+f+'.html','sky-'+f+'.webp',ext=True,tags=('quick play',)+SKY_TAGS.get(f,()),frm='Skywalker')
 
 # ---------- derived fields ----------
 for g in G:
