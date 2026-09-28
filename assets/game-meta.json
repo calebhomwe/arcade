@@ -5933,16 +5933,16 @@
     "gamepad": false,
     "touch": false,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": true,
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseKeys": "p",
+   "pauseButton": "tr",
    "howto": [
     "Pick a difficulty and press New life.",
-    "Click an object in the house (fridge, shower, bed, TV, phone, computer) and choose what your Sim does there.",
+    "Click an object in the 3D house (fridge, stove, shower, bed, TV, phone, computer...) and pick an action from the bubbles over it; click the floor to walk there.",
     "Keep all six needs out of the red; work at the computer for money and order groceries on the phone.",
     "Tick off the three goals each day; at midnight the day summary shows how you did."
    ],
@@ -5954,8 +5954,8 @@
     "Turn Autonomy off to make every choice yourself, or leave it on to let your Sim look after itself."
    ],
    "controls": {
-    "keyboard": "Click objects and actions; keys 1-4 set the speed (1x, 5x, 15x, 60x); Space, P or Esc pauses",
-    "touch": "Tap objects and actions; the speed buttons sit in the top bar and the pause button bottom right"
+    "keyboard": "Click objects, actions and the floor; keys 1-4 set the speed (1x, 5x, 15x, 60x); Space, P or Esc pauses",
+    "touch": "Tap objects, actions and the floor; speed buttons in the top bar, Goals opens today's goals, inventory and log; pause button top right"
    },
    "tricks": [],
    "cheats": [
@@ -5975,8 +5975,8 @@
    "difficulty": "Relaxed, Normal and Hard on the title card: needs drop 40% slower or faster than Normal, and groceries cost $15, $18 or $24.",
    "features": {
     "autosave": "Saves after every activity and every game hour (and on Exit); Continue on the title card picks it up",
-    "goals-or-quests": "Three daily goals in the side panel, $25 each, a trophy for all three",
-    "day-time-ui": "Day and clock in the top bar, speed buttons 1x to 60x, and an end-of-day summary card at midnight",
+    "goals-or-quests": "Three daily goals in the Goals panel (right side, or the Goals button on a phone), $25 each, a trophy for all three",
+    "day-time-ui": "Day and clock in the top bar, speed buttons 1x to 60x, day and night lighting in the house, and an end-of-day summary card at midnight",
     "inventory": "Inventory panel: groceries (used by snacks and meals, bought on the phone) and trophies",
     "results": "End-of-day summary card: goals done, money earned, groceries left, days lived and best"
    },
@@ -5986,8 +5986,9 @@
    ],
    "start": "#newBtn",
    "settings": {
-    "quality": "Graphics: High / Low button on the title card (Low draws the house at 1x pixel ratio)"
+    "quality": "Graphics: High / Low button on the title card (Low renders at 1x with no shadows, no night lamps and fewer garden props; a CPU-rendered device starts on Low)"
    },
+   "render": "three-3d",
    "authored": [
     "cheats",
     "controls",
@@ -5995,9 +5996,11 @@
     "features",
     "howto",
     "pauseButton",
+    "render",
     "saves",
     "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -6021,8 +6024,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": false,
@@ -6038,8 +6041,8 @@
    "pauseButton": "tl",
    "howto": [
     "Pick Easy, Normal or Hard and press Play.",
-    "You run on your own and pick up every plank you touch.",
-    "At a gap your planks build the bridge automatically; with too few planks you fall in.",
+    "Your builder runs on his own and picks up every plank bundle he touches; they stack up on his back.",
+    "At a gap he lays your planks as a bridge; with too few planks he falls in the lake.",
     "Reach the finish flag to win. Tap, click or Space jumps."
    ],
    "tips": [
@@ -6050,7 +6053,7 @@
    ],
    "controls": {
     "keyboard": "Space or Up to jump; P or Esc pauses",
-    "touch": "Tap the track to jump; the pause button sits top left"
+    "touch": "Tap the course to jump; the pause button sits top left"
    },
    "tricks": [],
    "cheats": [
@@ -6071,7 +6074,7 @@
    "features": {
     "one-tap-start": "One Play button on the title card (difficulty remembered)",
     "instant-restart": "Run again on the results card, the Restart button under the track, or Restart in the pause menu",
-    "best-score-badge": "Best distance and wins on the title card",
+    "best-score-badge": "Best distance and wins on the title card; the plank count and a distance bar with every gap marked sit over the course",
     "tutorial-card": "An animated 'Tap to jump' card before the first run; Replay tutorial in How to play",
     "results": "Results card with distance, gaps bridged, planks left, difficulty and best distance"
    },
@@ -6080,8 +6083,9 @@
    ],
    "start": "#brPlay",
    "settings": {
-    "quality": "Graphics: High / Low button on the title card (Low draws at 1x pixel ratio)"
+    "quality": "Graphics: High / Low button on the title card (Low renders at 1x with no shadows, fences, flowers or lily pads; a CPU-rendered device starts on Low)"
    },
+   "render": "three-3d",
    "authored": [
     "cheats",
     "controls",
@@ -6089,9 +6093,11 @@
     "features",
     "howto",
     "pauseButton",
+    "render",
     "saves",
     "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -8720,20 +8726,21 @@
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [
-    "Slide your finger or the mouse (or hold the arrow keys) and the black hole follows.",
-    "Swallow objects smaller than the hole; each one makes it bigger.",
+    "Slide your finger or move the mouse (or hold the arrow keys) and the hole rolls toward it through the park.",
+    "Swallow objects smaller than the hole: cones, benches, trees, cars, vans and cottages drop in and it grows.",
     "Objects with a red ring are too big for now: touching one chokes the hole and ends the run.",
     "Eat all 12 small ones as fast as you can."
    ],
    "tips": [
-    "Start with the tiniest objects: every bite grows you by a few pixels.",
+    "Start with the tiniest objects: every bite makes the hole wider.",
     "Objects near the hole get pulled into orbit, so you can reel them in from a short way off.",
-    "A red-ringed object turns safe once you have grown enough; the ring disappears.",
+    "A red ring disappears once you have grown enough to swallow that object.",
+    "The camera pulls back as you grow; the 12 pips at the bottom count what you have eaten.",
     "Your best time is the fastest full clear, shown top left."
    ],
    "controls": {
-    "keyboard": "Arrow keys move the hole; Space starts. P or Esc pauses.",
-    "touch": "Drag anywhere and the hole follows your finger. Pause button top right."
+    "keyboard": "Move the mouse or hold the arrow keys to steer; Space starts. P or Esc pauses.",
+    "touch": "Hold a finger on the screen and the hole rolls toward it; lift to stop. Pause button top right."
    },
    "tricks": [],
    "cheats": [
@@ -8754,7 +8761,7 @@
    "features": {
     "one-tap-start": "Tap, Space or an arrow key on the title card",
     "instant-restart": "Tap once on the CHOKED! or COSMIC HOLE! card",
-    "best-score-badge": "BEST clear time under the run timer, top left",
+    "best-score-badge": "BEST clear time under the run timer, top left, and on the title screen",
     "tutorial-card": "First-run How to play card with an animated drag; replay from Pause > How to play",
     "results": "CHOKED! card with objects eaten, or COSMIC HOLE! with clear time and best"
    },
@@ -8762,6 +8769,10 @@
     "sky-hole-eater-best"
    ],
    "start": "key:Space",
+   "settings": {
+    "quality": "Graphics: High / Low button on the title screen (Low renders at 1x with no shadows, a shorter view, no skyline, trees or lamps and fewer particles; a CPU-rendered device starts on Low)"
+   },
+   "render": "three-3d",
    "authored": [
     "cheats",
     "controls",
@@ -8769,8 +8780,11 @@
     "features",
     "howto",
     "pauseButton",
+    "render",
     "saves",
+    "settings",
     "start",
+    "tier",
     "tips"
    ]
   },

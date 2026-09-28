@@ -1,7 +1,7 @@
 {
   "howto": [
     "Pick a difficulty and press New life.",
-    "Click an object in the house (fridge, shower, bed, TV, phone, computer) and choose what your Sim does there.",
+    "Click an object in the 3D house (fridge, stove, shower, bed, TV, phone, computer...) and pick an action from the bubbles over it; click the floor to walk there.",
     "Keep all six needs out of the red; work at the computer for money and order groceries on the phone.",
     "Tick off the three goals each day; at midnight the day summary shows how you did."
   ],
@@ -13,8 +13,8 @@
     "Turn Autonomy off to make every choice yourself, or leave it on to let your Sim look after itself."
   ],
   "controls": {
-    "keyboard": "Click objects and actions; keys 1-4 set the speed (1x, 5x, 15x, 60x); Space, P or Esc pauses",
-    "touch": "Tap objects and actions; the speed buttons sit in the top bar and the pause button bottom right"
+    "keyboard": "Click objects, actions and the floor; keys 1-4 set the speed (1x, 5x, 15x, 60x); Space, P or Esc pauses",
+    "touch": "Tap objects, actions and the floor; speed buttons in the top bar, Goals opens today's goals, inventory and log; pause button top right"
   },
   "difficulty": "Relaxed, Normal and Hard on the title card: needs drop 40% slower or faster than Normal, and groceries cost $15, $18 or $24.",
   "cheats": [
@@ -33,8 +33,8 @@
   ],
   "features": {
     "autosave": "Saves after every activity and every game hour (and on Exit); Continue on the title card picks it up",
-    "goals-or-quests": "Three daily goals in the side panel, $25 each, a trophy for all three",
-    "day-time-ui": "Day and clock in the top bar, speed buttons 1x to 60x, and an end-of-day summary card at midnight",
+    "goals-or-quests": "Three daily goals in the Goals panel (right side, or the Goals button on a phone), $25 each, a trophy for all three",
+    "day-time-ui": "Day and clock in the top bar, speed buttons 1x to 60x, day and night lighting in the house, and an end-of-day summary card at midnight",
     "inventory": "Inventory panel: groceries (used by snacks and meals, bought on the phone) and trophies",
     "results": "End-of-day summary card: goals done, money earned, groceries left, days lived and best"
   },
@@ -43,8 +43,10 @@
     "mls_best"
   ],
   "start": "#newBtn",
-  "pauseButton": "br",
+  "pauseButton": "tr",
   "settings": {
-    "quality": "Graphics: High / Low button on the title card (Low draws the house at 1x pixel ratio)"
-  }
+    "quality": "Graphics: High / Low button on the title card (Low renders at 1x with no shadows, no night lamps and fewer garden props; a CPU-rendered device starts on Low)"
+  },
+  "tier": "3D-S",
+  "render": "three-3d"
 }
