@@ -17,9 +17,18 @@
   },
   "difficulty": "An adaptive curve: every two platforms down adds another black part (up to five), and the platforms spin faster the deeper you go.",
   "cheats": [
-    {"code": "STEELBALL", "effect": "Steel ball: black parts break like the rest"},
-    {"code": "SLOWSPIN", "effect": "Slow spin: platforms turn at half speed"},
-    {"code": "BIGBALL", "effect": "Big ball: a giant ball that grabs gems from further away"}
+    {
+      "code": "STEELBALL",
+      "effect": "Steel ball: black parts break like the rest"
+    },
+    {
+      "code": "SLOWSPIN",
+      "effect": "Slow spin: platforms turn at half speed"
+    },
+    {
+      "code": "BIGBALL",
+      "effect": "Big ball: a giant ball that grabs gems from further away"
+    }
   ],
   "features": {
     "one-tap-start": "Play, then the first tap smashes and starts the run",
@@ -28,7 +37,16 @@
     "tutorial-card": "Get-ready card with a tapping finger; the first run also explains slams and black parts",
     "results": "Cracked card with score, best, slam streak, close calls, gems and depth"
   },
-  "saves": ["stack-ball-best", "stack-ball-depth", "stack-ball-gems"],
+  "saves": [
+    "stack-ball-best",
+    "stack-ball-depth",
+    "stack-ball-gems"
+  ],
   "start": "#playBtn",
-  "pauseButton": "bl"
+  "pauseButton": "bl",
+  "settings": {
+    "quality": "Title screen > GRAPHICS: HIGH / LOW (Low renders at 1x resolution with no shadows, draws 6 platforms below the ball instead of 11 and fewer shards)"
+  },
+  "tier": "3D-S",
+  "render": "three-3d"
 }

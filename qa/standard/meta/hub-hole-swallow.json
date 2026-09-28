@@ -7,7 +7,7 @@
   "tips": [
     "Eat small things first: every bite makes the hole bigger.",
     "Swallowing things quickly one after another builds a chain bonus.",
-    "An alarm clock adds 5 seconds.",
+    "A spinning blue time star adds 5 seconds.",
     "Golden items are worth 2 extra points.",
     "Houses and towers are worth the most once the hole is big enough."
   ],
@@ -17,9 +17,18 @@
   },
   "difficulty": "An adaptive curve: bigger, more valuable things drift in from the edges and only fit once the hole has grown.",
   "cheats": [
-    {"code": "MEGAHOLE", "effect": "Mega hole: the hole starts huge"},
-    {"code": "EXTRATIME", "effect": "Extra time: 30 more seconds on the clock"},
-    {"code": "GOLDRUSH", "effect": "Gold rush: everything is golden and worth +2"}
+    {
+      "code": "MEGAHOLE",
+      "effect": "Mega hole: the hole starts huge"
+    },
+    {
+      "code": "EXTRATIME",
+      "effect": "Extra time: 30 more seconds on the clock"
+    },
+    {
+      "code": "GOLDRUSH",
+      "effect": "Gold rush: everything is golden and worth +2"
+    }
   ],
   "features": {
     "one-tap-start": "Play, then the first drag starts the clock",
@@ -28,7 +37,15 @@
     "tutorial-card": "Get-ready card with a dragging finger; the clock waits until you move",
     "results": "Time's Up card with score, best, rank and golden feast record"
   },
-  "saves": ["hole-swallow-best", "hole-swallow-rank"],
+  "saves": [
+    "hole-swallow-best",
+    "hole-swallow-rank"
+  ],
   "start": "#playBtn",
-  "pauseButton": "bl"
+  "pauseButton": "bl",
+  "settings": {
+    "quality": "Title screen > GRAPHICS: HIGH / LOW (Low renders at 1x resolution with no shadows, no houses, benches or lamps round the park and fewer particles)"
+  },
+  "tier": "3D-S",
+  "render": "three-3d"
 }
