@@ -199,9 +199,11 @@
   /* ---------- the standard pause menu ---------- */
   var root = null, panel = '', tipIx = 0;
   function el(tag, attrs, kids) { var e = D.createElement(tag); for (var k in attrs) { if (k === 'text') e.textContent = attrs[k]; else e.setAttribute(k, attrs[k]); } (kids || []).forEach(function (c) { e.appendChild(c); }); return e; }
-  function ensureRoot() {
-    if (root || !D.body) return root;
-    var css = el('style', { text:
+  var styled = false;
+  function ensureStyle() {   // the pause button needs these rules before the menu ever opens
+    if (styled || !(D.head || D.body)) return;
+    styled = true;
+    var css = el('style', { id: 'arcade-sdk-css', text:
       '#arcade-sdk{position:fixed;inset:0;z-index:2147483600;display:none;align-items:center;justify-content:center;background:rgba(8,10,20,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c1f2e}' +
       '#arcade-sdk.on{display:flex}#arcade-sdk .c{background:#fffdf7;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.45),inset 0 -5px 0 rgba(0,0,0,.08);padding:18px 20px 14px;width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 20px);overflow:auto;text-align:center;box-sizing:border-box}' +
       '#arcade-sdk h2{margin:0 0 2px;font-size:22px;font-weight:900;letter-spacing:.2px}#arcade-sdk .sub{margin:0 0 10px;color:#6a6f86;font-size:13px}' +
@@ -213,6 +215,10 @@
       '#arcade-sdk-btn{position:fixed;z-index:2147483599;width:40px;height:40px;border-radius:50%;border:0;background:rgba(10,12,24,.55);color:#fff;font:900 15px system-ui;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.3)}' +
       '#arcade-sdk-btn:focus-visible{outline:3px solid #6c7cff}@media (prefers-reduced-motion:reduce){#arcade-sdk{backdrop-filter:none}}@media (max-height:540px) and (min-width:420px){#arcade-sdk .c{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;align-content:start;width:min(600px,calc(100vw - 24px))}#arcade-sdk .c>h2,#arcade-sdk .c>.sub,#arcade-sdk .c>.tip,#arcade-sdk .c>ol,#arcade-sdk .c>ul,#arcade-sdk .c>table,#arcade-sdk .c>input,#arcade-sdk .c>.msg{grid-column:1/-1}#arcade-sdk .c>button[data-a=exit],#arcade-sdk .c>button[data-a=back]{grid-column:1/-1}#arcade-sdk button{min-height:40px;margin:4px 0}}' });
     D.head ? D.head.appendChild(css) : D.body.appendChild(css);
+  }
+  function ensureRoot() {
+    if (root || !D.body) return root;
+    ensureStyle();
     root = el('div', { id: 'arcade-sdk', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Game menu' });
     root.addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('[data-a]') : null; if (b) act(b.getAttribute('data-a')); });
     D.body.appendChild(root);
@@ -220,6 +226,7 @@
   }
   function pauseButton() {
     if (cfg.ownPauseUI || cfg.pauseButton === 'none' || D.getElementById('arcade-sdk-btn') || !D.body) return;
+    ensureStyle();
     var pos = cfg.pauseButton || meta.pauseButton || 'tr', b = el('button', { id: 'arcade-sdk-btn', type: 'button', 'aria-label': 'Pause', title: pauseKeys ? 'Pause (P)' : 'Pause' });
     b.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.6" height="12" rx="1.2" fill="#fff"/><rect x="9.4" y="2" width="3.6" height="12" rx="1.2" fill="#fff"/></svg>';
     b.style[pos[0] === 't' ? 'top' : 'bottom'] = '10px'; b.style[pos[1] === 'l' ? 'left' : 'right'] = '10px';
