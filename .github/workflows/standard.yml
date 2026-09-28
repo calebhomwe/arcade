@@ -11,6 +11,7 @@ on:
       - 'catalog.js'
       - 'qa/standard/**'
       - 'qa/harness/standard.mjs'
+      - 'qa/harness/sdk-test.mjs'
       - 'tools/game_meta.py'
       - '**/index.html'
       - '.github/workflows/standard.yml'
@@ -30,6 +31,17 @@ concurrency:
 env:
   SHARDS: 8
 jobs:
+  sdk:
+    # Unit tests for assets/arcade-sdk.js: timers, clocks and pause keys. Fails the check on any failure.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm ci --prefix qa/harness
+      - run: cd qa/harness && npx playwright install --with-deps chromium
+      - run: node qa/harness/sdk-test.mjs
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 40

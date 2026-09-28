@@ -230,7 +230,8 @@ def main():
         is3d = sc.get('render', '').endswith('3d')
         tier = '3D-R' if gid in TIER_3DR else '3D-S' if (gid in TIER_3DS or is3d) else '2D-HD'
         # P / Esc may open the arcade menu only where the game does not already use them.
-        keys = '' if sc.get('usesP') else ('p' if sc.get('usesEsc') else 'esc')
+        free = [k for k, used in (('p', sc.get('usesP')), ('esc', sc.get('usesEsc'))) if not used]
+        keys = '+'.join(free)   # 'p+esc', 'p', 'esc' or ''
         m = {
             'title': g['title'], 'cat': g['cat'], 'genre': genre, 'genreName': GENRES[genre][0],
             'modules': GENRES[genre][1], 'tier': tier, 'should3d': tier.startswith('3D'),

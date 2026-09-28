@@ -14,7 +14,7 @@
     {"id": "U09", "name": "Settings", "how": "meta+scan", "pass": "Sound always; 3D tiers also list a graphics-quality setting in meta.settings."},
     {"id": "U10", "name": "Tips", "how": "observe+meta", "pass": "At least 3 tips in meta, shown on the pause menu."},
     {"id": "U11", "name": "Results screen", "how": "observe", "pass": "The game reports scene 'over' with a score or outcome during the scripted session, or meta.features.results says where it is (REVIEW)."},
-    {"id": "U12", "name": "Saving", "how": "observe+scan", "pass": "localStorage or IndexedDB written during the session."},
+    {"id": "U12", "name": "Saving", "how": "observe+scan", "pass": "A key named in meta.saves (the best score or progress, not a first-run flag or setting) is in localStorage or IndexedDB after the session."},
     {"id": "U13", "name": "Phone", "how": "observe", "pass": "At 390x844 with touch: no sideways scroll, DOM text at least 12 px, DOM tap targets at least 40 px."},
     {"id": "U14", "name": "Stability", "how": "observe", "pass": "0 page errors, 0 console errors and 0 failed requests from the game."},
     {"id": "U15", "name": "Loading", "how": "observe", "pass": "Something visible within 1 s of the game frame loading, and the SDK ready within 20 s."},

@@ -31,7 +31,7 @@ leave alone) are audited and reported. The work list never includes them.
 | U09 | Settings | Sound at minimum. 3D games add a graphics-quality option. |
 | U10 | Tips | At least 3 tips, shown on loading, pause or game over. |
 | U11 | Results | A game-over or level-complete screen with score or outcome and a one-tap replay. |
-| U12 | Saving | Best score or progress kept in localStorage and survives a reload. |
+| U12 | Saving | Best score or progress kept in localStorage (or IndexedDB) and survives a reload. The game names the key in its meta `saves` field; a first-run flag or a setting does not count. |
 | U13 | Phone | Touch controls, no sideways scroll, text at least 12 px, tap targets at least 40 px, works in portrait (or asks to rotate). |
 | U14 | Stability | 0 console errors, 0 failed requests, no soft-locks in the scripted session. |
 | U15 | Loading | Never blank for more than 1 s; a progress indicator for loads over 2 s. |

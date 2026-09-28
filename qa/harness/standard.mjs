@@ -269,9 +269,15 @@ async function checkGame(g, browser) {
     set('U01', scenes.has('title') ? 'PASS' : firstBlank ? 'FAIL' : 'REVIEW', scenes.has('title') ? 'The game reports its title scene.' : firstBlank ? 'Blank one second after loading.' : 'Something is on screen; a person should confirm it is a title with a clear Play button.');
     set('U15', firstBlank ? 'FAIL' : (hasSdk && !ev.t.ready) ? 'FAIL' : 'PASS', firstBlank ? 'The game frame was still blank one second after it loaded.' : `First picture within 1 s; frame loaded in ${(ev.t.frameLoad / 1000).toFixed(1)} s` + (ev.t.ready ? `, SDK ready ${(ev.t.ready / 1000).toFixed(1)} s after Play.` : '.'));
     set('U11', scenes.has('over') ? 'PASS' : meta.features?.results ? 'REVIEW' : 'FAIL', scenes.has('over') ? 'The game reported a results scene.' : meta.features?.results ? 'Described in meta: ' + meta.features.results : 'No results scene reported (ArcadeSDK.state({scene:"over"})) and none described in meta.');
-    // ---- U12 saving ----
-    const store = await f.evaluate(async () => { let ls = 0; try { ls = Object.keys(localStorage).filter(k => k !== 'arcade_muted').length; } catch {} let idb = 0; try { idb = (await indexedDB.databases()).length; } catch {} return { ls, idb }; }).catch(() => ({ ls: 0, idb: 0 }));
-    set('U12', store.ls || store.idb ? 'PASS' : meta.scan?.saves ? 'REVIEW' : 'FAIL', store.ls || store.idb ? `Saved ${store.ls} localStorage key(s)` + (store.idb ? ` and ${store.idb} IndexedDB database(s).` : '.') : meta.scan?.saves ? 'The code saves, but nothing was saved in the scripted session.' : 'The game never saves progress or a best score.');
+    // ---- U12 saving: the game names the key(s) that hold progress (meta.saves); any storage alone is not proof ----
+    const saves = meta.saves || [];
+    const store = await f.evaluate(async keys => {
+      let all = []; try { all = Object.keys(localStorage).filter(k => k !== 'arcade_muted'); } catch {}
+      let idb = []; try { idb = (await indexedDB.databases()).map(d => d.name); } catch {}
+      return { all, idb, found: keys.filter(k => all.includes(k) || idb.includes(k.replace(/^idb:/, ''))) };
+    }, saves).catch(() => ({ all: [], idb: [], found: [] }));
+    if (saves.length) set('U12', store.found.length ? 'PASS' : 'REVIEW', store.found.length ? 'Progress saved under ' + store.found.join(', ') + '.' : 'Declared save key(s) ' + saves.join(', ') + ' not written in the scripted session (they may be written at the end of a run).');
+    else set('U12', store.all.length || store.idb.length ? 'REVIEW' : meta.scan?.saves ? 'REVIEW' : 'FAIL', store.all.length || store.idb.length ? 'Writes storage (' + [...store.all, ...store.idb].slice(0, 4).join(', ') + ') but meta.saves does not say which key holds progress.' : meta.scan?.saves ? 'The code saves, but nothing was saved in the scripted session and meta.saves is empty.' : 'The game never saves progress or a best score.');
     // ---- X01 graphics tier (desktop half; the crispness half is on the phone) ----
     const gl = (dEnd?.gl || []).filter(c => /webgl/i.test(c.type));
     ev.gl = dEnd?.gl || [];

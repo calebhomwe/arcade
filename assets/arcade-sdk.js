@@ -2,8 +2,8 @@
  *   <script src="../assets/arcade-sdk.js"></script>
  *
  * With no game code at all it gives the game what qa/standard/STANDARD.md requires:
- * - pause and resume: animation frames, timers, performance.now() and Web Audio freeze
- *   together, so the game resumes without a time jump;
+ * - pause and resume: animation frames, timers, performance.now(), Date.now() and Web Audio
+ *   freeze together, so the game resumes without a time jump (new Date() stays on the real clock);
  * - mute: every Web Audio graph and media element goes through one master switch;
  * - a standard pause menu: Resume, Restart, How to play, Tips, Sound, Codes, Exit;
  * - the arcade page's Pause, Mute and Help buttons and automatic pause when the tab hides.
@@ -44,6 +44,10 @@
   var pausedAt = 0, pausedTotal = 0;
   function vnow() { return (paused && !soft ? pausedAt : rawNow()) - pausedTotal; }
   try { W.performance.now = vnow; } catch (e) {}
+  // Date.now() skips paused time as well, so games that time runs with it do not jump on resume.
+  // new Date() is left on the real clock: calendars, daily puzzles and save stamps want real dates.
+  var rawDateNow = Date.now.bind(Date);
+  try { Date.now = function () { return Math.floor(rawDateNow() - pausedTotal - (paused && !soft ? rawNow() - pausedAt : 0)); }; } catch (e) {}
 
   /* ---------- animation frames ---------- */
   var rawRAF = W.requestAnimationFrame ? W.requestAnimationFrame.bind(W) : null, rawCAF = W.cancelAnimationFrame ? W.cancelAnimationFrame.bind(W) : null;
@@ -62,21 +66,32 @@
     W.cancelAnimationFrame = function (id) { var e = frames.get(id); if (e) { if (e.raw) rawCAF(e.raw); frames.delete(id); } else if (rawCAF) { try { rawCAF(id); } catch (x) {} } };
   }
 
-  /* ---------- timers: a timeout that falls due while paused runs on resume; intervals skip paused ticks ---------- */
-  var deferred = new Map(), tmap = new Map(), tid = 1e6;
-  W.setTimeout = function (fn, ms) {
-    if (typeof fn !== 'function') return rawST.apply(W, arguments);
-    var args = Array.prototype.slice.call(arguments, 2), id = tid++;
-    tmap.set(id, rawST(function () { tmap.delete(id); if (paused && !soft) deferred.set(id, function () { fn.apply(W, args); }); else fn.apply(W, args); }, ms));
+  /* ---------- timers: they count active (unpaused) time only ----------
+   * Every timeout and interval keeps its deadline on the game clock (vnow), so a pause simply stops it
+   * and resume re-arms it with the time it still had left. Intervals re-arm themselves on that clock. */
+  var timers = new Map(), tid = 1e6;
+  function arm(id, t) { t.raw = rawST(function () { fire(id); }, Math.max(0, t.due - vnow())); }
+  function fire(id) {
+    var t = timers.get(id); if (!t) return;
+    t.raw = 0;
+    if (paused && !soft) return;                      // re-armed on resume
+    if (vnow() < t.due - 1) { arm(id, t); return; }    // not yet due on the game clock
+    if (t.every) { t.due += t.every; if (t.due < vnow()) t.due = vnow() + t.every; arm(id, t); } else timers.delete(id);
+    try { t.fn.apply(W, t.args); } catch (e) { rawST(function () { throw e; }, 0); }
+  }
+  function addTimer(fn, ms, args, every) {
+    var id = tid++, d = Math.max(0, +ms || 0);
+    var t = { fn: fn, args: args, due: vnow() + (every ? Math.max(4, d) : d), every: every ? Math.max(4, d) : 0, raw: 0 };
+    timers.set(id, t); if (!paused || soft) arm(id, t);
     return id;
-  };
-  W.clearTimeout = function (id) { if (tmap.has(id)) { rawCT(tmap.get(id)); tmap.delete(id); } else if (deferred.has(id)) deferred.delete(id); else rawCT(id); };
-  W.setInterval = function (fn, ms) {
-    if (typeof fn !== 'function') return rawSI.apply(W, arguments);
-    var args = Array.prototype.slice.call(arguments, 2);
-    return rawSI(function () { if (!paused || soft) fn.apply(W, args); }, ms);
-  };
-  W.clearInterval = function (id) { rawCI(id); };
+  }
+  function dropTimer(id) { var t = timers.get(id); if (!t) return false; if (t.raw) rawCT(t.raw); timers.delete(id); return true; }
+  W.setTimeout = function (fn, ms) { if (typeof fn !== 'function') return rawST.apply(W, arguments); return addTimer(fn, ms, Array.prototype.slice.call(arguments, 2), false); };
+  W.setInterval = function (fn, ms) { if (typeof fn !== 'function') return rawSI.apply(W, arguments); return addTimer(fn, ms, Array.prototype.slice.call(arguments, 2), true); };
+  W.clearTimeout = function (id) { if (!dropTimer(id)) rawCT(id); };
+  W.clearInterval = function (id) { if (!dropTimer(id)) rawCI(id); };
+  function holdTimers() { timers.forEach(function (t) { if (t.raw) { rawCT(t.raw); t.raw = 0; } }); }
+  function releaseTimers() { timers.forEach(function (t, id) { if (!t.raw) arm(id, t); }); }
 
   /* ---------- audio: one master gain per context, suspend on pause ---------- */
   var ctxs = new Set(), masters = new Map(), wasRunning = new Set(), media = new Set(), mediaWasPlaying = new Set();
@@ -134,6 +149,7 @@
       pausedAt = rawNow();
       ctxs.forEach(function (c) { if (c.state === 'running') { wasRunning.add(c); try { c.suspend(); } catch (e) {} } });
       media.forEach(function (el) { if (!el.paused) { mediaWasPlaying.add(el); try { el.pause(); } catch (e) {} } });
+      holdTimers();
       freezeCss(true);
     }
     try { cfg.onPause && cfg.onPause(reason); } catch (e) {}
@@ -149,7 +165,7 @@
       wasRunning.forEach(function (c) { try { c.resume(); } catch (e) {} }); wasRunning.clear();
       mediaWasPlaying.forEach(function (el) { try { rawPlay.call(el); } catch (e) {} }); mediaWasPlaying.clear();
       frames.forEach(function (e, id) { if (!e.raw) schedule(id, e); });
-      var run = Array.from(deferred.values()); deferred.clear(); run.forEach(function (f) { try { f(); } catch (e) { rawST(function () { throw e; }, 0); } });
+      releaseTimers();
       freezeCss(false);
     }
     try { cfg.onResume && cfg.onResume(); } catch (e) {}
@@ -170,7 +186,8 @@
     } catch (e) {}
   }
   // One capture-phase key listener. While the menu is open the game gets no keys, and Esc or P
-  // steps back (or resumes). P / Esc open the menu only for games whose meta says those keys are free.
+  // steps back (or resumes). pauseKeys says which keys may open the menu: 'p+esc', 'p', 'esc' or ''
+  // (game-meta sets it to the keys the game does not already use).
   var pauseKeys = '';
   W.addEventListener('keydown', function (e) {
     var k = e.key, inMenu = !!(root && e.target && e.target.nodeType && root.contains(e.target));
@@ -181,7 +198,8 @@
       return;
     }
     var t = e.target && e.target.tagName; if (!pauseKeys || t === 'INPUT' || t === 'TEXTAREA' || e.repeat) return;
-    if (k === 'p' || k === 'P' || (pauseKeys === 'esc' && k === 'Escape')) { e.preventDefault(); e.stopPropagation(); if (paused) resume('user'); else pause('user'); }
+    var useP = pauseKeys === 'p' || pauseKeys === 'p+esc', useEsc = pauseKeys === 'esc' || pauseKeys === 'p+esc';
+    if ((useP && (k === 'p' || k === 'P')) || (useEsc && k === 'Escape')) { e.preventDefault(); e.stopPropagation(); if (paused) resume('user'); else pause('user'); }
   }, true);
   function setMuted(v) { muted = !!v; try { W.localStorage.setItem('arcade_muted', muted ? '1' : '0'); } catch (e) {} applyMute(); post('state', { muted: muted }); paintMenu(); }
   function restart() {
@@ -227,7 +245,7 @@
   function pauseButton() {
     if (cfg.ownPauseUI || cfg.pauseButton === 'none' || D.getElementById('arcade-sdk-btn') || !D.body) return;
     ensureStyle();
-    var pos = cfg.pauseButton || meta.pauseButton || 'tr', b = el('button', { id: 'arcade-sdk-btn', type: 'button', 'aria-label': 'Pause', title: pauseKeys ? 'Pause (P)' : 'Pause' });
+    var pos = cfg.pauseButton || meta.pauseButton || 'tr', b = el('button', { id: 'arcade-sdk-btn', type: 'button', 'aria-label': 'Pause', title: pauseKeys === 'esc' ? 'Pause (Esc)' : pauseKeys ? 'Pause (P)' : 'Pause' });
     b.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.6" height="12" rx="1.2" fill="#fff"/><rect x="9.4" y="2" width="3.6" height="12" rx="1.2" fill="#fff"/></svg>';
     b.style[pos[0] === 't' ? 'top' : 'bottom'] = '10px'; b.style[pos[1] === 'l' ? 'left' : 'right'] = '10px';
     b.addEventListener('click', function (e) { e.stopPropagation(); pause('user'); });
@@ -347,7 +365,7 @@
       return { version: V, paused: paused, soft: soft, reason: reason, pauseKeys: pauseKeys, muted: muted, cheated: cheated, clock: vnow(), raw: rawNow(), pausedTotal: pausedTotal, caps: caps(), meta: !!meta.title,
         audio: Array.from(ctxs).map(function (c) { var m = masters.get(c); return { state: c.state, master: m ? m.gain.value : null }; }),
         media: Array.from(media).map(function (el) { return { muted: el.muted, paused: el.paused }; }),
-        gl: glTypes.slice(), frames: frames.size, deferred: deferred.size, events: events.slice(-40), menu: panel };
+        gl: glTypes.slice(), frames: frames.size, timers: timers.size, events: events.slice(-40), menu: panel };
     }
   };
   W.ArcadeSDK = api;

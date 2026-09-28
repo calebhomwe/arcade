@@ -59,22 +59,34 @@ def main():
     if a.hdri and os.path.exists(a.hdri):
         env = nt.nodes.new('ShaderNodeTexEnvironment'); env.image = bpy.data.images.load(a.hdri)
         nt.links.new(env.outputs['Color'], bg.inputs['Color'])
-    else:
-        sky = nt.nodes.new('ShaderNodeTexSky'); nt.links.new(sky.outputs['Color'], bg.inputs['Color'])
+    else:   # no HDRI: a soft light-blue studio backdrop (a physical sky is black below the horizon)
+        bg.inputs['Color'].default_value = (0.78, 0.83, 0.9, 1.0)
     sun = bpy.data.objects.new('sun', bpy.data.lights.new('sun', 'SUN')); sc.collection.objects.link(sun)
     sun.data.energy = 3; sun.rotation_euler = (math.radians(50), 0, math.radians(a.turn + 60))
     # ground that only catches shadows
     bpy.ops.mesh.primitive_plane_add(size=radius * 40, location=(centre.x, centre.y, lo.z))
     ground = sc.objects[-1] if sc.objects[-1].type == 'MESH' else bpy.context.active_object
     ground.is_shadow_catcher = True
-    # camera on a three-quarter view that fits the bounding sphere
+    # camera on a three-quarter view, backed off until every corner of the bounding box fits with a 10% margin
     cam = bpy.data.objects.new('cam', bpy.data.cameras.new('cam')); sc.collection.objects.link(cam); sc.camera = cam
     cam.data.lens = 50
-    fov = min(cam.data.angle, cam.data.angle * h / w)
-    dist = radius / math.sin(fov / 2) * 0.82   # the bounding sphere overstates a box; this fills about 80% of the frame
+    cam.data.sensor_fit = 'HORIZONTAL'
+    tan_x = math.tan(cam.data.angle_x / 2) * 0.9
+    tan_y = tan_x * h / w
     el, hd = math.radians(a.angle), math.radians(a.turn)
-    cam.location = centre + Vector((math.sin(hd) * math.cos(el), -math.cos(hd) * math.cos(el), math.sin(el))) * dist
+    toward = Vector((math.sin(hd) * math.cos(el), -math.cos(hd) * math.cos(el), math.sin(el)))   # centre -> camera
+    right = Vector((0, 0, 1)).cross(toward).normalized()
+    up = toward.cross(right).normalized()
+    dist = 0.0
+    for p in pts:
+        v = p - centre
+        x, y, z = v.dot(right), v.dot(up), v.dot(toward)
+        dist = max(dist, z + abs(x) / tan_x, z + abs(y) / tan_y)
+    dist = max(dist, radius * 0.5)
+    cam.location = centre + toward * dist
     cam.rotation_euler = (centre - cam.location).to_track_quat('-Z', 'Y').to_euler()
+    cam.data.clip_start = max(0.01, dist * 0.01)
+    cam.data.clip_end = dist * 20 + radius * 40
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     sc.render.filepath = a.out
     bpy.ops.render.render(write_still=True)

@@ -586,7 +586,12 @@ function play() {
     } else if (m.type === 'state') {
       if ('paused' in m) sdk.paused = !!m.paused; if ('muted' in m) { sdk.muted = !!m.muted; store.set('ca_muted', sdk.muted); }
       paintSdk();
-    } else if (m.type === 'request-restart') restart();
+    } else if (m.type === 'request-restart') {
+      // A game without its own restart or exit handler asks the arcade to load it again. A fresh load
+      // opens on the game's own title screen, so this is also "Exit to title" (m.toTitle) for such games.
+      // The standard harness still marks that fallback FAIL: games should restart and exit in place.
+      restart();
+    }
     else if (m.type === 'request-leave') location.href = './';
     else if (m.type === 'event') { sdk.lastEvent = m; sdk.events.push(m); if (sdk.events.length > 100) sdk.events.shift(); }
     else if (m.type === 'ack') { sdk.acks.push(m); if (sdk.acks.length > 100) sdk.acks.shift(); }
