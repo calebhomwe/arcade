@@ -563,6 +563,55 @@ function play() {
   document.addEventListener('favchange', paintFav);
   const restart = () => { if (!started) { start(); return; } load.classList.remove('off'); frame.src = 'about:blank'; setTimeout(() => { frame.src = g.src; frame.addEventListener('load', () => load.classList.add('off'), { once: true }); }, 40); };
   $('#reload').addEventListener('click', restart);
+
+  /* Arcade SDK host (assets/arcade-sdk.js runs inside the game; see qa/standard/STANDARD.md).
+     Buttons stay disabled until the game answers, so a game without the SDK never pretends to pause. */
+  const sdk = { ready: false, caps: null, paused: false, muted: store.get('ca_muted', false), meta: null, acks: [], events: [] };
+  window.ArcadeHost = sdk;   // read by qa/harness/standard.mjs
+  const gp = $('#gpause'), gm = $('#gmute'), gh = $('#ghelp');
+  const toGame = (type, extra) => { try { frame.contentWindow.postMessage(Object.assign({ arcade: 1, type }, extra || {}), '*'); } catch (e) {} };
+  const paintSdk = () => {
+    [gp, gm, gh].forEach(b => { b.disabled = !sdk.ready; b.title = sdk.ready ? b.title.replace(/ — .*/, '') : b.getAttribute('aria-label') + ' — this game has not joined the arcade controls yet'; });
+    gp.setAttribute('aria-pressed', sdk.paused); gp.querySelector('use').setAttribute('href', sdk.paused ? '#i-play' : '#i-pause'); gp.setAttribute('aria-label', sdk.paused ? 'Resume the game' : 'Pause the game');
+    gm.setAttribute('aria-pressed', sdk.muted); gm.querySelector('use').setAttribute('href', sdk.muted ? '#i-mute' : '#i-sound'); gm.setAttribute('aria-label', sdk.muted ? 'Unmute the game' : 'Mute the game');
+  };
+  const metaP = fetch('assets/game-meta.json').then(r => r.ok ? r.json() : {}).then(all => (all.games || {})[g.id] || {}).catch(() => ({}));
+  metaP.then(m => { sdk.meta = m; paintMeta(m); });
+  window.addEventListener('message', e => {
+    const m = e.data; if (!m || m.arcade !== 1 || e.source !== frame.contentWindow) return;
+    if (m.type === 'ready') {
+      sdk.ready = true; sdk.caps = m.caps; paintSdk();
+      metaP.then(meta => toGame('config', { meta: Object.assign({ title: g.title }, meta) }));
+      if (sdk.muted) toGame('mute');
+    } else if (m.type === 'state') {
+      if ('paused' in m) sdk.paused = !!m.paused; if ('muted' in m) { sdk.muted = !!m.muted; store.set('ca_muted', sdk.muted); }
+      paintSdk();
+    } else if (m.type === 'request-restart') restart();
+    else if (m.type === 'request-leave') location.href = './';
+    else if (m.type === 'event') { sdk.lastEvent = m; sdk.events.push(m); if (sdk.events.length > 100) sdk.events.shift(); }
+    else if (m.type === 'ack') { sdk.acks.push(m); if (sdk.acks.length > 100) sdk.acks.shift(); }
+  });
+  // A new game document is starting whenever the frame's src changes; the SDK in it says ready again.
+  new MutationObserver(() => { sdk.ready = false; sdk.paused = false; sdk.caps = null; paintSdk(); }).observe(frame, { attributes: true, attributeFilter: ['src'] });
+  gp.addEventListener('click', () => toGame(sdk.paused ? 'resume' : 'pause', { reason: 'user' }));
+  gm.addEventListener('click', () => toGame(sdk.muted ? 'unmute' : 'mute'));
+  gh.addEventListener('click', () => toGame('howto'));
+  document.addEventListener('visibilitychange', () => { if (sdk.ready) toGame(document.hidden ? 'pause' : 'resume', { reason: document.hidden ? 'hidden' : 'visible' }); });
+  document.addEventListener('keydown', e => {
+    if (!sdk.ready || e.ctrlKey || e.metaKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName || '')) return;
+    const k = e.key.toLowerCase();
+    if (k === 'p') { e.preventDefault(); gp.click(); } else if (k === 'm') { e.preventDefault(); gm.click(); } else if (k === 'h') { e.preventDefault(); gh.click(); }
+  });
+  function paintMeta(m) {
+    // Tips and cheat codes from qa/standard: tips always, codes behind a spoiler so players can choose to look.
+    const box = $('#stdwrap'); if (!box) return;
+    let h = '';
+    if ((m.tips || []).length) h += '<h3>Tips</h3><ul class="tips">' + m.tips.map(t => '<li>' + esc(t) + '</li>').join('') + '</ul>';
+    if ((m.tricks || []).length) h += '<h3>Tricks</h3><table class="tricks">' + m.tricks.map(t => '<tr><td>' + esc(t.name) + '</td><td>' + esc(t.input || '') + '</td></tr>').join('') + '</table>';
+    if ((m.cheats || []).length) h += '<details class="codes"><summary>Cheat codes (spoilers)</summary><p>Open the game menu (Pause), choose Codes and type one in. Runs with codes never replace your best.</p><ul>' + m.cheats.map(c => '<li><code>' + esc(c.code) + '</code> ' + esc(c.effect || '') + '</li>').join('') + '</ul></details>';
+    box.innerHTML = h; box.hidden = !h;
+  }
+  paintSdk();
   // tester feedback
   const rate = $('#rate'), note = $('#note'), saved = $('#notesaved');
   const paintRate = () => { const r = (notes()[g.id] || {}).r; $$('button', rate).forEach(b => b.setAttribute('aria-checked', b.dataset.v === r)); };

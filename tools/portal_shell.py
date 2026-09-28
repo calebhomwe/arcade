@@ -8,6 +8,10 @@ Icons are drawn for this site on a 24px grid (stroke 2, round caps).
 import os, re, html, datetime
 
 ICONS = {
+  'pause':  '<rect x="6.5" y="5" width="3.8" height="14" rx="1.3"/><rect x="13.7" y="5" width="3.8" height="14" rx="1.3"/>',
+  'sound':  '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/>',
+  'mute':   '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>',
+  'help':   '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .9-1 1.6v.6"/><circle cx="12" cy="16.8" r=".6" fill="currentColor"/>',
   'menu':   '<path d="M4 6h16M4 12h16M4 18h16"/>',
   'search': '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
   'x':      '<path d="M6 6l12 12M18 6L6 18"/>',
