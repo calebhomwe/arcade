@@ -688,14 +688,15 @@
    "pauseButton": "tr",
    "howto": [
     "Steer the hole around the city and swallow anything smaller than it.",
-    "Every bite makes the hole wider, so cones, benches, trees, cars, buses and houses become food in turn.",
+    "Every bite makes the hole wider, so coins, cones, benches, trees, cars, trucks, houses and towers become food in turn.",
     "A rival hole that grows bigger than you swallows you. When the clock runs out your score is banked as coins for upgrades and new districts."
    ],
    "tips": [
     "Watch NEXT in the top-left panel: it says how big you must be to swallow the next kind of prop.",
     "Early on, sweep up coins and cones; they add up fast.",
     "GRAVITY WELL drags nearby food into you, a strong first buy.",
-    "Beat a district's quota to clear it; later districts pay up to x3.20 per bite."
+    "Beat a district's quota to clear it; later districts pay up to x3.20 per bite.",
+    "Cars and trucks drive along the roads: meet them head on."
    ],
    "controls": {
     "keyboard": "WASD or the arrow keys steer, or hold the mouse button and the hole rolls toward the pointer. P or Esc pauses.",
@@ -729,12 +730,13 @@
     "results": "TIME UP or SWALLOWED card with score, coins, XP, props swallowed, final size and quota progress"
    },
    "settings": {
-    "quality": "Hub > GRAPHICS: HIGH / LOW (Low draws at 1x resolution, drops prop shadows and thins the particles)"
+    "quality": "Hub > GRAPHICS: HIGH / LOW (Low renders at 1x resolution with no shadows, a shorter draw distance, no skyline or street lamps and fewer particles)"
    },
    "start": "#btnPlay",
    "saves": [
     "holegrind.save.v2"
    ],
+   "render": "three-3d",
    "authored": [
     "cheats",
     "controls",
@@ -743,9 +745,11 @@
     "howto",
     "pauseButton",
     "pauseKeys",
+    "render",
     "saves",
     "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -1603,8 +1607,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -1662,7 +1666,7 @@
    ],
    "start": "#play",
    "settings": {
-    "quality": "Graphics: High / Low button on the title card (Low renders at 1x pixel ratio for slower phones)"
+    "quality": "Graphics: High / Low button on the title card. High: up to 2x pixel ratio and soft shadows; Low: 1x, no shadow pass and half the island scenery."
    },
    "authored": [
     "cheats",
@@ -1674,6 +1678,7 @@
     "saves",
     "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -1697,8 +1702,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/playables/CrowdClash/index.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -1756,7 +1761,7 @@
    ],
    "start": "#play",
    "settings": {
-    "quality": "Graphics: High / Low button on the title card (Low renders at 1x pixel ratio for slower phones)"
+    "quality": "Graphics: High / Low button on the title card. High: up to 2x pixel ratio, soft shadows from every runner; Low: 1x, no shadow pass and half the roadside scenery."
    },
    "authored": [
     "cheats",
@@ -1768,6 +1773,7 @@
     "saves",
     "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -1791,8 +1797,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -1850,7 +1856,7 @@
    ],
    "start": "#play",
    "settings": {
-    "quality": "Graphics: High / Low button on the title card (Low renders at 1x pixel ratio for slower phones)"
+    "quality": "Graphics: High / Low button on the title card. High renders the 3D tower at up to 2x pixel ratio with soft real-time shadows; Low renders at 1x with no shadow pass."
    },
    "authored": [
     "cheats",
@@ -1862,6 +1868,7 @@
     "saves",
     "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -1885,8 +1892,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/playables/RungRunner/index.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -1944,7 +1951,7 @@
    ],
    "start": "#play",
    "settings": {
-    "quality": "Graphics: High / Low button on the title card (Low renders at 1x pixel ratio for slower phones)"
+    "quality": "Graphics: High / Low button on the title card. High: up to 2x pixel ratio and soft shadows; Low: 1x, no shadow pass and half the floating islands."
    },
    "authored": [
     "cheats",
@@ -1956,6 +1963,7 @@
     "saves",
     "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -4947,8 +4955,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -4970,7 +4978,7 @@
    "tips": [
     "Eat small things first: every bite makes the hole bigger.",
     "Swallowing things quickly one after another builds a chain bonus.",
-    "An alarm clock adds 5 seconds.",
+    "A spinning blue time star adds 5 seconds.",
     "Golden items are worth 2 extra points.",
     "Houses and towers are worth the most once the hole is big enough."
    ],
@@ -5006,6 +5014,10 @@
     "hole-swallow-rank"
    ],
    "start": "#playBtn",
+   "settings": {
+    "quality": "Title screen > GRAPHICS: HIGH / LOW (Low renders at 1x resolution with no shadows, no houses, benches or lamps round the park and fewer particles)"
+   },
+   "render": "three-3d",
    "authored": [
     "cheats",
     "controls",
@@ -5013,8 +5025,11 @@
     "features",
     "howto",
     "pauseButton",
+    "render",
     "saves",
+    "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -5129,8 +5144,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/helix-smash.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -5188,6 +5203,10 @@
     "helix-smash-gemsever"
    ],
    "start": "#playBtn",
+   "settings": {
+    "quality": "Title screen > GRAPHICS: HIGH / LOW (Low renders at 1x resolution with no shadows, draws 6 platforms below the ball instead of 11 and fewer shards)"
+   },
+   "render": "three-3d",
    "authored": [
     "cheats",
     "controls",
@@ -5195,8 +5214,11 @@
     "features",
     "howto",
     "pauseButton",
+    "render",
     "saves",
+    "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -5220,8 +5242,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/stack-ball.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -5280,6 +5302,10 @@
     "stack-ball-gems"
    ],
    "start": "#playBtn",
+   "settings": {
+    "quality": "Title screen > GRAPHICS: HIGH / LOW (Low renders at 1x resolution with no shadows, draws 6 platforms below the ball instead of 11 and fewer shards)"
+   },
+   "render": "three-3d",
    "authored": [
     "cheats",
     "controls",
@@ -5287,8 +5313,11 @@
     "features",
     "howto",
     "pauseButton",
+    "render",
     "saves",
+    "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
@@ -7324,14 +7353,66 @@
    },
    "pauseKeys": "",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Tap the golden wheat in your garden beds to harvest it, then tap an empty bed to plant again.",
+    "Follow the task card: it always names your next step, and Show me takes you straight there.",
+    "Use the bar along the bottom (the left rail on phones) to Grow, Raise animals, Produce treats, Trade and Build.",
+    "Meet Milo, June, Hazel and Theo and finish the twelve chapters of the Lantern Fair story."
+   ],
+   "tips": [
+    "Drag across several ripe beds in one stroke to harvest them all at once.",
+    "Hungry animals eat wheat and berries; collect eggs, milk and wool from Milo's paddock when they are ready.",
+    "Crops and bakery batches keep growing while the game is closed.",
+    "The trader's boat docks at the harbour after Chapter 2: fill its crates for a big reward.",
+    "Open the Barn to see everything you have stored, and upgrade it before it fills up."
+   ],
+   "controls": {
+    "keyboard": "Click to walk and use things, or WASD to walk and Space for the nearest action. G shows your task, Q and E turn the camera, the wheel zooms, right-drag pans, Esc closes a menu.",
+    "touch": "Tap the ground to walk; tap beds, buildings, animals and neighbours to use them; drag across beds to harvest many at once. The menus sit on the left rail (More shows the rest)."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "COINS500",
+     "effect": "+500 coins in your purse"
+    },
+    {
+     "code": "GROWNOW",
+     "effect": "Every planted crop is ready to harvest"
+    },
+    {
+     "code": "BUILDALL",
+     "effect": "Unlock every building in the Build menu"
+    }
+   ],
+   "difficulty": "A relaxed farm and life sim with no fail state: crops, animals and batches take real minutes, and the story opens one chapter at a time.",
+   "features": {
+    "autosave": "Every harvest, purchase and chapter saves at once, and the day clock and needs save every 30 seconds (browser IndexedDB, /userfs)",
+    "goals-or-quests": "The task card: five starter goals, then the twelve chapters of the Lantern Fair story, each with Show me and a coin reward",
+    "day-time-ui": "Day number, morning, afternoon or evening and the clock under Claire's name; the sky dims through dusk and the village lanterns glow at night",
+    "inventory": "The Barn (the Barn quick button on desktop, or Menu > Shared barn on any screen) lists every good you hold, the barn's capacity and its upgrade",
+    "tutorial": "Milo's welcome and the first-harvest goal on a new farm; Replay tutorial in the arcade menu brings them back",
+    "results": "Each finished goal and chapter shows a reward card; the Lantern Fair finale ends with credits and Keep playing",
+    "codes-on": "Using a code marks the farm Codes on for good (a red tag under the header) and pauses its achievements"
+   },
+   "settings": {
+    "quality": "Menu > Settings > Graphics: Shadows on or off, Smooth edges on or off, and Render scale (lower is faster and softer)",
+    "sound": "Menu > Settings > Sound: master, music, effects, Claire's voice, ambience and interface volumes, plus Mute all"
+   },
+   "saves": [
+    "idb:/userfs"
+   ],
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "tips"
+   ]
   },
   "godot-heat-firm": {
    "title": "Heat Firm",
