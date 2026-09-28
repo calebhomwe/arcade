@@ -367,7 +367,21 @@ async function run(g, browser) {
 
 const results = [];
 let next = 0;
-await Promise.all(Array.from({ length: WORKERS }, async () => { const browser = await launch(); while (next < games.length) { const g = games[next++]; results.push(await run(g, browser)); } await browser.close(); }));
+// A browser that dies (out of memory on a busy machine) is relaunched and the game tried once more;
+// a game that still cannot be checked gets a row saying so instead of stopping the whole run.
+const errorRow = (g, e) => ({ id: g.id, title: g.title, cat: g.cat, genre: META.games?.[g.id]?.genre, tier: META.games?.[g.id]?.tier, frozen: !!META.games?.[g.id]?.frozen,
+  ext: g.ext, harness: String(e?.message || e).split('\n')[0].slice(0, 200), checks: Object.fromEntries(STD.checks.map(c => [c.id, { s: 'REVIEW', note: 'Not checked: the harness failed (' + String(e?.message || e).split('\n')[0].slice(0, 120) + ').' }])), shots: {} });
+await Promise.all(Array.from({ length: WORKERS }, async () => {
+  let browser = await launch();
+  while (next < games.length) {
+    const g = games[next++];
+    for (let attempt = 0; ; attempt++) {
+      try { if (!browser.isConnected()) browser = await launch(); results.push(await run(g, browser)); break; }
+      catch (e) { await browser.close().catch(() => {}); browser = await launch(); if (attempt) { results.push(errorRow(g, e)); console.log(`${g.id.padEnd(28)} harness error: ${String(e.message || e).split('\n')[0]}`); break; } }
+    }
+  }
+  await browser.close().catch(() => {});
+}));
 server?.close();
 results.sort((a, b) => CATALOG.findIndex(g => g.id === a.id) - CATALOG.findIndex(g => g.id === b.id));
 
