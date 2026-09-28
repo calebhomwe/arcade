@@ -603,13 +603,17 @@ function play() {
     if (k === 'p') { e.preventDefault(); gp.click(); } else if (k === 'm') { e.preventDefault(); gm.click(); } else if (k === 'h') { e.preventDefault(); gh.click(); }
   });
   function paintMeta(m) {
-    // Tips and cheat codes from qa/standard: tips always, codes behind a spoiler so players can choose to look.
+    // Content from qa/standard/meta: steps, controls, tips, tricks, and codes behind a spoiler.
     const box = $('#stdwrap'); if (!box) return;
     let h = '';
+    if ((m.howto || []).length) h += '<ol class="steps">' + m.howto.map(t => '<li>' + esc(t) + '</li>').join('') + '</ol>';
+    const ctl = m.controls || {}, rows = [['keyboard', 'Keyboard'], ['touch', 'Touch'], ['gamepad', 'Gamepad']].filter(([k]) => ctl[k]);
+    if (rows.length) h += '<h3>Controls</h3><table class="ctl">' + rows.map(([k, l]) => '<tr><th scope="row">' + l + '</th><td>' + esc(ctl[k]) + '</td></tr>').join('') + '</table>';
     if ((m.tips || []).length) h += '<h3>Tips</h3><ul class="tips">' + m.tips.map(t => '<li>' + esc(t) + '</li>').join('') + '</ul>';
-    if ((m.tricks || []).length) h += '<h3>Tricks</h3><table class="tricks">' + m.tricks.map(t => '<tr><td>' + esc(t.name) + '</td><td>' + esc(t.input || '') + '</td></tr>').join('') + '</table>';
-    if ((m.cheats || []).length) h += '<details class="codes"><summary>Cheat codes (spoilers)</summary><p>Open the game menu (Pause), choose Codes and type one in. Runs with codes never replace your best.</p><ul>' + m.cheats.map(c => '<li><code>' + esc(c.code) + '</code> ' + esc(c.effect || '') + '</li>').join('') + '</ul></details>';
+    if ((m.tricks || []).length) h += '<h3>Tricks</h3><table class="ctl">' + m.tricks.map(t => '<tr><th scope="row">' + esc(t.name) + '</th><td>' + esc(t.input || '') + '</td></tr>').join('') + '</table>';
+    if ((m.cheats || []).length) h += '<details class="codes"><summary>Cheat codes (spoilers)</summary><p>Pause the game, choose Codes and type one in. A run with codes on never replaces your best score.</p><ul>' + m.cheats.map(c => '<li><code>' + esc(c.code) + '</code> ' + esc(c.effect || '') + '</li>').join('') + '</ul></details>';
     box.innerHTML = h; box.hidden = !h;
+    if ((m.howto || []).length) { $('#howwrap').hidden = false; $('#how').hidden = !$('#how').textContent.trim(); }
   }
   paintSdk();
   // tester feedback

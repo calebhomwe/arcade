@@ -85,6 +85,8 @@ async function checkGame(g, browser) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, serviceWorkers: 'block' });
   await routeExternal(ctx);
   const page = await ctx.newPage(); page.setDefaultTimeout(10000);
+  // When the game really said ready, measured in the page (the harness's own polling is slower).
+  await page.addInitScript(() => { addEventListener('message', e => { if (e.data && e.data.arcade === 1 && e.data.type === 'ready' && !window.__readyAt) window.__readyAt = performance.now(); }, true); addEventListener('click', e => { if (e.target && e.target.closest && e.target.closest('#playbtn') && !window.__playAt) window.__playAt = performance.now(); }, true); });
   const inGame = u => u && !u.startsWith(BASE + 'assets/') && !/\/play\.html/.test(u) && !u.startsWith('data:');
   page.on('pageerror', e => !ev.closed && ev.errors.push(String(e.message || e).slice(0, 300)));
   page.on('console', m => { if (!ev.closed && m.type() === 'error' && inGame(m.location().url || '')) ev.console.push(m.text().slice(0, 300)); });
@@ -111,7 +113,7 @@ async function checkGame(g, browser) {
     const readyBy = Date.now() + (heavy(g) ? 45000 : 20000);
     let h = await host();
     while (!h.ready && Date.now() < readyBy) { await wait(300); h = await host(); }
-    ev.t.ready = h.ready ? Date.now() - t0 : null;
+    ev.t.ready = h.ready ? await page.evaluate(() => window.__readyAt && window.__playAt ? Math.round(window.__readyAt - window.__playAt) : null) : null;
     const d0 = await dbg();
     const hasSdk = !!d0;
     if (heavy(g)) await wait(8000);
@@ -250,7 +252,7 @@ async function checkGame(g, browser) {
     const dEnd = hasSdk ? await dbg() : null;
     const scenes = new Set((dEnd?.events || []).filter(e => e.name === 'scene').map(e => e.data?.scene));
     set('U01', scenes.has('title') ? 'PASS' : firstBlank ? 'FAIL' : 'REVIEW', scenes.has('title') ? 'The game reports its title scene.' : firstBlank ? 'Blank one second after loading.' : 'Something is on screen; a person should confirm it is a title with a clear Play button.');
-    set('U15', firstBlank ? 'FAIL' : (hasSdk && !ev.t.ready) ? 'FAIL' : 'PASS', firstBlank ? 'The game frame was still blank one second after it loaded.' : `First picture within 1 s; frame loaded in ${(ev.t.frameLoad / 1000).toFixed(1)} s` + (ev.t.ready ? `, SDK ready at ${(ev.t.ready / 1000).toFixed(1)} s.` : '.'));
+    set('U15', firstBlank ? 'FAIL' : (hasSdk && !ev.t.ready) ? 'FAIL' : 'PASS', firstBlank ? 'The game frame was still blank one second after it loaded.' : `First picture within 1 s; frame loaded in ${(ev.t.frameLoad / 1000).toFixed(1)} s` + (ev.t.ready ? `, SDK ready ${(ev.t.ready / 1000).toFixed(1)} s after Play.` : '.'));
     set('U11', scenes.has('over') ? 'PASS' : meta.features?.results ? 'REVIEW' : 'FAIL', scenes.has('over') ? 'The game reported a results scene.' : meta.features?.results ? 'Described in meta: ' + meta.features.results : 'No results scene reported (ArcadeSDK.state({scene:"over"})) and none described in meta.');
     // ---- U12 saving ----
     const store = await f.evaluate(async () => { let ls = 0; try { ls = Object.keys(localStorage).filter(k => k !== 'arcade_muted').length; } catch {} let idb = 0; try { idb = (await indexedDB.databases()).length; } catch {} return { ls, idb }; }).catch(() => ({ ls: 0, idb: 0 }));

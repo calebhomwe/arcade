@@ -15,10 +15,10 @@
 <script>(function(){try{var s=JSON.parse(localStorage.getItem('ca_settings')||'{}'),h=document.documentElement;h.dataset.theme=s.theme||'dark';h.dataset.accent=s.accent||'lime';h.dataset.size=s.size||'comfy';h.dataset.motion=s.motion||'auto';h.dataset.labels=s.labels!==false?'1':'0';if(innerWidth>1100)h.dataset.rail='min'}catch(e){}})()</script>
 <link rel="preload" href="assets/fonts/fredoka.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/nunito.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/site.css?v=playroom-8">
-<link rel="stylesheet" href="assets/playroom.css?v=playroom-8">
+<link rel="stylesheet" href="assets/site.css?v=standard-1">
+<link rel="stylesheet" href="assets/playroom.css?v=standard-1">
 <script src="catalog.js" defer></script>
-<script src="assets/site.js?v=playroom-8" defer></script>
+<script src="assets/site.js?v=standard-1" defer></script>
 </head>
 <body>
 <!--@sprite-->
@@ -30,7 +30,7 @@
   <a class="brand" href="./" aria-label="Caleb's Arcade home"><svg class="logo" aria-hidden="true"><use href="#logo"/></svg><span class="word">Caleb's Arcade<small>GOOD GAMES. ZERO ADS.</small></span></a>
   <div class="search" role="search">
     <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
-    <input id="q" type="search" placeholder="Search 110 games" autocomplete="off" spellcheck="false" aria-label="Search games" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg" enterkeyhint="search">
+    <input id="q" type="search" placeholder="Search 111 games" autocomplete="off" spellcheck="false" aria-label="Search games" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg" enterkeyhint="search">
     <button class="clear" id="qclear" type="button" aria-label="Clear the search" hidden><svg class="i"><use href="#i-x"/></svg></button>
     <kbd aria-hidden="true">/</kbd>
     <div class="sugg" id="sugg" role="listbox" aria-label="Matching games" hidden></div>
@@ -123,7 +123,7 @@
             <h2 id="about-h">About this game</h2>
             <p class="blurb" id="blurb"></p>
             <div id="howwrap" hidden><h3>How to play</h3><p class="how" id="how"></p></div>
-              <div id="stdwrap" hidden></div>
+            <div id="stdwrap" hidden></div>
             <p class="tip" id="ext" hidden>This game lives on one of Caleb's other sites and plays here inside the arcade. If it feels cramped, go fullscreen or open it in a new tab.</p>
             <div class="tags" id="tags"></div>
           </section>

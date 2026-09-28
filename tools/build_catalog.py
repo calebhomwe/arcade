@@ -204,7 +204,7 @@ open(os.path.join(ROOT,'catalog.js'),'w',encoding='utf-8').write(out)
 import portal_shell
 portal_shell.write(ROOT, G, CATS)
 print('catalog.js: %d games (%d local, %d external), %d categories' % (len(G), sum(not g['ext'] for g in G), sum(g['ext'] for g in G), len(CATS)))
-for fn in ('index.html','manifest.webmanifest','README.txt'):
+for fn in ('index.html','play.html','404.html','manifest.webmanifest','README.txt'):
     fp=os.path.join(ROOT,fn); t=open(fp,encoding='utf-8').read()
     t2=re.sub(r'\b\d+ (free browser games|free games|games,|games"|games<)', lambda m: '%d %s' % (len(G), m.group(1)), t)
     if t2!=t: open(fp,'w',encoding='utf-8').write(t2); print('  count updated in', fn)
