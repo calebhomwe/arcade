@@ -1238,31 +1238,84 @@
     "sdkInit": true
    },
    "pauseKeys": "p",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "bl",
+   "howto": [
+    "Press Play to open the day. The bar at the top shows the clock and the day's takings target.",
+    "Tap Add to Cart on products (or Scan barcodes), then open the cart and Proceed to Checkout.",
+    "Checked-out sales count toward the target. Beat it before the clock hits 0:00 to clear the day.",
+    "At close, the day's costs come out of your takings. Spend the store bank on upgrades in Career."
+   ],
+   "tips": [
+    "Pricier lines like Salmon Fillet ($12.99) fill the target fastest, but only a few are in stock.",
+    "Only checked-out sales count: don't leave a full cart when the clock runs out.",
+    "Scans within five seconds of each other build a streak.",
+    "Miss three targets in a row and the store goes into arrears: the target rises 15% until you clear a day.",
+    "Express Register adds 30 seconds to every day; Standing Restock refills every shelf at opening."
+   ],
+   "controls": {
+    "keyboard": "Tab to any button and press Enter. Ctrl+K jumps to search; type a barcode in Scan and press Enter. Esc closes a panel, P pauses.",
+    "touch": "Tap Add to Cart, the cart icon and the buttons. Scroll the page to see more shelves."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "BIGSPENDER",
+     "effect": "+$500 in the store bank"
+    },
+    {
+     "code": "RESTOCK",
+     "effect": "Every product line refilled to double its opening stock"
+    },
+    {
+     "code": "OVERTIME",
+     "effect": "+60 seconds on the day clock, today and every day while codes are on"
+    },
+    {
+     "code": "ALLLINES",
+     "effect": "Every bonus product line unlocked"
+    }
+   ],
+   "difficulty": "Easy, Normal or Hard on the title card, between days. Easy days last 2:30 with targets 20% lower; Hard days last 1:30 with targets 20% higher. Targets and daily costs rise every day you clear.",
+   "features": {
+    "goals-or-day-targets": "Each day has a takings target and a countdown clock in the day bar; targets rise with every day cleared",
+    "economy-readout": "Day bar: takings against target, day costs and store bank; product cards show price and stock; Analytics has revenue and category charts",
+    "upgrade-path": "Career: Express Register, Wholesale Account, Loyalty Cards and Standing Restock, bought from the store bank; cleared days unlock five new product lines",
+    "end-of-day-summary": "Close-of-business card: takings against target, costs, profit or loss, store bank, unlocks and what tomorrow brings",
+    "results": "The close-of-business card with Start next day; Career shows the record board",
+    "tutorial": "Five coach marks on the first day (the clock waits while they are open); replay from How to play"
+   },
+   "saves": [
+    "minimart_career",
+    "minimart_day",
+    "minimart_bestday"
+   ],
+   "start": "#titlePlay",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "field-station": {
    "title": "Field Station",
    "cat": "sim",
-   "genre": "management",
-   "genreName": "Management / shop / shift",
+   "genre": "learning",
+   "genreName": "Learning",
    "modules": [
-    "goals-or-day-targets",
-    "economy-readout",
-    "upgrade-path",
-    "end-of-day-summary"
+    "age-or-level-bands",
+    "hints",
+    "grown-up-progress-report"
    ],
    "tier": "2D-HD",
    "should3d": false,
    "why3d": "",
-   "cheatPolicy": "eligible",
+   "cheatPolicy": "learning",
    "frozen": false,
    "ownerActive": false,
    "ext": false,
@@ -1283,14 +1336,48 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick your year group, then open an instrument card (or press Play for the one you have done least).",
+    "Each instrument gives you a brief: build the circuit, balance the equation, place the comma, build the word.",
+    "Check your work. Every answer, right or wrong, explains why, and lands in your skill map.",
+    "Finish an instrument's briefs to certify it. Stuck? Hint in the pause menu reads your current question."
+   ],
+   "tips": [
+    "In Circuit Bay, series bulbs share one path and glow dim; parallel bulbs each get their own branch.",
+    "In Reaction Bench, change only the big numbers in front of a formula, never the small ones inside it.",
+    "In Signal Room, break a new word at its seams and read the meaning of each part in order.",
+    "In Log Office, read the sentence aloud both ways before you choose where the comma goes.",
+    "Mistakes lower a skill faster than right answers raise it, so a steady run beats lucky guesses."
+   ],
+   "controls": {
+    "keyboard": "Tab to any card, chip or button and press Enter; arrow keys move the Particle Chamber sliders. P or Esc pauses.",
+    "touch": "Tap cards, parts and buttons; drag the sliders; tap gaps on the circuit board to place parts."
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Year-group bands (Y5–6, Y7–8, Y9, or all) choose which instruments show, and each instrument's briefs step up from one bulb or one word to multi-part problems. Mastery drops faster for a mistake than it rises for a right answer.",
+   "features": {
+    "age-or-level-bands": "Year group chips on the station (All years, Y5–6, Y7–8, Y9) filter the instruments by their year range; the choice is remembered",
+    "hints": "Hint in the pause menu reads the live question: the next word part by meaning, the uneven element and a coefficient to try, the gap that needs a mark, the clause type to add, the circuit diagnosis, the chamber state to reach, or the food-web links to follow",
+    "grown-up-progress-report": "Report for grown-ups (on the station): accuracy, streak, each instrument's level and each skill's mastery, with a Print button",
+    "results": "Each instrument ends with its own results panel (for example Transmission decoded: 9 of 16 correct) with Run it again and Back to station",
+    "tutorial": "Three coach marks on the first visit: the instruments, the year group and the progress report; replay from How it works"
+   },
+   "saves": [
+    "fieldstation.v1"
+   ],
+   "start": "#playNext",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "genreName",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "bloxburg-town": {
    "title": "Bloxburg Town",
@@ -3545,15 +3632,65 @@
     "sdkInit": true
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "tl",
+   "howto": [
+    "Press Play. The valley pans past on its own: there is nothing to win or lose.",
+    "Drag the view, or use the arrows, to look around. Freeze, slow down or speed up time with the control bar.",
+    "The chronicle notes real moments as they happen. Tick off all ten kinds in Sightings.",
+    "Press END to see what this session saw, then start a new day or keep watching."
+   ],
+   "tips": [
+    "Speed time up to 4x to bring the V-flock and a full lap round sooner.",
+    "Keep the pond on screen to catch its glint, and more rarely its dead calm.",
+    "A cloud crossing the sun happens in the top right: watch the sun.",
+    "The world is the same every visit (seed 1337), so a moment you missed will come round again.",
+    "Your clock, camera and speed are saved, so the valley picks up where you left it."
+   ],
+   "controls": {
+    "keyboard": "Space freezes time, , and . change speed, [ and ] scrub time, left and right arrows pan, C shows or hides the chronicle. P or Esc pauses.",
+    "touch": "Drag the valley to pan. The bottom bar has pan, freeze, slower, faster, Sightings and END."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "TIMELAPSE",
+     "effect": "Two new time speeds, 8x and 16x, and time jumps to 8x"
+    },
+    {
+     "code": "FIREFLIES",
+     "effect": "Twice as many fireflies in the meadow"
+    },
+    {
+     "code": "ALLSEEN",
+     "effect": "Every sighting is ticked in the journal"
+    }
+   ],
+   "difficulty": "No difficulty setting: nothing can be lost or failed. The only pacing knob is time speed (0.25x to 4x), which decides how quickly rare moments come round.",
+   "features": {
+    "autosave": "The chronicle and sightings save the moment they happen; the world clock, camera and speed save every 5 seconds and resume on your next visit",
+    "goals-or-quests": "Sightings: ten kinds of moment to witness, each ticked the first time it happens, with a hint for the next one",
+    "day-time-ui": "The HUD shows the lap of the world, the world clock and the time speed; the control bar freezes or speeds time",
+    "inventory": "The Sightings journal (the star button) lists what you have seen, and the chronicle keeps the last 60 moments with timestamps",
+    "results": "END shows a session summary: world time watched, moments noted, new sightings, then New day or Keep watching",
+    "tutorial": "Three coach marks on the first Play: watching, the time controls and the chronicle; replay from How to play"
+   },
+   "saves": [
+    "dom.sightings.v1",
+    "dom.chronicle.v1",
+    "dom.session.v1"
+   ],
+   "start": "#dPlay",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "living-world": {
    "title": "Dominion: Living World",
@@ -3590,14 +3727,67 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Press Play. The landscape lives through its own days and nights: nothing to win or lose.",
+    "Drag the view or hold the arrows to walk. Tap the scene, or the freeze button, to freeze time.",
+    "Keep a tree, flower, creature or sky sight in view for a moment and it goes in the field log.",
+    "Fill all fourteen entries. END shows your field notes; New day starts again at dawn."
+   ],
+   "tips": [
+    "Fireflies, the moon and the starfield only appear at night: press + to speed the day along.",
+    "Sunrise is short, between about 05:00 and 06:00. Scrub back with [ if you miss it.",
+    "God-rays need a high sun, around midday.",
+    "Blooms are in the foreground meadow: walk slowly and each colour turns up.",
+    "New world (or R) grows a different valley from a new seed; your field log is kept."
+   ],
+   "controls": {
+    "keyboard": "A / D or left and right arrows walk, W walks fast, Space freezes time, , and . change day speed, [ and ] scrub the day, L shows the field log, R grows a new world. P or Esc pauses.",
+    "touch": "Drag to walk, tap to freeze time. The bottom bar has walk (hold), freeze, slower, faster, LOG and END."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "TIMELAPSE",
+     "effect": "Two new day speeds, 8x and 16x, and the day jumps to 8x"
+    },
+    {
+     "code": "FIREFLIES",
+     "effect": "Twice as many fireflies at night"
+    },
+    {
+     "code": "BIGFLOCK",
+     "effect": "The bird flock doubles in size"
+    },
+    {
+     "code": "ALLLOGGED",
+     "effect": "Every species is ticked in the field log"
+    }
+   ],
+   "difficulty": "No difficulty setting: nothing can be lost or failed. The day speed (0.25x to 4x) is the only pacing knob; night sightings come round sooner at higher speeds.",
+   "features": {
+    "autosave": "The field log saves the moment something is logged; the seed, day, clock, camera and day speed save every 5 seconds and resume next visit",
+    "goals-or-quests": "The field log: fourteen trees, blooms, creatures and sky sights to find, with a hint for the next one",
+    "day-time-ui": "The HUD shows DAY N, a 24-hour clock and the phase (NIGHT, DAWN, DAY, DUSK); the sky, sun and moon follow it",
+    "inventory": "The field log panel (LOG button or L) lists every species found, with the ones still to find",
+    "results": "END shows your field notes: days lived, new species this session and the log total, then New day or Keep watching",
+    "tutorial": "Three coach marks on the first Play: walking, the time controls and the field log; replay from How to play"
+   },
+   "saves": [
+    "lw.fieldlog.v1",
+    "lw.session.v1"
+   ],
+   "start": "#dPlay",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "mini-life-sim": {
    "title": "Mini Life Sim",
@@ -3765,15 +3955,67 @@
     "sdkInit": true
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "none",
+   "howto": [
+    "Tap your age, type your name if you like, then press Start playing.",
+    "Keep Pip happy: tap Feed, Fetch and Nap when the love, food or energy meters get low.",
+    "Do Tricks, play Games (Star Catch, Paw Match, Homework, Bible Quiz, Memory Verse) and grow the Garden to earn stars.",
+    "Spend stars in the Shop on outfits, pets and scenes, and finish the daily quests for bonus stars."
+   ],
+   "tips": [
+    "Pip's meters drop slowly even while you are away, so feed Pip first when you come back.",
+    "Tap Pip for a quick bit of love and a bond point.",
+    "In Star Catch, five catches in a row give a bonus; tapping a cloud resets the streak.",
+    "The 🎁 gift is ready once a day: come back tomorrow to grow your streak.",
+    "Homework questions match the age you picked; change it in Settings > Age."
+   ],
+   "controls": {
+    "keyboard": "Tab to any button and press Enter or Space (Pip can be patted with Enter too). P or Esc pauses.",
+    "touch": "Tap the buttons, Pip and the garden plots; drag furniture in your room."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "STARSHOWER",
+     "effect": "+100 stars"
+    },
+    {
+     "code": "FULLHEARTS",
+     "effect": "Love, food and energy all filled to the top"
+    },
+    {
+     "code": "NOREST",
+     "effect": "Tricks never need a rest"
+    },
+    {
+     "code": "CLOUDLESS",
+     "effect": "No clouds fall in Star Catch"
+    }
+   ],
+   "difficulty": "Age bands (Ages 4–6, 7–9, 10–12 and 13+) set how hard the Homework questions are and how many stars they pay; pick one on the title card or in Settings > Age.",
+   "features": {
+    "autosave": "Everything saves as you play (claire_pip_save_v2), and Pip's needs catch up with the time you were away",
+    "goals-or-quests": "📋 Quests: three new tasks every day with star rewards and a bonus for finishing all three; 🏆 achievements",
+    "day-time-ui": "The meadow follows the real time of day (day and night sky) with a weather badge; 🎁 has a daily calendar",
+    "inventory": "📔 Collection shows outfits, pets, scenes and stickers collected; the Shop wardrobe holds what you own",
+    "results": "Star Catch ends with a Time's up card (stars, best, Play again); Paw Match ends with an All matched card",
+    "tutorial": "Four coach marks after Start playing (Pip's needs, care buttons, quests and the shop) that leave every button tappable; replay from How to play"
+   },
+   "saves": [
+    "claire_pip_save_v2"
+   ],
+   "start": "#ageBands .ageband",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "sneaker-drop": {
    "title": "SneakerDrop — Hype Market Tycoon",
@@ -3810,14 +4052,66 @@
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Each day, check the hype calendar: a coloured dot is a sneaker drop.",
+    "Tap SNIPE, then tap again when the needle is in the gold zone to buy the pair at retail.",
+    "Tap a pair in storage and flip it into a live auction. Press SELL NOW when the top bid beats what you paid.",
+    "Hit NEXT DAY to move on. After ten weeks the run closes; your score is profit per week."
+   ],
+   "tips": [
+    "A GRAIL drop is worth sniping even at a high retail price: it resells for almost double.",
+    "Late auction bids can retract. A good bid at FINAL CALL is safer than waiting for the hammer.",
+    "Grading adds up to 50% to the sale price, so grade your best pairs before you flip them.",
+    "Three good snipes in a row widen the timing window.",
+    "CASH OUT RUN locks in your profit per week early: a strong week can beat a long grind."
+   ],
+   "controls": {
+    "keyboard": "Space or Enter snipes, sells and continues (on the market it moves to the next day). Right arrow: next day, S: shop, Up and Down: pick a pair. P pauses.",
+    "touch": "Tap the buttons on screen. Drag the storage list to scroll."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "BIGBANK",
+     "effect": "+$2,500 cash now and at the start of every run while codes are on"
+    },
+    {
+     "code": "HYPEBEAST",
+     "effect": "Every brand goes ON FIRE, so resale prices run hot"
+    },
+    {
+     "code": "SLOWHANDS",
+     "effect": "The snipe needle moves at half speed"
+    },
+    {
+     "code": "GRAILDROP",
+     "effect": "A free grade-S AUREUM 24K lands in storage"
+    }
+   ],
+   "difficulty": "Pick Easy, Normal or Hard on the title. Easy starts with $1,200 and a wider snipe window; Hard starts with $550 and a tighter one. Each difficulty keeps its own best score.",
+   "features": {
+    "goals-or-day-targets": "The calendar header shows the next rank to reach (for example SOLE BROKER at $40 a week); ten weeks per run",
+    "economy-readout": "Header shows cash, net profit and profit per week; storage rows show market value and profit or loss per pair",
+    "upgrade-path": "SHOP: storage units, grading bench and verified-seller reputation, each with levels",
+    "end-of-day-summary": "A WEEK CLOSED recap after every seventh day: cash change, worth gained, flip profit, drops won and the next rank goal",
+    "results": "RUN CLOSED screen with profit per week, rank, best flip and Same seed again / New seed buttons",
+    "tutorial": "Five coach marks on the first run point at the calendar, the snipe, storage, next day and the goal; replay from How to play"
+   },
+   "saves": [
+    "sneakerdrop_save"
+   ],
+   "start": "#startBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "deepcut-mine": {
    "title": "DEEPCUT",
@@ -4148,14 +4442,70 @@
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a house on the city map, or press Play for the one marked START HERE.",
+    "Choose a tool, then press and drag across the walls and floor to scrub the grime away.",
+    "Tap each piece of rubbish to bag it, and buy furniture from the Furnish list.",
+    "Press LIST THE HOUSE to sell. Cleaner and better furnished houses earn more stars and profit."
+   ],
+   "tips": [
+    "The Goal box shows exactly what two and three stars need, and ticks them off as you go.",
+    "Furniture is sold back at 85% of its value, and a few pieces (Armchair, Mirror, Framed Art) are worth more than they cost.",
+    "Buy the Scrubber as soon as you can: it cleans much faster than the sponge.",
+    "Drag empty space, or right-drag, to turn the room and reach the far walls.",
+    "Keep scrubbing without stopping to build a clean streak."
+   ],
+   "controls": {
+    "keyboard": "Mouse: drag a surface to scrub, drag empty space or right-drag to look, wheel to zoom. P or Esc pauses.",
+    "touch": "Drag a surface to scrub, drag empty space to look around, tap rubbish and buttons."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "CASHFLOW",
+     "effect": "+$1,000 cash"
+    },
+    {
+     "code": "MEGASPONGE",
+     "effect": "Every tool cleans a circle three times wider"
+    },
+    {
+     "code": "ALLTOOLS",
+     "effect": "Every tool in the toolbox is yours, free"
+    },
+    {
+     "code": "TIDYUP",
+     "effect": "All the rubbish in the current house bags itself"
+    }
+   ],
+   "difficulty": "Easy, Normal or Hard on the city map. Easy houses start with lighter grime and two fewer pieces of rubbish; Hard ones have heavier grime and three more. Later houses in the list are messier and pay more.",
+   "features": {
+    "goals-or-day-targets": "Goal box in the side panel: the clean % and furniture value each star needs, ticked live",
+    "economy-readout": "Cash in the HUD; each furniture row shows cost, value and net; each job shows its asking price",
+    "upgrade-path": "Toolbox: buy the Scrubber; sixteen houses, from a small terrace to a penthouse loft, pay more as they get messier",
+    "end-of-day-summary": "The SOLD card after each flip: stars, clean %, furniture value, money spent, profit and the best stars for that house",
+    "results": "SOLD card with Back to the city and Flip it again",
+    "tutorial": "Five coach marks on the first job: tools, scrubbing, the HUD, furnishing and listing; replay from How to play"
+   },
+   "settings": {
+    "quality": "City map > Settings > Graphics: Low / High (also in the side panel while cleaning). Low drops shadows and renders at 1x."
+   },
+   "saves": [
+    "cleanhouse_save_v1"
+   ],
+   "start": "#btnPlay",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "tic-tac-toe": {
    "title": "Tic Tac Toe — Beat the Bot",
@@ -4276,14 +4626,66 @@
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Each level is a picture cut into squares. The faint picture on the board shows where every piece belongs.",
+    "Drag a piece from the tray onto its spot. A right piece locks in green and builds a combo.",
+    "A wrong piece sits in its cell with an orange edge until you drag it somewhere else.",
+    "Fill the board. Fewer moves earn more stars; clearing a level unlocks the next."
+   ],
+   "tips": [
+    "Start with the corners and edges: they are the easiest to match to the faint picture.",
+    "Look for the sun, clouds and hill lines: they run across several pieces.",
+    "HINT lights up a piece and its spot, or points out a piece that is in the wrong cell.",
+    "UNDO takes back your last move, including a swap.",
+    "The Daily Puzzle is a new picture every day: clear it each day to grow your streak.",
+    "Leave whenever you like: the puzzle in progress is kept, and PLAY turns into CONTINUE."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys move the cursor on the board, N picks the next piece, Enter places it, H for a hint, U to undo. P pauses.",
+    "touch": "Drag a piece onto the board, or tap a piece and then tap a square. HINT and UNDO sit under the tray."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "PEEKABOO",
+     "effect": "The picture on the board shows at full strength"
+    },
+    {
+     "code": "MAGNET",
+     "effect": "Drop a piece anywhere on the board and it flies to its own spot"
+    },
+    {
+     "code": "ALLLEVELS",
+     "effect": "Every level is unlocked"
+    },
+    {
+     "code": "RAINBOW",
+     "effect": "Party mode: rainbow pieces and star bursts on every snap"
+    }
+   ],
+   "difficulty": "Easy cuts the picture into 3x3 pieces, Normal 4x4 and Hard 5x5. Pick it on the title screen; stars are kept per difficulty.",
+   "features": {
+    "hints": "HINT button (and the arcade Hint): lights up the next useful piece and its spot, or names a piece that is in the wrong cell; an idle hint appears after 20 seconds",
+    "undo": "UNDO button (or U) takes back the last move, putting any piece it swapped out back too",
+    "level-select-or-daily": "LEVELS screen with twelve pictures and their stars, plus a Daily Puzzle with a day streak",
+    "results": "PUZZLE COMPLETE card with stars, moves, time, score and your best, plus Next, Play again and Levels",
+    "tutorial": "Three-step first-run coach: the board, a guided drag of one glowing piece, then Hint and Undo; replay from How to play"
+   },
+   "saves": [
+    "snapjigsaw_v1"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "kingdom-defense": {
    "title": "Kingdom Defense",

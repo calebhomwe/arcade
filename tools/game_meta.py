@@ -70,7 +70,7 @@ GENRE_BY_ID = {
     'critter-rush': 'racing', 'critter-rush-2d': 'racing', 'godot-la-city': 'racing',
     'nistar': 'rhythm', 'godot-heavens-grace': 'rhythm',
     'chili-firm': 'idle', 'godot-heat-firm': 'idle',
-    'sneaker-drop': 'management', 'mini-mart': 'management', 'field-station': 'management', 'cook-rush': 'management',
+    'sneaker-drop': 'management', 'mini-mart': 'management', 'field-station': 'learning', 'cook-rush': 'management',
     'clean-house': 'management', 'chef-chloe-kitchen': 'management', 'godot-chef-chloe': 'management',
     'hub-chess': 'board', 'hub-connect-four': 'board', 'hub-tic-tac-toe': 'board', 'tic-tac-toe': 'board',
     'hub-simon-says': 'puzzle', 'hub-tower-stack': 'hyper-casual', 'hub-snake': 'arcade',

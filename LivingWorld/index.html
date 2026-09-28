@@ -12,20 +12,20 @@
   #hud{position:fixed;left:12px;top:10px;font-size:12px;line-height:1.5;
     text-shadow:0 1px 2px #000a;pointer-events:none;opacity:.82;}
   #hud b{color:#ffeab0;}
-  #hint{position:fixed;right:12px;bottom:10px;font-size:11px;opacity:.5;
+  #hint{position:fixed;right:12px;bottom:66px;font-size:12px;opacity:.6;
     text-shadow:0 1px 2px #000a;pointer-events:none;text-align:right;max-width:52vw;}
   /* SHARE CARD — a labelled DOM button, never a key, so it cannot swallow a control. */
-  #btnShare{position:fixed;right:12px;top:10px;z-index:6;font:600 11px ui-monospace,Menlo,Consolas,monospace;
+  #btnShare{position:fixed;right:12px;top:58px;z-index:6;font:600 12px ui-monospace,Menlo,Consolas,monospace;
     letter-spacing:.06em;color:#e6f7ea;background:rgba(6,10,18,.6);border:1px solid #ffffff2e;
     border-radius:6px;padding:6px 10px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-shadow:0 1px 2px #000c}
   #btnShare:hover{background:rgba(16,26,42,.88);border-color:#9fe8b066}
   /* FIELD LOG — the observation layer (not a game). Its own dark panel so the
      checklist stays readable over a bright sky. */
-  #log{position:fixed;left:12px;bottom:10px;font-size:11px;line-height:1.45;
+  #log{position:fixed;left:12px;bottom:66px;font-size:12px;line-height:1.45;
     background:rgba(6,10,18,.58);border:1px solid #ffffff1f;border-radius:6px;
     padding:6px 9px;text-shadow:0 1px 2px #000c;pointer-events:none;
     max-width:min(330px,64vw);}
-  #log h4{margin:0 0 3px;font-size:11px;letter-spacing:.04em;color:#ffeab0;font-weight:700}
+  #log h4{margin:0 0 3px;font-size:12px;letter-spacing:.04em;color:#ffeab0;font-weight:700}
   #log .n{color:#9fe8b0}
   #log .row{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #log .row .t{display:inline-block;width:1.15em;color:#7f8ca0}
@@ -38,9 +38,34 @@
     opacity:0;transition:opacity .35s;pointer-events:none;white-space:nowrap}
   #toast.show{opacity:1}
   @media (max-width:560px){
-    #log{left:8px;right:8px;bottom:8px;max-width:none}
+    #log{left:8px;right:8px;bottom:64px;max-width:none}
     #hint{display:none}
   }
+  /* on-screen controls: the keyboard verbs, for touch */
+  #ctl{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:6;display:flex;gap:4px;
+    background:rgba(6,10,18,.6);border:1px solid #ffffff2e;border-radius:10px;padding:4px}
+  #ctl button,.dcard button{min-width:44px;min-height:44px;border:1px solid #ffffff2e;border-radius:7px;background:rgba(16,26,42,.88);
+    color:#e6f7ea;font:700 14px ui-monospace,Menlo,Consolas,monospace;cursor:pointer;padding:0 8px;touch-action:none}
+  #ctl button:hover,.dcard button:hover{border-color:#9fe8b066}
+  #ctl button:focus-visible,.dcard button:focus-visible{outline:2px solid #9fe8b0;outline-offset:2px}
+  #ctl .sep{width:1px;background:#ffffff1f;margin:4px 2px}
+  @media (max-width:420px){ #ctl button{min-width:40px;padding:0 4px;font-size:13px} #ctl .sep{display:none} }
+  .dlayer{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(4,7,20,.55);overflow:auto}
+  .dlayer.on{display:flex}
+  .dcard{width:min(440px,100%);margin:auto;background:rgba(11,16,38,.95);border:1px solid #9fe8b055;border-radius:10px;
+    padding:18px 18px 14px;color:#dff3e4;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;box-shadow:0 20px 60px #000a}
+  .dcard h1{margin:0;font:800 28px/1.1 ui-monospace,Menlo,Consolas,monospace;color:#ffeab0;letter-spacing:.06em}
+  .dcard h2{margin:0 0 6px;font:800 18px ui-monospace,Menlo,Consolas,monospace;color:#ffeab0}
+  .dcard .k{color:#8b96a8;font-size:12px;letter-spacing:.08em}
+  .dcard .go{background:#9fe8b0;color:#0b1026;border-color:#9fe8b0;width:100%;margin-top:8px}
+  .dcard .row{display:flex;gap:8px;margin-top:8px}.dcard .row button{flex:1}
+  .dcard ul{margin:6px 0;padding-left:18px}.dcard li{margin:2px 0}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+  .stats div{background:#141c38;border:1px solid #ffffff1f;border-radius:7px;padding:6px;text-align:center}
+  .stats b{display:block;color:#ffeab0;font-size:16px}
+  #codesOn{position:fixed;right:62px;top:14px;z-index:6;font:700 12px ui-monospace,Menlo,monospace;color:#0b1026;background:#ffeab0;border-radius:6px;padding:6px 8px}
+  #coachSpot{position:fixed;border:2px solid #9fe8b0;border-radius:10px;box-shadow:0 0 0 9999px rgba(4,7,20,.55);pointer-events:none;transition:all .25s;z-index:21;display:none}
+  @media (prefers-reduced-motion: reduce){ #toast,#coachSpot{transition:none} }
 </style>
 </head>
 <body>
@@ -49,7 +74,40 @@
 <div id="log"></div>
 <div id="toast"></div>
 <button id="btnShare" type="button">SAVE FIELD LOG CARD</button>
-<div id="hint">A / D or ← → pan · W speed · SPACE pause · [ ] scrub · , . day speed · L log · R reseed · click/tap pause</div>
+<div id="hint">A / D or ← → pan · W walk fast · SPACE freeze time · [ ] scrub · , . day speed · L log · R new world · tap to freeze</div>
+<div id="ctl" role="toolbar" aria-label="World controls">
+  <button type="button" id="cLeft" aria-label="Walk left (hold)">&lsaquo;</button>
+  <button type="button" id="cFreeze" aria-label="Freeze time">&#10074;&#10074;</button>
+  <button type="button" id="cRight" aria-label="Walk right (hold)">&rsaquo;</button>
+  <span class="sep"></span>
+  <button type="button" id="cSlow" aria-label="Slower day">&minus;</button>
+  <button type="button" id="cRate" aria-label="Day speed" disabled>1x</button>
+  <button type="button" id="cFast" aria-label="Faster day">+</button>
+  <span class="sep"></span>
+  <button type="button" id="cLog" aria-label="Field log">LOG</button>
+  <button type="button" id="cEnd" aria-label="End session">END</button>
+</div>
+<div id="codesOn" hidden>CODES ON</div>
+<div id="coachSpot"></div>
+<div class="dlayer" id="dTitle" role="dialog" aria-modal="true" aria-labelledby="dTitleH"><div class="dcard">
+  <div class="k">DOMINION</div>
+  <h1 id="dTitleH">LIVING WORLD</h1>
+  <p>A seeded landscape that lives through its own days and nights. Walk it, speed the day up or freeze it, and fill the field log with the fourteen things this world can show you.</p>
+  <div class="stats" id="dTitleStats"></div>
+  <button type="button" class="go" id="dPlay">Play</button>
+  <div class="row"><button type="button" id="dHow">How to play</button><button type="button" id="dNew">New world</button></div>
+</div></div>
+<div class="dlayer" id="dSum" role="dialog" aria-modal="true" aria-labelledby="dSumH"><div class="dcard">
+  <div class="k" id="dSumK">SESSION OVER</div>
+  <h2 id="dSumH">Your field notes</h2>
+  <div class="stats" id="dSumStats"></div>
+  <ul id="dSumList"></ul>
+  <div class="row"><button type="button" class="go" id="dAgain" style="margin-top:0">New day</button><button type="button" id="dKeep">Keep watching</button></div>
+</div></div>
+<div class="dlayer" id="dCoach" role="dialog" aria-modal="true" aria-label="How to play" style="background:none;align-items:flex-start;padding-top:70px;pointer-events:none"><div class="dcard" style="pointer-events:auto;position:relative;z-index:22">
+  <div class="k" id="dCoachK"></div><p id="dCoachT" style="font-size:14px"></p>
+  <div class="row"><button type="button" id="dCoachSkip">Skip</button><button type="button" class="go" id="dCoachGo" style="margin-top:0">Next</button></div>
+</div></div>
 <script>
 "use strict";
 /* ===========================================================================
@@ -357,7 +415,7 @@ addEventListener("keydown",e=>{ keys[e.code]=true;
   if(e.code==="Comma"||e.code==="Minus"){ state.tSpeed=DAYSPEEDS[Math.max(0,DAYSPEEDS.indexOf(state.tSpeed)-1)]; }
   if(e.code==="Period"||e.code==="Equal"){ state.tSpeed=DAYSPEEDS[Math.min(DAYSPEEDS.length-1,DAYSPEEDS.indexOf(state.tSpeed)+1)]; }
   if(e.code==="KeyL") toggleLog();
-  if(e.code==="KeyR"){ SEED=(hash2(Date.now()&0xffff, (state.camX|0))>>>0); reseed(); }
+  if(e.code==="KeyR"){ if(typeof newWorld==="function") newWorld(); else { SEED=(hash2(Date.now()&0xffff, (state.camX|0))>>>0); reseed(); } }
 });
 addEventListener("keyup",e=>{ keys[e.code]=false; });
 
@@ -366,7 +424,10 @@ addEventListener("keyup",e=>{ keys[e.code]=false; });
    =========================================================================== */
 const cv=document.getElementById("c"), ctx=cv.getContext("2d");
 const hud=document.getElementById("hud");
-function resize(){ state.W=cv.width=innerWidth; state.H=cv.height=innerHeight; }
+let DPR=1;
+function resize(){ DPR=Math.min(2,devicePixelRatio||1); state.W=innerWidth; state.H=innerHeight;
+  // backing store = CSS size x DPR; everything is drawn in CSS pixels through the transform
+  cv.width=Math.round(innerWidth*DPR); cv.height=Math.round(innerHeight*DPR); ctx.setTransform(DPR,0,0,DPR,0,0); }
 addEventListener("resize",()=>{ resize(); });
 function reseed(){ treeCache.clear(); bakeTextures(); initFlock(); initFireflies(); }
 
@@ -447,7 +508,7 @@ const GROUND_MARGIN=384;
 let groundCache=null;                          // {cv,camX0,band,W,H,seed}
 function groundBake(L,W,H,band,amb,camX0){
   const GW=W+GROUND_MARGIN*2;
-  const cv=makeCanvas(GW,H), c=cv.getContext("2d");
+  const cv=makeCanvas(Math.round(GW*DPR),Math.round(H*DPR)), c=cv.getContext("2d"); c.scale(DPR,DPR);
   const step=U*0.6;
   const c0=Math.floor((camX0-GROUND_MARGIN)/step), n=Math.ceil(GW/step)+2;
   const gcol=`rgba(${(40*amb+18)|0},${(70*amb+30)|0},${(36*amb+16)|0},.9)`;
@@ -466,17 +527,17 @@ function groundBake(L,W,H,band,amb,camX0){
       c.fillStyle=rgba([255,230,120],0.9); c.beginPath(); c.arc(fx,fy,1.8,0,TAU); c.fill();
     }
   }
-  return {cv,camX0,band,W,H,seed:SEED};
+  return {cv,camX0,band,W,H,seed:SEED,dpr:DPR};
 }
 function drawGround(L, sky){ /* foreground grass blades + flowers on nearest layer */
   const W=state.W,H=state.H,camX=state.camX*L.par;
   const band=Math.min(7,Math.max(0,(sky.amb*8)|0));
   let g=groundCache;
-  if(!g || g.W!==W || g.H!==H || g.band!==band || g.seed!==SEED || Math.abs(camX-g.camX0)>GROUND_MARGIN-8){
+  if(!g || g.W!==W || g.H!==H || g.band!==band || g.seed!==SEED || g.dpr!==DPR || Math.abs(camX-g.camX0)>GROUND_MARGIN-8){
     g=groundCache=groundBake(L,W,H,band,sky.amb,camX);
   }
-  const srcX=Math.max(0,Math.min(g.cv.width-W,(camX-g.camX0)+GROUND_MARGIN));
-  ctx.drawImage(g.cv, srcX, 0, W, H, 0, 0, W, H);
+  const srcX=Math.max(0,Math.min(g.cv.width/g.dpr-W,(camX-g.camX0)+GROUND_MARGIN));
+  ctx.drawImage(g.cv, srcX*g.dpr, 0, W*g.dpr, H*g.dpr, 0, 0, W, H);
 }
 
 /* ===========================================================================
@@ -615,12 +676,16 @@ function bakeDayArt(sky,sun,W,H,band){
   dayArt={band,W,H,bg,sun:sc,sunR:R,vig:vc};
 }
 
+let lastDraw=-1e9;
 function frame(now){
+  // Behind the title card or the session summary the landscape is only a backdrop: draw it at ~10 fps.
+  if(typeof playing!=="undefined" && (!playing || document.querySelector(".dlayer.on:not(#dCoach)")) && now-lastDraw<100){ requestAnimationFrame(frame); return; }
+  lastDraw=now;
   const dt=Math.min(0.05,(now-(state.last||now))/1000); state.last=now;
   const W=state.W,H=state.H;
   // PULSE: time + camera springs (I7)
-  if(!state.tPaused) state.t=(state.t+dt*state.tRate*state.tSpeed)%1;
-  state.camTarget = keys.KeyW||keys.ShiftLeft?150:36;
+  if(!state.tPaused){ const nt=(state.t+dt*state.tRate*state.tSpeed)%1; if(nt<state.t) state.day=(state.day||1)+1; state.t=nt; }
+  state.camTarget = keys.KeyW||keys.ShiftLeft?150:(RMOTION?18:36);
   let dir=0; if(keys.KeyA||keys.ArrowLeft)dir-=1; if(keys.KeyD||keys.ArrowRight)dir+=1;
   const desired = dir!==0 ? dir*Math.abs(state.camTarget)*2.4 : state.camTarget;
   state.camV += (desired-state.camV)*Math.min(1,dt*3);   // spring to target vel
@@ -692,9 +757,10 @@ function frame(now){
 
   // HUD — honest ambient self-description; internal cache/flock counters removed.
   const phase = phaseName(state.t);
-  hud.innerHTML=`<b>LIVING WORLD</b> — ambient landscape · no objective, just watch<br>`
-    +`seed <b>0x${(SEED>>>0).toString(16).toUpperCase()}</b> · ${phase} · t=${state.t.toFixed(2)} · x=${(state.camX|0)}`
-    +` · day ×${state.tSpeed}${state.tPaused?" (paused)":""} · <b>${loggedCount()}/${SPECIES.length}</b> logged`;
+  const mins=Math.floor(state.t*1440), clock=String(Math.floor(mins/60)).padStart(2,"0")+":"+String(mins%60).padStart(2,"0");
+  hud.innerHTML=`<b>LIVING WORLD</b> · DAY ${state.day||1} · <b>${clock}</b> ${phase}<br>`
+    +`seed <b>0x${(SEED>>>0).toString(16).toUpperCase()}</b> · day ×${state.tSpeed}${state.tPaused?" (frozen)":""} · <b>${loggedCount()}/${SPECIES.length}</b> logged`;
+  if(typeof paintCtl==="function") paintCtl();
 
   requestAnimationFrame(frame);
 }
@@ -719,13 +785,133 @@ function updateBoids(dt){
 const _q=new URLSearchParams(location.search);
 if(_q.has('seed')){ const v=parseInt(_q.get('seed'),16); if(!isNaN(v)) SEED=v>>>0; }
 if(_q.has('t')){ const v=parseFloat(_q.get('t')); if(!isNaN(v)) state.t=clamp(v,0,0.999); }
-cv.addEventListener("pointerdown",()=>{ state.tPaused=!state.tPaused; }); // tap/click pause (touch parity)
+// tap/click freezes time (touch parity); a drag walks the camera instead
+(function(){ let d=null;
+  cv.addEventListener("pointerdown",e=>{ d={x:e.clientX,moved:0}; try{ cv.setPointerCapture(e.pointerId); }catch(er){} });
+  cv.addEventListener("pointermove",e=>{ if(!d) return; const dx=e.clientX-d.x; d.x=e.clientX; d.moved+=Math.abs(dx); if(d.moved>8) state.camX-=dx; });
+  cv.addEventListener("pointerup",()=>{ if(d&&d.moved<=8) state.tPaused=!state.tPaused; d=null; });
+  cv.addEventListener("pointercancel",()=>{ d=null; }); })();
 resize(); bakeTextures(); initFlock(); initFireflies(); renderLog();
 requestAnimationFrame(t=>{ state.last=t; requestAnimationFrame(frame); });
 // expose for the headless seed / observation gates (additive, read-only)
 window.__DEBUG={ worldHash, seedInfo:()=>({seed:SEED}),
   fieldLog:()=>({count:loggedCount(),total:SPECIES.length,seen:Object.keys(fieldLog.seen),dwell:Object.assign({},dwell)}),
   view:()=>({t:state.t,x:Math.round(state.camX),tSpeed:state.tSpeed,paused:state.tPaused}) };
+
+
+/* ===========================================================================
+   ARCADE LAYER: title card, touch controls, session summary, first-run coach,
+   codes, hints and a session autosave. Additive: two new localStorage keys
+   (lw.session.v1, lw.tut); the seeded world and worldHash are untouched.
+   =========================================================================== */
+const RMOTION=!!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches);
+const $l=id=>document.getElementById(id);
+const sdkCall=(fn,a)=>{ try{ if(window.ArcadeSDK) ArcadeSDK[fn](a); }catch(e){} };
+const codesUsed=()=>{ try{ return !!(window.ArcadeSDK&&ArcadeSDK.cheated); }catch(e){ return false; } };
+let playing=false, sess={day:1,t:0,start:0,logged:0};
+function paintCtl(){
+  const r=$l("cRate"); if(!r) return;
+  const tx=state.tSpeed+"x"; if(r.textContent!==tx) r.textContent=tx;
+  const f=$l("cFreeze"), ft=state.tPaused?"▶":"❚❚"; if(f.textContent!==ft){ f.textContent=ft; f.setAttribute("aria-label",state.tPaused?"Unfreeze time":"Freeze time"); }
+  const lg="LOG "+loggedCount()+"/"+SPECIES.length; if($l("cLog").textContent!==lg) $l("cLog").textContent=lg;
+}
+function speed(d){ const i=DAYSPEEDS.indexOf(state.tSpeed); state.tSpeed=DAYSPEEDS[Math.max(0,Math.min(DAYSPEEDS.length-1,(i<0?2:i)+d))]; }
+function hold(btn,code){ const on=e=>{ e.preventDefault(); keys[code]=true; }, off=()=>{ keys[code]=false; };
+  btn.addEventListener("pointerdown",on); ["pointerup","pointerleave","pointercancel"].forEach(ev=>btn.addEventListener(ev,off)); }
+hold($l("cLeft"),"KeyA"); hold($l("cRight"),"KeyD");
+$l("cFreeze").onclick=()=>{ state.tPaused=!state.tPaused; };
+$l("cSlow").onclick=()=>speed(-1);
+$l("cFast").onclick=()=>speed(1);
+$l("cLog").onclick=()=>toggleLog();
+$l("cEnd").onclick=()=>endSession();
+function show(id,on){ $l(id).classList.toggle("on",!!on); }
+function showTitle(){
+  coachEnd(); show("dSum",false); playing=false;
+  $l("dTitleStats").innerHTML="<div><b>"+loggedCount()+"/"+SPECIES.length+"</b>logged</div><div><b>DAY "+(state.day||1)+"</b>"+phaseName(state.t)+"</div><div><b>0x"+(SEED>>>0).toString(16).toUpperCase()+"</b>seed</div>";
+  show("dTitle",true); setTimeout(()=>$l("dPlay").focus(),30); sdkCall("state",{scene:"title"});
+}
+function play(){
+  show("dTitle",false); playing=true; sess={day:state.day||1,start:performance.now(),logged:loggedCount()}; sdkCall("state",{scene:"play"});
+  let tut=false; try{ tut=localStorage.getItem("lw.tut")==="1"; }catch(e){}
+  if(!tut) setTimeout(()=>{ if(playing&&!COACH) coachStart(); },600);
+}
+/* End of session: what this sitting added to the field log. Time freezes behind the card. */
+let wasFrozen=false;
+function endSession(){
+  if(!playing) return; coachEnd(); wasFrozen=state.tPaused; state.tPaused=true;
+  const mins=Math.round((performance.now()-sess.start)/60000), got=loggedCount()-sess.logged;
+  $l("dSumK").textContent="SESSION OVER · DAY "+(state.day||1)+(codesUsed()?" · CODES ON":"");
+  $l("dSumStats").innerHTML="<div><b>"+(state.day-sess.day+1)+"</b>day"+(state.day-sess.day?"s":"")+" lived</div><div><b>"+got+"</b>new species</div><div><b>"+loggedCount()+"/"+SPECIES.length+"</b>field log</div>";
+  const next=SPECIES.find(sp=>!fieldLog.seen[sp.id]);
+  $l("dSumList").innerHTML=(mins?"<li>"+mins+" minute"+(mins>1?"s":"")+" watched</li>":"")+(next?"<li>Next to find: "+hintFor(next)+"</li>":"<li>The field log is complete.</li>");
+  show("dSum",true); $l("dAgain").focus();
+  sdkCall("state",{scene:"over",score:loggedCount()});
+}
+/* A fresh day: dawn again, camera home, same world. The field log is kept. */
+function newDay(){
+  coachEnd(); show("dSum",false); show("dTitle",false);
+  state.t=0.20; state.day=1; state.camX=0; state.camV=36; state.tSpeed=RMOTION?0.5:1; state.tPaused=false;
+  playing=true; sess={day:1,start:performance.now(),logged:loggedCount()}; sdkCall("state",{scene:"play"});
+}
+function newWorld(){ SEED=(hash2(Date.now()&0xffff,(state.camX|0))>>>0); reseed(); newDay(); }
+$l("dAgain").onclick=newDay;
+$l("dKeep").onclick=()=>{ show("dSum",false); state.tPaused=wasFrozen; sdkCall("state",{scene:"play"}); };
+$l("dPlay").onclick=play;
+$l("dHow").onclick=()=>{ play(); coachStart(); };
+$l("dNew").onclick=()=>{ newWorld(); };
+/* autosave: seed, clock, day and camera, restored on the next visit */
+const SESSION_KEY="lw.session.v1";
+function saveSession(){ try{ localStorage.setItem(SESSION_KEY,JSON.stringify({v:1,seed:SEED>>>0,t:Math.round(state.t*1000)/1000,day:state.day||1,camX:Math.round(state.camX),tSpeed:state.tSpeed})); }catch(e){} }
+setInterval(saveSession,5000); addEventListener("pagehide",saveSession);
+(function(){ if(_q.has("seed")||_q.has("t")){ state.day=1; return; }
+  try{ const o=JSON.parse(localStorage.getItem(SESSION_KEY)); if(o&&isFinite(o.t)){ if(o.seed!==(SEED>>>0)){ SEED=o.seed>>>0; reseed(); }
+    state.t=clamp(o.t,0,0.999); state.day=o.day||1; state.camX=o.camX||0; if(DAYSPEEDS.indexOf(o.tSpeed)>=0) state.tSpeed=o.tSpeed; return; } }catch(e){}
+  state.day=1; if(RMOTION) state.tSpeed=0.5; })();
+if(innerWidth<=560 && logVisible) toggleLog();   // phones start with the log folded away (LOG opens it)
+
+/* hints: the next species you have not logged, and how to find it now */
+function hintFor(sp){
+  const ph=phaseName(state.t), night=ph==="NIGHT";
+  const how={tree:"walk (‹ › or A/D) until a "+sp.name.toLowerCase()+" stands in view and hold still a moment",
+    bloom:"walk along the meadow until a "+sp.name.toLowerCase()+" flower is in the foreground",
+    creature:sp.id==="firefly"?(night?"it is night: look low over the meadow":"fireflies only come out after dark; press + to speed the day"):"wait for the bird flock to cross the sky",
+    sky:{stars:night?"look up: the stars are out":"stars appear at night; press + to speed the day",moon:night?"the moon is up; hold still":"the moon rises at night",
+      rays:"god-rays need a high sun, around midday",sunrise:"sunrise is between about 05:00 and 06:00; scrub back with [ if you missed it",dusk:"dusk runs from about 16:00 to 19:00"}[sp.id]}[sp.kind];
+  return sp.name+": "+how+".";
+}
+function hint(){ const next=SPECIES.find(sp=>!fieldLog.seen[sp.id]); return next?hintFor(next):"All fourteen are in the field log. Try R or New world for a different valley."; }
+
+/* first-run coach */
+let COACH=null;
+const COACH_STEPS=[
+  {k:"1 / 3 · WALK",t:"This world lives on its own. Drag it or hold ‹ › to walk; tap to freeze time.",r:()=>({x:innerWidth*0.15,y:innerHeight*0.25,w:innerWidth*0.7,h:innerHeight*0.35})},
+  {k:"2 / 3 · TIME",t:"Freeze the day, or slow it down and speed it up. Night brings stars, the moon and fireflies.",sel:"#ctl"},
+  {k:"3 / 3 · FIELD LOG",t:"Keep something in view for a moment and it is logged. Fill all fourteen; END shows your notes.",sel:"#cLog"}];
+function coachStart(){ if(!playing) play(); COACH={i:0}; show("dCoach",true); coachPaint(); sdkCall("event","tutorial-start"); }
+function coachPaint(){
+  if(!COACH) return; const st=COACH_STEPS[COACH.i], sp=$l("coachSpot");
+  let r; if(st.sel){ const b=document.querySelector(st.sel).getBoundingClientRect(); r={x:b.left,y:b.top,w:b.width,h:b.height}; } else r=st.r();
+  sp.style.display="block"; sp.style.left=(r.x-6)+"px"; sp.style.top=(r.y-6)+"px"; sp.style.width=(r.w+12)+"px"; sp.style.height=(r.h+12)+"px";
+  $l("dCoachK").textContent=st.k; $l("dCoachT").textContent=st.t; $l("dCoachGo").textContent=COACH.i===COACH_STEPS.length-1?"Start":"Next";
+}
+function coachEnd(done){ if(!COACH) return; COACH=null; show("dCoach",false); $l("coachSpot").style.display="none"; try{ localStorage.setItem("lw.tut","1"); }catch(e){} if(done) sdkCall("event","tutorial-done"); }
+$l("dCoachGo").onclick=()=>{ if(!COACH) return; COACH.i++; if(COACH.i>=COACH_STEPS.length) coachEnd(true); else coachPaint(); };
+$l("dCoachSkip").onclick=()=>coachEnd();
+addEventListener("resize",()=>{ if(COACH) coachPaint(); });
+
+/* codes */
+const CODES={TIMELAPSE:"Two new day speeds, 8x and 16x (the day jumps to 8x)",FIREFLIES:"Twice as many fireflies at night",BIGFLOCK:"The bird flock doubles in size",ALLLOGGED:"Every species is ticked in the field log"};
+function enterCode(c){
+  if(!CODES[c]) return {ok:false};
+  if(c==="TIMELAPSE"){ if(DAYSPEEDS.indexOf(8)<0) DAYSPEEDS.push(8,16); state.tSpeed=8; }
+  else if(c==="FIREFLIES"){ const n=state.fireflies.length; for(let i=0;i<n;i++){ const f=state.fireflies[i]; state.fireflies.push({x:(f.x+0.37)%1,y:f.y,ph:f.ph+2.1,sp:f.sp}); } }
+  else if(c==="BIGFLOCK"){ const n=flock.length; for(let i=0;i<n;i++){ const b=flock[i]; flock.push({x:b.x-60,y:b.y+18,vx:b.vx,vy:b.vy,ph:b.ph+1.7}); } }
+  else if(c==="ALLLOGGED"){ SPECIES.forEach(sp=>{ if(!fieldLog.seen[sp.id]){ fieldLog.seen[sp.id]=true; fieldLog.first[sp.id]=Date.now(); } }); saveLog(); renderLog(); }
+  $l("codesOn").hidden=false; toast("CODE ON · "+CODES[c]);
+  return {ok:true,message:CODES[c]};
+}
+if(window.ArcadeSDK) ArcadeSDK.init({ pauseButton:"tr", onRestart:newDay, onExit:showTitle, onTutorial:coachStart, onHint:hint, onCheat:enterCode });
+showTitle();
 
 /* ── FIELD LOG share card ────────────────────────────────────────────────
    Additive: composites a plain 880x520 PNG from the SAME live field log the

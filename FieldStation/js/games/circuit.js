@@ -349,8 +349,11 @@ export function start(root, api) {
     $swbtn();
     notes.replaceChildren(el('h3', {}, 'Bench notes'));
 
+    api.setHint && api.setHint(() => { const t = TASKS[taskIx];
+      return t.check(sim, slots) ? (taskIx < TASKS.length - 1 ? 'Brief met. Press Next brief.' : 'Every brief is certified.') : diagnose(sim, t); });
     if (passed && !solved.has(task.id)) {
       solved.add(task.id);
+      if (solved.size === TASKS.length) api.done && api.done(100);
       api.record(task.skill, true);
       api.Sound.win();
       api.toast('Brief ' + (taskIx + 1) + ' certified', 'win');

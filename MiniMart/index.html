@@ -76,6 +76,7 @@
         .logo {
             display: flex;
             align-items: center;
+            min-height: 44px;
             gap: 0.75rem;
             font-weight: 800;
             font-size: 1.5rem;
@@ -135,6 +136,7 @@
 
         .btn {
             padding: 0.625rem 1.25rem;
+            min-height: 44px;
             border-radius: var(--radius-sm);
             border: none;
             font-weight: 600;
@@ -170,7 +172,7 @@
         }
 
         .btn-icon {
-            width: 40px; height: 40px;
+            width: 44px; height: 44px;
             padding: 0;
             justify-content: center;
             position: relative;
@@ -182,7 +184,7 @@
             right: -4px;
             background: var(--danger);
             color: white;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 700;
             width: 18px; height: 18px;
             border-radius: 50%;
@@ -230,6 +232,7 @@
         .nav-item {
             display: flex;
             align-items: center;
+            min-height: 44px;
             gap: 0.75rem;
             padding: 0.625rem 0.875rem;
             border-radius: var(--radius-sm);
@@ -371,7 +374,7 @@
             left: 0.75rem;
             background: var(--danger);
             color: white;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 700;
             padding: 0.25rem 0.625rem;
             border-radius: 100px;
@@ -511,7 +514,7 @@
         }
 
         .qty-btn {
-            width: 28px; height: 28px;
+            width: 44px; height: 44px;
             border-radius: 6px;
             border: 1px solid var(--surface-3);
             background: var(--surface);
@@ -604,6 +607,7 @@
 
         .form-input {
             width: 100%;
+            min-height: 44px;
             padding: 0.625rem 0.875rem;
             border: 2px solid var(--surface-3);
             border-radius: var(--radius-sm);
@@ -718,7 +722,8 @@
                edge. Let it wrap so the controls drop to their own line. */
             .page-header { flex-wrap: wrap; }
             .page-header > * { min-width: 0; }
-            .sidebar { position: static; }
+            .sidebar { position: static; order: 2; }
+            .main-content { order: 1; }
             .header-content { flex-wrap: wrap; }
             .search-bar { order: 3; max-width: 100%; width: 100%; }
         }
@@ -911,6 +916,107 @@
             *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
         }
 
+        /* ---- day loop: clock, target, close of day ---- */
+        .manage-toggle { min-height: 44px; display: flex; align-items: center; cursor: pointer; }
+
+        .day-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--surface-3);
+            padding: 0.625rem 2rem;
+        }
+
+        .day-bar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .day-badge {
+            background: var(--accent);
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.75rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.4rem 0.8rem;
+            border-radius: 100px;
+            white-space: nowrap;
+        }
+
+        .day-info { color: var(--text-secondary); font-size: 0.9rem; }
+
+        .day-clock {
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1.35rem;
+            font-variant-numeric: tabular-nums;
+            min-width: 4.2rem;
+            text-align: right;
+        }
+
+        .day-clock.urgent { color: var(--danger); animation: clockPulse 1s ease-in-out infinite; }
+        @keyframes clockPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        .day-progress {
+            flex: 1;
+            min-width: 120px;
+            height: 10px;
+            border-radius: 100px;
+            background: var(--surface-2);
+            overflow: hidden;
+        }
+
+        .day-progress-fill {
+            height: 100%;
+            border-radius: 100px;
+            background: linear-gradient(90deg, var(--accent), #f97316);
+            transition: width 0.3s ease;
+        }
+
+        .day-takings { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+        .day-summary-amount {
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+        }
+
+
+        /* ---- title card, coach marks, codes badge (arcade standard) ---- */
+        .title-wrap { position: fixed; inset: 0; z-index: 400; display: none; align-items: center; justify-content: center;
+            padding: 1rem; background: rgb(15 23 42 / 0.6); overflow-y: auto; }
+        .title-wrap.active { display: flex; }
+        .title-card { background: var(--surface); color: var(--text); border-radius: var(--radius); box-shadow: var(--shadow-lg);
+            width: 100%; max-width: 460px; padding: 1.75rem; text-align: center; margin: auto; }
+        .title-logo { width: 64px; height: 64px; margin: 0 auto 0.75rem; border-radius: 16px; background: var(--accent); color: #fff;
+            display: grid; place-items: center; box-shadow: 0 8px 20px rgb(245 158 11 / 0.35); }
+        .title-logo svg { width: 36px; height: 36px; }
+        .title-card h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.01em; }
+        .title-card .lede { color: var(--text-secondary); margin: 0.4rem 0 1rem; line-height: 1.5; }
+        .title-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+        .title-stats div { background: var(--surface-2); border-radius: 10px; padding: 0.55rem 0.4rem; }
+        .title-stats b { display: block; font-size: 1.05rem; }
+        .title-stats span { color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .title-card .btn { width: 100%; justify-content: center; margin-top: 0.5rem; }
+        .seg { display: flex; gap: 0.4rem; margin: 0.35rem 0 0.25rem; }
+        .seg .btn { flex: 1; margin-top: 0; padding: 0.5rem 0.25rem; background: var(--surface-2); color: var(--text); }
+        .seg .btn.on { background: var(--primary); color: var(--surface); }
+        .seg-label { text-align: left; color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.75rem; }
+        .coach { position: fixed; inset: 0; z-index: 450; display: none; pointer-events: none; }
+        .coach.active { display: block; }
+        .coach-spot { position: fixed; border: 3px solid var(--accent); border-radius: 14px; box-shadow: 0 0 0 9999px rgb(15 23 42 / 0.55); transition: all 0.25s; }
+        .coach-card { position: fixed; left: 50%; transform: translateX(-50%); width: min(420px, calc(100vw - 32px)); pointer-events: auto;
+            background: var(--surface); color: var(--text); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 1rem 1.1rem; }
+        .coach-card .product-category { color: var(--accent); }
+        .coach-card p { margin: 0.35rem 0 0.75rem; line-height: 1.5; font-weight: 600; }
+        .coach-card .row { display: flex; gap: 0.5rem; }
+        .coach-card .row .btn { flex: 1; justify-content: center; }
+        @media (prefers-reduced-motion: reduce) { .coach-spot { transition: none; } }
+
         .hidden { display: none !important; }
     </style>
 </head>
@@ -945,6 +1051,8 @@
             </div>
         </div>
     </header>
+
+    <div class="day-bar" id="dayBar"></div>
 
     <div class="container">
         <div class="layout">
@@ -1026,6 +1134,37 @@
         <div class="modal" id="modalContent"></div>
     </div>
 
+
+    <!-- Title card: the store's front door -->
+    <div class="title-wrap" id="titleWrap" role="dialog" aria-modal="true" aria-labelledby="titleH">
+        <div class="title-card">
+            <div class="title-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11v8a1 1 0 001 1h14a1 1 0 001-1v-8"/><path d="M3 10l1.5-5h15L21 10"/><path d="M3 10a3 3 0 006 0 3 3 0 006 0 3 3 0 006 0"/><path d="M9 20v-6h6v6"/></svg></div>
+            <h1 id="titleH">QuickStop Mini Mart</h1>
+            <p class="lede">Run the corner shop. Ring up sales before the clock runs out, beat each day's takings target and grow the store bank.</p>
+            <div class="title-stats" id="titleStats"></div>
+            <div class="seg-label">Difficulty</div>
+            <div class="seg" id="diffSeg" role="group" aria-label="Difficulty">
+                <button class="btn" data-diff="easy">Easy</button><button class="btn" data-diff="normal">Normal</button><button class="btn" data-diff="hard">Hard</button>
+            </div>
+            <p id="diffNote" style="color: var(--text-secondary); font-size: 0.85rem; text-align: left; margin-top: 0.25rem;"></p>
+            <button class="btn btn-primary" id="titlePlay">Play</button>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-ghost" id="titleHow" style="flex: 1;">How to play</button>
+                <button class="btn btn-ghost" id="titleBrowse" style="flex: 1;">Browse the shop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coach marks -->
+    <div class="coach" id="coach" role="dialog" aria-modal="true" aria-label="How to play">
+        <div class="coach-spot" id="coachSpot"></div>
+        <div class="coach-card" id="coachCard">
+            <div class="product-category" id="coachK"></div>
+            <p id="coachT"></p>
+            <div class="row"><button class="btn btn-ghost" id="coachSkip">Skip</button><button class="btn btn-primary" id="coachGo">Next</button></div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -1052,6 +1191,31 @@
             { id: 18, name: "Chicken Breast (lb)", category: "Meat", price: 5.99, stock: 9, emoji: "🍗", barcode: "7890123473" },
             { id: 19, name: "Salmon Fillet", category: "Meat", price: 12.99, stock: 6, emoji: "🐟", barcode: "7890123474" },
             { id: 20, name: "Apples (3lb bag)", category: "Produce", price: 4.99, stock: 20, emoji: "🍎", barcode: "7890123475" }
+        ];
+
+        /* ---- career progression (additive) ----------------------------------
+           Products that only reach the shelf once a day has actually been
+           cleared. unlockDay = number of cleared days required. They are
+           merged INTO this.products (same shape as DEFAULT_PRODUCTS), so every
+           existing screen - shop, cart, checkout, admin, analytics - keeps
+           working with no changes. */
+        const BONUS_PRODUCTS = [
+            { id: 21, name: "Bagels (6pk)",      category: "Bakery",    price: 5.49, stock: 14, emoji: "🥯", barcode: "7890123476", unlockDay: 1 },
+            { id: 22, name: "Cold Brew 4pk",     category: "Beverages", price: 7.99, stock: 12, emoji: "🧋", barcode: "7890123477", unlockDay: 2 },
+            { id: 23, name: "Aged Cheddar Block",category: "Dairy",     price: 8.49, stock: 10, emoji: "🧀", barcode: "7890123478", unlockDay: 3 },
+            { id: 24, name: "Fresh Basil",       category: "Produce",   price: 2.29, stock: 18, emoji: "🌿", barcode: "7890123479", unlockDay: 4 },
+            { id: 25, name: "Soy Candle",        category: "Household", price: 11.99, stock: 8, emoji: "🕯️", barcode: "7890123480", unlockDay: 5 }
+        ];
+        /* opening stock per SKU, used by the Standing Restock upgrade */
+        const BASE_STOCK = {};
+        [...DEFAULT_PRODUCTS, ...BONUS_PRODUCTS].forEach(p => { BASE_STOCK[p.id] = p.stock; });
+
+        /* ---- upgrades: spend the store bank to change how a day plays ---- */
+        const UPGRADES = [
+            { id: 'register',  name: 'Express Register',       cost: 150, desc: '+30 seconds on every day clock.' },
+            { id: 'wholesale', name: 'Wholesale Account',       cost: 200, desc: 'Daily overheads cut by 25%.' },
+            { id: 'loyalty',   name: 'Loyalty Cards',           cost: 300, desc: 'Every checkout banks +4% extra takings.' },
+            { id: 'restock',   name: 'Standing Restock Order',  cost: 250, desc: 'Every SKU refilled to opening stock at the start of each day.' }
         ];
 
         // ==================== SFX (Web Audio synth — offline, no assets) ====================
@@ -1126,16 +1290,28 @@
         })();
 
         // ==================== CONFETTI ====================
+        const REDUCED_MOTION = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+        const sdk = (fn, a) => { try { if (window.ArcadeSDK) ArcadeSDK[fn](a); } catch (e) {} };
+        const cheated = () => { try { return !!(window.ArcadeSDK && ArcadeSDK.cheated); } catch (e) { return false; } };
+        /* difficulty: how long a day lasts and how big its takings target is */
+        const DIFFS = {
+            easy:   { name: 'Easy',   ms: 150000, tgt: 0.8, note: '2:30 days and targets 20% lower.' },
+            normal: { name: 'Normal', ms: 120000, tgt: 1,   note: '2:00 days and the standard targets.' },
+            hard:   { name: 'Hard',   ms: 90000,  tgt: 1.2, note: '1:30 days and targets 20% higher.' }
+        };
         function burstConfetti() {
+            if (REDUCED_MOTION) return;          // no confetti bursts with reduced motion
             let layer = document.getElementById('confettiLayer');
             if (!layer) {
                 layer = document.createElement('canvas');
                 layer.id = 'confettiLayer';
                 document.body.appendChild(layer);
             }
-            layer.width = innerWidth;
-            layer.height = innerHeight;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            layer.width = Math.round(innerWidth * dpr);
+            layer.height = Math.round(innerHeight * dpr);
             const g = layer.getContext('2d');
+            g.setTransform(dpr, 0, 0, dpr, 0, 0);
             const colors = ['#f59e0b', '#f97316', '#10b981', '#3b82f6', '#ef4444', '#eab308'];
             const parts = Array.from({ length: 90 }, () => ({
                 x: innerWidth / 2 + (Math.random() - .5) * 160,
@@ -1150,7 +1326,7 @@
             }));
             const t0 = performance.now();
             (function frame(t) {
-                g.clearRect(0, 0, layer.width, layer.height);
+                g.clearRect(0, 0, innerWidth, innerHeight);
                 const dt = Math.min(2, (t - t0) / 1000);
                 let alive = false;
                 for (const p of parts) {
@@ -1165,7 +1341,7 @@
                     g.restore();
                 }
                 if (alive) requestAnimationFrame(frame);
-                else g.clearRect(0, 0, layer.width, layer.height);
+                else g.clearRect(0, 0, innerWidth, innerHeight);
             })(t0);
         }
 
@@ -1180,12 +1356,37 @@
             scanBest: parseInt(localStorage.getItem('minimart_beststreak') || '0', 10) || 0,
             scanLast: 0,
 
+            // ---- day loop: clock + takings target + close-of-day result ----
+            DAY_MS: 120000,
+            day: 1,
+            bestDay: parseInt(localStorage.getItem('minimart_bestday') || '0', 10) || 0,
+            dayActive: false,
+            dayEndsAt: 0,
+            takings: 0,
+            target: 0,
+            targetHit: false,
+            dayTimer: null,
+
+            // ---- career: bank, overheads, misses, upgrades, unlocks ----
+            // NEW localStorage key. The existing keys (minimart_data,
+            // minimart_cart, minimart_day, minimart_bestday, minimart_beststreak,
+            // minimart_theme, minimart_muted) are untouched and still authoritative.
+            careerKey: 'minimart_career',
+            career: null,
+            diffKey: (() => { try { const d = localStorage.getItem('minimart_diff'); return DIFFS[d] ? d : 'normal'; } catch (e) { return 'normal'; } })(),
+            bonusMs: 0,          // OVERTIME code
+            coachI: 0,           // 1-based coach step while the coach is open
+
             init() {
                 this.loadData();
                 this.loadMute();
                 this.renderCategories();
+                this.loadCareer();
                 this.navigate('shop');
                 this.updateCartUI();
+                this.loadDay();
+                this.applyUnlocks(true);
+                this.renderDayBar();
 
                 // Keyboard shortcuts
                 document.addEventListener('keydown', (e) => {
@@ -1576,6 +1777,7 @@
                     status: 'completed'
                 };
                 this.orders.unshift(order);
+                this.recordSale(total);
 
                 // Generate receipt HTML
                 const receiptHTML = `
@@ -1993,7 +2195,7 @@
                                 ${Object.entries(dailySales).map(([date, val]) => `
                                     <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
                                         <div style="width: 100%; background: linear-gradient(to top, var(--accent), rgb(245 158 11 / 0.3)); border-radius: 4px 4px 0 0; height: ${(val / maxDaily * 100) || 2}%; transition: height 0.5s;"></div>
-                                        <div style="font-size: 0.7rem; color: var(--text-secondary); text-align: center; white-space: nowrap;">${date}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: center; white-space: nowrap;">${date}</div>
                                     </div>
                                 `).join('')}
                             </div>
@@ -2166,7 +2368,7 @@
                     if (now - this.scanLast > 5000) this.scanStreak = 0;
                     this.scanStreak++;
                     this.scanLast = now;
-                    if (this.scanStreak > this.scanBest) {
+                    if (this.scanStreak > this.scanBest && !cheated()) {
                         this.scanBest = this.scanStreak;
                         localStorage.setItem('minimart_beststreak', String(this.scanBest));
                     }
@@ -2198,6 +2400,403 @@
                     chip.classList.toggle('on', this.scanStreak > 0);
                 }
                 if (best) best.textContent = this.scanBest;
+            },
+
+            // ==================== CAREER / PROGRESSION ====================
+            loadCareer() {
+                let saved = null;
+                try { saved = JSON.parse(localStorage.getItem(this.careerKey)); } catch (e) { saved = null; }
+                const base = { bank: 0, daysCleared: 0, misses: 0, strikes: 0,
+                               lifetimeTakings: 0, bestTakings: 0, arrears: false, upgrades: {} };
+                this.career = Object.assign(base, saved && typeof saved === 'object' ? saved : {});
+                if (!this.career.upgrades) this.career.upgrades = {};
+            },
+
+            saveCareer() {
+                localStorage.setItem(this.careerKey, JSON.stringify(this.career));
+            },
+
+            /* Day costs rise faster than the target does, so later days need
+               real margins rather than just more volume. */
+            overheadsForDay(n) { return 40 + (Math.max(1, n) - 1) * 20; },
+
+            overheads() {
+                const raw = this.overheadsForDay(this.day);
+                return this.career && this.career.upgrades.wholesale ? Math.round(raw * 0.75) : raw;
+            },
+
+            /* Missing three targets puts the store into arrears: the target
+               carries a visible +15% surcharge until a day is cleared. */
+            targetNow() {
+                const t = this.targetForDay(this.day);
+                return this.career && this.career.arrears ? Math.round(t * 1.15) : t;
+            },
+
+            dayLength() { return this.diff().ms + (this.career && this.career.upgrades.register ? 30000 : 0) + this.bonusMs; },
+
+            saleBonus(amount) { return this.career && this.career.upgrades.loyalty ? amount * 1.04 : amount; },
+
+            restockAll(silent) {
+                if (!this.career || !this.career.upgrades.restock) return;
+                let n = 0;
+                this.products.forEach(p => {
+                    const base = BASE_STOCK[p.id];
+                    if (base && p.stock < base) { p.stock = base; n++; }
+                });
+                if (n) { this.saveData(); if (!silent) this.showToast(n + ' lines restocked from standing order', 'success', true); }
+            },
+
+            applyUnlocks(silent) {
+                const have = new Set(this.products.map(p => p.id));
+                const fresh = BONUS_PRODUCTS.filter(b => this.career.daysCleared >= b.unlockDay && !have.has(b.id));
+                if (!fresh.length) return 0;
+                fresh.forEach(b => this.products.push(Object.assign({}, b)));
+                this.saveData();
+                if (!silent) this.showToast('New line unlocked: ' + fresh.map(b => b.name).join(', '), 'success', true);
+                return fresh.length;
+            },
+
+            nextUnlock() {
+                return BONUS_PRODUCTS.filter(b => b.unlockDay > this.career.daysCleared)
+                                     .sort((a, b) => a.unlockDay - b.unlockDay)[0] || null;
+            },
+
+            buyUpgrade(id) {
+                const u = UPGRADES.find(x => x.id === id);
+                if (!u || this.career.upgrades[id] || this.career.bank < u.cost) return;
+                this.career.bank -= u.cost;
+                this.career.upgrades[id] = true;
+                this.saveCareer();
+                SFX.cash();
+                this.showToast('Bought ' + u.name, 'success', true);
+                this.renderDayBar();
+                this.showCareer();
+            },
+
+            showCareer() {
+                const c = this.career;
+                const money = v => (v < 0 ? '\u2212$' : '$') + Math.abs(v).toFixed(2);
+                const nx = this.nextUnlock();
+                const ups = UPGRADES.map(u => {
+                    const owned = !!c.upgrades[u.id];
+                    const afford = c.bank >= u.cost;
+                    return '<div style="display:flex;gap:.75rem;align-items:center;justify-content:space-between;padding:.65rem 0;border-bottom:1px solid var(--surface-3);">' +
+                        '<div><div style="font-weight:700;">' + u.name + (owned ? ' \u2713' : '') + '</div>' +
+                        '<div style="color:var(--text-secondary);font-size:.85rem;">' + u.desc + '</div></div>' +
+                        (owned
+                            ? '<span style="color:var(--success);font-weight:700;white-space:nowrap;">Owned</span>'
+                            : '<button class="btn ' + (afford ? 'btn-primary' : 'btn-ghost') + '" style="min-height:44px;white-space:nowrap;" ' +
+                              (afford ? '' : 'disabled ') + 'onclick="app.buyUpgrade(\'' + u.id + '\')">$' + u.cost + '</button>') +
+                        '</div>';
+                }).join('');
+                const rows = [
+                    ['Days cleared', c.daysCleared],
+                    ['Best day cleared', this.bestDay],
+                    ['Missed targets', c.misses],
+                    ['Lifetime takings', '$' + c.lifetimeTakings.toFixed(2)],
+                    ['Best single day', '$' + c.bestTakings.toFixed(2)],
+                    ['Store bank', money(c.bank)],
+                    ['Orders completed', this.orders.length],
+                    ['Best scan streak', 'x' + this.scanBest],
+                    ['SKUs on shelf', this.products.length + ' of ' + (DEFAULT_PRODUCTS.length + BONUS_PRODUCTS.length)]
+                ];
+                document.getElementById('modalContent').innerHTML =
+                    '<div class="modal-header">' +
+                        '<h2 style="font-size:1.25rem;font-weight:700;">Career \u00b7 record board</h2>' +
+                        '<button class="btn btn-ghost btn-icon" onclick="app.closeModal()">\u2715</button>' +
+                    '</div>' +
+                    '<div style="text-align:center;margin-bottom:1rem;">' +
+                        '<div class="product-category">Day ' + this.day + ' \u00b7 store record</div>' +
+                        '<div style="font-size:1.3rem;font-weight:800;">Bank ' + money(c.bank) + '</div>' +
+                        (c.arrears ? '<div style="color:var(--danger);font-weight:700;">FINAL NOTICE \u2014 target +15% until you clear a day</div>' : '') +
+                    '</div>' +
+                    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin-bottom:1rem;">' +
+                        rows.map(r => '<div style="background:var(--surface-2);border-radius:10px;padding:.6rem .75rem;">' +
+                            '<div style="color:var(--text-secondary);font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;">' + r[0] + '</div>' +
+                            '<div style="font-weight:800;font-size:1.05rem;">' + r[1] + '</div></div>').join('') +
+                    '</div>' +
+                    '<h3 style="font-size:1rem;font-weight:700;margin-bottom:.25rem;">Upgrades</h3>' +
+                    '<div style="margin-bottom:.75rem;">' + ups + '</div>' +
+                    '<p style="color:var(--text-secondary);font-size:.85rem;">' +
+                        (nx ? 'Next line unlocks after ' + nx.unlockDay + ' day' + (nx.unlockDay > 1 ? 's' : '') +
+                              ' cleared: <strong>' + nx.name + '</strong> (day ' + nx.unlockDay + ').'
+                            : 'Every product line is unlocked.') +
+                    '</p>' +
+                    '<button class="btn btn-ghost" style="width:100%;min-height:44px;margin-top:.75rem;" onclick="app.closeModal()">Close</button>';
+                document.getElementById('modalOverlay').classList.add('active');
+                SFX.click();
+            },
+
+            // ==================== DAY LOOP ====================
+            loadDay() {
+                const saved = parseInt(localStorage.getItem('minimart_day') || '1', 10);
+                this.day = Number.isFinite(saved) && saved > 0 ? saved : 1;
+                this.target = this.targetNow();
+            },
+
+            targetForDay(n) {
+                return Math.round((100 + (Math.max(1, n) - 1) * 50) * this.diff().tgt);
+            },
+
+            diff() { return DIFFS[this.diffKey] || DIFFS.normal; },
+
+            startDay() {
+                this.closeModal();
+                this.hideTitle();
+                this.dayActive = true;
+                this.takings = 0;
+                this.target = this.targetNow();
+                this.targetHit = false;
+                this.restockAll(true);
+                this.saveCareer();                      // the career record exists from the first opening bell
+                this.dayEndsAt = Date.now() + this.dayLength();
+                this.showToast('Day ' + this.day + ' open \u2014 take $' + this.target.toFixed(2) +
+                    ' before close (costs $' + this.overheads().toFixed(2) + ')', 'success', true);
+                SFX.chime();
+                this.renderDayBar();
+                clearInterval(this.dayTimer);
+                this.dayTimer = setInterval(() => {
+                    if (!this.dayActive) return;
+                    if (this.coachI) { this.dayEndsAt = Date.now() + this.heldMs; return; }   // the clock waits while the coach is open
+                    if (Date.now() >= this.dayEndsAt) { this.closeDay(); return; }
+                    this.updateDayClock();
+                }, 250);
+                this.updateDayClock();
+                sdk('state', { scene: 'play' });
+                if (!localStorage.getItem('minimart_tut')) setTimeout(() => { if (this.dayActive && !this.coachI && !localStorage.getItem('minimart_tut')) this.coachStart(); }, 700);
+            },
+
+            updateDayClock() {
+                const clock = document.getElementById('dayClock');
+                if (!clock) return;
+                const left = Math.max(0, this.dayEndsAt - Date.now());
+                const s = Math.ceil(left / 1000);
+                clock.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+                clock.classList.toggle('urgent', s <= 20);
+            },
+
+            recordSale(amount) {
+                if (!this.dayActive) return;
+                this.takings += this.saleBonus(amount);
+                if (!this.targetHit && this.takings >= this.target) {
+                    this.targetHit = true;
+                    this.showToast('Takings target reached \u2014 costs still to pay at close', 'success', true);
+                    SFX.chime();
+                }
+                this.renderDayBar();
+            },
+
+            renderDayBar() {
+                const host = document.getElementById('dayBar');
+                if (!host) return;
+                const c = this.career || { bank: 0, strikes: 0, arrears: false };
+                const codesBadge = this.codesOn ? '<span class="day-badge" style="background:var(--info);">Codes on</span>' : '';
+                const notice = codesBadge + (c.arrears
+                    ? '<span class="day-badge" style="background:var(--danger);">Arrears \u00b7 target +15%</span>'
+                    : (c.strikes ? '<span class="day-badge" style="background:var(--danger);">' + c.strikes + ' miss' + (c.strikes > 1 ? 'es' : '') + '</span>' : ''));
+                if (this.dayActive) {
+                    const pct = Math.min(100, this.target > 0 ? (this.takings / this.target) * 100 : 0);
+                    host.innerHTML =
+                        '<div class="day-bar-inner">' +
+                            '<span class="day-badge">Day ' + this.day + '</span>' + notice +
+                            '<span class="day-clock" id="dayClock">--:--</span>' +
+                            '<div class="day-progress"><div class="day-progress-fill" style="width:' + pct + '%"></div></div>' +
+                            '<span class="day-takings">$' + this.takings.toFixed(2) + ' / $' + this.target.toFixed(2) + '</span>' +
+                            '<span class="day-info">costs <strong>$' + this.overheads().toFixed(2) + '</strong></span>' +
+                            '<button class="btn btn-ghost" style="min-height:44px;padding:0.35rem 0.8rem;" onclick="app.showCareer()">Career</button>' +
+                        '</div>';
+                    this.updateDayClock();
+                } else {
+                    host.innerHTML =
+                        '<div class="day-bar-inner">' +
+                            '<span class="day-badge">Day ' + this.day + '</span>' + notice +
+                            '<span class="day-info">Takings target <strong>$' + this.targetNow().toFixed(2) + '</strong> \u00b7 Costs <strong>$' + this.overheads().toFixed(2) + '</strong> \u00b7 Bank <strong>$' + c.bank.toFixed(2) + '</strong> \u00b7 Best day cleared <strong>' + this.bestDay + '</strong></span>' +
+                            '<button class="btn btn-ghost" style="min-height:44px;" onclick="app.showCareer()">Career \u00b7 records</button>' +
+                            '<button class="btn btn-primary" onclick="app.startDay()">Start Day ' + this.day + '</button>' +
+                        '</div>';
+                }
+            },
+
+            closeDay() {
+                clearInterval(this.dayTimer);
+                this.dayTimer = null;
+                this.dayActive = false;
+                const won = this.takings >= this.target;
+                const played = this.day;
+                const overheads = this.overheads();
+                const profit = this.takings - overheads;
+                const c = this.career;
+
+                c.bank += profit;
+                c.lifetimeTakings += this.takings;
+                const codes = cheated();            // a day played with codes on never sets a best
+                if (this.takings > c.bestTakings && !codes) c.bestTakings = this.takings;
+
+                let unlocked = 0;
+                if (won) {
+                    c.daysCleared += 1;
+                    c.strikes = 0;
+                    c.arrears = false;
+                    if (played > this.bestDay && !codes) {
+                        this.bestDay = played;
+                        localStorage.setItem('minimart_bestday', String(this.bestDay));
+                    }
+                    this.day = played + 1;
+                    localStorage.setItem('minimart_day', String(this.day));
+                    this.saveCareer();
+                    unlocked = this.applyUnlocks(true);
+                } else {
+                    c.misses += 1;
+                    c.strikes += 1;
+                    if (c.strikes >= 3) c.arrears = true;
+                    this.saveCareer();
+                }
+                this.renderDayBar();
+                this.showDaySummary(won, played, overheads, profit, unlocked);
+            },
+
+            showDaySummary(won, played, overheads, profit, unlocked) {
+                const diff = this.takings - this.target;
+                const c = this.career;
+                const money = v => (v < 0 ? '\u2212$' : '+$') + Math.abs(v).toFixed(2);
+                const nextTarget = Math.round(this.targetForDay(this.day) * (c.arrears ? 1.15 : 1));
+                const consequence = won
+                    ? 'Day ' + played + ' cleared and costs of $' + overheads.toFixed(2) + ' paid. ' +
+                      'Day ' + this.day + ' opens with a target of $' + nextTarget +
+                      ' and costs of $' + this.overheadsForDay(this.day).toFixed(2) + '.'
+                    : 'You were $' + Math.abs(diff).toFixed(2) + ' short of target, and the day still cost $' + overheads.toFixed(2) +
+                      ' \u2014 the bank took the difference. Day ' + played + ' stays open until you clear it.' +
+                      (c.arrears
+                        ? ' FINAL NOTICE: a 15% arrears surcharge now applies to the target.'
+                        : ' ' + (3 - c.strikes) + ' more missed ' + ((3 - c.strikes) === 1 ? 'day' : 'days') + ' before a final notice.');
+                document.getElementById('modalContent').innerHTML =
+                    '<div class="modal-header">' +
+                        '<h2 style="font-size: 1.25rem; font-weight: 700;">' + (won ? 'Day cleared' : 'Target missed') + '</h2>' +
+                        '<button class="btn btn-ghost btn-icon" onclick="app.closeModal()">\u2715</button>' +
+                    '</div>' +
+                    '<div style="text-align: center; margin-bottom: 1.5rem;">' +
+                        '<div class="product-category">Day ' + played + ' \u00b7 close of business</div>' +
+                        '<div class="day-summary-amount" style="color:' + (won ? 'var(--success)' : 'var(--danger)') + ';">$' + this.takings.toFixed(2) + '</div>' +
+                        '<div style="color: var(--text-secondary);">Takings target $' + this.target.toFixed(2) + ' \u2014 ' + (diff >= 0 ? '+' : '\u2212') + '$' + Math.abs(diff).toFixed(2) + '</div>' +
+                        '<div style="margin-top: 0.4rem;">Day costs $' + overheads.toFixed(2) + ' \u2014 <strong style="color:' + (profit >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + (profit >= 0 ? 'profit ' : 'loss ') + money(profit) + '</strong></div>' +
+                        '<div style="margin-top: 0.35rem; font-weight: 700;">Store bank $' + c.bank.toFixed(2) + '</div>' +
+                        (unlocked ? '<div style="margin-top: 0.5rem; color: var(--success); font-weight: 700;">' + unlocked + ' new product line' + (unlocked > 1 ? 's' : '') + ' unlocked</div>' : '') +
+                        '<p style="margin-top: 1rem; color: var(--text-secondary);">' + consequence + '</p>' +
+                        '<div style="margin-top: 0.75rem;">Best day cleared: <strong>' + this.bestDay + '</strong></div>' +
+                    '</div>' +
+                    '<button class="btn btn-ghost" id="btnShare" style="width: 100%; margin-bottom: 0.75rem;" onclick="shareCard()">Save the day card</button>' +
+                    '<button class="btn btn-ghost" style="width: 100%; min-height:44px; margin-bottom: 0.75rem;" onclick="app.showCareer()">Career \u00b7 record board</button>' +
+                    '<div style="display: flex; gap: 0.75rem;">' +
+                        '<button class="btn btn-primary" style="flex: 1;" onclick="app.startDay()">Start Day ' + this.day + '</button>' +
+                        '<button class="btn btn-ghost" onclick="app.closeModal()">Back to Shop</button>' +
+                    '</div>';
+                document.getElementById('modalOverlay').classList.add('active');
+                if (won) { SFX.cash(); burstConfetti(); }
+                else SFX.err();
+                if (cheated()) {
+                    const note = document.createElement('div');
+                    note.style.cssText = 'text-align:center;font-weight:700;color:var(--accent);margin-top:.5rem;';
+                    note.textContent = 'Codes on: this day does not count toward your best day or best takings.';
+                    document.getElementById('modalContent').appendChild(note);
+                }
+                sdk('state', { scene: 'over', score: Math.round(this.takings * 100) / 100, outcome: won ? 'cleared' : 'missed' });
+            },
+
+
+            // ==================== TITLE, TUTORIAL, CODES, HINTS (arcade standard) ====================
+            showTitle() {
+                this.closeModal(); this.coachEnd();
+                const c = this.career || { bank: 0 };
+                document.getElementById('titleStats').innerHTML =
+                    '<div><b>Day ' + this.day + '</b><span>Next up</span></div>' +
+                    '<div><b>$' + c.bank.toFixed(0) + '</b><span>Store bank</span></div>' +
+                    '<div><b>' + this.bestDay + '</b><span>Best day</span></div>';
+                document.getElementById('titlePlay').textContent = this.dayActive ? 'Back to Day ' + this.day : 'Play Day ' + this.day;
+                this.paintDiff();
+                document.getElementById('titleWrap').classList.add('active');
+                setTimeout(() => document.getElementById('titlePlay').focus(), 50);
+                sdk('state', { scene: 'title' });
+            },
+            hideTitle() { document.getElementById('titleWrap').classList.remove('active'); },
+            paintDiff() {
+                document.querySelectorAll('#diffSeg [data-diff]').forEach(b => { const on = b.dataset.diff === this.diffKey; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); b.disabled = this.dayActive && !on; });
+                document.getElementById('diffNote').textContent = this.diff().note + (this.dayActive ? ' (change it between days)' : '');
+            },
+            setDiff(d) {
+                if (this.dayActive || !DIFFS[d]) return;
+                this.diffKey = d; try { localStorage.setItem('minimart_diff', d); } catch (e) {}
+                this.target = this.targetNow(); this.paintDiff(); this.renderDayBar(); SFX.tick();
+            },
+            titlePlay() { this.hideTitle(); if (this.dayActive) sdk('state', { scene: 'play' }); else this.startDay(); },
+            /* Restart = run today again from the opening bell. Career, bank and records are kept. */
+            restartDay() {
+                clearInterval(this.dayTimer); this.dayTimer = null; this.dayActive = false; this.takings = 0;
+                this.cart = []; this.saveData(); this.updateCartUI();
+                this.navigate('shop'); this.startDay();
+            },
+            /* Exit mid-day: the unfinished day is set aside (not counted as a miss) and the title card opens. */
+            exitToTitle() {
+                if (this.dayActive) { clearInterval(this.dayTimer); this.dayTimer = null; this.dayActive = false; this.takings = 0; this.renderDayBar(); }
+                this.showTitle();
+            },
+
+            COACH_STEPS: [
+                { sel: '#dayBar', k: '1 / 5 · The day', t: 'Each day has a clock and a takings target. Sell enough before the clock hits 0:00 to clear the day.' },
+                { sel: '.product-card .add-to-cart', k: '2 / 5 · Ring it up', t: 'Tap Add to Cart on a product. Pricier lines fill the target faster, but stock runs out.' },
+                { sel: '.header-actions .btn-icon[title="Cart"]', k: '3 / 5 · Check out', t: 'Open the cart and press Proceed to Checkout. Only checked-out sales count toward the target.' },
+                { sel: '.page-header .btn-ghost', k: '4 / 5 · Scan for speed', t: 'Scan lets you type barcodes fast. Chain scans within five seconds to build a streak.' },
+                { sel: '#dayBar .btn-ghost', k: '5 / 5 · Grow the store', t: 'At close the day\'s costs come out of the takings. Spend the bank in Career on upgrades; cleared days unlock new product lines.' }
+            ],
+            coachStart() {
+                this.hideTitle(); this.closeModal(); if (this.currentView !== 'shop') this.navigate('shop');
+                if (this.dayActive) this.heldMs = Math.max(0, this.dayEndsAt - Date.now());
+                this.coachI = 1; document.getElementById('coach').classList.add('active'); this.coachPaint(); sdk('event', 'tutorial-start');
+            },
+            coachPaint() {
+                if (!this.coachI) return;
+                const st = this.COACH_STEPS[this.coachI - 1], e = document.querySelector(st.sel);
+                if (e && e.scrollIntoView) e.scrollIntoView({ block: 'center', behavior: 'auto' });
+                const r = e ? e.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 2, width: 0, height: 0 };
+                const spot = document.getElementById('coachSpot'), card = document.getElementById('coachCard');
+                spot.style.left = (r.left - 6) + 'px'; spot.style.top = (r.top - 6) + 'px'; spot.style.width = (r.width + 12) + 'px'; spot.style.height = (r.height + 12) + 'px';
+                document.getElementById('coachK').textContent = st.k; document.getElementById('coachT').textContent = st.t;
+                document.getElementById('coachGo').textContent = this.coachI === this.COACH_STEPS.length ? 'Start selling' : 'Next';
+                const low = r.top + r.height / 2 > innerHeight * 0.5;
+                card.style.top = low ? '16px' : 'auto'; card.style.bottom = low ? 'auto' : '64px';   // clear of the pause button
+            },
+            coachNext() { if (!this.coachI) return; this.coachI++; if (this.coachI > this.COACH_STEPS.length) this.coachEnd(true); else this.coachPaint(); },
+            coachEnd(done) {
+                if (!this.coachI) return; this.coachI = 0; document.getElementById('coach').classList.remove('active');
+                try { localStorage.setItem('minimart_tut', '1'); } catch (e) {}
+                if (done) sdk('event', 'tutorial-done');
+            },
+
+            CODES: { BIGSPENDER: '+$500 in the store bank', RESTOCK: 'Every product line refilled to double its opening stock',
+                     OVERTIME: '+60 seconds on the day clock (today and every day while codes are on)', ALLLINES: 'Every bonus product line unlocked' },
+            enterCode(c) {
+                if (!this.CODES[c]) return { ok: false };
+                if (c === 'BIGSPENDER') { this.career.bank += 500; this.saveCareer(); }
+                else if (c === 'RESTOCK') { this.products.forEach(p => { const b = BASE_STOCK[p.id] || 20; p.stock = Math.max(p.stock, b * 2); }); this.saveData(); if (this.currentView === 'shop') this.navigate('shop'); }
+                else if (c === 'OVERTIME') { this.bonusMs += 60000; if (this.dayActive) { this.dayEndsAt += 60000; this.updateDayClock(); } }
+                else if (c === 'ALLLINES') { this.career.daysCleared = Math.max(this.career.daysCleared, 5); this.saveCareer(); this.applyUnlocks(true); this.renderCategories(); if (this.currentView === 'shop') this.navigate('shop'); }
+                this.codesOn = true; this.renderDayBar();
+                this.showToast('Code on: ' + this.CODES[c], 'success', true);
+                return { ok: true, message: this.CODES[c] };
+            },
+
+            hint() {
+                if (document.getElementById('titleWrap').classList.contains('active')) return 'Press Play to open Day ' + this.day + '. Easy gives you longer days and lower targets.';
+                if (!this.dayActive) return 'Start Day ' + this.day + ' from the bar at the top: the target is $' + this.targetNow().toFixed(2) + '.';
+                const need = this.target - this.takings;
+                const cartTotal = this.cart.reduce((s, c) => { const p = this.products.find(x => x.id === c.id); return s + (p ? p.price * c.qty : 0); }, 0) * 1.08;
+                if (need <= 0) return 'Target reached. Keep selling to grow the bank: every extra dollar helps with tomorrow\'s costs.';
+                if (cartTotal >= need) return 'Your cart ($' + cartTotal.toFixed(2) + ' with tax) covers the rest of the target. Check out now.';
+                const left = Math.max(0, Math.ceil((this.dayEndsAt - Date.now()) / 1000));
+                const best = this.products.filter(p => p.stock > 0).sort((a, b) => b.price - a.price)[0];
+                if (!best) return 'Everything is sold out: open Management > Inventory to restock.';
+                const n = Math.min(best.stock, Math.max(1, Math.ceil((need - cartTotal) / (best.price * 1.08))));
+                return '$' + (need - cartTotal).toFixed(2) + ' to go with ' + left + 's left. ' + best.emoji + ' ' + best.name + ' is your priciest line at $' + best.price.toFixed(2) +
+                    ': ' + n + ' of them (barcode ' + best.barcode + ') would ' + (n * best.price * 1.08 >= need - cartTotal ? 'cover it.' : 'get you closest.');
             },
 
             // ==================== UTILITIES ====================
@@ -2282,9 +2881,132 @@
             }
         };
 
+        /* ── share card (additive) ───────────────────────────────────────────
+           Composites a plain 880x520 PNG from the SAME live close-of-day numbers the
+           modal is showing (parsed back from #modalContent / app state), so the card
+           can never disagree with the run. Canvas 2D + toBlob only — no library, no
+           network, no external font, no new localStorage key. */
+        var MSC={title:'MINI MART',sub:'QuickStop day book · close of business',bg:'#f8fafc',panel:'#0f172a',
+          ink:'#0f172a',dim:'#64748b',lite:'#cbd5e1',accent:'#f59e0b',green:'#10b981',red:'#ef4444',file:'minimart'};
+        function mscFont(g,weight,size,text,maxW,family){
+            g.font=weight+' '+size+'px '+family;
+            while(size>8&&g.measureText(text).width>maxW){ size-=1; g.font=weight+' '+size+'px '+family; }
+            return size;
+        }
+        function mscMoney(v){ return '$'+Number(v||0).toFixed(2); }
+        function shareCard(){
+            try{
+                var W=880,H=520,c=document.createElement('canvas');c.width=W;c.height=H;
+                var g=c.getContext('2d'),C=MSC;
+                var SYS="system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif";
+                var MONO="ui-monospace,'Cascadia Mono',Consolas,monospace";
+                var modal=document.getElementById('modalContent')||document.body;
+                var h2=modal.querySelector('h2');
+                var amtEl=modal.querySelector('.day-summary-amount');
+                var catEl=modal.querySelector('.product-category');
+                var raw=(modal.textContent||'').replace(/\s+/g,' ').trim();
+                var amtM=amtEl?String(amtEl.textContent).match(/([0-9]+(?:\.[0-9]+)?)/):null;
+                var dayM=catEl?String(catEl.textContent).match(/Day\s+(\d+)/):null;
+                var tgtM=raw.match(/Takings target\s*\$([0-9]+(?:\.[0-9]+)?)/);
+                var bestM=raw.match(/Best day cleared:\s*(\d+)/);
+                var takings=amtM?parseFloat(amtM[1]):(typeof app!=='undefined'?app.takings:0);
+                var day=dayM?parseInt(dayM[1],10):(typeof app!=='undefined'?app.day:1);
+                var target=tgtM?parseFloat(tgtM[1]):(typeof app!=='undefined'?app.target:takings);
+                var best=bestM?parseInt(bestM[1],10):(typeof app!=='undefined'?app.bestDay:0);
+                var won=takings>=target;
+                var diff=takings-target;
+                var kick=(h2&&h2.textContent.trim())||(won?'Day cleared':'Target missed');
+                var rows=[
+                    ['DAY',String(day)],
+                    ['TAKINGS',mscMoney(takings)],
+                    ['DAILY TARGET',mscMoney(target)],
+                    ['MARGIN',(diff>=0?'+':'−')+'$'+Math.abs(diff).toFixed(2)],
+                    ['BEST DAY CLEARED',String(best)],
+                    ['OUTCOME',won?'DAY CLEARED':'TARGET MISSED']
+                ];
+                g.fillStyle=C.bg; g.fillRect(0,0,W,H);
+                g.fillStyle=C.panel; g.fillRect(0,0,W,104);
+                g.fillStyle=C.accent; g.fillRect(0,0,10,H);
+                g.fillStyle=C.accent; g.fillRect(0,104,W,4);
+                mscFont(g,'800',30,C.title,W-320,SYS);
+                g.fillStyle='#ffffff'; g.fillText(C.title,42,54);
+                mscFont(g,'500',14,C.sub,W-320,SYS);
+                g.fillStyle=C.lite; g.fillText(C.sub,42,84);
+                g.textAlign='right'; g.font='800 12px '+MONO; g.fillStyle='#94a3b8';
+                g.fillText('SHARE CARD',W-42,54); g.textAlign='left';
+                mscFont(g,'800',20,kick,W-84,SYS);
+                g.fillStyle=won?C.green:C.red; g.fillText(kick,42,166);
+                mscFont(g,'800',54,'DAY '+day,W-84,SYS);
+                g.fillStyle=C.ink; g.fillText('DAY '+day,42,242);
+                for(var i=0;i<Math.min(rows.length,6);i++){
+                    var col=i%2, rw=(i-col)/2;
+                    var x=42+col*418, y=300+rw*54;
+                    g.font='800 12px '+MONO; g.fillStyle=C.dim;
+                    g.fillText(String(rows[i][0]).toUpperCase(),x,y);
+                    mscFont(g,'800',22,String(rows[i][1]),386,MONO);
+                    g.fillStyle=C.ink; g.fillText(String(rows[i][1]),x,y+24);
+                }
+                g.fillStyle=C.panel; g.fillRect(0,H-44,W,44);
+                g.fillStyle=C.accent; g.fillRect(0,H-44,W,3);
+                g.font='500 13px '+SYS; g.fillStyle=C.lite;
+                g.fillText(new Date().toLocaleDateString(),42,H-16);
+                g.textAlign='right'; g.font='800 13px '+MONO; g.fillStyle=C.accent;
+                g.fillText('PROSTON WORKS · '+C.title,W-42,H-16);
+                g.textAlign='left';
+                c.toBlob(function(b){
+                    if(!b)return;
+                    var u=URL.createObjectURL(b),a=document.createElement('a');
+                    a.href=u; a.download=C.file+'-card.png';
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    setTimeout(function(){URL.revokeObjectURL(u);},2000);
+                },'image/png');
+            }catch(e){}
+        }
+        window.__shareCard=shareCard;
+        // Debug hook for the audit harness
+        window.__DEBUG = {
+            state: () => ({
+                day: app.day, dayActive: app.dayActive, takings: app.takings,
+                target: app.target, bestDay: app.bestDay,
+                secondsLeft: app.dayActive ? Math.max(0, Math.ceil((app.dayEndsAt - Date.now()) / 1000)) : app.DAY_MS / 1000
+            }),
+            // additive career readouts so a drive can prove the loop
+            career: () => ({
+                bank: app.career.bank, daysCleared: app.career.daysCleared,
+                misses: app.career.misses, strikes: app.career.strikes, arrears: app.career.arrears,
+                lifetimeTakings: app.career.lifetimeTakings, bestTakings: app.career.bestTakings,
+                upgrades: Object.keys(app.career.upgrades).filter(k => app.career.upgrades[k]),
+                skus: app.products.length, orders: app.orders.length
+            }),
+            overheads: () => app.overheads(),
+            dayLength: () => app.dayLength(),
+            nextUnlock: () => { const n = app.nextUnlock(); return n ? { name: n.name, day: n.unlockDay } : null; },
+            buyUpgrade: id => app.buyUpgrade(id),
+            showCareer: () => app.showCareer(),
+            closeDay: () => app.closeDay(),
+            setBank: v => { app.career.bank = v; app.saveCareer(); app.renderDayBar(); },
+            start: () => app.startDay()
+        };
+
         // Initialize
         app.loadTheme();
         app.init();
+        document.getElementById('titlePlay').onclick = () => app.titlePlay();
+        document.getElementById('titleHow').onclick = () => { if (!app.dayActive) app.startDay(); app.coachStart(); };
+        document.getElementById('titleBrowse').onclick = () => { app.hideTitle(); app.renderDayBar(); };
+        document.querySelectorAll('#diffSeg [data-diff]').forEach(b => b.onclick = () => app.setDiff(b.dataset.diff));
+        document.getElementById('coachGo').onclick = () => app.coachNext();
+        document.getElementById('coachSkip').onclick = () => app.coachEnd();
+        addEventListener('resize', () => { if (app.coachI) app.coachPaint(); });
+        if (window.ArcadeSDK) ArcadeSDK.init({
+            pauseButton: 'bl',            // top right holds the theme, sound and cart buttons
+            onRestart: () => app.restartDay(),
+            onExit: () => app.exitToTitle(),
+            onTutorial: () => { if (!app.dayActive) app.startDay(); app.coachStart(); },
+            onHint: () => app.hint(),
+            onCheat: code => app.enterCode(code)
+        });
+        app.showTitle();
     </script>
 </body>
 </html>

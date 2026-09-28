@@ -227,8 +227,8 @@
   .bubble::after{content:""; position:absolute; bottom:-8px; right:24px; width:16px; height:16px; background:#fff; border-radius:3px; transform:rotate(45deg);}
   .bubble.show{opacity:1; transform:translateY(0) scale(1);}
 
-  .actions{position:absolute; left:0; right:0; bottom:0; z-index:25; display:flex; gap:6px; padding:14px 11px calc(14px + env(safe-area-inset-bottom)); background:linear-gradient(0deg, rgba(255,243,250,.98) 55%, rgba(255,243,250,0));}
-  .btn{flex:1; border:none; cursor:pointer; font-family:inherit; background:linear-gradient(180deg,#ffffff,#fff0f8); border-radius:17px; padding:9px 3px 7px; display:flex; flex-direction:column; align-items:center; gap:2px; font-weight:700; font-size:10px; color:var(--ink-soft); box-shadow:var(--shadow-soft), inset 0 1px 0 #fff, inset 0 0 0 1.5px rgba(255,255,255,.6); transition:transform .12s ease, box-shadow .12s;}
+  .actions{position:absolute; left:0; right:0; bottom:0; z-index:25; display:flex; gap:4px; padding:14px 8px calc(14px + env(safe-area-inset-bottom)); background:linear-gradient(0deg, rgba(255,243,250,.98) 55%, rgba(255,243,250,0));}
+  .btn{flex:1; border:none; cursor:pointer; font-family:inherit; background:linear-gradient(180deg,#ffffff,#fff0f8); border-radius:17px; padding:9px 1px 7px; display:flex; flex-direction:column; align-items:center; gap:2px; font-weight:700; font-size:12px; letter-spacing:-.03em; color:var(--ink-soft); box-shadow:var(--shadow-soft), inset 0 1px 0 #fff, inset 0 0 0 1.5px rgba(255,255,255,.6); transition:transform .12s ease, box-shadow .12s;}
   .btn .ic{font-size:22px;}
   .btn .ic{filter:drop-shadow(0 1px 1px rgba(120,60,100,.18));}
   .btn:active{transform:translateY(2px) scale(.96); box-shadow:var(--shadow-soft);}
@@ -241,14 +241,14 @@
   @keyframes floatUp{0%{opacity:0; transform:translateY(0) scale(.6);}20%{opacity:1; transform:translateY(-6px) scale(1.1);}100%{opacity:0; transform:translateY(-46px) scale(1);}}
   .confetti{position:absolute; width:9px; height:9px; border-radius:2px; z-index:40; pointer-events:none;}
 
-  .corner{position:absolute; z-index:26; border:none; background:linear-gradient(180deg,#fff,#fff2fa); width:40px; height:40px; border-radius:50%; font-size:19px; cursor:pointer; box-shadow:var(--shadow-soft), inset 0 1px 0 #fff; color:var(--ink); display:flex; align-items:center; justify-content:center; transition:transform .12s;}
+  .corner{position:absolute; z-index:26; border:none; background:linear-gradient(180deg,#fff,#fff2fa); width:44px; height:44px; border-radius:50%; font-size:19px; cursor:pointer; box-shadow:var(--shadow-soft), inset 0 1px 0 #fff; color:var(--ink); display:flex; align-items:center; justify-content:center; transition:transform .12s;}
   .corner:active{transform:scale(.92);}
   .corner:focus-visible{outline:3px solid var(--pink-deep);}
   .corner.alert{animation:dailyPulse 1.4s ease-in-out infinite;}
   @keyframes dailyPulse{0%,100%{transform:scale(1); box-shadow:var(--shadow);}50%{transform:scale(1.12); box-shadow:0 0 0 8px rgba(255,212,94,.25);}}
-  #btnDaily{top:58px; left:14px; background:linear-gradient(180deg,#ffe08a,#f7b733);}
+  #btnDaily{top:56px; left:12px; background:linear-gradient(180deg,#ffe08a,#f7b733);}
   #btnDaily.hidden{display:none;}
-  #btnQuests{top:104px; left:14px;}
+  #btnQuests{top:104px; left:12px;}
   #weatherTag{top:58px; right:14px; background:rgba(255,255,255,.85); pointer-events:none;}
   #btnAch{left:14px; bottom:96px;} #btnSet{right:14px; bottom:96px;}
 
@@ -325,12 +325,12 @@
   .seedpick{display:flex; gap:8px; margin-bottom:12px;}
   .seedopt{flex:1; border:none; cursor:pointer; font-family:inherit; background:#fff; border-radius:14px; padding:8px 4px; box-shadow:0 3px 10px rgba(120,60,100,.1); text-align:center; border:3px solid transparent;}
   .seedopt.sel{border-color:var(--pink-deep);}
-  .seedopt .se{font-size:24px;} .seedopt .sn{font-weight:800; font-size:11px; margin-top:2px;}
-  .seedopt .sc{font-size:11px; color:var(--gold-deep); font-weight:800;}
+  .seedopt .se{font-size:24px;} .seedopt .sn{font-weight:800; font-size:12px; margin-top:2px;}
+  .seedopt .sc{font-size:12px; color:var(--gold-deep); font-weight:800;}
   .plots{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px;}
   .plot{aspect-ratio:1; background:linear-gradient(180deg,#cdeeb6,#a9dd8c); border-radius:16px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:2px; cursor:pointer; box-shadow:inset 0 -6px 0 rgba(0,0,0,.08); position:relative; overflow:hidden;}
   .plot .pe{font-size:34px; transition:transform .3s;}
-  .plot .pg{position:absolute; bottom:6px; font-size:10px; font-weight:800; color:#4d7a37;}
+  .plot .pg{position:absolute; bottom:6px; font-size:12px; font-weight:800; color:#4d7a37;}
   .plot.ready .pe{animation:pop .8s ease-in-out infinite;}
   @keyframes pop{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}
   .garden-note{font-size:12px; color:var(--ink-soft); text-align:center; line-height:1.5;}
@@ -410,7 +410,7 @@
   .agebands{display:grid; grid-template-columns:1fr 1fr; gap:8px; width:240px;}
   .ageband{border:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:13px; padding:10px 6px; border-radius:14px; background:#fff; color:var(--ink); box-shadow:0 4px 10px rgba(120,60,100,.12), inset 0 1px 0 #fff; line-height:1.2; transition:transform .1s;}
   .ageband:active{transform:scale(.96);}
-  .ageband .sub{display:block; font-size:10px; color:var(--ink-soft); font-weight:700; margin-top:2px;}
+  .ageband .sub{display:block; font-size:12px; color:var(--ink-soft); font-weight:700; margin-top:2px;}
   .ageband.sel{background:linear-gradient(180deg,#ffd45e,#f7b733); color:#7a4a1f;}
   .ageband.sel .sub{color:#7a4a1f;}
   #startBtn:disabled{opacity:.5; cursor:not-allowed;}
@@ -437,9 +437,9 @@
   .rsection{font-weight:800; font-size:15px; color:var(--ink); margin:4px 2px 10px; display:flex; align-items:center; gap:6px;}
   .calgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:6px;}
   .calcell{position:relative; border-radius:14px; padding:10px 4px 8px; text-align:center; background:linear-gradient(180deg,#fff,#fff3fa); box-shadow:0 3px 9px rgba(120,60,100,.1), inset 0 1px 0 #fff; border:2px solid transparent;}
-  .calcell .cd{font-size:10px; font-weight:800; color:var(--ink-soft);}
+  .calcell .cd{font-size:12px; font-weight:800; color:var(--ink-soft);}
   .calcell .ci{font-size:26px; line-height:1.1; filter:drop-shadow(0 2px 2px rgba(120,60,100,.18));}
-  .calcell .cl{font-size:9px; font-weight:700; color:var(--ink-soft);}
+  .calcell .cl{font-size:12px; letter-spacing:-.02em; font-weight:700; color:var(--ink-soft);}
   .calcell.claimed{opacity:.55;}
   .calcell.claimed::after{content:"✓"; position:absolute; top:4px; right:6px; color:#3fb56b; font-weight:800; font-size:13px;}
   .calcell.today{border-color:var(--gold-deep); background:linear-gradient(180deg,#fff6d8,#ffe7a8); animation:dailyPulse 1.4s ease-in-out infinite;}
@@ -488,13 +488,13 @@
   .furni.sel{filter:drop-shadow(0 0 0 #ffd45e); background:rgba(255,212,94,.45); border-radius:12px; outline:2px dashed #f7b733;}
   .furni.drag{cursor:grabbing; z-index:5;}
   .roomtools{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:10px 2px 6px; min-height:30px;}
-  .roomtools #roomHint{font-size:11.5px; color:var(--ink-soft); font-weight:700;}
+  .roomtools #roomHint{font-size:12px; color:var(--ink-soft); font-weight:700;}
   #roomPutAway{border:none; cursor:pointer; font-family:inherit; font-weight:800; font-size:12px; padding:7px 14px; border-radius:12px; background:#ffe0e0; color:#c0392b;}
   .furni-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:9px;}
   .furni-card{position:relative; border:none; cursor:pointer; font-family:inherit; background:linear-gradient(180deg,#fff,#fff5fb); border-radius:14px; padding:10px 4px 8px; text-align:center; box-shadow:0 3px 9px rgba(120,60,100,.1), inset 0 1px 0 #fff; display:flex; flex-direction:column; align-items:center; gap:3px;}
   .furni-card .fe{font-size:28px;}
-  .furni-card .fn{font-size:10px; font-weight:700; color:var(--ink-soft);}
-  .furni-card .fc{font-size:10.5px; font-weight:800; color:var(--gold-deep);}
+  .furni-card .fn{font-size:12px; font-weight:700; color:var(--ink-soft);}
+  .furni-card .fc{font-size:12px; font-weight:800; color:var(--gold-deep);}
   .furni-card.placed{outline:2px solid #7bc47f;} .furni-card.placed .fc{color:#3fb56b;}
   .furni-card.owned .fc{color:#2f6db0;}
   .furni-card:disabled{opacity:.5; cursor:not-allowed;}
@@ -507,14 +507,14 @@
   .district:active{transform:scale(.97);}
   .district .de{font-size:38px; filter:drop-shadow(0 3px 4px rgba(0,0,0,.2));}
   .district .dn{font-weight:800; font-size:15px; text-shadow:0 1px 3px rgba(0,0,0,.25);}
-  .district .dd{font-size:10.5px; font-weight:600; opacity:.95; text-shadow:0 1px 2px rgba(0,0,0,.25);}
+  .district .dd{font-size:12px; font-weight:600; opacity:.95; text-shadow:0 1px 2px rgba(0,0,0,.25);}
   .district.home{background:linear-gradient(150deg,#8fd3a0,#5fae73);}
   .district.square{background:linear-gradient(150deg,#ffb27a,#ff8c5a);}
   .district.park{background:linear-gradient(150deg,#7fc6ff,#4f9fe8);}
   .district.shops{background:linear-gradient(150deg,#ff9ec4,#e86fa6);}
   .district.locked{background:linear-gradient(150deg,#c9bcd4,#a99ab8); cursor:not-allowed;}
   .district.locked .lockbadge{position:absolute; top:8px; right:10px; font-size:18px;}
-  .district .req{font-size:10px; font-weight:800; background:rgba(0,0,0,.18); padding:2px 8px; border-radius:999px; align-self:flex-start;}
+  .district .req{font-size:12px; font-weight:800; background:rgba(0,0,0,.18); padding:2px 8px; border-radius:999px; align-self:flex-start;}
   .future-label{font-weight:800; font-size:13px; color:var(--ink); margin:16px 2px 8px;}
   /* district detail */
   .ddetail-head{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
@@ -524,9 +524,23 @@
   .act-card{display:flex; align-items:center; gap:13px; border:none; cursor:pointer; font-family:inherit; text-align:left; background:linear-gradient(180deg,#fff,#fff5fb); border-radius:16px; padding:14px; box-shadow:0 4px 12px rgba(120,60,100,.1), inset 0 1px 0 #fff; transition:transform .12s;}
   .act-card:active{transform:scale(.98);}
   .act-card .ae{font-size:32px; filter:drop-shadow(0 2px 3px rgba(120,60,100,.2));}
-  .act-card .an{font-weight:800; font-size:15px;} .act-card .ax{font-size:11.5px; color:var(--ink-soft);}
+  .act-card .an{font-weight:800; font-size:15px;} .act-card .ax{font-size:12px; color:var(--ink-soft);}
 
   .reduce *{animation-duration:.001s !important;}
+  /* arcade layer: pause corner, codes pill, coach marks */
+  #btnPause{top:104px; right:12px; z-index:95;}   /* above the intro card too, so it works on every screen */
+  #codesOn{position:absolute; top:62px; left:50%; transform:translateX(-50%); z-index:27; background:var(--pink-deep); color:#fff; font-weight:800; font-size:12px; letter-spacing:.06em; padding:4px 12px; border-radius:999px; box-shadow:var(--shadow-soft);}
+  #coach{position:fixed; inset:0; z-index:2147483000; display:none; pointer-events:none;}
+  #coach.on{display:block;}
+  #coachSpot{position:fixed; border:3px solid var(--gold-deep); border-radius:20px; box-shadow:0 0 0 9999px rgba(90,58,82,.45); transition:all .25s;}
+  #coachCard{position:fixed; left:50%; transform:translateX(-50%); width:min(360px,calc(100vw - 32px)); pointer-events:auto; background:var(--panel); color:var(--ink); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px 16px 12px; font-family:inherit;}
+  #coachCard .k{font-family:var(--display); font-weight:800; font-size:13px; color:var(--pink-deep); letter-spacing:.04em;}
+  #coachCard p{margin:6px 0 12px; font-size:15px; font-weight:600; line-height:1.45;}
+  #coachCard .row{display:flex; gap:8px;}
+  #coachCard button{flex:1; min-height:44px; border:none; border-radius:999px; font-family:var(--display); font-weight:800; font-size:15px; cursor:pointer;}
+  #coachGo{background:linear-gradient(180deg,#ff9ec4,#ff6fa5); color:#fff;}
+  #coachSkip{background:#f4e3ee; color:var(--ink);}
+  @media (prefers-reduced-motion: reduce){ #coachSpot{transition:none;} }
 </style>
 </head>
 <body>
@@ -601,10 +615,12 @@
 
     <button class="corner" id="btnDaily" title="Rewards" aria-label="Rewards">🎁</button>
     <button class="corner" id="btnQuests" title="Quests" aria-label="Quests">📋</button>
-    <button class="corner" id="btnCollection" title="Collection" aria-label="Collection" style="top:150px; left:14px;">📔</button>
+    <button class="corner" id="btnCollection" title="Collection" aria-label="Collection" style="top:152px; left:12px;">📔</button>
     <div class="corner" id="weatherTag" title="Weather">☀️</div>
     <button class="corner" id="btnAch" title="Achievements" aria-label="Achievements">🏆</button>
     <button class="corner" id="btnSet" title="Settings" aria-label="Settings">⚙️</button>
+    <button class="corner" id="btnPause" title="Pause" aria-label="Pause" hidden>⏸️</button>
+    <div id="codesOn" hidden>CODES ON</div>
 
     <div id="toast" role="status"></div>
 
@@ -878,6 +894,9 @@
   </div>
 </div>
 
+<div id="coach" role="dialog" aria-modal="true" aria-label="How to play"><div id="coachSpot"></div><div id="coachCard">
+  <div class="k" id="coachK"></div><p id="coachT"></p>
+  <div class="row"><button id="coachSkip" type="button">Skip</button><button id="coachGo" type="button">Next</button></div></div></div>
 <script>
 "use strict";
 (function(){
@@ -1237,7 +1256,7 @@
   function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800); }
   function floaty(text,x,y,color){ const el=document.createElement("div"); el.className="floaty"; el.textContent=text; el.style.left=x+"px"; el.style.top=y+"px"; if(color) el.style.color=color; stage.appendChild(el); setTimeout(()=>el.remove(),1150); }
   function confetti(x,y,count){
-    if(S.reduce) return;
+    if(RM()) return;
     const colors=["#ff8fc0","#ffd45e","#7bc4ff","#b58bff","#7bc47f","#ff6fa5"];
     for(let i=0;i<count;i++){
       const p=document.createElement("div"); p.className="confetti"; p.style.background=colors[i%colors.length]; stage.appendChild(p);
@@ -1336,7 +1355,7 @@
     if(want){ b.textContent=want; b.classList.add("show"); } else b.classList.remove("show");
     $("petNameLabel").textContent=S.petName;
   }
-  function bump(){ if(S.reduce) return; const pet=$("pet"); pet.style.transform="scale(1.12)"; setTimeout(()=>{ pet.style.transform=""; },160); }
+  function bump(){ if(RM()) return; const pet=$("pet"); pet.style.transform="scale(1.12)"; setTimeout(()=>{ pet.style.transform=""; },160); }
   function pipPos(){ return {x:330,y:500}; }
 
   /* ---------- Decay / tick ---------- */
@@ -1497,8 +1516,8 @@
   function performTrick(tr){
     if(!trickReady()||S.level<tr.lvl) return;
     const pet=$("pet");
-    if(!S.reduce){ pet.classList.add(tr.anim); setTimeout(()=>pet.classList.remove(tr.anim),1200); }
-    S.happy=clamp(S.happy+8); S.stats.tricks++; S.trickCdUntil=Date.now()+TRICK_CD;
+    if(!RM()){ pet.classList.add(tr.anim); setTimeout(()=>pet.classList.remove(tr.anim),1200); }
+    S.happy=clamp(S.happy+8); S.stats.tricks++; S.trickCdUntil=CH.norest?0:Date.now()+TRICK_CD;
     Sound.cheer(); confetti(300,460,24); floaty("✨",300,470,"#b58bff");
     addStars(tr.reward,300,440); addXp(3); questProgress("trick",1);
     renderHUD(); updatePip(); renderTricks(); checkAch(); save();
@@ -1644,7 +1663,7 @@
     if(!mysteryReady()){ renderMystery(); toast("The box is still wrapping up! ⏰"); return; }
     S.mystery.lastOpen=Date.now();
     const g=$("mysteryGift"); g.classList.remove("ready");
-    if(!S.reduce) g.classList.add("opening");
+    if(!RM()) g.classList.add("opening");
     const rar=pickRarity(); const amt=rnd(rar.stars[0],rar.stars[1]);
     const gotSticker = Math.random()<rar.sticker ? grantSticker() : null;
     setTimeout(()=>{
@@ -1656,7 +1675,7 @@
       $("revReward").textContent = "+⭐"+amt + (gotSticker?"  +1 sticker":"");
       $("mysteryReveal").classList.add("open");
       refreshDaily(); checkAch(); save();
-    }, S.reduce?0:560);
+    }, RM()?0:560);
   }
 
   /* ---------- Collection book ---------- */
@@ -1771,8 +1790,8 @@
   function renderSettings(){
     $("tglSound").classList.toggle("on",!S.muted); $("tglSound").setAttribute("aria-checked",String(!S.muted));
     $("tglMusic").classList.toggle("on",S.music); $("tglMusic").setAttribute("aria-checked",String(S.music));
-    $("tglMotion").classList.toggle("on",S.reduce); $("tglMotion").setAttribute("aria-checked",String(S.reduce));
-    document.body.classList.toggle("reduce",S.reduce);
+    $("tglMotion").classList.toggle("on",RM()); $("tglMotion").setAttribute("aria-checked",String(RM()));
+    document.body.classList.toggle("reduce",RM());
   }
 
   /* ---------- Games hub ---------- */
@@ -1815,12 +1834,14 @@
     function finish(){
       clearInterval(timer); const secs=Math.floor((Date.now()-startT)/1000);
       let reward=Math.max(6,30-moves)+Math.max(0,20-Math.floor(secs/3));
-      S.stats.matchWins++; if(S.stats.bestMatch==null||moves<S.stats.bestMatch) S.stats.bestMatch=moves;
+      S.stats.matchWins++; if(!codesUsed() && (S.stats.bestMatch==null||moves<S.stats.bestMatch)) S.stats.bestMatch=moves;
       Sound.win(); confetti(210,300,70); addStars(reward); addXp(8); questProgress("game",1); checkAch(); save();
       setTimeout(()=>toast("🎉 All matched! +⭐"+reward+" in "+moves+" moves"),200);
+      sdk("state",{scene:"over",score:moves});
     }
     return { open };
   })();
+  const CH={cloudless:false, norest:false};   // arcade codes (on until the page reloads)
 
   /* ---------- Star Catch ---------- */
   const Game=(function(){
@@ -1831,11 +1852,11 @@
     function countdown(n){ const cd=$("gCountdown"); cd.style.display="flex"; (function step(k){ if(k===0){ cd.textContent="GO!"; Sound.good(); setTimeout(()=>{ cd.style.display="none"; start(); },600); return; } cd.textContent=k; Sound.pop(); setTimeout(()=>step(k-1),800); })(n); }
     function start(){ running=true; last=performance.now(); endAt=last+timeLeft*1000; spawnAcc=0; raf=requestAnimationFrame(loop); }
     function clearItems(){ items.forEach(it=>it.el.remove()); items=[]; }
-    function spawn(){ const isBad=Math.random()<0.22; const data=isBad?BAD:GOOD[Math.floor(Math.random()*GOOD.length)]; const el=document.createElement("div"); el.className="fall"+(isBad?" bad":""); el.textContent=data.e; const x=16+Math.random()*(420-64); el.style.left=x+"px"; el.style.top="-44px"; const item={el,x,y:-44,vy:120+Math.random()*90+(30-timeLeft)*2,bad:isBad,pts:data.pts||0,dead:false}; el.addEventListener("pointerdown",ev=>{ ev.preventDefault(); pick(item); }); $("game").appendChild(el); items.push(item); }
+    function spawn(){ const isBad=!CH.cloudless && Math.random()<0.22; const data=isBad?BAD:GOOD[Math.floor(Math.random()*GOOD.length)]; const el=document.createElement("div"); el.className="fall"+(isBad?" bad":""); el.textContent=data.e; const x=16+Math.random()*(420-64); el.style.left=x+"px"; el.style.top="-44px"; const item={el,x,y:-44,vy:120+Math.random()*90+(30-timeLeft)*2,bad:isBad,pts:data.pts||0,dead:false}; el.addEventListener("pointerdown",ev=>{ ev.preventDefault(); pick(item); }); $("game").appendChild(el); items.push(item); }
     function pick(item){ if(!running||item.dead) return; item.dead=true; if(item.bad){ streak=0; score=Math.max(0,score-1); Sound.bad(); flash(item.el,"😵"); $("gStreak").classList.remove("show"); } else{ streak++; let gained=item.pts, bonus=(streak>0&&streak%5===0)?3:0; score+=gained+bonus; Sound.coin(); flash(item.el,"+"+(gained+bonus)); if(streak>=3){ const st=$("gStreak"); st.textContent="🔥 "+streak+" streak!"+(bonus?"  +"+bonus+" bonus":""); st.classList.add("show"); } } $("gScore").textContent=score; item.el.remove(); }
     function flash(refEl,txt){ const f=document.createElement("div"); f.className="floaty"; f.textContent=txt; f.style.color="#ffe08a"; f.style.left=refEl.style.left; f.style.top=(parseFloat(refEl.style.top)||0)+"px"; $("game").appendChild(f); setTimeout(()=>f.remove(),1100); }
     function loop(now){ if(!running) return; const dt=Math.min(0.05,(now-last)/1000); last=now; timeLeft=Math.max(0,(endAt-now)/1000); $("gTime").textContent=Math.ceil(timeLeft); $("gTimeBar").style.width=(timeLeft/30*100)+"%"; spawnAcc+=dt; const interval=Math.max(0.35,0.85-(30-timeLeft)*0.012); if(spawnAcc>=interval){ spawnAcc=0; spawn(); } for(const it of items){ if(it.dead) continue; it.y+=it.vy*dt; it.el.style.top=it.y+"px"; if(it.y>760){ it.dead=true; it.el.remove(); if(!it.bad){ streak=0; $("gStreak").classList.remove("show"); } } } items=items.filter(it=>!it.dead); if(timeLeft<=0){ finish(); return; } raf=requestAnimationFrame(loop); }
-    function finish(){ running=false; cancelAnimationFrame(raf); clearItems(); S.stats.games++; if(score>S.stats.bestCatch) S.stats.bestCatch=score; addStars(score); addXp(Math.ceil(score/3)); questProgress("game",1); Sound.win(); $("gFinal").textContent="+"+score+" ⭐"; $("gBest").textContent="Best: "+S.stats.bestCatch+" ⭐  ·  Games played: "+S.stats.games; $("gOver").classList.add("open"); checkAch(); save(); }
+    function finish(){ running=false; cancelAnimationFrame(raf); clearItems(); S.stats.games++; if(score>S.stats.bestCatch && !codesUsed()) S.stats.bestCatch=score; addStars(score); addXp(Math.ceil(score/3)); questProgress("game",1); Sound.win(); $("gFinal").textContent="+"+score+" ⭐"; $("gBest").textContent="Best: "+S.stats.bestCatch+" ⭐  ·  Games played: "+S.stats.games; $("gOver").classList.add("open"); if(codesUsed()) $("gBest").textContent+="  ·  codes on: best not saved"; checkAch(); save(); sdk("state",{scene:"over",score:score}); }
     function close(){ running=false; cancelAnimationFrame(raf); clearItems(); $("game").classList.remove("open"); tick(); }
     return { open, close, again:open };
   })();
@@ -1963,6 +1984,8 @@
     $("intro").classList.add("gone"); $("claire").classList.add("wave"); setTimeout(()=>$("claire").classList.remove("wave"),2000);
     Sound.refreshMusic(); ensureQuests(); refreshDaily(); refreshQuestAlert(); checkAch(); tick(); save();
     toast("Welcome, "+S.player.name+"! 🎀");
+    sdk("state",{scene:"play"});
+    if(!S.tut) setTimeout(()=>{ if(S.started && !COACH) coachStart(); },900);
   }
   $("startBtn").onclick=beginGame;
 
@@ -1971,6 +1994,89 @@
 
   /* ---------- PWA manifest ---------- */
   (function injectManifest(){ try{ const manifest={name:"Claire & Pip",short_name:"Claire",description:"A cosy pet-care and dress-up game.",start_url:".",display:"standalone",background_color:"#ffd9ec",theme_color:"#ffb3d1",icons:[]}; const url=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"})); const link=document.createElement("link"); link.rel="manifest"; link.href=url; document.head.appendChild(link); }catch(e){} })();
+
+
+  /* ---------- Arcade layer: reduced motion, scenes, coach, hints, codes ---------- */
+  function osReduce(){ try{ return !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){ return false; } }
+  function RM(){ return !!S.reduce || osReduce(); }       // the in-game toggle, or the device setting
+  function sdk(fn,a){ try{ if(window.ArcadeSDK) ArcadeSDK[fn](a); }catch(e){} }
+  function codesUsed(){ try{ return !!(window.ArcadeSDK && ArcadeSDK.cheated); }catch(e){ return false; } }
+  const OVERLAYS=[...document.querySelectorAll(".overlay")].map(o=>o.id);
+  function closeAll(){ OVERLAYS.forEach(id=>hide(id)); if($("game").classList.contains("open")) Game.close(); }
+  /* Exit: back to the title (the intro card), with your name and age already filled in. Nothing is lost. */
+  function toTitle(){
+    coachEnd(); closeAll();
+    $("playerName").value=(S.player&&S.player.name&&S.player.name!=="Friend")?S.player.name:"";
+    renderAgeBands("ageBands",()=>{ $("startBtn").disabled=false; });
+    $("startBtn").disabled=!S.signedIn;
+    $("intro").classList.remove("gone");
+    sdk("state",{scene:"title"});
+  }
+  /* Restart: play the open mini-game again from the start; in the yard, close every panel and start
+     afresh with Claire and Pip. The long-term save (stars, outfits, pets, garden) is never wiped here. */
+  function restartHere(){
+    if($("game").classList.contains("open")){ Game.again(); sdk("state",{scene:"play"}); return; }
+    if($("matchOverlay").classList.contains("open")){ Match.open(); sdk("state",{scene:"play"}); return; }
+    coachEnd(); closeAll();
+    if(!$("intro").classList.contains("gone")){ if(S.signedIn) beginGame(); return; }
+    applyDecay(); renderAll(); refreshDaily(); refreshQuestAlert();
+    toast("Back in the yard with "+S.petName+" 🏡"); sdk("state",{scene:"play"});
+  }
+
+  let COACH=null;
+  const COACH_STEPS=[
+    {sel:".needs", k:"1 / 4 · Pip's needs", t:"Love 💖, food 🍓 and energy ⚡ slowly go down, even while you are away. Keep them topped up!"},
+    {sel:".actions", k:"2 / 4 · Look after Pip", t:"Tap Feed, Fetch and Nap to care for Pip. Tricks, Games and Garden earn stars ⭐."},
+    {sel:"#btnQuests", k:"3 / 4 · Daily quests", t:"Every day brings three little quests. Finish them and tap Claim for bonus stars."},
+    {sel:"#btnShop", k:"4 / 4 · Dress up and explore", t:"Spend stars in the Shop on outfits, and tap Explore to visit the town."}
+  ];
+  function coachStart(){
+    if(!S.started){ if(!S.signedIn){ const b=document.querySelector("#ageBands .ageband"); if(b) b.click(); } beginGame(); }
+    closeAll(); COACH={i:0}; $("coach").classList.add("on"); coachPaint(); sdk("event","tutorial-start");
+  }
+  function coachPaint(){
+    if(!COACH) return; const st=COACH_STEPS[COACH.i], e=document.querySelector(st.sel);
+    const r=e?e.getBoundingClientRect():{left:innerWidth/2,top:innerHeight/2,width:0,height:0};
+    const sp=$("coachSpot"), cc=$("coachCard");
+    sp.style.left=(r.left-6)+"px"; sp.style.top=(r.top-6)+"px"; sp.style.width=(r.width+12)+"px"; sp.style.height=(r.height+12)+"px";
+    $("coachK").textContent=st.k; $("coachT").textContent=st.t; $("coachGo").textContent=COACH.i===COACH_STEPS.length-1?"Let's play!":"Next";
+    // the card sits over the sky, between the HUD and the yard, so every real button stays tappable
+    cc.style.top=Math.round(innerHeight*0.24)+"px"; cc.style.bottom="auto";
+  }
+  function coachEnd(done){ if(!COACH) return; COACH=null; $("coach").classList.remove("on"); S.tut=1; save(); if(done) sdk("event","tutorial-done"); }
+  $("coachGo").onclick=()=>{ if(!COACH) return; Sound.pop(); COACH.i++; if(COACH.i>=COACH_STEPS.length) coachEnd(true); else coachPaint(); };
+  $("coachSkip").onclick=()=>coachEnd();
+  // while a panel or mini-game is open the coach steps aside, and comes back when you return to the yard
+  setInterval(()=>{ if(!COACH) return; const busy=OVERLAYS.some(id=>$(id).classList.contains("open"))||$("game").classList.contains("open");
+    $("coach").style.visibility=busy?"hidden":""; if(!busy) coachPaint(); },300);
+  window.addEventListener("resize",()=>{ if(COACH) coachPaint(); });
+
+  /* Hint: looks at Pip, today's gift and quests, or the mini-game that is open. */
+  function hint(){
+    if(!$("intro").classList.contains("gone")) return "Type your name if you like, tap your age, then press Start playing.";
+    if($("game").classList.contains("open")) return "Tap the falling ⭐ 💖 💎 and leave the ☁️ clouds alone. Five in a row gives a bonus!";
+    if($("matchOverlay").classList.contains("open")) return "Flip two cards at a time. Remember where each picture was, so you can find its twin.";
+    const needs=[["hunger","hungry","tap Feed 🍓"],["energy","sleepy","tap Nap 💤"],["happy","lonely","tap Fetch 🎾 or give Pip a pat"]];
+    const low=needs.map(n=>[n,S[n[0]]]).sort((a,b)=>a[1]-b[1])[0];
+    if(low[1]<40) return S.petName+" is "+low[0][1]+" ("+Math.round(low[1])+"%): "+low[0][2]+".";
+    if(S.quests.items.some(q=>!q.claimed&&q.prog>=q.goal)) return "A quest is finished! Open 📋 Quests and tap Claim.";
+    if(dailyAvailable()) return "Today's gift is waiting: tap 🎁.";
+    const q=S.quests.items.find(x=>!x.claimed);
+    if(q) return "Today's quest: "+q.label+" ("+q.prog+" / "+q.goal+").";
+    return "All of today's quests are done! Try Games, or spend your "+S.stars+" ⭐ in the Shop.";
+  }
+
+  const CODES={STARSHOWER:"+100 stars ⭐", FULLHEARTS:"Love, food and energy all filled to the top", NOREST:"Tricks never need a rest", CLOUDLESS:"No clouds fall in Star Catch"};
+  function enterCode(c){
+    if(!CODES[c]) return {ok:false};
+    if(c==="STARSHOWER") addStars(100);
+    else if(c==="FULLHEARTS"){ S.happy=100; S.hunger=100; S.energy=100; renderHUD(); updatePip(); }
+    else if(c==="NOREST"){ CH.norest=true; S.trickCdUntil=0; }
+    else if(c==="CLOUDLESS") CH.cloudless=true;
+    save(); $("codesOn").hidden=false; toast("✨ Code on: "+CODES[c]);
+    return {ok:true, message:CODES[c]};
+  }
+  $("btnPause").onclick=()=>{ try{ ArcadeSDK.showMenu(); }catch(e){} };
 
   /* ---------- Boot ---------- */
   function boot(){
@@ -1985,6 +2091,11 @@
     setInterval(()=>{ applyDaylight(); ensureQuests(); refreshDaily(); refreshQuestAlert(); },60000);
     document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&S.started){ applyDecay(); ensureQuests(); renderAll(); refreshDaily(); refreshQuestAlert(); } });
     save();
+    if(window.ArcadeSDK){
+      $("btnPause").hidden=false;              // the game's own pause corner opens the arcade menu
+      ArcadeSDK.init({ pauseButton:"none", onRestart:restartHere, onExit:toTitle, onTutorial:coachStart, onHint:hint, onCheat:enterCode });
+    }
+    sdk("state",{scene:$("intro").classList.contains("gone")?"play":"title"});
   }
   boot();
 })();

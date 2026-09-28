@@ -9,23 +9,53 @@
   html,body{margin:0;height:100%;background:#0a0f1c;overflow:hidden}
   #stage{position:fixed;inset:0;overflow:hidden;display:grid;place-items:center}
   canvas{image-rendering:auto;box-shadow:0 0 80px #000 inset}
-  #hud{position:fixed;left:12px;right:12px;bottom:10px;font:clamp(10px,2.6vw,12px)/1.4 ui-monospace,Menlo,monospace;
+  #hud{position:fixed;left:12px;right:12px;bottom:62px;font:12px/1.4 ui-monospace,Menlo,monospace;text-align:center;
        color:#ffe9b0cc;text-shadow:0 1px 2px #000;pointer-events:none}
   /* CHRONICLE - the observation layer. Own dark panel so it stays readable over the scene. */
-  #chron{position:fixed;left:12px;bottom:36px;max-width:min(380px,86vw);
-       font:11px/1.45 ui-monospace,Menlo,monospace;color:#eadfc4cc;
+  #chron{position:fixed;left:12px;bottom:86px;max-width:min(380px,86vw);
+       font:12px/1.45 ui-monospace,Menlo,monospace;color:#eadfc4cc;
        background:rgba(6,10,18,.55);border:1px solid #ffffff1f;border-radius:6px;
        padding:6px 9px;text-shadow:0 1px 2px #000;pointer-events:none}
-  #chron h4{margin:0 0 3px;font-size:11px;letter-spacing:.04em;color:#ffe9b0;font-weight:700}
+  #chron h4{margin:0 0 3px;font-size:12px;letter-spacing:.04em;color:#ffe9b0;font-weight:700}
   #chron .ts{color:#8fa0b8}
   #chron .new{color:#bff0c8;font-weight:700}
   #chron .e{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* SHARE CARD — a labelled DOM button, never a key, so it cannot swallow a control. */
-  #btnShare{position:fixed;right:12px;top:10px;z-index:6;font:600 11px ui-monospace,Menlo,Consolas,monospace;
+  #btnShare{position:fixed;right:12px;top:10px;z-index:6;font:600 12px ui-monospace,Menlo,Consolas,monospace;
        letter-spacing:.06em;color:#ffe9b0;background:rgba(6,10,18,.6);border:1px solid #ffffff2e;
        border-radius:6px;padding:6px 10px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;text-shadow:0 1px 2px #000}
   #btnShare:hover{background:rgba(16,26,42,.88);border-color:#ffd27a66}
-  @media (max-width:560px){ #chron{left:8px;right:8px;bottom:52px;max-width:none} }
+  @media (max-width:560px){ #chron{left:8px;right:8px;bottom:86px;max-width:none} }
+  /* on-screen controls: the same verbs as the keyboard, for touch */
+  #ctl{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:6;display:flex;gap:4px;
+       background:rgba(6,10,18,.6);border:1px solid #ffffff2e;border-radius:10px;padding:4px}
+  #ctl button,.dcard button{min-width:44px;min-height:44px;border:1px solid #ffffff2e;border-radius:7px;background:rgba(16,26,42,.88);
+       color:#ffe9b0;font:700 14px ui-monospace,Menlo,Consolas,monospace;cursor:pointer;padding:0 8px}
+  #ctl button:hover,.dcard button:hover{border-color:#ffd27a66}
+  #ctl button:focus-visible,.dcard button:focus-visible{outline:2px solid #ffd27a;outline-offset:2px}
+  #ctl .sep{width:1px;background:#ffffff1f;margin:4px 2px}
+  @media (max-width:420px){ #ctl button{min-width:40px;padding:0 5px;font-size:13px} #ctl .sep{display:none} }
+  .dlayer{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:16px;
+       background:rgba(4,7,14,.55);overflow:auto}
+  .dlayer.on{display:flex}
+  .dcard{width:min(440px,100%);margin:auto;background:rgba(10,15,28,.94);border:1px solid #ffd27a55;border-radius:10px;
+       padding:18px 18px 14px;color:#eadfc4;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;box-shadow:0 20px 60px #000a}
+  .dcard h1{margin:0;font:800 30px/1.1 ui-monospace,Menlo,Consolas,monospace;color:#ffe9b0;letter-spacing:.06em}
+  .dcard h2{margin:0 0 6px;font:800 18px ui-monospace,Menlo,Consolas,monospace;color:#ffe9b0}
+  .dcard .k{color:#8fa0b8;font-size:12px;letter-spacing:.08em}
+  .dcard .go{background:#ffd27a;color:#1a1408;border-color:#ffd27a;width:100%;margin-top:8px}
+  .dcard .row{display:flex;gap:8px;margin-top:8px}.dcard .row button{flex:1}
+  .dcard ul{margin:6px 0;padding-left:18px}.dcard li{margin:2px 0}
+  .dcard .seen{color:#bff0c8}.dcard .unseen{color:#8fa0b8}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+  .stats div{background:#121b30;border:1px solid #ffffff1f;border-radius:7px;padding:6px;text-align:center}
+  .stats b{display:block;color:#ffe9b0;font-size:16px}
+  #codesOn{position:fixed;left:62px;top:14px;z-index:6;font:700 12px ui-monospace,Menlo,monospace;color:#1a1408;background:#ffd27a;border-radius:6px;padding:6px 8px}
+  #toast{position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:7;font:700 12px ui-monospace,Menlo,monospace;color:#bff0c8;
+       background:rgba(6,10,18,.8);border:1px solid #ffffff2e;border-radius:20px;padding:6px 12px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+  #toast.show{opacity:1}
+  #coachSpot{position:fixed;border:2px solid #ffd27a;border-radius:10px;box-shadow:0 0 0 9999px rgba(4,7,14,.55);pointer-events:none;transition:all .25s;z-index:21;display:none}
+  @media (prefers-reduced-motion: reduce){ #toast,#coachSpot{transition:none} }
 </style>
 </head>
 <body>
@@ -33,6 +63,46 @@
 <div id="hud"></div>
 <div id="chron"></div>
 <button id="btnShare" type="button">SAVE CHRONICLE CARD</button>
+<div id="ctl" role="toolbar" aria-label="World controls">
+  <button type="button" id="cLeft" aria-label="Pan left">&lsaquo;</button>
+  <button type="button" id="cFreeze" aria-label="Freeze time">&#10074;&#10074;</button>
+  <button type="button" id="cRight" aria-label="Pan right">&rsaquo;</button>
+  <span class="sep"></span>
+  <button type="button" id="cSlow" aria-label="Slower">&minus;</button>
+  <button type="button" id="cRate" aria-label="Time speed" disabled>1x</button>
+  <button type="button" id="cFast" aria-label="Faster">+</button>
+  <span class="sep"></span>
+  <button type="button" id="cSight" aria-label="Sightings">&#9733; 0/10</button>
+  <button type="button" id="cEnd" aria-label="End session">END</button>
+</div>
+<div id="codesOn" hidden>CODES ON</div>
+<div id="toast" role="status"></div>
+<div id="coachSpot"></div>
+<div class="dlayer" id="dTitle" role="dialog" aria-modal="true" aria-labelledby="dTitleH"><div class="dcard">
+  <div class="k">SEEDED BIOME WORLD</div>
+  <h1 id="dTitleH">DOMINION</h1>
+  <p>A living valley that pans past on its own. There is nothing to win or lose: watch, change the pace of time, and let the chronicle note what really happens.</p>
+  <div class="stats" id="dTitleStats"></div>
+  <button type="button" class="go" id="dPlay">Play</button>
+  <div class="row"><button type="button" id="dHow">How to play</button><button type="button" id="dSights">Sightings</button></div>
+</div></div>
+<div class="dlayer" id="dSight" role="dialog" aria-modal="true" aria-labelledby="dSightH"><div class="dcard">
+  <h2 id="dSightH">SIGHTINGS</h2>
+  <div class="k">Ten kinds of moment this world can show. Each is ticked the first time the chronicle notes it.</div>
+  <ul id="dSightList"></ul>
+  <button type="button" class="go" id="dSightClose">Back to the world</button>
+</div></div>
+<div class="dlayer" id="dSum" role="dialog" aria-modal="true" aria-labelledby="dSumH"><div class="dcard">
+  <div class="k" id="dSumK">SESSION OVER</div>
+  <h2 id="dSumH">What you saw</h2>
+  <div class="stats" id="dSumStats"></div>
+  <ul id="dSumList"></ul>
+  <div class="row"><button type="button" class="go" id="dAgain" style="margin-top:0">New day</button><button type="button" id="dKeep">Keep watching</button></div>
+</div></div>
+<div class="dlayer" id="dCoach" role="dialog" aria-modal="true" aria-label="How to play" style="background:none;align-items:flex-start;padding-top:70px;pointer-events:none"><div class="dcard" style="pointer-events:auto;position:relative;z-index:22">
+  <div class="k" id="dCoachK"></div><p id="dCoachT" style="font-size:14px"></p>
+  <div class="row"><button type="button" id="dCoachSkip">Skip</button><button type="button" class="go" id="dCoachGo" style="margin-top:0">Next</button></div>
+</div></div>
 <script>
 "use strict";
 /* ============================ DOMINION — Seeded Biome World ============================
@@ -1343,12 +1413,16 @@ function drawVignette(g){
 }
 
 /* ---- resize ---- */
+let VIEW_SCALE=1;
 function resize(){DPR=Math.min(2,window.devicePixelRatio||1);
   // Cover the viewport so a fixed 16:9 stage never letterboxes to a strip on phones
   // (was Math.min -> 390x219 inside an 844px screen). Overflows evenly and is clipped.
-  const scale=Math.max(window.innerWidth/VW,window.innerHeight/VH);
-  cv.width=VW*DPR; cv.height=VH*DPR; cv.style.width=VW*scale+'px'; cv.style.height=VH*scale+'px';
-  ctx.setTransform(DPR,0,0,DPR,0,0);}
+  const scale=Math.max(window.innerWidth/VW,window.innerHeight/VH); VIEW_SCALE=scale;
+  // The canvas is exactly the viewport, at CSS size x DPR so it stays crisp; the 16:9 stage is drawn
+  // centred inside it and the overflow is simply not rasterised (a portrait phone shows only its middle).
+  const W=window.innerWidth, H=window.innerHeight, k=scale*DPR;
+  cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); cv.style.width=W+'px'; cv.style.height=H+'px';
+  ctx.setTransform(k,0,0,k,(W-VW*scale)/2*DPR,(H-VH*scale)/2*DPR);}
 
 /* ===========================================================================
    PULSE control + CHRONICLE - the observation layer. Not a game: no score, no
@@ -1378,6 +1452,7 @@ function chronAdd(k,msg){
   chron.push({w:Math.round(worldT*10)/10, iso:Date.now(), k, m:msg});
   if(chron.length>CHRON_MAX) chron.splice(0,chron.length-CHRON_MAX);
   saveChron(); renderChron(msg);
+  if(typeof onMoment==="function") onMoment(k,msg);
 }
 function fire(k,gap,msg){
   const last=chronFired[k]; if(last!==undefined && worldT-last<gap) return false;
@@ -1451,8 +1526,11 @@ function worldHash(){
   return h.toString(16).padStart(8,"0");
 }
 /* ---- main loop ---- */
-let t0=0, frames=0, fps=0, acc=0;
+let t0=0, frames=0, fps=0, acc=0, lastDraw=-1e9;
 function frame(ms){
+  // Behind the title card or the session summary the valley is only a backdrop: draw it at ~10 fps.
+  if(typeof playing!=="undefined" && (!playing || document.querySelector(".dlayer.on:not(#dCoach)")) && ms-lastDraw<100){ requestAnimationFrame(frame); return; }
+  lastDraw=ms;
   const t=ms/1000; const raw=t-t0||0; t0=t;
   // FPS uses UNCLAMPED frame time; the world step stays clamped for stability.
   frames++; acc+=raw; if(acc>0.5){fps=Math.round(frames/acc);frames=0;acc=0;}
@@ -1481,8 +1559,9 @@ function frame(ms){
   drawVignette(ctx);
   chronicleTick(wt);
   document.getElementById("hud").textContent=
-    "DOMINION — ambient seeded world · no objective, just watch · seed "+SEED+" · "+fps+"fps"
-    +" · time "+(paused?"paused":timeRate+"x")+" · SPACE pause  , . speed  [ ] scrub  C chronicle";
+    "DOMINION · seed "+SEED+" · lap "+(Math.max(0,Math.floor((worldT*38+camNudge)/WORLDW))+1)+" · "+clk(worldT)
+    +" · "+(paused?"time frozen":timeRate+"x")+" · "+fps+"fps";
+  paintCtl();
   requestAnimationFrame(frame);
 }
 window.addEventListener("resize",resize);
@@ -1496,6 +1575,137 @@ window.__DOMINION={SEED,trees:trees.length,hills:hillTex.length,birds:birds.leng
 window.__DEBUG={ worldHash, seedInfo:()=>({seed:SEED}),
   chronicle:()=>({count:chron.length,visible:chronVisible,last:chron.slice(-6)}),
   time:()=>({worldT:Math.round(worldT*100)/100,rate:timeRate,paused}) };
+
+
+/* ===========================================================================
+   ARCADE LAYER: title card, touch controls, sightings journal, session summary,
+   first-run coach, codes and hints. Additive: two new localStorage keys
+   (dom.sightings.v1, dom.session.v1); the seeded world and worldHash are untouched.
+   =========================================================================== */
+const $d=id=>document.getElementById(id);
+const sdkCall=(fn,a)=>{ try{ if(window.ArcadeSDK) ArcadeSDK[fn](a); }catch(e){} };
+const codesUsed=()=>{ try{ return !!(window.ArcadeSDK&&ArcadeSDK.cheated); }catch(e){ return false; } };
+const RM=!!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches);
+const SIGHTS=[["pond-in","The pond drifts into view","It comes round once per lap of the pan."],
+  ["pond-out","The pond passes out of view","Watch the pond until it slides off screen."],
+  ["glint","A glint flares on the pond","Keep the pond in view: the glint pulses every few seconds."],
+  ["calm","The pond goes dead still","A rarer moment: keep the pond on screen at a faster speed."],
+  ["flock","The V-flock crosses the valley","Speed time up: the flock crosses about once a lap."],
+  ["rays","God-rays at their brightest","The light shafts breathe slowly; give them a minute."],
+  ["cloud","A cloud crosses the sun","Clouds drift right to left across the sun, top right."],
+  ["swarm","Fireflies swarm","Watch the meadow: sometimes many fireflies peak together."],
+  ["flutter","Two butterflies cross paths","Butterflies wander near the ground; pan along the meadow."],
+  ["lap","The pan completes a full lap","A lap is 3600 world units: 4x speed gets there fast."]];
+const SIGHT_KEY="dom.sightings.v1", SESSION_KEY="dom.session.v1";
+let sights={}; try{ const o=JSON.parse(localStorage.getItem(SIGHT_KEY)); if(o&&o.seen) sights=o.seen; }catch(e){}
+function saveSights(){ try{ localStorage.setItem(SIGHT_KEY, JSON.stringify({v:1,seen:sights})); }catch(e){} }
+const seenCount=()=>SIGHTS.filter(x=>sights[x[0]]).length;
+let sess={t0:0,n:0,fresh:[]}, playing=false;
+function onMoment(k,msg){
+  if(k==="boot") return;
+  sess.n++;
+  if(SIGHTS.some(x=>x[0]===k) && !sights[k]){ sights[k]=Date.now(); saveSights(); sess.fresh.push(k); toast("NEW SIGHTING · "+SIGHTS.find(x=>x[0]===k)[1]); }
+}
+function toast(m){ const t=$d("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),2800); }
+function paintCtl(){
+  const r=$d("cRate"); if(!r) return;
+  const txt=timeRate+"x"; if(r.textContent!==txt) r.textContent=txt;
+  const f=$d("cFreeze"), ft=paused?"▶":"❚❚"; if(f.textContent!==ft){ f.textContent=ft; f.setAttribute("aria-label",paused?"Unfreeze time":"Freeze time"); }
+  const sc="★ "+seenCount()+"/"+SIGHTS.length; if($d("cSight").textContent!==sc) $d("cSight").textContent=sc;
+}
+function setRate(i){ timeIdx=Math.max(0,Math.min(TIME_STEPS.length-1,i)); timeRate=TIME_STEPS[timeIdx]; }
+$d("cLeft").onclick=()=>{ camNudge-=160; };
+$d("cRight").onclick=()=>{ camNudge+=160; };
+$d("cFreeze").onclick=()=>{ paused=!paused; };
+$d("cSlow").onclick=()=>setRate(timeIdx-1);
+$d("cFast").onclick=()=>setRate(timeIdx+1);
+$d("cSight").onclick=()=>openSights();
+$d("cEnd").onclick=()=>endSession();
+// drag the valley to pan (mouse or touch)
+(function(){ const st=$d("stage"); let d=null;
+  st.addEventListener("pointerdown",e=>{ d={x:e.clientX}; try{ st.setPointerCapture(e.pointerId); }catch(er){} });
+  st.addEventListener("pointermove",e=>{ if(!d) return; camNudge-=(e.clientX-d.x)/VIEW_SCALE; d.x=e.clientX; });
+  const up=()=>{ d=null; }; st.addEventListener("pointerup",up); st.addEventListener("pointercancel",up); })();
+function show(id,on){ $d(id).classList.toggle("on",!!on); }
+function showTitle(){
+  coachEnd(); show("dSight",false); show("dSum",false); playing=false;
+  $d("dTitleStats").innerHTML="<div><b>"+seenCount()+"/"+SIGHTS.length+"</b>sightings</div><div><b>"+chron.length+"</b>moments noted</div><div><b>"+SEED+"</b>seed</div>";
+  show("dTitle",true); setTimeout(()=>$d("dPlay").focus(),30); sdkCall("state",{scene:"title"});
+}
+function play(){
+  show("dTitle",false); playing=true; sess={t0:worldT,n:0,fresh:[]}; sdkCall("state",{scene:"play"});
+  let tut=false; try{ tut=localStorage.getItem("dom.tut")==="1"; }catch(e){}
+  if(!tut) setTimeout(()=>{ if(playing&&!COACH) coachStart(); },600);
+}
+function openSights(){
+  $d("dSightList").innerHTML=SIGHTS.map(x=>sights[x[0]]?'<li class="seen">✓ '+x[1]+'</li>':'<li class="unseen">? '+x[2]+'</li>').join("");
+  show("dSight",true); $d("dSightClose").focus();
+}
+$d("dSightClose").onclick=()=>show("dSight",false);
+$d("dSights").onclick=()=>openSights();
+/* End of session: a summary of what this sitting actually saw. Time freezes behind it. */
+let wasPaused=false;
+function endSession(){
+  if(!playing) return; coachEnd(); wasPaused=paused; paused=true;
+  const watched=worldT-sess.t0;
+  $d("dSumK").textContent="SESSION OVER · seed "+SEED+(codesUsed()?" · CODES ON":"");
+  $d("dSumStats").innerHTML="<div><b>"+clk(watched)+"</b>world time</div><div><b>"+sess.n+"</b>moments</div><div><b>"+seenCount()+"/"+SIGHTS.length+"</b>sightings</div>";
+  $d("dSumList").innerHTML=sess.fresh.length?sess.fresh.map(k=>'<li class="seen">New: '+SIGHTS.find(x=>x[0]===k)[1]+'</li>').join("")
+    :'<li class="unseen">No new sightings this time. Next to find: '+((SIGHTS.find(x=>!sights[x[0]])||[0,"nothing, the journal is full"])[1])+'</li>';
+  show("dSum",true); $d("dAgain").focus();
+  sdkCall("state",{scene:"over",score:sess.n});
+}
+/* A fresh day: the world clock and camera go back to the start. Chronicle and sightings are kept. */
+function newDay(){
+  coachEnd(); show("dSum",false); show("dSight",false); show("dTitle",false);
+  worldT=0; camNudge=0; setRate(RM?1:2); paused=false; chronLap=null; chronPond=null; chronPrevLead=null; chronFired={};
+  playing=true; sess={t0:0,n:0,fresh:[]}; sdkCall("state",{scene:"play"});
+}
+$d("dAgain").onclick=newDay;
+$d("dKeep").onclick=()=>{ show("dSum",false); paused=wasPaused; sdkCall("state",{scene:"play"}); };
+$d("dPlay").onclick=play;
+$d("dHow").onclick=()=>{ play(); coachStart(); };
+// autosave: where the clock and camera were, restored on the next visit
+function saveSession(){ try{ localStorage.setItem(SESSION_KEY, JSON.stringify({v:1,seed:SEED,worldT:Math.round(worldT*10)/10,timeIdx,camNudge:Math.round(camNudge)})); }catch(e){} }
+setInterval(saveSession,5000);
+addEventListener("pagehide",saveSession);
+(function(){ try{ const o=JSON.parse(localStorage.getItem(SESSION_KEY)); if(o&&o.seed===SEED&&isFinite(o.worldT)){ worldT=o.worldT; camNudge=o.camNudge||0; if(TIME_STEPS[o.timeIdx]!==undefined) setRate(o.timeIdx); } else if(RM) setRate(1); }catch(e){ if(RM) setRate(1); } })();
+
+/* first-run coach */
+let COACH=null;
+const COACH_STEPS=[
+  {k:"1 / 3 · WATCH",t:"This valley is watched, not played. It pans past on its own; drag it, or use ‹ ›, to look around.",r:()=>({x:innerWidth*0.15,y:innerHeight*0.3,w:innerWidth*0.7,h:innerHeight*0.35})},
+  {k:"2 / 3 · TIME",t:"Freeze time, slow it down or speed it up. Faster time brings rare moments round sooner.",sel:"#ctl"},
+  {k:"3 / 3 · CHRONICLE",t:"The chronicle notes real moments as they happen. Tick off all ten in ★ Sightings; END shows what you saw.",sel:"#chron"}];
+function coachStart(){ if(!playing) play(); COACH={i:0}; show("dCoach",true); coachPaint(); sdkCall("event","tutorial-start"); }
+function coachPaint(){
+  if(!COACH) return; const st=COACH_STEPS[COACH.i], sp=$d("coachSpot");
+  let r; if(st.sel){ const b=document.querySelector(st.sel).getBoundingClientRect(); r={x:b.left,y:b.top,w:b.width,h:b.height}; } else r=st.r();
+  sp.style.display="block"; sp.style.left=(r.x-6)+"px"; sp.style.top=(r.y-6)+"px"; sp.style.width=(r.w+12)+"px"; sp.style.height=(r.h+12)+"px";
+  $d("dCoachK").textContent=st.k; $d("dCoachT").textContent=st.t; $d("dCoachGo").textContent=COACH.i===COACH_STEPS.length-1?"Start watching":"Next";
+}
+function coachEnd(done){ if(!COACH) return; COACH=null; show("dCoach",false); $d("coachSpot").style.display="none"; try{ localStorage.setItem("dom.tut","1"); }catch(e){} if(done) sdkCall("event","tutorial-done"); }
+$d("dCoachGo").onclick=()=>{ if(!COACH) return; COACH.i++; if(COACH.i>=COACH_STEPS.length) coachEnd(true); else coachPaint(); };
+$d("dCoachSkip").onclick=()=>coachEnd();
+addEventListener("resize",()=>{ if(COACH) coachPaint(); });
+
+/* codes */
+const CODES={TIMELAPSE:"Two new time speeds: 8x and 16x (and time jumps to 8x)",FIREFLIES:"Twice as many fireflies in the meadow",ALLSEEN:"Every sighting is ticked in the journal"};
+let lapsed=false, doubled=false;
+function enterCode(c){
+  if(!CODES[c]) return {ok:false};
+  if(c==="TIMELAPSE"){ if(!lapsed){ TIME_STEPS.push(8,16); lapsed=true; } setRate(TIME_STEPS.indexOf(8)); }
+  else if(c==="FIREFLIES"){ if(!doubled){ const m=__fireflies.motes, n=m.length; for(let i=0;i<n;i++){ const o=m[i]; m.push(Object.assign({},o,{homeX:(o.homeX+VW*0.37)%VW,orbitPhase:o.orbitPhase+2.1,blinkPhase:o.blinkPhase+1.3})); } doubled=true; } }
+  else if(c==="ALLSEEN"){ SIGHTS.forEach(x=>{ if(!sights[x[0]]) sights[x[0]]=Date.now(); }); saveSights(); }
+  $d("codesOn").hidden=false; toast("CODE ON · "+CODES[c]);
+  return {ok:true,message:CODES[c]};
+}
+/* hint: the next moment you have not seen yet, and how to catch it */
+function hint(){
+  const next=SIGHTS.find(x=>!sights[x[0]]);
+  if(!next) return "Every sighting is in the journal. Try 4x speed and watch the chronicle fill.";
+  return "Still to see: "+next[1].toLowerCase()+". "+next[2]+(timeRate<2?" Tip: + speeds time up.":"");
+}
 
 /* ── CHRONICLE share card ────────────────────────────────────────────────
    Additive: composites a plain 880x520 PNG from the SAME chronicle the panel
@@ -1563,6 +1773,15 @@ function shareCard(){
 window.__shareCard=shareCard;
 (function(){var b=document.getElementById('btnShare');
   if(b)b.addEventListener('click',function(){shareCard();b.blur();});})();
+if(window.ArcadeSDK) ArcadeSDK.init({
+  pauseButton:"tl",                 // top right is the SAVE CHRONICLE CARD button
+  onRestart:newDay,
+  onExit:showTitle,
+  onTutorial:coachStart,
+  onHint:hint,
+  onCheat:enterCode
+});
+showTitle();
 </script>
 </body>
 </html>
