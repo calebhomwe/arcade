@@ -154,7 +154,11 @@ async function checkGame(g, browser) {
 
     if (!hasSdk) {
       const why = meta.ext ? 'The arcade SDK is not on this game yet (it lives in ' + (g.src.split('/')[3] || 'another repo') + ').' : 'The arcade SDK is not loaded by this game.';
-      for (const id of ['U02', 'U04', 'U05', 'U06', 'U07', 'U08', 'U10', 'U17', 'H01', 'H02', 'C01', 'T01']) set(id, 'FAIL', why);
+      for (const id of ['U02', 'U04', 'U05', 'U06', 'U07', 'U08', 'U10', 'U17', 'H01']) set(id, 'FAIL', why);
+      // Checks that do not apply to this game stay N/A whether or not the SDK is there.
+      set('H02', ['puzzle', 'learning'].includes(meta.genre) ? 'FAIL' : 'N/A', ['puzzle', 'learning'].includes(meta.genre) ? why : 'Recommended, not required, for ' + (meta.genreName || meta.genre) + ' games.');
+      set('C01', meta.cheatPolicy === 'eligible' ? 'FAIL' : 'N/A', meta.cheatPolicy === 'eligible' ? why : ({ learning: 'Learning games get hints instead of codes.', rhythm: 'Rhythm games get a no-fail mode instead of codes.', frozen: 'Owner-frozen game.' }[meta.cheatPolicy] || meta.cheatPolicy));
+      set('T01', meta.genre === 'board-sports' ? 'FAIL' : 'N/A', meta.genre === 'board-sports' ? why : 'Only board-sports games need a trick list.');
     } else {
       set('U17', h.ready && d0.caps.declared ? 'PASS' : 'FAIL', h.ready ? (d0.caps.declared ? 'Ready, and the game declares what it supports.' : 'SDK ready, but the game has not called ArcadeSDK.init to declare restart, exit, tutorial, hints or codes.') : 'SDK loaded but never said ready.');
       // ---- U04 pause / U05 resume ----

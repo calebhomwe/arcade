@@ -27,7 +27,7 @@ leave alone) are audited and reported. The work list never includes them.
 | U05 | Resume | Continues exactly where it stopped. No time jump, no lost input. |
 | U06 | Restart | Starts the current run or level again without reloading the page. |
 | U07 | Exit | "Exit to title" in the pause menu, and the arcade's Back always works. |
-| U08 | Sound | A mute toggle. Separate music and effects volume when the game has both. The setting is remembered. |
+| U08 | Sound | Sound effects for the core actions, and a mute toggle. Separate music and effects volume when the game has both. The setting is remembered. A game with no audio of its own can call `ArcadeSDK.sfx(name)` with the arcade's shared kit (`assets/sfx/kit.json`: tap, coin, jump, win, lose and 25 more). |
 | U09 | Settings | Sound at minimum. 3D games add a graphics-quality option. |
 | U10 | Tips | At least 3 tips, shown on loading, pause or game over. |
 | U11 | Results | A game-over or level-complete screen with score or outcome and a one-tap replay. |
@@ -124,6 +124,8 @@ Anything it can't observe is REVIEW, never PASS.
 | `qa/standard/meta/<game-id>.json` | Hand-written content for one game: `howto`, `tips`, `controls`, `tricks`, `cheats`, `difficulty`, `settings`, `features`, `saves` (the storage keys that hold progress), `start` (how the harness gets from the title into play: a CSS selector such as `#playBtn`, or `key:Space`), and overrides such as `pauseKeys` or `pauseButton`. |
 | `tools/game_meta.py` | Merges the catalogue, the genre and tier tables, a scan of each game's code and the files above into `assets/game-meta.json`. `--report` lists what each game is missing. |
 | `assets/arcade-sdk.js` | The SDK every game loads first. Its header shows the whole API. |
+| `assets/sfx/` | The shared sound kit: 30 short effects made with ElevenLabs (Creator plan, commercial licence), with a per-sound gain in `kit.json` that evens out loudness. |
+| `tools/audio/elevenlabs.py` | Makes voices, sound effects and music with ElevenLabs. The key comes from `ELEVENLABS_API_KEY` or `ELEVENLABS_KEY_FILE`, and never goes in a repo. |
 | `tools/inject_sdk.py` | Adds the SDK to every local game; run it again after re-vendoring a game or re-exporting a Godot build. `--check` fails if one is missing. |
 | `qa/harness/standard.mjs` | The harness. Writes `qa/standard-results/matrix.json` and `index.html`. |
 

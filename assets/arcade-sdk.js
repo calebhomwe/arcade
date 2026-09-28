@@ -25,6 +25,7 @@
  *   ArcadeSDK.event('tutorial-done');
  *   ArcadeSDK.gamePaused(true);                 // a game with its own pause menu (ownPauseUI) reports it
  *   if (ArcadeSDK.cheated) skipSavingBest();
+ *   ArcadeSDK.sfx('coin');                      // a sound from the arcade's shared kit (assets/sfx/kit.json)
  *
  * Nothing in here may break a game: every hook is guarded and falls back to the original.
  */
@@ -130,6 +131,55 @@
     media.forEach(function (el) { try { el.muted = muted; } catch (e) {} });
     D.querySelectorAll && D.querySelectorAll('audio,video').forEach(function (el) { media.add(el); el.muted = muted; });
   }
+
+  /* ---------- shared sound effects: ArcadeSDK.sfx('coin') ----------
+   * The arcade hosts a kit of short sounds (assets/sfx/<name>.mp3, listed in assets/sfx/kit.json).
+   * A game with no audio of its own calls ArcadeSDK.sfx(name, {volume, rate}) when something happens.
+   * The sounds play through the SDK's master gain, so the arcade's mute and pause cover them; a name
+   * that is not in the kit, or a kit that cannot load, is silent rather than an error. */
+  var kitBase = (function () { try { var src = D.currentScript && D.currentScript.src; return src ? src.replace(/arcade-sdk\.js(\?.*)?$/, 'sfx/') : ''; } catch (e) { return ''; } })();
+  var sfxCtx = null, sfxBuf = {}, sfxLoading = {}, sfxGain = null;
+  function loadKit() {   // per-sound gains from kit.json even out the kit's loudness
+    if (sfxGain) return sfxGain;
+    sfxGain = (kitBase && W.fetch ? W.fetch(kitBase + 'kit.json').then(function (r) { return r.ok ? r.json() : {}; }) : Promise.resolve({}))
+      .then(function (k) { var g = {}, s = (k && k.sounds) || {}; for (var n in s) g[n] = +s[n].gain || 1; return g; }, function () { return {}; });
+    return sfxGain;
+  }
+  function sfxContext() {
+    if (!sfxCtx && W.AudioContext) { try { sfxCtx = new W.AudioContext(); } catch (e) { sfxCtx = null; } }
+    return sfxCtx;
+  }
+  function loadSfx(name) {
+    if (sfxBuf[name] !== undefined) return Promise.resolve(sfxBuf[name]);
+    if (sfxLoading[name]) return sfxLoading[name];
+    var c = sfxContext(); if (!c || !kitBase || !W.fetch) return Promise.resolve(null);
+    sfxLoading[name] = W.fetch(kitBase + encodeURIComponent(name) + '.mp3')
+      .then(function (r) { if (!r.ok) throw new Error('missing'); return r.arrayBuffer(); })
+      .then(function (b) { return new Promise(function (res, rej) { c.decodeAudioData(b, res, rej); }); })
+      .then(function (buf) { sfxBuf[name] = buf; return buf; }, function () { sfxBuf[name] = null; return null; });
+    return sfxLoading[name];
+  }
+  var gains = {};
+  function playBuf(buf, o, name) {
+    var c = sfxContext(); if (!c || !buf || (paused && !soft)) return;
+    try {
+      if (c.state === 'suspended') c.resume();
+      var src = c.createBufferSource(), g = c.createGain();
+      src.buffer = buf; src.playbackRate.value = o.rate || 1; g.gain.value = (o.volume == null ? 0.8 : o.volume) * (gains[name] || 1);
+      src.connect(g); g.connect(c.destination); src.start();
+    } catch (e) {}
+  }
+  function playSfx(name, o) {
+    o = o || {};
+    if (sfxBuf[name]) return playBuf(sfxBuf[name], o, name);
+    var asked = rawNow();
+    loadKit().then(function (g) { gains = g; });
+    loadSfx(name).then(function (buf) { if (rawNow() - asked < 250) playBuf(buf, o, name); });   // first use: play if it loaded quickly
+  }
+  // Browsers start audio only after a gesture; wake the kit's context on the first one.
+  ['pointerdown', 'keydown', 'touchstart'].forEach(function (t) {
+    W.addEventListener(t, function () { if (sfxCtx && sfxCtx.state === 'suspended' && !(paused && !soft)) { try { sfxCtx.resume(); } catch (e) {} } }, { capture: true, passive: true });
+  });
 
   /* ---------- graphics telemetry for the harness (which contexts the game asked for) ---------- */
   try {
@@ -361,6 +411,8 @@
     state: function (s) { post('state', s || {}); if (s && s.scene) log('scene', { scene: s.scene }); },
     event: function (name, data) { log(name, data); post('event', { name: name, data: data || null }); },
     now: vnow,
+    sfx: playSfx,
+    preloadSfx: function (names) { loadKit().then(function (g) { gains = g; }); (names || []).forEach(loadSfx); },
     setHint: function (t) { var had = hasHints(); hintText = String(t || ''); if (!had && hintText) post('ready', { caps: caps() }); },
     tryCode: tryCode,
     debug: function () {

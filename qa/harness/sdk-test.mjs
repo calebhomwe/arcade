@@ -66,7 +66,13 @@ check('cleared timers never run', await page.evaluate(() => window.cancelled) ==
   check('mute covers a context with nothing connected yet', r.muted === 0 && r.unmuted === 1, JSON.stringify(r));
 }
 
-// 6. Pause keys: 'esc' binds only Escape, 'p' only P, 'p+esc' both.
+// 6. The shared sound kit never throws: an unknown name, or no kit at all, is silent.
+{
+  const r = await page.evaluate(async () => { try { ArcadeSDK.sfx('no-such-sound'); ArcadeSDK.preloadSfx(['coin']); await new Promise(res => setTimeout(res, 200)); return 'ok'; } catch (e) { return String(e); } });
+  check('sfx with a missing kit is silent, not an error', r === 'ok', r);
+}
+
+// 7. Pause keys: 'esc' binds only Escape, 'p' only P, 'p+esc' both.
 for (const [keys, pressP, pressEsc] of [['esc', false, true], ['p', true, false], ['p+esc', true, true]]) {
   await page.evaluate(k => ArcadeSDK.init({ pauseKeys: k }), keys);
   const r = await page.evaluate(() => {
