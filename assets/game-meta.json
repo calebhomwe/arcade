@@ -147,14 +147,123 @@
    },
    "pauseKeys": "",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
-   "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "howto": [
+    "Press Drop in and race three rivals 2 km down the mountain to the finish arch.",
+    "Carve to steer, tuck for speed, brake to scrub it off.",
+    "Hold jump to crouch and release to ollie; the kickers throw you high.",
+    "In the air, spin, flip and grab, then land with the board pointing down the hill or you crash.",
+    "Tricks score points and fill the boost meter. Burn boost to pass the rivals."
+   ],
+   "tips": [
+    "Let go of the spin just before you land: the board settles onto the fall line by itself.",
+    "Hold a grab for more than 0.7 s to tweak it for extra points.",
+    "Land your next trick within 3.5 s to raise the combo, up to x5. A crash resets it.",
+    "Rail points only count once you land cleanly after popping off the rail.",
+    "The first kicker, at 90 m, is the gentle one: try your first grab there.",
+    "Trees and rocks crash you and cost about two seconds, so pick lines through the open snow."
+   ],
+   "controls": {
+    "keyboard": "A / D or ← / → carve (spin in the air), W / ↑ tuck (front flip in the air), S / ↓ brake (back flip in the air), Space hold and release to ollie, J K L grabs, Shift boost, Esc or P pause.",
+    "touch": "Left thumb pad steers, tucks and brakes (spins and flips in the air). Hold JUMP and let go to ollie, hold GRAB in the air, tap BOOST to burn the meter.",
+    "gamepad": "Left stick steers, tucks and brakes; A ollies; X, Y and B grab (Indy, Melon, Method); RB or RT boosts."
+   },
+   "tricks": [
+    {
+     "name": "FS 180 / 360 / 540 / 720+",
+     "input": "Hold D or → in the air (touch: thumb pad right)"
+    },
+    {
+     "name": "BS 180 / 360 / 540 / 720+",
+     "input": "Hold A or ← in the air (touch: thumb pad left)"
+    },
+    {
+     "name": "Frontflip (Double, Triple)",
+     "input": "Hold W or ↑ in the air (touch: thumb pad up)"
+    },
+    {
+     "name": "Backflip (Double, Triple)",
+     "input": "Hold S or ↓ in the air (touch: thumb pad down)"
+    },
+    {
+     "name": "Indy grab",
+     "input": "Hold J in the air (gamepad X)"
+    },
+    {
+     "name": "Melon grab",
+     "input": "Hold K in the air (gamepad Y)"
+    },
+    {
+     "name": "Method grab",
+     "input": "Hold L in the air (gamepad B); touch GRAB cycles Melon, Method, Indy"
+    },
+    {
+     "name": "Tweaked grab / Indy to Melon",
+     "input": "Hold a grab past 0.7 s, or switch grab keys mid-air"
+    },
+    {
+     "name": "Boardslide",
+     "input": "Ride onto a rail with speed; tap Space (JUMP) to pop off early"
+    },
+    {
+     "name": "50-50 to Boardslide",
+     "input": "Stay on a rail for more than 1.4 s"
+    },
+    {
+     "name": "Big Air",
+     "input": "Hang 1.25 s or more with no other trick"
+    },
+    {
+     "name": "Combo x2 to x5",
+     "input": "Land the next trick within 3.5 s; a crash resets it"
+    }
+   ],
+   "cheats": [
+    {
+     "code": "ENDLESSBOOST",
+     "effect": "Unlimited boost: the meter never drains"
+    },
+    {
+     "code": "MOONJUMP",
+     "effect": "Moon gravity: one sixth g in the air, huge hang time"
+    },
+    {
+     "code": "GHOSTRIDER",
+     "effect": "Ride straight through trees and rocks"
+    }
+   ],
+   "difficulty": "Adaptive: the three rivals ease off when they get far ahead of you and boost when you pull away, so every race stays close. Kickers grow from a gentle 1.3 m lip at 90 m to 3.6 m near the bottom.",
+   "features": {
+    "trick-system": "Spins (FS/BS 180 to 1440), single to triple front and back flips, Indy, Melon and Method grabs with tweaks and grab-to-grab, Boardslide and 50-50 rails, Big Air, all scored by the board physics",
+    "trick-list": "Controls (title and pause) lists the 12 moves with their inputs; so does Tricks in the arcade menu",
+    "combo": "Each trick landed within 3.5 s of the last raises the multiplier up to x5 (COMBO xN under the trick name); a crash resets it",
+    "land-bail-feedback": "Landings throw snow, thump, shake the camera and tag Stomped or Sketchy; bails name the reason (Caught an edge, Over-rotated, Flat landing, Hit a tree or rock) with a crash sound",
+    "trick-tutorial": "First race: five coach cards (carve, tuck, ollie, first trick, boost) that advance when you do each move, with a Skip button; the arcade's How to play > Replay tutorial runs it again",
+    "results": "Results card: medal and place, time, trick score, top speed, air time, best trick, an S to D rank and the finish order; Race again replays",
+    "countdown": "3-2-1-GO before every race",
+    "saving": "Personal best time and points are kept in localStorage and shown on the title; a run with codes on never writes them",
+    "pause": "In a race: the game's own pause button, Esc, P, leaving the window or the arcade's Pause open its panel, now with a tip. On the title and results the arcade's pause button (top right) opens the arcade menu.",
+    "audio": "Race music under the game's own wind, carve and trick sounds, and a crowd cheer at the finish arch"
+   },
+   "settings": {
+    "quality": "Title > Quality: Low, Medium or High (Low turns off shadows and thins the forest; High raises resolution, trees and particles). The game reloads to apply it and remembers the choice.",
+    "sound": "Title > sound button; Controls (title and pause) has Music and Effects sliders, saved. The same sliders are in the arcade's How to play panel."
+   },
+   "saves": [
+    "summitline.best"
+   ],
+   "start": "#btnPlay",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "saves",
+    "settings",
+    "start",
+    "tips",
+    "tricks"
+   ]
   },
   "high-nest": {
    "title": "High Nest",
@@ -4723,14 +4832,76 @@
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Press PLAY NOW, then pick a difficulty and a map.",
+    "Choose a defender from the shop and tap a glowing green spot beside the road, or drag it onto the field.",
+    "Press START WAVE. Defenders fire on their own, and every popped pod pays credits.",
+    "Tap a placed defender to buy one of its three upgrade paths, or to sell it.",
+    "Stop all 40 waves before the pods break through the gate."
+   ],
+   "tips": [
+    "Camo pods are invisible to most defenders. The Eagle Lookout, Otter River Patrol, Owl and Raccoon see them, and a Dolphin reveals them for its neighbours.",
+    "Lead pods ignore sharp damage. Bring explosive, cold, energy or normal damage for them.",
+    "The Honey Badger Orchard earns credits after every cleared wave. Build it early and it pays for itself.",
+    "Royal Rush charges as you pop pods. Press R (or RUSH) when it reaches 100% to overdrive every defender for 9 seconds.",
+    "Once your defence holds, switch to 2× or 3× speed, or turn on AUTO to start each wave for you.",
+    "Stuck? Hint reads your field: it names the next threat and the best upgrade you can afford."
+   ],
+   "controls": {
+    "keyboard": "Click a defender card, then a green spot (or drag it). Number keys pick defenders in the open category, Space starts the wave, R fires Royal Rush, Esc deselects, P pauses.",
+    "touch": "Tap a category and a defender, then tap a green spot or drag the card onto the field. Tap a placed defender to upgrade or sell it."
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "KINGSGOLD",
+     "effect": "+5,000 credits now and at the start of every mission"
+    },
+    {
+     "code": "IRONGATE",
+     "effect": "The gate never loses HP"
+    },
+    {
+     "code": "ALLHEROES",
+     "effect": "Every defender unlocked, whatever your rank"
+    },
+    {
+     "code": "SLOWPODS",
+     "effect": "Every air-pod and carrier moves at half speed"
+    }
+   ],
+   "difficulty": "Choose on the map screen: Easy (40 gate HP, 800 credits, gentler pods), Medium (30 HP, 700 credits), Hard (20 HP, 600 credits, tougher pods) or Impoppable (1 HP, 450 credits). Within a mission the pods get tougher and faster wave by wave.",
+   "features": {
+    "wave-preview": "The NEXT panel lists the coming wave's pods on screens 1200 px and wider; Hint names the next wave's threats on any screen",
+    "speed-control": "1×, 2× and 3× buttons in the top bar, plus AUTO to start waves by itself",
+    "tower-info": "Tap a placed defender: its sheet shows damage, range, attack speed, damage type and its three upgrade paths. HEROES on the title lists the whole roster",
+    "upgrade-and-sell": "The defender sheet: three paths of three tiers each (one path can go to tier 3) and a Sell button",
+    "star-results": "KINGDOM SECURED or GATE BREACHED card with 1 to 3 stars by gate HP left, pods popped, campaign progress, REDEPLOY and MAP SELECT",
+    "results": "End card with stars, waves reached, pods popped and campaign progress; REDEPLOY replays the map",
+    "tutorial": "The first mission on Riverside Switchback coaches you to build and start the wave; the arcade's How to play > Replay tutorial runs it again",
+    "saving": "Best wave per map and difficulty, rank, XP and defender mastery are kept in localStorage; a run with codes on saves none of them",
+    "pause": "In a mission: the game's own pause button (top bar), P or the arcade's Pause open its panel, now with a tip. On the title and map screens the arcade's pause button (top right) opens the arcade menu.",
+    "audio": "Menu and battle music with crossfades and an announcer for wave starts, boss and final waves, the first pods, cleared waves, upgrades, victory and defeat"
+   },
+   "settings": {
+    "sound": "Sound button in the top bar; Pause > Settings (and SETTINGS on the title) has master, effects and ambience (music) volume, screen shake and particles, all saved. The arcade's How to play panel also has Music and Effects sliders."
+   },
+   "saves": [
+    "kd-best",
+    "kd-career"
+   ],
+   "start": "#play",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "saves",
+    "settings",
+    "start",
+    "tips"
+   ]
   },
   "nistar": {
    "title": "NISTAR",

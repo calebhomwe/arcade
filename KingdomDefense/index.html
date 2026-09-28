@@ -1551,6 +1551,7 @@ let assetList=Object.values(images),loaded=0;function assetDone(){loaded++;docum
 updateUI();syncXP();syncDiff();syncCards();
 window.KD={state,MAPS,TYPES,ENEMIES,waves,images,DIFFS,career,TOWER_RANK,awardXP,get playing(){return playing},get paused(){return paused},get waveActive(){return waveActive},get path(){return path},get pathTotal(){return pathTotal},get selectedMap(){return selectedMap},startWave,reset,finish,setPause,selectPlaced,tryBuild,canBuild,step:(dt,n)=>{for(let i=0;i<n;i++)update(dt)},get selectedType(){return selectedType},get dragState(){return drag},get canvasTopMargin(){return canvasTopMargin},get SBW(){return SBW},get W(){return W},get H(){return H},version:"v7.4-strategy"};
 </script>
+<script src="arcade-hooks.js"></script>
 </body>
 </html>
 
