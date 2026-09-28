@@ -1511,15 +1511,15 @@
     "engine": "unity",
     "render": "unity-3d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": false,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -1555,15 +1555,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": true,
     "ownPause": true,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -1599,15 +1599,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": true,
     "ownPause": true,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -1643,15 +1643,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": true,
     "ownPause": true,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -1687,15 +1687,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": true,
     "ownPause": true,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -1731,15 +1731,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": true,
     "ownPause": true,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -1775,15 +1775,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": true,
     "ownPause": true,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -3454,26 +3454,61 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a level on the title: 3 letters up to 9+ letters. Harder levels unlock as you earn XP.",
+    "Tap the letter tiles in order to spell the hidden word. Tap a filled slot to send a letter back.",
+    "Finish each word before the time bar runs out. Three misses or time-outs end the game."
+   ],
+   "tips": [
+    "Look for common endings like -ING, -ER and -LE first.",
+    "A word with no hints and no mistakes scores a PERFECT +5.",
+    "Your streak adds up to +30 points a word, so a skip costs more than it looks.",
+    "Shuffle the tiles when you are stuck: a new order often shows the word.",
+    "Gold tiles count towards your gold collection on the title screen."
+   ],
+   "controls": {
+    "keyboard": "Type letters to place tiles, Backspace takes the last one back. Esc pauses.",
+    "touch": "Tap tiles to place them, tap a slot to send its letter back"
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Five level bands by word length: 3 letters (ages 5-6), 4-5 (6-7), 6 (7-8), 7-8 (8-9) and 9+ (9 and up). Each band unlocks with XP and gives more time for longer words.",
+   "features": {
+    "age-or-level-bands": "Five word-length levels on the title, with an age guide in the grown-ups report",
+    "hints": "In-game Hint button places the next letter; the arcade Hint names the next letter or the wrong slot",
+    "grown-up-progress-report": "Grown-ups button on the title: words tried and accuracy per level, practice days, the words missed most and a suggested next level",
+    "tutorial": "Guided first word with coach cards (the timer waits); replay with Learn to play",
+    "results": "Game Over card with score, best, best streak and fastest word"
+   },
+   "saves": [
+    "ws_best",
+    "ws_xp",
+    "ws_progress"
+   ],
+   "start": ".diff-btn.sel",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-hangman": {
    "title": "Hangman",
@@ -3497,26 +3532,61 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a word length (Short, Medium or Long) and a category.",
+    "Guess the hidden word one letter at a time: tap the keyboard or type.",
+    "Each wrong letter adds a line to the drawing. Seven wrong and the round is lost. Five words make a game."
+   ],
+   "tips": [
+    "Start with vowels: A, E, I, O and U are in almost every word.",
+    "After the vowels, try common letters like S, T, R and N.",
+    "Solve a word with no mistakes to earn a rose token that reveals a letter for free.",
+    "Words get longer as the five rounds go on.",
+    "Your win streak adds a bonus to every solved word."
+   ],
+   "controls": {
+    "keyboard": "Type a letter to guess it. Esc pauses.",
+    "touch": "Tap the on-screen letters"
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Three level bands by word length: Short (3-5 letters, ages 6-7), Medium (5-7, ages 8-9) and Long (7+, ages 10 and up). Within a game the words grow longer each round.",
+   "features": {
+    "age-or-level-bands": "Short, Medium and Long word levels on the title, each with an age guide",
+    "hints": "In-game Hint reveals a letter; the arcade Hint suggests vowels first, then the letter that appears most in the word",
+    "grown-up-progress-report": "Grown-ups button on the title: words tried and accuracy per level, practice days, the words missed most and a suggested next level",
+    "tutorial": "Coach cards on the first game walk through a guess, the drawing, hints and a solve; replay with Learn to play",
+    "results": "Game Over card with score, best, best streak and perfect run"
+   },
+   "saves": [
+    "hg_best",
+    "hg_stats_v1",
+    "hg_progress"
+   ],
+   "start": ".cat-btn[data-cat=animals]",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-missing-letter": {
    "title": "Missing Letter",
@@ -3540,26 +3610,61 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a level: Climb starts with 3-letter words and grows, or choose 3, 5 or 6 letters.",
+    "One letter is missing from each word. Tap the letter that fills the gap.",
+    "Score as many words as you can in 60 seconds. Endless mode has no clock but only 3 hearts."
+   ],
+   "tips": [
+    "Say the word out loud: the missing sound often jumps out.",
+    "Wait 3 seconds and a picture clue appears above the word.",
+    "Answer within 2 seconds for a +5 slipstream bonus.",
+    "Every 4 right in a row raises your score multiplier.",
+    "A wrong answer costs 2 seconds, so a quick guess is not always best."
+   ],
+   "controls": {
+    "keyboard": "Type the letter or press 1-4 to pick an answer. Esc pauses.",
+    "touch": "Tap one of the four letters"
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Level bands: 3-letter words (ages 5-6), 5-letter words (ages 6-7) and 6-letter words (ages 7-8), or Climb, which moves up a band every 6 right answers.",
+   "features": {
+    "age-or-level-bands": "Level row on the title: Climb, 3 letters, 5 letters and 6 letters, each with an age guide",
+    "hints": "A picture clue appears after 3 seconds; the arcade Hint says whether the missing letter is a vowel and rules out one wrong answer",
+    "grown-up-progress-report": "Grown-ups button on the title: words tried and accuracy per level, practice days, the words missed most and a suggested next level",
+    "tutorial": "Coach cards on the first game (the clock waits); replay with Learn to play",
+    "results": "Time's Up card with score, best, combo, answer speed, medals and all-time accuracy"
+   },
+   "saves": [
+    "ml_best",
+    "ml_progress",
+    "ml_lr"
+   ],
+   "start": "#btnPlay",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-spell-and-say": {
    "title": "Spell & Say",
@@ -3583,26 +3688,62 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a level and press Play. The game says a word out loud.",
+    "Spell it with the letter keys, then tap the tick to check.",
+    "Three wrong spellings end the game. Spell 8 in a row to win a heart back."
+   ],
+   "tips": [
+    "Tap the turtle to hear the word extra slowly and listen for each sound.",
+    "The light bulb shows the next letter once per word, for 5 points.",
+    "Words you miss go on your Tricky list. Spell them right later to clear them.",
+    "Spelling a word within about 4 seconds earns a +3 fast bonus.",
+    "No voice on this device? The word flashes on screen for a moment instead."
+   ],
+   "controls": {
+    "keyboard": "Type letters, Backspace deletes, Enter checks. Esc pauses.",
+    "touch": "Tap the on-screen letters, the back arrow and the tick"
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Five level bands by word length, each with an age guide: Easy 3-4 letters (ages 5-6), Medium 4-5 (6-7), Hard 5-6 (7-8), Insane 6-7 (8-9) and Max 7-9 (9 and up). Higher bands unlock with XP.",
+   "features": {
+    "age-or-level-bands": "Five levels on the title, each labelled with word length and an age guide",
+    "hints": "The light bulb shows the next letter; the arcade Hint gives the first letter, spots a wrong letter, or names the next one",
+    "grown-up-progress-report": "Grown-ups button on the title: words tried and accuracy per level, practice days, the words missed most and a suggested next level",
+    "tutorial": "Coach cards on the first game: listen, type, check and hints; replay with Learn to play",
+    "results": "Game Over card with score, best, best streak, flawless runs and word rank"
+   },
+   "saves": [
+    "ss_best",
+    "ss_words",
+    "ss_xp",
+    "ss_progress"
+   ],
+   "start": "#btnPlay",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "pauseKeys",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-rhyme-time": {
    "title": "Rhyme Time",
@@ -3626,26 +3767,60 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": true,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a level (Starter, Climb or Pro) and a beat, then press Start Rapping.",
+    "A word appears. Type a word that rhymes with it and tap DROP or press Enter.",
+    "Answer before the time bar empties. Three misses and the mic drops."
+   ],
+   "tips": [
+    "Rhymes end with the same sound: change the first sound and keep the ending.",
+    "A fast answer earns a +5 bonus, and your chain adds up to +30 a word.",
+    "Pass skips a hard word without losing a heart, but it breaks your chain.",
+    "Each word can only be used once per game.",
+    "Load your own music as the beat, or slow the built-in beat with the BPM slider."
+   ],
+   "controls": {
+    "keyboard": "Type your rhyme and press Enter. P or Esc pauses when the text box is not in use.",
+    "touch": "Tap the text box to type, then tap DROP"
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Three level bands: Starter (short words and extra time, ages 6-7), Climb (starts short and adds longer words as rounds go on, ages 8-9) and Pro (medium and long words from the start, ages 10 and up). The time bar shortens each round.",
+   "features": {
+    "age-or-level-bands": "Starter, Climb and Pro levels on the title, each with an age guide",
+    "hints": "The arcade Hint gives the ending a rhyme needs and the first letter of an unused rhyme; a miss shows an example rhyme",
+    "grown-up-progress-report": "Grown-ups button on the title: rhymes tried and accuracy for short, medium and long words, practice days, the words missed most and a suggested next level",
+    "tutorial": "Coach cards on the first game (the time bar waits); replay with Learn to play",
+    "results": "Mic Drop card with score, best, best chain and rounds"
+   },
+   "saves": [
+    "rt_best",
+    "rt_beststreak",
+    "rt_progress"
+   ],
+   "start": "#btnStart",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-math-blast": {
    "title": "Math Blast",
@@ -3669,26 +3844,60 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Choose which sums to practise (+, -, × and ÷) and a level, then press Start.",
+    "Work out the sum at the top and tap the bubble with the answer, or press 1 to 4.",
+    "Right answers build your combo. Bubbles that float away cost 2 seconds. The round lasts 60 seconds."
+   ],
+   "tips": [
+    "A wrong tap circles the right bubble for a moment: use it to learn the fact.",
+    "Pop the ice bubble to freeze every bubble for 3 seconds.",
+    "The +5 bubble adds five seconds to the clock.",
+    "Your combo multiplies every answer, so steady beats fast.",
+    "Turn off the kinds of sums you have mastered to practise the tricky ones."
+   ],
+   "controls": {
+    "keyboard": "1 to 4 pop the bubbles from left to right. P or Esc pauses.",
+    "touch": "Tap a bubble to pop it"
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Five level bands with an age guide: Easy (ages 5-6, sums to 18), Medium (7-8), Hard (9-10, times tables to 12), Insane (11-12) and Max (13+). Harder bands unlock with XP, and bubbles speed up as the score climbs.",
+   "features": {
+    "age-or-level-bands": "Level buttons on the title, each with an age guide, plus a choice of +, -, × and ÷",
+    "hints": "A wrong tap circles the right bubble; the arcade Hint gives a strategy for the current sum (count on, make a ten, split and double, times tables)",
+    "grown-up-progress-report": "Grown-ups button on the title: answers and accuracy per level, practice days, the sums missed most and a suggested next level",
+    "tutorial": "Coach cards on the first round (the bubbles and the clock wait); replay with Learn to play",
+    "results": "Time's Up card with score, best, max combo, golden bubbles and totals for each kind of sum"
+   },
+   "saves": [
+    "mathBlastBest",
+    "mathBlastProg",
+    "mathBlastReport"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-math-run": {
    "title": "Math Run",
@@ -3712,26 +3921,60 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Choose which sums to practise (+, -, × and ÷) and a level, then press Start.",
+    "Work out the sum at the top, then move to the lane whose gate shows the answer.",
+    "Run through the right gate to score. A wrong gate costs a heart; you have three."
+   ],
+   "tips": [
+    "After a miss the right gate lights up and the answer is shown, so you learn the fact.",
+    "Grab a shield: it blocks one wrong gate.",
+    "Gold gates give a gem. Three gems buy a revive after a crash.",
+    "Every 10 right answers earns a medal.",
+    "The track speeds up as your score grows, so work the sum out early."
+   ],
+   "controls": {
+    "keyboard": "Left and Right arrows (or A and D) change lane. Space starts. P or Esc pauses.",
+    "touch": "Tap a lane or swipe left and right"
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Five level bands with an age guide: Easy (ages 5-6), Medium (7-8), Hard (9-10, times tables to 12), Insane (11-12) and Max (13+). Harder bands unlock with XP, and the run speeds up with the score.",
+   "features": {
+    "age-or-level-bands": "Level buttons on the title, each with an age guide, plus a choice of +, -, × and ÷",
+    "hints": "After a miss the right gate is revealed; the arcade Hint gives a strategy for the current sum",
+    "grown-up-progress-report": "Grown-ups button on the title: gates and accuracy per level, practice days, the sums missed most and a suggested next level",
+    "tutorial": "Coach cards on the first run (the gates wait); replay with Learn to play",
+    "results": "Crashed card with score, best, medals and gems, plus a gem revive"
+   },
+   "saves": [
+    "mathRunBest",
+    "mathRunProg",
+    "mathRunReport"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-math-snake": {
    "title": "Math Snake",
@@ -3755,26 +3998,60 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Choose which sums to practise (+, -, × and ÷) and a level, then press Start.",
+    "Work out the sum at the top and steer the snake onto the number with the answer.",
+    "A wrong number or a wall costs a heart. You have three."
+   ],
+   "tips": [
+    "Pick the wrong number twice and the right one starts to glow.",
+    "Four right answers in a row start a Frenzy: extra points for 10 seconds.",
+    "Every 5 in a row wins back a heart.",
+    "Gold stars are worth 25 bonus points, and the treasure chest holds a surprise.",
+    "Wrong numbers hop to a new spot now and then, so plan a clear path."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys or WASD steer. P or Esc pauses.",
+    "touch": "Swipe on the board or use the on-screen arrow buttons"
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Five level bands with an age guide: Easy (ages 5-6), Medium (7-8), Hard (9-10, times tables to 12), Insane (11-12) and Max (13+). Harder bands unlock with XP, and the snake speeds up as the score grows.",
+   "features": {
+    "age-or-level-bands": "Level buttons on the title, each with an age guide, plus a choice of +, -, × and ÷",
+    "hints": "After two wrong picks the right number glows; the arcade Hint gives a strategy for the current sum",
+    "grown-up-progress-report": "Grown-ups button on the title: answers and accuracy per level, practice days, the sums missed most and a suggested next level",
+    "tutorial": "Coach cards on the first game (the snake waits); replay with Learn to play",
+    "results": "Game Over card with score, best, bonus stars, trophy and lifetime numbers eaten"
+   },
+   "saves": [
+    "mathSnakeBest",
+    "mathSnakeProg",
+    "mathSnakeReport"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-math-battle": {
    "title": "Math Battle",
@@ -3798,26 +4075,60 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a level and press Start Adventure.",
+    "Solve the sum and tap the right answer (or press 1 to 4) to attack the monster.",
+    "A wrong answer lets the monster hit you, and it also attacks every few seconds. Defeat monsters for gold and XP; a boss comes every 5 kills."
+   ],
+   "tips": [
+    "Three right answers in a row build a x3 combo for triple damage.",
+    "Spend gold in the Shop: a sword hits harder, a shield adds health, a potion heals fully.",
+    "Every 5-answer streak pays 5 bonus gold.",
+    "Answering within about a second builds a Quick streak.",
+    "When you are defeated you can revive for 25 gold and keep your level."
+   ],
+   "controls": {
+    "keyboard": "1 to 4 answer. Enter starts or revives. P or Esc pauses.",
+    "touch": "Tap an answer; tap Shop, Hunting Log and War Medals for more"
+   },
    "tricks": [],
    "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "difficulty": "Five level bands with an age guide: Easy (ages 5-6), Medium (7-8), Hard (9-10, times tables to 12), Insane (11-12) and Max (13+). Harder bands unlock as your hero levels up, and monsters get tougher with every kill.",
+   "features": {
+    "age-or-level-bands": "Level buttons on the title, each with an age guide",
+    "hints": "The right answer lights up after every answer; the arcade Hint gives a strategy for the current sum",
+    "grown-up-progress-report": "Grown-ups button on the title: answers and accuracy per level, practice days, the sums missed most and a suggested next level",
+    "tutorial": "Coach cards on the first battle (the monster waits); replay with Learn to play",
+    "results": "Defeated card with kills, level, gold and best, plus Revive and New Run"
+   },
+   "saves": [
+    "mathBattleSave",
+    "mathBattleBest",
+    "mathBattleReport"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-idle-empire": {
    "title": "Idle Empire",
@@ -3842,26 +4153,73 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Tap the big coin to earn coins.",
+    "Buy buildings: each one earns coins every second, even while you are away.",
+    "Own 25, 50 or 100 of a building to double its output. At 1M coins earned, Prestige for golden coins that raise all income by 10% each."
+   ],
+   "tips": [
+    "Cursors also make every tap stronger.",
+    "Use the ×10, ×25 and MAX buttons to buy in bulk.",
+    "Send a Trade Caravan with spare coins: it comes back with 1.5 to 2.4 times as much.",
+    "A Golden Rush doubles taps for 12 seconds: tap fast!",
+    "Claim the Daily Tribute once a day for a minute of income."
+   ],
+   "controls": {
+    "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
+    "touch": "Tap the coin and the buy buttons"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "GOLDRAIN",
+     "effect": "Gold rain: 1M coins (or ten minutes of income, whichever is more)"
+    },
+    {
+     "code": "MIDAS",
+     "effect": "Midas touch: every tap is worth 10 times more"
+    },
+    {
+     "code": "TIMEWARP",
+     "effect": "Time warp: one hour of income right now"
+    }
+   ],
+   "difficulty": "An idle curve: each building costs 15% more than the last, and every prestige resets buildings but multiplies income, so each run goes further.",
+   "features": {
+    "offline-earnings": "Welcome back card: coins earned while away at 50% rate, up to 8 hours",
+    "upgrade-tree": "Ten buildings from Cursor to Empire, each with ×2 milestones at 25, 50 and 100 owned, plus deeds worth +2% each",
+    "big-number-format": "Coins shown as 1.2K, 3.4M, 5.6B and on to Qi",
+    "prestige-or-next-goal": "Prestige for golden coins (+10% income each) with a progress bar to the next golden coin",
+    "tutorial": "Coach cards on the first visit: tap, buy, milestones and prestige; replay with Learn to play",
+    "results": "Prestige card with coins this run, all-time earnings, golden coins and the new multiplier"
+   },
+   "saves": [
+    "ie_state"
+   ],
+   "start": "#btnPlay",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-tap-monsters": {
    "title": "Tap Monsters",
@@ -3886,26 +4244,73 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Tap the monster to hit it; beat it to earn gold and move up a level.",
+    "Hire heroes with gold: they attack for you every second, even while you are away.",
+    "Every 10th level is a boss. When you have earned enough gold, Ascend for souls that raise your damage by 5% each."
+   ],
+   "tips": [
+    "Every hero you own also makes your taps 10% stronger.",
+    "Each tap has a 10% chance to CRIT for triple damage.",
+    "Golden monsters pay extra: tap them fast.",
+    "Keep killing quickly to build a Fever streak for bonus gold.",
+    "Crystals from bosses open Loot Caches full of gold."
+   ],
+   "controls": {
+    "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
+    "touch": "Tap the monster and the hire buttons"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "GOLDRAIN",
+     "effect": "Gold rain: a big pile of gold (25 monsters' worth)"
+    },
+    {
+     "code": "ONEPUNCH",
+     "effect": "One punch: taps hit 100 times harder"
+    },
+    {
+     "code": "HEROPARTY",
+     "effect": "Hero party: 5 of every hero join for free"
+    }
+   ],
+   "difficulty": "An idle curve: monsters gain health and pay more gold every level, bosses every 10 levels have ten times the health, and each hero costs 50% more than the last.",
+   "features": {
+    "offline-earnings": "Welcome back card: gold your heroes earned while away at 50% rate, up to 8 hours",
+    "upgrade-tree": "Five heroes from Knight to Dragon, bought one, ten or MAX at a time, plus badges",
+    "big-number-format": "Gold and damage shown as 1.2K, 3.4M, 5.6B and beyond",
+    "prestige-or-next-goal": "Ascend for souls (+5% damage each) with the gold needed for the next soul shown under the button",
+    "tutorial": "Coach cards on the first visit: tap, hire, bosses and ascending; replay with Learn to play",
+    "results": "Ascended card with gold this run, level reached, best level, souls and the new multiplier"
+   },
+   "saves": [
+    "tm_state"
+   ],
+   "start": "#btnPlay",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-idle-miner": {
    "title": "Idle Miner",
@@ -3930,26 +4335,73 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Tap the rock to dig stones. Every stone takes you deeper.",
+    "Spend stones on a better pickaxe (more per tap) and auto-miners (stones every second, even while you are away).",
+    "Deeper tiers have richer ore. Past 1000m, Prestige for gems that add 3% mining power each."
+   ],
+   "tips": [
+    "Tap quickly to build Flow: every 10 in a row pays a bonus.",
+    "Dynamite makes all digging 10 times faster for 20 seconds.",
+    "Each new ore tier doubles the value of every stone.",
+    "Gems also buy permanent upgrades like the Eternal Pick.",
+    "Use the ×10 and MAX buttons to hire miners in bulk."
+   ],
+   "controls": {
+    "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
+    "touch": "Tap the rock and the shop buttons"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "STONERAIN",
+     "effect": "Stone rain: a big pile of stones (ten minutes' worth, at least 1000)"
+    },
+    {
+     "code": "BIGBOOM",
+     "effect": "Big boom: free dynamite, ×10 digging for 60 seconds"
+    },
+    {
+     "code": "DEEPDIVE",
+     "effect": "Deep dive: 500m deeper at once"
+    }
+   ],
+   "difficulty": "An idle curve: pickaxes cost 60% more each level and miners 50% more each, while ore gets richer every tier from Stone at 0m to Void at 5000m.",
+   "features": {
+    "offline-earnings": "Welcome back card: stones your miners dug while away at 50% rate, up to 8 hours",
+    "upgrade-tree": "Pickaxe levels, auto-miners, dynamite and four gem upgrades",
+    "big-number-format": "Stones shown as 1.2K, 3.4M, 5.6B and beyond",
+    "prestige-or-next-goal": "Prestige for gems (+3% mining each) plus the next ore tier and its depth shown under the rock",
+    "tutorial": "Coach cards on the first visit: dig, shop and dynamite; replay with Learn to play",
+    "results": "Prestige card with stones this run, depth reached, total gems and the new multiplier"
+   },
+   "saves": [
+    "im_state"
+   ],
+   "start": "#btnPlay",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-farm-harvest": {
    "title": "Farm Harvest",
@@ -3981,19 +4433,66 @@
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Pick a crop, then tap an empty plot to plant it.",
+    "Tap a growing plot to water it (twice as fast), and tap it again when it glows to harvest and sell it.",
+    "Spend coins in the shop on plots, a sprinkler, a harvester and chickens, and chase the goal at the top."
+   ],
+   "tips": [
+    "Each harvest of a crop raises its price by 6% for good.",
+    "Harvests sometimes drop a seed. Saved seeds are planted first, for free.",
+    "Three harvests within two seconds of each other make a combo.",
+    "The Sprinkler waters everything and the Harvester replants for you.",
+    "Crops and chickens keep working while you are away, for up to two hours."
+   ],
+   "controls": {
+    "keyboard": "Tab to a plot or button and press Enter or Space. P or Esc pauses.",
+    "touch": "Tap crops, plots and shop buttons"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "COINSHOWER",
+     "effect": "Coin shower: a big pile of coins"
+    },
+    {
+     "code": "QUICKGROW",
+     "effect": "Quick grow: every planted crop is ready now"
+    },
+    {
+     "code": "MAGICBEANS",
+     "effect": "Magic beans: 10 free seeds of every crop"
+    }
+   ],
+   "difficulty": "Self-paced: dearer crops take longer but pay more, plot unlocks double in price, and each goal is a bigger coin total.",
+   "features": {
+    "autosave": "The farm saves on this device every 5 seconds and when you leave (not while codes are on)",
+    "goals-or-quests": "Goal bar under the top bar: the next coin total to earn, with a coin reward when you reach it",
+    "day-time-ui": "Day number and clock in the top bar (6:00 to 22:00, dusk dims the farm) and a Day summary card at the end of each day",
+    "inventory": "The 🎒 Barn: saved seeds for every crop, harvest counts and mastery prices, plots and helpers",
+    "tutorial": "Coach cards on the first visit: pick, plant, water, harvest and the shop; replay with Learn to play",
+    "results": "Day summary card with crops harvested and coins earned that day"
+   },
+   "saves": [
+    "farmHarvestSave_v1"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-farm-idle": {
    "title": "Farm Idle Tycoon",
@@ -4018,26 +4517,73 @@
     "engine": "dom",
     "render": "dom",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "howto": [
+    "Tap the tractor to earn coins.",
+    "Buy farm buildings: each one earns coins every second, even while you are away.",
+    "At 1M coins earned, start a New Farm+ for Legacy Points that raise all income by 10% each."
+   ],
+   "tips": [
+    "Tap quickly for a combo: fast taps pay extra.",
+    "25 taps charge a Golden Harvest: +25% income for 10 seconds.",
+    "Fill the market orders for a big coin bonus before their timer runs out.",
+    "Catch the butterflies that flutter past for a reward.",
+    "Use the ×10 and ×25 buttons to buy buildings in bulk."
+   ],
+   "controls": {
+    "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
+    "touch": "Tap the tractor and the buy buttons"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "HAYRAIN",
+     "effect": "Hay rain: a big pile of coins (ten minutes' worth, at least 10,000)"
+    },
+    {
+     "code": "GOLDENHOUR",
+     "effect": "Golden hour: a Golden Harvest that lasts a whole minute"
+    },
+    {
+     "code": "BUMPERCROP",
+     "effect": "Bumper crop: every tractor tap is worth 10 times more"
+    }
+   ],
+   "difficulty": "An idle curve: each building costs more than the last, owning 25, 50 and 100 of one multiplies its income, and every New Farm+ restarts the farm with more income per building.",
+   "features": {
+    "offline-earnings": "Welcome back card: coins the farm earned while away at half rate, up to 8 hours",
+    "upgrade-tree": "Ten buildings from Wheat Field to Mega Farm with income milestones, plus the Farm Market and achievements",
+    "big-number-format": "Coins shown as 1.2K, 3.4M, 5.6B and beyond",
+    "prestige-or-next-goal": "New Farm+ for Legacy Points (+10% income each), and timed market orders as the next goal",
+    "tutorial": "Coach cards on the first visit: tap, buy and prestige; replay with Learn to play",
+    "results": "New Farm+ card with coins earned, Legacy Points and the new income multiplier"
+   },
+   "saves": [
+    "farmIdleSave_v1"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-hole-swallow": {
    "title": "Hole Swallow",
@@ -4062,26 +4608,73 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "bl",
+   "howto": [
+    "Press Play, then drag the black hole around the field (or steer it with the arrow keys).",
+    "Swallow anything smaller than the hole to score and grow. Bigger things bounce off until you grow.",
+    "Score as much as you can before the 60-second clock runs out."
+   ],
+   "tips": [
+    "Eat small things first: every bite makes the hole bigger.",
+    "Swallowing things quickly one after another builds a chain bonus.",
+    "An alarm clock adds 5 seconds.",
+    "Golden items are worth 2 extra points.",
+    "Houses and towers are worth the most once the hole is big enough."
+   ],
+   "controls": {
+    "keyboard": "Arrow keys or WASD steer the hole. P or Esc pauses.",
+    "touch": "Drag anywhere to move the hole"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "MEGAHOLE",
+     "effect": "Mega hole: the hole starts huge"
+    },
+    {
+     "code": "EXTRATIME",
+     "effect": "Extra time: 30 more seconds on the clock"
+    },
+    {
+     "code": "GOLDRUSH",
+     "effect": "Gold rush: everything is golden and worth +2"
+    }
+   ],
+   "difficulty": "An adaptive curve: bigger, more valuable things drift in from the edges and only fit once the hole has grown.",
+   "features": {
+    "one-tap-start": "Play, then the first drag starts the clock",
+    "instant-restart": "Play Again on the Time's Up card starts a new round at once",
+    "best-score-badge": "Best pill in the top bar during play, and on the Time's Up card",
+    "tutorial-card": "Get-ready card with a dragging finger; the clock waits until you move",
+    "results": "Time's Up card with score, best, rank and golden feast record"
+   },
+   "saves": [
+    "hole-swallow-best",
+    "hole-swallow-rank"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-knife-hit": {
    "title": "Knife Hit",
@@ -4106,26 +4699,73 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "bl",
+   "howto": [
+    "Press Play, then tap anywhere (or press Space) to throw a knife into the spinning log.",
+    "Never hit a knife that is already stuck in the log.",
+    "Land every knife to split the log and move to a faster level. Golden apples are worth +5."
+   ],
+   "tips": [
+    "Watch the bottom of the log: throw just after a stuck knife passes.",
+    "The log can change direction between levels, so check which way it spins.",
+    "A level cleared without slicing an apple counts as a Perfect Level.",
+    "Throwing quickly in a row builds a Flow streak.",
+    "Reach levels 3, 6, 9 and 12 to collect emblems."
+   ],
+   "controls": {
+    "keyboard": "Space or Up arrow throws. P or Esc pauses.",
+    "touch": "Tap anywhere to throw"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "SLOWLOG",
+     "effect": "Slow log: every log spins at half speed"
+    },
+    {
+     "code": "GHOSTBLADE",
+     "effect": "Ghost blade: knives slip past stuck knives"
+    },
+    {
+     "code": "APPLERAIN",
+     "effect": "Apple rain: a new golden apple after every slice"
+    }
+   ],
+   "difficulty": "An adaptive curve: each level the log spins faster, has more sections and may reverse direction.",
+   "features": {
+    "one-tap-start": "Play, then the first tap throws and starts the run",
+    "instant-restart": "Play Again on the Clash card starts a new run at once",
+    "best-score-badge": "Best pill in the top bar during play, and on the Clash card",
+    "tutorial-card": "Get-ready card with a tapping finger; the first run also explains stuck knives and apples",
+    "results": "Clash card with score, best and emblems"
+   },
+   "saves": [
+    "knife-hit-best",
+    "knife-hit-apples"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-helix-smash": {
    "title": "Helix Smash",
@@ -4150,26 +4790,73 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "bl",
+   "howto": [
+    "Press Play, then tap (or press Space) to smash down through the platform below the ball.",
+    "Blue and purple parts break, green bounces you through for a combo, red and orange end the run.",
+    "Tap when a safe colour is at the front of the next platform. Gems, rings and shields float on the way down."
+   ],
+   "tips": [
+    "Each platform spins at its own speed: watch the front edge, not the ball.",
+    "Green bounces chain into combos worth more with every bounce.",
+    "Three plain smashes in a row light a fever bonus.",
+    "A shield blocks one red or orange landing.",
+    "The magnet pulls gems in for a few seconds."
+   ],
+   "controls": {
+    "keyboard": "Space or Down arrow smashes. P or Esc pauses.",
+    "touch": "Tap anywhere to smash"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "IRONBALL",
+     "effect": "Iron ball: red and orange break like the rest"
+    },
+    {
+     "code": "SHIELDUP",
+     "effect": "Shield up: every run starts with 3 shields"
+    },
+    {
+     "code": "BIGBALL",
+     "effect": "Big ball: a giant ball that grabs gems from further away"
+    }
+   ],
+   "difficulty": "An adaptive curve: from the fourth platform down, more red and orange parts appear, up to four per platform.",
+   "features": {
+    "one-tap-start": "Play, then the first tap smashes and starts the run",
+    "instant-restart": "Play Again on the Shattered card starts a new run at once",
+    "best-score-badge": "Best pill in the top bar during play, and on the Shattered card",
+    "tutorial-card": "Get-ready card with a tapping finger; the first run also explains the colours",
+    "results": "Shattered card with score, best, best combo and gem records"
+   },
+   "saves": [
+    "helix-smash-best",
+    "helix-smash-gemsever"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-stack-ball": {
    "title": "Stack Ball",
@@ -4194,26 +4881,74 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
+    "sdk": true,
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "tr",
-   "howto": [],
-   "tips": [],
-   "controls": {},
+   "pauseButton": "bl",
+   "howto": [
+    "Press Play, then tap (or press Space) to smash down through the platform below the ball.",
+    "Tap again in mid-air to slam down faster for bonus points.",
+    "Coloured parts break. Landing on a black part ends the run."
+   ],
+   "tips": [
+    "Watch the front edge of the next platform: tap just after a black part passes.",
+    "Slams in a row build a streak worth +5 bonuses.",
+    "Landing right next to a black part counts as a close call.",
+    "Gaps in the tower drop you straight to the next solid platform.",
+    "Gems add points and climb your gem rank; the bright elite gems are worth +15."
+   ],
+   "controls": {
+    "keyboard": "Space or Down arrow smashes, press again in the air to slam. P or Esc pauses.",
+    "touch": "Tap anywhere to smash, tap again in mid-air to slam"
+   },
    "tricks": [],
-   "cheats": [],
-   "difficulty": "",
-   "features": {},
-   "authored": []
+   "cheats": [
+    {
+     "code": "STEELBALL",
+     "effect": "Steel ball: black parts break like the rest"
+    },
+    {
+     "code": "SLOWSPIN",
+     "effect": "Slow spin: platforms turn at half speed"
+    },
+    {
+     "code": "BIGBALL",
+     "effect": "Big ball: a giant ball that grabs gems from further away"
+    }
+   ],
+   "difficulty": "An adaptive curve: every two platforms down adds another black part (up to five), and the platforms spin faster the deeper you go.",
+   "features": {
+    "one-tap-start": "Play, then the first tap smashes and starts the run",
+    "instant-restart": "Play Again on the Cracked card starts a new run at once",
+    "best-score-badge": "Best pill in the top bar during play, and on the Cracked card",
+    "tutorial-card": "Get-ready card with a tapping finger; the first run also explains slams and black parts",
+    "results": "Cracked card with score, best, slam streak, close calls, gems and depth"
+   },
+   "saves": [
+    "stack-ball-best",
+    "stack-ball-depth",
+    "stack-ball-gems"
+   ],
+   "start": "#playBtn",
+   "authored": [
+    "cheats",
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
   },
   "hub-isle-of-bells": {
    "title": "Isle of Bells",
@@ -4822,15 +5557,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": false,
     "usesP": false,
     "usesEsc": false,
     "ownPause": true,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -4865,16 +5600,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -4910,15 +5645,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": true,
     "usesEsc": false,
     "ownPause": true,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "esc",
    "pauseButton": "tr",
@@ -6133,9 +6868,9 @@
     "gamepad": false,
     "usesP": false,
     "usesEsc": false,
-    "ownPause": false,
+    "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6170,15 +6905,15 @@
    "scan": {
     "engine": "godot",
     "render": "godot-3d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "usesP": false,
     "usesEsc": false,
-    "ownPause": false,
+    "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6215,14 +6950,14 @@
     "engine": "godot",
     "render": "godot-3d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "usesP": false,
     "usesEsc": true,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -6259,14 +6994,14 @@
     "engine": "godot",
     "render": "godot-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "usesP": false,
     "usesEsc": true,
-    "ownPause": false,
+    "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p",
    "pauseButton": "tr",
@@ -6302,14 +7037,14 @@
     "engine": "godot",
     "render": "godot-3d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "usesP": false,
     "usesEsc": false,
     "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6389,14 +7124,14 @@
     "engine": "godot",
     "render": "godot-3d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "usesP": false,
     "usesEsc": false,
-    "ownPause": false,
+    "ownPause": true,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6474,16 +7209,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6518,16 +7253,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6562,16 +7297,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6605,16 +7340,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6649,16 +7384,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6693,16 +7428,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6737,16 +7472,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6780,16 +7515,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6825,15 +7560,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6868,16 +7603,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6911,16 +7646,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6954,16 +7689,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -6998,16 +7733,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -7043,15 +7778,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -7086,16 +7821,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -7130,16 +7865,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -7174,16 +7909,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -7218,16 +7953,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -7263,15 +7998,15 @@
     "engine": "canvas",
     "render": "canvas-2d",
     "saves": true,
-    "reducedMotion": false,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -7306,16 +8041,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -7350,16 +8085,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -7394,16 +8129,16 @@
    "scan": {
     "engine": "canvas",
     "render": "canvas-2d",
-    "saves": false,
-    "reducedMotion": false,
+    "saves": true,
+    "reducedMotion": true,
     "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
-    "sdk": false,
-    "sdkInit": false
+    "sdk": true,
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
