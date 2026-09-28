@@ -149,7 +149,8 @@ async function checkGame(g, browser) {
     }
     await wait(600);
     // Moving = two frames differ. Software rendering under load can be slow, so look a few times.
-    const moving = async (tag) => { let a = await shot(tag + '-a'); for (let i = 0; i < 3; i++) { await wait(700); const b = await shot(tag + '-b'); if (a && b && !a.equals(b)) return true; a = b; } return false; };
+    // true = moving, false = still, null = not measured (every screenshot pair had a timeout).
+    const moving = async (tag) => { let a = await shot(tag + '-a'), seen = false; for (let i = 0; i < 3; i++) { await wait(700); const b = await shot(tag + '-b'); if (a && b) { seen = true; if (!a.equals(b)) return true; } a = b; } return seen ? false : null; };
     const animating = await moving('2-playing');
 
     if (!hasSdk) {
@@ -189,9 +190,10 @@ async function checkGame(g, browser) {
       if (d1?.paused && !d0.caps.ownPauseUI && !menuOn) fails.push('no pause menu appeared');
       const p1 = await shot('4-paused'); await wait(1500); const p2 = await shot('5-paused-later');
       const d2 = await dbg();
-      const frozen = !!(p1 && p2 && p1.equals(p2));
+      const freezeMeasured = !!(p1 && p2), frozen = freezeMeasured && p1.equals(p2);   // a timed-out screenshot is not "moving"
+      if (!freezeMeasured) notes.push('a paused screenshot timed out, so the freeze itself was not measured');
       if (d1?.paused && !d1.soft && d2.clock !== d1.clock) fails.push('the game clock kept running while paused');
-      if (d1?.paused && animating && !frozen) fails.push('the picture kept moving while paused');
+      if (d1?.paused && animating && freezeMeasured && !frozen) fails.push('the picture kept moving while paused');
       const audioRunning = (d2?.audio || []).filter(a => a.state === 'running').length;
       if (d1?.paused && !d1.soft && audioRunning) fails.push(audioRunning + ' audio context(s) kept running');
       const tipShown = await f.locator('#arcade-sdk .tip').count().catch(() => 0);
@@ -207,8 +209,8 @@ async function checkGame(g, browser) {
       const rf = [];
       if (d3?.paused) rf.push('still paused after Resume');
       if (drift != null && drift > 50) rf.push('the game clock is ' + Math.round(drift) + ' ms out after resume');
-      if (animating && !movesAgain) rf.push('the picture did not move again after resume');
-      set('U05', rf.length ? 'FAIL' : (animating ? 'PASS' : 'REVIEW'), rf.length ? rf.join('; ') : animating ? 'Resumed where it stopped: no time jump (' + (drift == null ? '?' : Math.round(drift)) + ' ms), and the picture moves again.' : 'Resumed and the clock is in step, but the scene was not moving, so continuity was not seen.');
+      if (animating && movesAgain === false) rf.push('the picture did not move again after resume');
+      set('U05', rf.length ? 'FAIL' : (animating && movesAgain === true ? 'PASS' : 'REVIEW'), rf.length ? rf.join('; ') : animating && movesAgain === true ? 'Resumed where it stopped: no time jump (' + (drift == null ? '?' : Math.round(drift)) + ' ms), and the picture moves again.' : animating === null || movesAgain === null ? 'Resumed and the clock is in step; screenshots timed out, so motion was not measured.' : 'Resumed and the clock is in step, but the scene was not moving, so continuity was not seen.');
       // ---- keys and hidden tab ----
       const keyNote = [];
       const keys = d0.pauseKeys || '';   // what the SDK really bound (the game's init can override the metadata)
@@ -227,8 +229,9 @@ async function checkGame(g, browser) {
       await wait(200); const v2 = await dbg();
       if (!(v1?.paused && v1.reason === 'hidden')) fails.push('a hidden tab did not pause');
       if (v2?.paused) fails.push('coming back to the tab did not resume');
-      if (!animating) notes.push('the scene was not moving before the pause, so the freeze itself was not seen');
-      set('U04', fails.length ? 'FAIL' : (animating ? 'PASS' : 'REVIEW'), fails.length ? fails.join('; ') : ['Pause froze picture, clock and audio' + (tipShown ? ', menu showed a tip' : ''), ...keyNote, ...notes].join('; ') + '.');
+      if (animating === null) notes.push('screenshots timed out before the pause, so motion was not measured');
+      else if (!animating) notes.push('the scene was not moving before the pause, so the freeze itself was not seen');
+      set('U04', fails.length ? 'FAIL' : (animating && freezeMeasured ? 'PASS' : 'REVIEW'), fails.length ? fails.join('; ') : ['Pause froze picture, clock and audio' + (tipShown ? ', menu showed a tip' : ''), ...keyNote, ...notes].join('; ') + '.');
       // ---- U08 sound ----
       await page.locator('#gmute').click({ timeout: 3000 }).catch(() => {});
       await wait(250);
