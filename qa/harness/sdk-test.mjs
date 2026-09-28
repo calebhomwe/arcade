@@ -72,7 +72,23 @@ check('cleared timers never run', await page.evaluate(() => window.cancelled) ==
   check('sfx with a missing kit is silent, not an error', r === 'ok', r);
 }
 
-// 7. Pause keys: 'esc' binds only Escape, 'p' only P, 'p+esc' both.
+// 7. Web Animations (element.animate) hold while paused and play again on resume; the menu's own keep running.
+{
+  await page.evaluate(() => { window.__box = document.createElement('div'); document.body.appendChild(window.__box); window.__anim = window.__box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 5000 }); });
+  await wait(200);
+  const r1 = await page.evaluate(() => { const menu = document.getElementById('arcade-sdk'); window.__menuAnim = menu ? menu.animate([{ opacity: 1 }, { opacity: 1 }], { duration: 5000 }) : null; ArcadeSDK.pause(); return { t: window.__anim.currentTime, held: ArcadeSDK.debug().heldAnims, state: window.__anim.playState }; });
+  await wait(600);
+  const r2 = await page.evaluate(() => ({ t: window.__anim.currentTime, menu: window.__menuAnim && window.__menuAnim.playState }));
+  check('element.animate holds while paused', r1.state === 'paused' && r1.held >= 1 && Math.abs(r2.t - r1.t) < 1, `held=${r1.held} moved ${Math.round(r2.t - r1.t)} ms`);
+  check("the menu's own animations keep running", r2.menu === 'running', 'menu=' + r2.menu);   // the menu exists: tests above paused
+  await page.evaluate(() => ArcadeSDK.resume());
+  await wait(300);
+  const r3 = await page.evaluate(() => ({ t: window.__anim.currentTime, state: window.__anim.playState, held: ArcadeSDK.debug().heldAnims }));
+  check('element.animate plays again on resume', r3.state === 'running' && r3.t > r1.t + 100 && r3.held === 0, `state=${r3.state} +${Math.round(r3.t - r1.t)} ms`);
+  await page.evaluate(() => { window.__anim.cancel(); window.__box.remove(); window.__menuAnim && window.__menuAnim.cancel(); });
+}
+
+// 8. Pause keys: 'esc' binds only Escape, 'p' only P, 'p+esc' both.
 for (const [keys, pressP, pressEsc] of [['esc', false, true], ['p', true, false], ['p+esc', true, true]]) {
   await page.evaluate(k => ArcadeSDK.init({ pauseKeys: k }), keys);
   const r = await page.evaluate(() => {

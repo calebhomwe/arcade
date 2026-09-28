@@ -492,7 +492,8 @@ function play() {
   let started = false;
   function start() {
     if (started) return; started = true;
-    splash.classList.add('gone'); load.classList.remove('off'); $('#loadtxt').textContent = 'Loading ' + g.title + '…';
+    splash.classList.add('gone'); setTimeout(() => { splash.style.display = 'none'; }, 400);   // its pulse stops painting over the frame
+    load.classList.remove('off'); $('#loadtxt').textContent = 'Loading ' + g.title + '…';
     // A game tagged 'mic' also gets microphone access; the browser still asks the player.
     if (mic) frame.allow = frame.allow + '; microphone';
     frame.hidden = false; frame.title = g.title; frame.src = g.src;

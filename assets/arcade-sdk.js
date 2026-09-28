@@ -229,11 +229,31 @@
     if (on) { paused = true; soft = true; reason = 'game'; } else { paused = false; soft = false; reason = ''; }
     post('state', { paused: paused, reason: reason }); log(on ? 'pause' : 'resume', { reason: 'game', soft: true });
   }
-  var freezeEl = null;
+  var freezeEl = null, heldAnims = [];
   function freezeCss(on) {   // CSS animations stop with the game; the menu keeps its own
     try {
       if (on && !freezeEl) { freezeEl = el('style', { id: 'arcade-sdk-freeze', text: 'body *:not(#arcade-sdk):not(#arcade-sdk *):not(#arcade-sdk-btn){animation-play-state:paused!important}' }); (D.head || D.documentElement).appendChild(freezeEl); }
       else if (!on && freezeEl) { freezeEl.remove(); freezeEl = null; }
+    } catch (e) {}
+    freezeAnims(on);
+  }
+  // Web Animations (element.animate) and CSS transitions run on the document timeline, which the
+  // stylesheet above does not reach: hold the running ones and play exactly those again on resume.
+  // CSS animations are left to the stylesheet, so a game that sets animation-play-state keeps control.
+  function freezeAnims(on) {
+    try {
+      if (on) {
+        if (!D.getAnimations) return;
+        D.getAnimations().forEach(function (a) {
+          if (a.playState !== 'running' || (W.CSSAnimation && a instanceof W.CSSAnimation)) return;
+          var t = a.effect && a.effect.target;
+          if (t && t.nodeType === 1 && ((root && root.contains(t)) || t.id === 'arcade-sdk-btn')) return;
+          try { a.pause(); heldAnims.push(a); } catch (e) {}
+        });
+      } else {
+        var list = heldAnims; heldAnims = [];
+        list.forEach(function (a) { try { if (a.playState === 'paused') a.play(); } catch (e) {} });
+      }
     } catch (e) {}
   }
   // One capture-phase key listener. While the menu is open the game gets no keys, and Esc or P
@@ -420,7 +440,7 @@
       return { version: V, paused: paused, soft: soft, reason: reason, pauseKeys: pauseKeys, muted: muted, cheated: cheated, clock: vnow(), raw: rawNow(), pausedTotal: pausedTotal, caps: caps(), meta: !!meta.title,
         audio: Array.from(ctxs).map(function (c) { var m = masters.get(c); return { state: c.state, master: m ? m.gain.value : null }; }),
         media: Array.from(media).map(function (el) { return { muted: el.muted, paused: el.paused }; }),
-        gl: glTypes.slice(), frames: frames.size, timers: timers.size, events: events.slice(-40), menu: panel };
+        gl: glTypes.slice(), frames: frames.size, timers: timers.size, heldAnims: heldAnims.length, events: events.slice(-40), menu: panel };
     }
   };
   W.ArcadeSDK = api;
