@@ -944,8 +944,8 @@
    "ext": false,
    "src": "MathsKart/index.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -953,7 +953,7 @@
     "touch": true,
     "usesP": false,
     "usesEsc": true,
-    "ownPause": false,
+    "ownPause": true,
     "sdk": true,
     "sdkInit": true
    },
@@ -985,25 +985,30 @@
     "hints": "HINT button (H, or the arcade Hint): a make-a-ten, number-line, skip-count or next-sound nudge for the current balloon question; a wrong balloon also shows one",
     "grown-up-progress-report": "FOR GROWN-UPS on the menu (all time) and on the Race Complete card (this race): skills practised, accuracy, words to practise and what to practise next",
     "tutorial": "Four-step coach on the first race (drive, boost pads, answer balloons, items); skip it or replay it from the menu",
-    "results": "Race Complete card: placement, best lap, answer streak, correct / asked and the grown-up report"
+    "results": "Race Complete card: placement, best lap, answer streak, correct / asked and the grown-up report",
+    "3d-race": "Chase camera behind a 3D kart on a looping track with kerbs, grandstands and a start gantry; three rival karts with name tags; a minimap",
+    "juice": "Balloons pop into confetti, boost flames, speed lines and a wider view on a rocket boost, drift smoke and sparks, a hop and dizzy stars on a spin-out, a countdown swing-round and a victory camera"
    },
    "settings": {
-    "quality": "Menu > GRAPHICS: HIGH / LOW (Low draws at three-quarter resolution for slower devices; the choice is remembered)"
+    "quality": "Menu > GRAPHICS: HIGH / LOW (Low turns off shadows, clouds and texture filtering, draws at 1x resolution with fewer roadside props and particles; a device with no graphics chip starts on Low; the choice is remembered)"
    },
    "saves": [
     "mathskart_meta_v1",
     "mk_learn"
    ],
    "start": "#bPlay",
+   "render": "three-3d",
    "authored": [
     "controls",
     "difficulty",
     "features",
     "howto",
     "pauseButton",
+    "render",
     "saves",
     "settings",
     "start",
+    "tier",
     "tips"
    ]
   },
