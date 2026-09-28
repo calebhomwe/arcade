@@ -109,6 +109,17 @@ async function checkGame(g, browser) {
   page.on('console', m => { if (!ev.closed && m.type() === 'error' && inGame(m.location().url || '')) ev.console.push(m.text().slice(0, 300)); });
   page.on('response', r => { if (!ev.closed && r.status() >= 400 && inGame(r.url())) ev.failed.push(r.status() + ' ' + r.url().replace(BASE, '')); });
   page.on('requestfailed', r => { const u = r.url(); if (!ev.closed && inGame(u) && !/favicon/.test(u)) ev.failed.push((r.failure()?.errorText || 'failed') + ' ' + u.replace(BASE, '')); });
+  // Fraction of pixels whose colour moved by more than 24 (of 255) in any channel; null if the decode failed.
+  const pixelDiff = (a, b) => page.evaluate(async ([x, y]) => {
+    const load = async b64 => { const r = await fetch('data:image/jpeg;base64,' + b64); return createImageBitmap(await r.blob()); };
+    const [i1, i2] = await Promise.all([load(x), load(y)]);
+    if (i1.width !== i2.width || i1.height !== i2.height) return 1;
+    const c = new OffscreenCanvas(i1.width, i1.height), g = c.getContext('2d');
+    g.drawImage(i1, 0, 0); const d1 = g.getImageData(0, 0, c.width, c.height).data;
+    g.clearRect(0, 0, c.width, c.height); g.drawImage(i2, 0, 0); const d2 = g.getImageData(0, 0, c.width, c.height).data;
+    let n = 0; for (let i = 0; i < d1.length; i += 4) if (Math.abs(d1[i] - d2[i]) > 24 || Math.abs(d1[i + 1] - d2[i + 1]) > 24 || Math.abs(d1[i + 2] - d2[i + 2]) > 24) n++;
+    return n / (d1.length / 4);
+  }, [a.toString('base64'), b.toString('base64')]).catch(() => null);
   const shot = async (name) => { const p = path.join(shots, `${g.id}-${name}.jpg`); try { const b = await page.locator('#frame').screenshot({ type: 'jpeg', quality: 55, timeout: 8000 }); await fs.writeFile(p, b); ev.shots[name] = path.relative(out, p); return b; } catch { return null; } };
   const host = () => page.evaluate(() => { const h = window.ArcadeHost || {}; return { ready: h.ready, caps: h.caps, paused: h.paused, muted: h.muted, acks: h.acks || [], events: h.events || [] }; });
   let f = null;
@@ -150,7 +161,8 @@ async function checkGame(g, browser) {
     await wait(600);
     // Moving = two frames differ. Software rendering under load can be slow, so look a few times.
     // true = moving, false = still, null = not measured (every screenshot pair had a timeout).
-    const moving = async (tag) => { let a = await shot(tag + '-a'), seen = false; for (let i = 0; i < 3; i++) { await wait(700); const b = await shot(tag + '-b'); if (a && b) { seen = true; if (!a.equals(b)) return true; } a = b; } return seen ? false : null; };
+    // Moving means at least 0.1% of pixels changed beyond JPEG noise (see pixelDiff), the same bar as the freeze check.
+    const moving = async (tag) => { let a = await shot(tag + '-a'), seen = false; for (let i = 0; i < 3; i++) { await wait(700); const b = await shot(tag + '-b'); if (a && b) { seen = true; if (!a.equals(b)) { const f = await pixelDiff(a, b); if (f == null || f >= 0.001) return true; } } a = b; } return seen ? false : null; };
     const animating = await moving('2-playing');
 
     if (!hasSdk) {
@@ -190,10 +202,14 @@ async function checkGame(g, browser) {
       if (d1?.paused && !d0.caps.ownPauseUI && !menuOn) fails.push('no pause menu appeared');
       const p1 = await shot('4-paused'); await wait(1500); const p2 = await shot('5-paused-later');
       const d2 = await dbg();
-      const freezeMeasured = !!(p1 && p2), frozen = freezeMeasured && p1.equals(p2);   // a timed-out screenshot is not "moving"
+      const freezeMeasured = !!(p1 && p2);   // a timed-out screenshot is not "moving"
+      // Frozen = byte-identical, or under 0.1% of pixels changed by more than a JPEG-noise margin
+      // (a blurred menu backdrop can re-encode a few bytes differently with nothing moving).
+      let frozen = freezeMeasured && p1.equals(p2), changedFrac = frozen ? 0 : null;
+      if (freezeMeasured && !frozen) { changedFrac = await pixelDiff(p1, p2); frozen = changedFrac != null && changedFrac < 0.001; }
       if (!freezeMeasured) notes.push('a paused screenshot timed out, so the freeze itself was not measured');
       if (d1?.paused && !d1.soft && d2.clock !== d1.clock) fails.push('the game clock kept running while paused');
-      if (d1?.paused && animating && freezeMeasured && !frozen) fails.push('the picture kept moving while paused');
+      if (d1?.paused && animating && freezeMeasured && !frozen) fails.push('the picture kept moving while paused' + (changedFrac != null ? ' (' + (changedFrac * 100).toFixed(2) + '% of pixels changed)' : ''));
       const audioRunning = (d2?.audio || []).filter(a => a.state === 'running').length;
       if (d1?.paused && !d1.soft && audioRunning) fails.push(audioRunning + ' audio context(s) kept running');
       const tipShown = await f.locator('#arcade-sdk .tip').count().catch(() => 0);
