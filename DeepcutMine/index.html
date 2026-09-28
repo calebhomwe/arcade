@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>DEEPCUT</title>
+<style>
+  :root{ --ink:#120d0a; --rock:#3a2c22; --dirt:#6b4f36; --gold:#e6b455; --ember:#e2725b;
+         --paper:#f3e7d3; --muted:#a08a72; --good:#8fbf6a; --bad:#e2725b; }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);
+    font-family:ui-monospace,Consolas,"DejaVu Sans Mono",monospace;-webkit-user-select:none;user-select:none;touch-action:none}
+  #cv{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+  .panel{position:fixed;background:rgba(18,13,10,.82);border:1px solid rgba(243,231,211,.16);
+    border-radius:12px;backdrop-filter:blur(5px)}
+  #hud{left:10px;top:10px;padding:9px 12px;z-index:6;min-width:210px}
+  #hud .row{display:flex;justify-content:space-between;gap:12px;font-size:11px;margin:3px 0;align-items:center}
+  .bar{height:8px;border-radius:5px;background:#2a2018;overflow:hidden;width:110px}
+  .bar i{display:block;height:100%;width:100%;transition:width .12s}
+  #fuelBar i{background:var(--gold)} #hullBar i{background:var(--good)} #cargoBar i{background:#8fb0d8}
+  #cash{font-size:20px;color:var(--gold);font-weight:800}
+  #depth{font-size:12px;color:var(--muted)}
+  #shop{right:10px;top:10px;width:216px;padding:11px;z-index:6;max-height:calc(100vh - 20px);overflow:auto;
+    transition:transform .18s ease,opacity .18s ease}
+  #shop.away{transform:translateX(240px);opacity:0;pointer-events:none}
+  #shop h3{margin:0 0 8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .up{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#231a13;
+    border:1px solid rgba(243,231,211,.12);border-radius:9px;padding:8px;margin-bottom:6px;cursor:pointer;
+    font-size:11px;min-height:44px}
+  .up:hover{border-color:var(--gold)}
+  .up b{display:block;font-size:12px}
+  .up small{color:var(--muted);font-size:10px}
+  .up .cost{color:var(--gold);font-weight:800;white-space:nowrap}
+  .up.poor{opacity:.45}
+  #pad{left:50%;bottom:14px;transform:translateX(-50%);z-index:6;padding:6px;display:grid;
+    grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,52px);gap:6px}
+  .pk{border-radius:11px;border:1px solid rgba(243,231,211,.18);background:rgba(243,231,211,.08);
+    display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--paper)}
+  .pk:active{background:rgba(230,180,85,.35)}
+  #toast{position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:40;pointer-events:none;
+    font-weight:900;font-size:19px;opacity:0;transition:opacity .18s;text-shadow:0 3px 12px #000;
+    max-width:min(92vw,460px);text-align:center;line-height:1.25;word-break:break-word}
+  #toast.on{opacity:1}
+  #title{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;background:radial-gradient(circle at 50% 30%,#2b1f16,#0d0906 70%)}
+  #title h1{font-size:clamp(34px,9vw,74px);margin:0;letter-spacing:.08em;color:var(--gold);
+    text-shadow:0 5px 0 #5a3f22, 0 12px 30px #000}
+  #title p{color:var(--muted);font-size:13px;margin:10px 0 22px;max-width:520px;text-align:center;line-height:1.7;padding:0 18px}
+  .btn{padding:14px 34px;border-radius:12px;border:0;background:var(--gold);color:#2a1c0c;font-weight:900;
+    font-size:16px;letter-spacing:.08em;cursor:pointer;font-family:inherit}
+  .btn:active{transform:scale(.97)}
+  #stats{display:flex;gap:14px;margin-top:20px;flex-wrap:wrap;justify-content:center}
+  #stats div{background:rgba(243,231,211,.06);border:1px solid rgba(243,231,211,.14);border-radius:10px;padding:8px 14px;text-align:center}
+  #stats b{display:block;font-size:19px;color:var(--gold)} #stats span{font-size:9px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+  @media (max-width:560px){
+    /* 390px cannot afford a 150px shop rail AND readable gameplay: shrink it and let it scroll. */
+    #shop{width:126px;padding:7px;max-height:56vh;overflow:auto}
+    #shop h3{font-size:9px;letter-spacing:.1em}
+    /* every buyable row is a tap target: 44px minimum, same as the d-pad */
+    .up{padding:6px 7px;font-size:10px;min-height:44px}
+    .up b{font-size:11px}
+    .up small{display:none}
+    #hud{min-width:132px;padding:7px 9px}
+    #hud .row{font-size:10px}
+    .bar{width:62px}
+    #cash{font-size:17px}
+    #toast{font-size:16px;top:13%}
+    #pad{grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,46px)}
+  }
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div class="panel" id="hud">
+  <div id="cash">$0</div>
+  <div id="depth">0 m</div>
+  <div class="row"><span>FUEL</span><div class="bar" id="fuelBar"><i></i></div></div>
+  <div class="row"><span>HULL</span><div class="bar" id="hullBar"><i></i></div></div>
+  <div class="row"><span>CARGO</span><div class="bar" id="cargoBar"><i></i></div></div>
+  <div class="row"><span id="comboTxt" style="color:var(--gold)"></span></div>
+</div>
+
+<div class="panel" id="shop">
+  <h3>Surface shop</h3>
+  <div id="upgrades"></div>
+  <div style="font-size:10px;color:var(--muted);margin-top:8px;line-height:1.6">
+    Dig with ARROWS / WASD / the pad.<br>Climb to the surface to sell and refuel.
+  </div>
+  <button class="btn" id="btnShareShop" style="width:100%;margin-top:8px;padding:10px;font-size:11px;background:transparent;border:1px solid var(--gold);color:var(--gold)">SAVE SCORE CARD</button>
+</div>
+
+<div class="panel" id="pad">
+  <div></div><div class="pk" data-d="up">&#9650;</div><div></div>
+  <div class="pk" data-d="left">&#9664;</div><div class="pk" data-d="down">&#9660;</div><div class="pk" data-d="right">&#9654;</div>
+</div>
+
+<div id="toast"></div>
+
+<div id="title">
+  <h1>DEEPCUT</h1>
+  <p>One drill. Two thousand metres of rock. Dig, sell, upgrade, go deeper - and do not run the tank dry down there.</p>
+  <p style="font-size:11px;color:var(--muted)" id="seedLine"></p>
+  <button class="btn" id="btnPlay">START DIGGING</button>
+  <button class="btn" id="btnShare" style="margin-top:10px;background:transparent;border:1px solid var(--gold);color:var(--gold)">SAVE A SCORE CARD</button>
+  <div id="stats"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+var SAVE_KEY = 'deepcut_save_v1';
+var TS = 34;                       // tile size in px - re-derived in fit() so the shaft fills the viewport
+var COLS = 28;
+
+/* ---------------------------------------------------------------- audio */
+var AU = (function(){
+  var files = { dig:'audio/dig.mp3', ore:'audio/ore.mp3', rare:'audio/rare.mp3', lava:'audio/lava.mp3',
+                sell:'audio/sell.mp3', buy:'audio/buy.mp3', bed:'audio/bed.mp3' };
+  var pool = {};
+  function voices(k){ if(!pool[k]){ var e=[]; for(var i=0;i<3;i++){ var a=new Audio();
+      a.preload='none'; a.src=files[k]; a.volume=0.001; e.push(a); } pool[k]={e:e,i:0}; } return pool[k]; }
+  function play(k, vol, rate){ if(!files[k]) return; var p=voices(k);
+    var a=p.e[p.i]; p.i=(p.e.length?1:0)+((p.i+1)%p.e.length); try{
+      a.pause(); a.currentTime=0; a.volume=Math.min(1, vol==null?0.7:vol); a.playbackRate=rate||1;
+      var pr=a.play(); if(pr&&pr.catch) pr.catch(function(){});
+    }catch(err){} }
+  return { play:play };
+})();
+
+/* --------------------------------------------------------------- world */
+var ORES = [
+  { id:'copper',   name:'Copper',    val:5,       col:'#c87f4a', hard:1.0, from:0,    to:9999, chance:0.180 },
+  { id:'tin',      name:'Tin',       val:12,      col:'#b9c4cc', hard:1.1, from:40,   to:9999, chance:0.120 },
+  { id:'iron',     name:'Iron',      val:30,      col:'#9aa3ad', hard:1.3, from:80,   to:9999, chance:0.100 },
+  { id:'silver',   name:'Silver',    val:90,      col:'#dfe6ee', hard:1.5, from:150,  to:9999, chance:0.070 },
+  { id:'gold',     name:'Gold',      val:300,     col:'#e6b455', hard:1.7, from:250,  to:9999, chance:0.040 },
+  { id:'platinum', name:'Platinum',  val:1200,    col:'#cfe9f5', hard:2.0, from:450,  to:9999, chance:0.020 },
+  { id:'emerald',  name:'Emerald',   val:5000,    col:'#57d98a', hard:2.4, from:700,  to:9999, chance:0.012 },
+  { id:'ruby',     name:'Ruby',      val:20000,   col:'#e2485c', hard:2.8, from:900,  to:9999, chance:0.006 },
+  { id:'diamond',  name:'Diamond',   val:100000,  col:'#bff3ff', hard:3.2, from:1100, to:9999, chance:0.0025 },
+  { id:'void',     name:'Voidstone', val:1000000, col:'#b07ce8', hard:4.0, from:1400, to:9999, chance:0.0005 }
+];
+var LAYERS = [
+  { from:0,   name:'Topsoil',  bg:'#6b4f36', hard:0.55, hazard:0    },
+  { from:40,  name:'Shale',    bg:'#4d4a45', hard:0.80, hazard:0    },
+  { from:120, name:'Granite',  bg:'#3f4550', hard:1.10, hazard:0.01 },
+  { from:260, name:'Basalt',   bg:'#33343d', hard:1.45, hazard:0.03 },
+  { from:500, name:'Obsidian', bg:'#26232e', hard:1.85, hazard:0.06 },
+  { from:850, name:'Magma',    bg:'#3a2018', hard:2.30, hazard:0.11 },
+  { from:1300,name:'Void',     bg:'#1b1526', hard:2.90, hazard:0.07 }
+];
+function layerAt(r){ var L=LAYERS[0]; for(var i=0;i<LAYERS.length;i++){ if(r>=LAYERS[i].from) L=LAYERS[i]; } return L; }
+
+/* ---- DAILY SEED ---- The hub launches cabinets with ?seed=<daily hash>. Use it to seed world
+   generation so the same day gives the same mine for everyone; without it the seed stays random. */
+var URLSEED = (function(){ try{ var m = /[?&]seed=(\d+)/.exec(location.search); return m ? (parseInt(m[1],10)>>>0) : null; }
+  catch(e){ return null; } })();
+var _rng = URLSEED === null ? ((Math.random()*4294967296)>>>0) : URLSEED;
+function rnd(){
+  _rng = (_rng + 0x6D2B79F5) | 0;
+  var t = Math.imul(_rng ^ (_rng >>> 15), 1 | _rng);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+var world = null;   // sparse: key "c,r" -> tile
+function key(c,r){ return c + ',' + r; }
+var MAX_DEPTH = 2000, BEDROCK = 2;
+
+function makeTile(c, r){
+  if(r <= 1) return null;                             // open surface / sky
+  if(r >= MAX_DEPTH) return { t:'bedrock', hard:99 };
+  if(c < 0 || c >= COLS) return { t:'bedrock', hard:99 };
+  var L = layerAt(r);
+  // random cave
+  if(rnd() < 0.045) return null;
+  var roll = rnd();
+  // hazard first
+  if(roll < L.hazard){
+    return rnd() < 0.5 ? { t:'lava', hard:1.4 } : { t:'gas', hard:0.8 };
+  }
+  // ore
+  var oc = 0;
+  for(var i=0;i<ORES.length;i++){
+    var o = ORES[i];
+    if(r >= o.from){ oc += o.chance; if(rnd() < o.chance) return { t:'ore', ore:o, hard:o.hard*L.hard }; }
+  }
+  return { t:'rock', hard:L.hard * (0.9 + rnd()*0.3) };
+}
+function tileAt(c,r){
+  if(r <= 1) return null;
+  var k = key(c,r);
+  if(!(k in world)) world[k] = makeTile(c,r);
+  return world[k];
+}
+function setTile(c,r,v){ world[key(c,r)] = v; }
+
+/* --------------------------------------------------------------- state */
+var S = null;
+function fresh(){
+  return {
+    cash: 0, best: 0,
+    up: { drill:0, cargo:0, fuel:0, hull:0, radiator:0, lamp:0 },
+    p: { x: Math.floor(COLS/2), y: 0 },
+    fuel: 100, hull: 100, cargo: [], depth: 0, deepest: 0,
+    combo: 0, comboT: 0, runs: 0
+  };
+}
+function load(){ try{ var s = localStorage.getItem(SAVE_KEY); if(s){ var o = JSON.parse(s); if(o && o.up) return o; } }catch(e){} return null; }
+/* Shared purse: the hub (hub/index.html) keeps hub_save_v1 on the SAME origin, so any
+   cabinet can credit it directly. This is what makes "one coin purse" real rather than
+   decorative. Silently no-ops when there is no hub save. */
+function hubCredit(n){
+  n = Math.max(0, Math.round(n||0)); if(!n) return;
+  try{
+    var raw = localStorage.getItem('hub_save_v1');
+    if(!raw) return;
+    var h = JSON.parse(raw);
+    if(!h || h.v !== 1) return;
+    h.coins = (h.coins||0) + n;
+    localStorage.setItem('hub_save_v1', JSON.stringify(h));
+  }catch(e){}
+}
+function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+
+/* ---------------------------------------------------------------- tuning */
+var UP = {
+  drill:    { name:'Drill',    base:50,  desc:'digs faster' },
+  cargo:    { name:'Cargo',    base:75,  desc:'+4 ore slots' },
+  fuel:     { name:'Fuel tank',base:100, desc:'+55 fuel' },
+  hull:     { name:'Hull',     base:120, desc:'+30 hull' },
+  radiator: { name:'Radiator', base:500, desc:'lava resist' },
+  lamp:     { name:'Lamp',     base:60,  desc:'see further' }
+};
+function upCost(k){ var lv = S.up[k]; return Math.round(UP[k].base * Math.pow(2.2, lv)); }
+function drillSpeed(){ return 1.6 + S.up.drill * 0.55; }
+function cargoMax(){ return 8 + S.up.cargo * 4; }
+function fuelMax(){ return 100 + S.up.fuel * 55; }
+function hullMax(){ return 100 + S.up.hull * 30; }
+function lavaRes(){ return Math.min(0.8, S.up.radiator * 0.16); }
+function lampR(){ return 3.4 + S.up.lamp * 0.9; }
+function cargoValue(){ var v=0; for(var i=0;i<S.cargo.length;i++) v += S.cargo[i].val; return v; }
+
+/* --------------------------------------------------------------- juice */
+var shake = 0, hitstop = 0, parts = [], floats = [];
+var pool = [];   // pre-allocated particle refs (no per-frame allocation)
+function shakeAdd(a){ shake = Math.min(1.4, shake + a); }
+function hit(a){ hitstop = Math.max(hitstop, a); }
+function burst(px, py, col, n, spread){
+  for(var i=0;i<(n||8);i++){
+    parts.push({ x:px, y:py, vx:(Math.random()-.5)*(spread||160), vy:(Math.random()-.9)*(spread||160),
+                 life:0.5+Math.random()*0.45, col:col, s:2+Math.random()*3 });
+  }
+  if(parts.length > 320) parts.splice(0, parts.length-320);
+}
+function popText(px, py, txt, col){ floats.push({ x:px, y:py, t:txt, col:col||'#e6b455', life:1.0 }); }
+function stepJuice(dt){
+  for(var i=parts.length-1;i>=0;i--){ var p=parts[i]; p.life-=dt;
+    if(p.life<=0){ parts.splice(i,1); continue; }
+    p.vy += 420*dt; p.x += p.vx*dt; p.y += p.vy*dt; }
+  for(var j=floats.length-1;j>=0;j--){ var f=floats[j]; f.life-=dt; f.y -= 26*dt;
+    if(f.life<=0) floats.splice(j,1); }
+  if(shake>0) shake = Math.max(0, shake - dt*2.6);
+}
+
+/* ----------------------------------------------------------------- cam */
+var cam = { x:0, y:0 };
+function fit(){ var dpr = Math.min(2, devicePixelRatio||1);
+  cv.width = Math.floor(innerWidth*dpr); cv.height = Math.floor(innerHeight*dpr);
+  cv.style.width = innerWidth+'px'; cv.style.height = innerHeight+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  /* The shaft is COLS tiles wide. At a fixed 34px it only covered 952px of a 1280px viewport, which
+     left dead gutters and made the player a speck. Size a tile so the shaft spans the viewport, with a
+     floor so a narrow phone still gets a comfortably tappable tile (and simply scrolls sideways). */
+  TS = Math.max(34, Math.min(74, innerWidth / COLS));
+}
+addEventListener('resize', fit); fit();
+
+/* ---------------------------------------------------------------- input */
+var keys = {};
+addEventListener('keydown', function(e){
+  keys[e.key.toLowerCase()] = true;
+  if(['arrowup','arrowdown','arrowleft','arrowright',' '].indexOf(e.key.toLowerCase())>=0) e.preventDefault();
+});
+addEventListener('keyup', function(e){ keys[e.key.toLowerCase()] = false; });
+var tdir = null;
+Array.prototype.forEach.call(document.querySelectorAll('.pk'), function(b){
+  function on(e){ e.preventDefault(); tdir = b.getAttribute('data-d'); }
+  function off(e){ e.preventDefault(); if(tdir === b.getAttribute('data-d')) tdir = null; }
+  b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off);
+  b.addEventListener('pointerleave', off); b.addEventListener('pointercancel', off);
+});
+function inputDir(){
+  if(tdir) return tdir;
+  if(keys['arrowleft']||keys['a']) return 'left';
+  if(keys['arrowright']||keys['d']) return 'right';
+  if(keys['arrowup']||keys['w']) return 'up';
+  if(keys['arrowdown']||keys['s']) return 'down';
+  return null;
+}
+
+/* ----------------------------------------------------------------- dig */
+var dig = { dir:null, t:0, need:0 };
+function tryDig(dir, dt){
+  var p = S.p, nc = p.x, nr = p.y;
+  if(dir==='left') nc--; else if(dir==='right') nc++;
+  else if(dir==='up') nr--; else if(dir==='down') nr++;
+  if(nc < 0 || nc >= COLS) return;
+  if(nr < 0) return;
+  var t = tileAt(nc, nr);
+  if(t === null){ p.x = nc; p.y = nr; dig.t = 0; return; }        // open cave
+  if(t.t === 'bedrock'){ return; }
+  if(dig.dir !== dir || dig.c !== nc || dig.r !== nr){ dig.dir = dir; dig.c = nc; dig.r = nr; dig.t = 0;
+    dig.need = t.hard / drillSpeed(); }
+  /* The title promises 'do not run the tank dry' and the shop sells a $100 fuel tank, so running
+     dry has to actually cost something: 3x slower cutting and the drill strains the hull. Slow
+     rather than a hard stop, so a player can always crawl back to the surface. */
+  var dry = S.fuel <= 0;
+  dig.t += dt * (dry ? 0.34 : 1);
+  if(dry){ S.hull = Math.max(0, S.hull - dt * 2.4);
+    if(!S._dryWarn || performance.now() - S._dryWarn > 2500){ S._dryWarn = performance.now();
+      toast('OUT OF FUEL - the drill is straining', '#e2725b'); } }
+  // chip feedback while digging
+  if(Math.random() < dt*9){ burst((nc+0.5)*TS, (nr+0.5)*TS, t.t==='ore'? t.ore.col : '#7a5c40', 2, 90);
+    AU.play('dig', 0.16, 0.9 + Math.random()*0.25); }
+  if(dig.t >= dig.need){
+    // break it
+    dig.t = 0;
+    if(t.t === 'lava'){ p.x = nc; p.y = nr; hurt(26*(1-lavaRes()), 'BURNED');
+      burst((nc+0.5)*TS,(nr+0.5)*TS, '#e2725b', 16, 200); shakeAdd(0.55); hit(0.07); AU.play('lava',0.7); return; }
+    if(t.t === 'gas'){ p.x = nc; p.y = nr; S.fuel = Math.max(0, S.fuel - 26);
+      popText((nc+0.5)*TS,(nr+0.5)*TS,'GAS','#9fd8ff'); toast('Gas pocket - fuel lost', '#9fd8ff'); AU.play('lava',0.5,0.7); }
+    if(t.t === 'ore'){
+      /* A streak that cannot pay is decoration: each ore in a live streak is worth 5% more
+         (capped at +60%), and a burn/cargo-full still zeroes it. */
+      var v = Math.round(t.ore.val * (1 + 0.05*Math.min(S.combo, 12)));
+      if(S.cargo.length < cargoMax()){ S.cargo.push({ id:t.ore.id, val:v, col:t.ore.col });
+        var rare = v >= 1200;
+        popText((nc+0.5)*TS,(nr+0.5)*TS, '+$' + v.toLocaleString(), t.ore.col);
+        burst((nc+0.5)*TS,(nr+0.5)*TS, t.ore.col, rare?22:10, rare?260:150);
+        shakeAdd(rare?0.7:0.18); hit(rare?0.07:0.035);
+        S.combo++; S.comboT = 2.2;
+        var pn = Math.min(S.combo, 12);
+        AU.play(rare?'rare':'ore', 0.5, (0.85 + pn*0.06));
+        if(rare){ toast(t.ore.name + '!', t.ore.col); }
+      } else {
+        popText((nc+0.5)*TS,(nc+0.5)*TS, 'CARGO FULL', '#e2725b');
+        toast('Cargo full - climb to the surface', '#e2725b');
+      }
+    } else {
+      burst((nc+0.5)*TS,(nr+0.5)*TS, '#7a5c40', 8, 140); shakeAdd(0.12); hit(0.03);
+    }
+    setTile(nc, nr, null);
+    p.x = nc; p.y = nr;
+  }
+}
+function hurt(n, why){
+  S.hull = Math.max(0, S.hull - n);
+  popText((S.p.x+0.5)*TS, (S.p.y+0.5)*TS, '-' + Math.round(n), '#e2725b');
+  shakeAdd(0.5); hit(0.09);
+  if(S.hull <= 0){ toast('DRILL WRECKED - ' + (why||''), '#e2725b'); respawn(); }
+}
+function respawn(){
+  // lose half the cargo, return to the surface with a repaired but damaged hull
+  S.cargo = S.cargo.slice(0, Math.floor(S.cargo.length/2));
+  S.p.x = Math.floor(COLS/2); S.p.y = 0;
+  S.hull = hullMax()*0.6; S.fuel = Math.max(S.fuel, 25);
+  S.combo = 0;
+}
+
+/* ---------------------------------------------------------- surface shop */
+var atSurface = function(){ return S.p.y <= 1; };
+var lastSell = 0;
+function surfaceTick(){
+  if(!atSurface()) return;
+  if(S.cargo.length){ var v = cargoValue(); S.cash += v; lastSell = v;
+    popText(innerWidth/2, 120, '+$' + v.toLocaleString(), '#8fbf6a');
+    toast('Sold $' + v.toLocaleString(), '#8fbf6a'); AU.play('sell', 0.8);
+    hubCredit(Math.round(v * 0.1));   // 10% of every haul feeds the shared hub purse
+    if(v > S.best) S.best = v;
+    S.cargo = []; persist(); }
+  if(S.fuel < fuelMax()){ S.fuel = Math.min(fuelMax(), S.fuel + 34*0.016*60*0.016*60);
+    S.fuel = Math.min(fuelMax(), S.fuel + 0.9); }
+  if(S.hull < hullMax()) S.hull = Math.min(hullMax(), S.hull + 0.5);
+}
+function buyUpgrade(k){
+  var c = upCost(k);
+  if(S.cash < c){ toast('Need $' + c.toLocaleString(), '#e2725b'); return; }
+  S.cash -= c; S.up[k]++; persist(); renderShop(); renderHUD();
+  AU.play('buy', 0.7); toast(UP[k].name + ' Lv ' + S.up[k], '#e6b455');
+}
+function renderShop(){
+  var box = document.getElementById('upgrades'); if(!box) return;
+  box.innerHTML = '';
+  Object.keys(UP).forEach(function(k){
+    var d = document.createElement('div');
+    var c = upCost(k), poor = S.cash < c;
+    d.className = 'up' + (poor?' poor':'');
+    d.innerHTML = '<div><b>' + UP[k].name + '</b><small>Lv ' + S.up[k] + ' &middot; ' + UP[k].desc + '</small></div>' +
+                  '<div class="cost">$' + c.toLocaleString() + '</div>';
+    d.onclick = function(){ buyUpgrade(k); };
+    box.appendChild(d);
+  });
+}
+/* Cheap HUD: nodes are looked up once at boot and text is only written when it changes, so the
+   render loop never forces a style/layout pass on an unchanged frame. */
+var elCash = document.getElementById('cash'), elDepth = document.getElementById('depth'),
+    elFuel = document.getElementById('fuelBar').firstChild, elHull = document.getElementById('hullBar').firstChild,
+    elCargo = document.getElementById('cargoBar').firstChild, elCombo = document.getElementById('comboTxt'),
+    elShop = document.getElementById('shop');
+var hudLast = { cash:'', depth:'', combo:'' };
+var shopAway = false;
+function syncShopVisibility(){
+  var away = !atSurface();
+  if(away !== shopAway){ shopAway = away; elShop.classList.toggle('away', away); }
+}
+function streakPct(){ return Math.round(5 * Math.min(S.combo, 12)); }
+function setTxt(el, key, v){ if(hudLast[key] !== v){ hudLast[key] = v; el.textContent = v; } }
+function renderHUD(){
+  setTxt(elCash, 'cash', '$' + Math.round(S.cash).toLocaleString());
+  setTxt(elDepth, 'depth', S.p.y + ' m  (deepest ' + S.deepest + ')');
+  elFuel.style.width = (100*S.fuel/fuelMax()) + '%';
+  elHull.style.width = (100*S.hull/hullMax()) + '%';
+  elCargo.style.width = (100*S.cargo.length/cargoMax()) + '%';
+  /* the streak starts paying at x2, so it is worth showing before it is large */
+  setTxt(elCombo, 'combo', S.combo >= 2 ? ('STREAK x' + S.combo + '  +' + streakPct() + '%') : '');
+}
+var toastEl = document.getElementById('toast');
+function toast(msg, col){ toastEl.textContent = msg; toastEl.style.color = col||'#e6b455';
+  toastEl.classList.add('on'); clearTimeout(toast._h); toast._h = setTimeout(function(){ toastEl.classList.remove('on'); }, 1000); }
+
+/* ------------------------------------------------------------------- ui */
+var mode = 'title';
+function startGame(){
+  if(!S) S = fresh(); else { S.p.x = Math.floor(COLS/2); S.p.y = 0; }
+  world = {};
+  mode = 'play';
+  document.getElementById('title').style.display = 'none';
+  renderShop(); renderHUD();
+  AU.play('buy', 0.5);
+  if(!S.bedOn){ S.bedOn = 1; try{ var b = new Audio('audio/bed.mp3'); b.loop = true; b.volume = 0.18;
+    var pr = b.play(); if(pr&&pr.catch) pr.catch(function(){}); }catch(e){} }
+}
+document.getElementById('btnPlay').onclick = startGame;
+
+/* ----------------------------------------------------------- share card
+   A plain-PNG dig record: canvas 2D only, no library, no network, no external
+   font. It prints the same figures as the title's own stat tiles. */
+function drawCard(g){
+  g.fillStyle = '#120d0a'; g.fillRect(0, 0, 880, 520);
+  g.fillStyle = '#3a2c22'; g.fillRect(0, 0, 880, 96);
+  g.fillStyle = '#e6b455'; g.font = "800 26px ui-monospace,Consolas,'DejaVu Sans Mono',monospace";
+  g.fillText('DEEPCUT', 40, 46);
+  g.fillStyle = '#f3e7d3'; g.font = "600 14px ui-monospace,Consolas,monospace";
+  g.fillText('ONE DRILL  ·  2000 m OF ROCK', 40, 74);
+  /* headline number: deepest depth reached */
+  g.fillStyle = '#e6b455'; g.font = "800 78px ui-monospace,Consolas,monospace";
+  g.fillText(S.deepest + ' m', 40, 252);
+  g.fillStyle = '#e2725b'; g.font = "700 15px ui-monospace,Consolas,monospace";
+  g.fillText('DEEPEST', 44, 280);
+  var upLevels = 0; for (var k in S.up) upLevels += (S.up[k] || 0);
+  var rows = [['CASH', '$' + Math.round(S.cash).toLocaleString()],
+              ['BEST HAUL', '$' + S.best.toLocaleString()],
+              ['CARGO VALUE', '$' + cargoValue().toLocaleString()],
+              ['UPGRADES', upLevels + ' bought']];
+  for (var i = 0; i < rows.length; i++) {
+    var y = 340 + i * 40;
+    g.fillStyle = '#a08a72'; g.font = "700 15px ui-monospace,Consolas,monospace";
+    g.fillText(rows[i][0], 40, y);
+    g.fillStyle = '#f3e7d3'; g.font = "800 24px ui-monospace,Consolas,monospace";
+    g.fillText(String(rows[i][1]), 400, y);
+  }
+  g.fillStyle = '#a08a72'; g.font = "500 13px ui-monospace,Consolas,monospace";
+  g.fillText(new Date().toLocaleDateString(), 40, 500);
+  g.textAlign = 'right'; g.fillText('current run ' + S.p.y + ' m  ·  deepcut', 840, 500); g.textAlign = 'left';
+}
+function saveCard(){
+  try{
+    var c = document.createElement('canvas'); c.width = 880; c.height = 520;
+    drawCard(c.getContext('2d'));
+    c.toBlob(function(blob){
+      if(!blob) return;
+      var u = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = u; a.download = 'deepcut-' + S.deepest + 'm.png';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+    }, 'image/png');
+  }catch(e){}
+}
+document.getElementById('btnShare').onclick = saveCard;
+document.getElementById('btnShareShop').onclick = saveCard;
+window.__shareCard = saveCard;   /* test hook: same function the button calls */
+
+/* ----------------------------------------------------------------- draw */
+function roundRect(g,x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r);
+  g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+
+function draw(){
+  var W = innerWidth, H = innerHeight;
+  ctx.save();
+  if(shake > 0){ var m = shake*9; ctx.translate((Math.random()-.5)*m, (Math.random()-.5)*m); }
+
+  // camera target
+  // Fill everything outside the 28-column shaft so it reads as solid ground, not dead black.
+  var lb = layerAt(Math.max(2, Math.round(cam.y/TS)+8)).bg;
+  ctx.fillStyle = lb; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = 'rgba(0,0,0,.55)';
+  ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  var mineL = 0*TS - cam.x, mineR = COLS*TS - cam.x;
+  ctx.fillRect(0,0,Math.max(0,mineL),H);
+  ctx.fillRect(Math.max(0,mineR),0,W,H);
+
+  var tx = (S.p.x+0.5)*TS - W/2, ty = (S.p.y+0.5)*TS - H/2;
+  cam.x += (tx - cam.x) * 0.16; cam.y += (ty - cam.y) * 0.16;
+  if(S.p.y <= 2) cam.y += (-cam.y) * 0.0;
+  if(S.p.y <= 2){ var wantY = -H*0.30; cam.y += (wantY - cam.y)*0.16; }
+
+  var c0 = Math.floor(cam.x/TS)-1, c1 = Math.ceil((cam.x+W)/TS)+1;
+  var r0 = Math.max(0, Math.floor(cam.y/TS)-1), r1 = Math.ceil((cam.y+H)/TS)+1;
+
+  // sky / surface
+  var skyG = ctx.createLinearGradient(0,0,0,Math.max(140, -cam.y + 150));
+  skyG.addColorStop(0,'#1b2533'); skyG.addColorStop(1,'#4a3a28');
+  ctx.fillStyle = skyG; ctx.fillRect(0,0,W,Math.max(0, (2*TS) - cam.y));
+  if(cam.y < 2*TS){
+    ctx.fillStyle = '#2c2118';
+    ctx.fillRect(0, TS - cam.y, W, TS);
+    ctx.fillStyle = 'rgba(243,231,211,.25)';
+    for(var i=0;i<14;i++){ var hx = (i*97 - cam.x*0.4) % (W+80);
+      ctx.fillRect(hx, TS - cam.y - 20 - (i%3)*8, 3, 20 + (i%3)*8); }
+  }
+
+  // tiles
+  var lamp = lampR();
+  for(var r=r0;r<=r1;r++){
+    for(var c=c0;c<=c1;c++){
+      if(c<0||c>=COLS) continue;
+      var t = tileAt(c,r);
+      if(t === null) continue;
+      var x = c*TS - cam.x, y = r*TS - cam.y;
+      // darkness falloff
+      var dx = (c+0.5) - (S.p.x+0.5), dy = (r+0.5) - (S.p.y+0.5);
+      var dist = Math.sqrt(dx*dx+dy*dy);
+      var lit = Math.max(0, 1 - dist/lamp);
+      if(t.t === 'bedrock'){ ctx.fillStyle = '#0e0b09'; ctx.fillRect(x,y,TS,TS); continue; }
+      var base = (t.t==='lava') ? '#7a2a14' : (t.t==='gas') ? '#2f4a44' : layerAt(r).bg;
+      ctx.fillStyle = base; ctx.fillRect(x,y,TS,TS);
+      ctx.fillStyle = 'rgba(0,0,0,' + (0.62*(1-lit)).toFixed(3) + ')'; ctx.fillRect(x,y,TS,TS);
+      if(lit <= 0.02) continue;
+      // texture
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.05*lit).toFixed(3) + ')';
+      ctx.fillRect(x+3, y+3, TS-6, 2);
+      if(t.t === 'ore'){
+        if(Math.random()<0.04) burst(x+TS/2,y+TS/2,t.ore.col,1,40);
+        ctx.fillStyle = t.ore.col; ctx.globalAlpha = 0.35 + 0.65*lit;
+        ctx.beginPath(); ctx.arc(x+TS*0.36, y+TS*0.40, TS*0.20, 0, 6.3); ctx.fill();
+        ctx.beginPath(); ctx.arc(x+TS*0.64, y+TS*0.62, TS*0.14, 0, 6.3); ctx.fill();
+        ctx.globalAlpha = 1;
+        if(t.ore.val >= 1200){ ctx.strokeStyle = t.ore.col; ctx.lineWidth = 1.5;
+          ctx.globalAlpha = 0.5 + 0.5*Math.sin(performance.now()/260); ctx.strokeRect(x+1.5,y+1.5,TS-3,TS-3); ctx.globalAlpha = 1; }
+      } else if(t.t === 'lava'){
+        ctx.fillStyle = 'rgba(255,140,60,' + (0.35 + 0.3*Math.sin(performance.now()/220 + c)).toFixed(2) + ')';
+        ctx.fillRect(x+2, y+2, TS-4, TS-4);
+      } else if(t.t === 'gas'){
+        ctx.fillStyle = 'rgba(140,220,190,.18)'; ctx.beginPath();
+        ctx.arc(x+TS/2, y+TS/2, TS*0.30, 0, 6.3); ctx.fill();
+      }
+      // dig progress on the target tile
+      if(dig.c===c && dig.r===r && dig.need>0){
+        var f = dig.t/dig.need;
+        ctx.strokeStyle = '#100c08'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(x+TS*0.2, y+TS*0.35); ctx.lineTo(x+TS*0.45, y+TS*0.55);
+        ctx.moveTo(x+TS*0.55, y+TS*0.30); ctx.lineTo(x+TS*0.8, y+TS*0.62); ctx.stroke();
+        ctx.fillStyle = '#e6b455'; ctx.fillRect(x, y+TS-4, TS*f, 3);
+      }
+    }
+  }
+
+  // drill
+  var px = S.p.x*TS - cam.x, py = S.p.y*TS - cam.y;
+  ctx.fillStyle = '#c9552f'; roundRect(ctx, px+3, py+3, TS-6, TS-6, 7); ctx.fill();
+  ctx.fillStyle = '#f0a35c'; roundRect(ctx, px+7, py+7, TS-14, TS-16, 4); ctx.fill();
+  ctx.fillStyle = '#2a1c0c'; ctx.beginPath(); ctx.arc(px+TS*0.5, py+TS*0.62, 3.4, 0, 6.3); ctx.fill();
+  // headlight cone
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  var lg = ctx.createRadialGradient(px+TS/2, py+TS/2, 4, px+TS/2, py+TS/2, lamp*TS*0.55);
+  lg.addColorStop(0,'rgba(255,214,150,.16)'); lg.addColorStop(1,'rgba(255,214,150,0)');
+  ctx.fillStyle = lg; ctx.beginPath(); ctx.arc(px+TS/2, py+TS/2, lamp*TS*0.55, 0, 6.3); ctx.fill();
+  ctx.restore();
+
+  // particles
+  for(var i=0;i<parts.length;i++){ var q=parts[i];
+    ctx.globalAlpha = Math.max(0, Math.min(1, q.life*2)); ctx.fillStyle = q.col;
+    ctx.fillRect(q.x - cam.x, q.y - cam.y, q.s, q.s); }
+  ctx.globalAlpha = 1;
+  // floats
+  ctx.font = '700 14px ui-monospace,Consolas,monospace'; ctx.textAlign = 'center';
+  for(var j=0;j<floats.length;j++){ var f=floats[j];
+    ctx.globalAlpha = Math.max(0, Math.min(1, f.life));
+    ctx.fillStyle = '#000'; ctx.fillText(f.t, f.x - cam.x + 1, f.y - cam.y + 1);
+    ctx.fillStyle = f.col; ctx.fillText(f.t, f.x - cam.x, f.y - cam.y); }
+  ctx.globalAlpha = 1; ctx.textAlign = 'left';
+
+  // depth ruler
+  ctx.fillStyle = 'rgba(243,231,211,.30)'; ctx.font = '600 11px ui-monospace,monospace';
+  for(var rr=r0; rr<=r1; rr++){ if(rr>0 && rr % 25 === 0){
+    var yy = rr*TS - cam.y; ctx.fillText(rr + 'm', 6, yy); ctx.fillRect(34, yy-4, 12, 1); } }
+
+  ctx.restore();
+}
+
+/* ---------------------------------------------------------------- loop */
+var acc = 0, last = performance.now(), hudAcc = 0;
+function frame(now){
+  requestAnimationFrame(frame);
+  var raw = Math.min(0.1, (now-last)/1000); last = now;
+  var dt = raw;
+  if(hitstop > 0){ hitstop -= raw; dt = raw*0.22; }
+  if(mode === 'play'){
+    var dir = inputDir();
+    if(dir) tryDig(dir, dt);
+    else dig.t = 0;
+    // fuel burn
+    S.fuel = Math.max(0, S.fuel - dt*(dir?1.55:0.55));
+    if(S.fuel <= 0 && dir){ popText((S.p.x+.5)*TS,(S.p.y+.5)*TS,'NO FUEL','#e2725b'); }
+    if(S.p.y > S.deepest){ S.deepest = S.p.y; }
+    S.depth = S.p.y;
+    // hazards near lava
+    if(S.p.y > 1){ var near = tileAt(S.p.x, S.p.y);
+      if(near && near.t === 'lava') hurt(30*(1-lavaRes())*dt, 'LAVA'); }
+    // oxygen deep
+    if(S.p.y > 850){ S.fuel = Math.max(0, S.fuel - dt*0.35); }
+    if(S.comboT > 0){ S.comboT -= dt; if(S.comboT <= 0) S.combo = 0; }
+    surfaceTick();
+    syncShopVisibility();
+    hudAcc += raw; if(hudAcc >= 0.1){ hudAcc = 0; renderHUD(); }
+  }
+  stepJuice(dt);
+  draw();
+}
+requestAnimationFrame(frame);
+
+/* ---------------------------------------------------------------- boot */
+S = load() || fresh();
+renderShop(); renderHUD();
+(function(){ var sl=document.getElementById('seedLine');
+  if(sl) sl.textContent = URLSEED===null ? 'free dig - random mine' : ('DAILY SEED ' + URLSEED + ' - same mine for everyone today'); })();
+world = {}; tileAt(1,3);
+document.getElementById('stats').innerHTML =
+  '<div><b>$' + Math.round(S.cash).toLocaleString() + '</b><span>Cash</span></div>' +
+  '<div><b>' + S.deepest + 'm</b><span>Deepest</span></div>' +
+  '<div><b>$' + S.best.toLocaleString() + '</b><span>Best haul</span></div>';
+
+window.__DEBUG = {
+  state: function(){ return { mode:mode, cash:Math.round(S.cash), depth:S.p.y, deepest:S.deepest,
+                              fuel:Math.round(S.fuel), hull:Math.round(S.hull), cargo:S.cargo.length,
+                              cargoMax:cargoMax(), combo:S.combo, upgrades:S.up }; },
+  start: function(){ startGame(); },
+  grant: function(n){ S.cash += n; persist(); renderHUD(); renderShop(); return S.cash; },
+  digDown: function(times){ for(var i=0;i<(times||10);i++){
+      window.__DEBUG.force('down'); } return S.p.y; },
+  /* deterministic dig used by headless tests, bypassing input */
+  force: function(dir){ var saved=dig.dir; dig.dir=null; tryDig(dir, 99); return S.p.y; },
+  toSurface: function(){ S.p.y = 0; return true; },
+  /* Hash the generated world so a test can prove the daily seed is deterministic. */
+  worldHash: function(n){
+    var h = 2166136261 >>> 0, c = 0, lim = n || 3000;
+    for(var r = 2; r < 240 && c < lim; r++){
+      for(var col = 0; col < COLS && c < lim; col++, c++){
+        var t = tileAt(col, r);
+        var v = (t === null) ? 0 : (t.t === 'ore' ? (t.ore.val + 1) : (t.t === 'lava' ? 997 : (t.t === 'gas' ? 998 : 1)));
+        h ^= v; h = Math.imul(h, 16777619) >>> 0;
+      }
+    }
+    return h;
+  },
+  seedInfo: function(){ return { urlSeed: URLSEED }; },
+  setFuel: function(n){ S.fuel = Math.max(0, Math.min(fuelMax(), Number(n)||0)); renderHUD(); return S.fuel; },
+  setHull: function(n){ S.hull = Math.max(0, Math.min(hullMax(), Number(n)||0)); renderHUD(); return S.hull; },
+  sell: function(){ surfaceTick(); return Math.round(S.cash); },
+  cargoVals: function(){ return S.cargo.map(function(c){ return { id:c.id, val:c.val }; }); },
+  upgrade: function(k){ buyUpgrade(k); return S.up[k]; },
+  wipe: function(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} S = fresh(); }
+};
+})();
+</script>
+</body>
+</html>

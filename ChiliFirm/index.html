@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2a1140">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 12c7 0 11 6 9 14-2 9-11 16-22 17 5-5 7-11 7-18 0-8 1-13 6-13z' fill='%23ef2b24' stroke='%231e0b22' stroke-width='3.2'/%3E%3Cpath d='M20 12c3-3 9-3 12 0-3 2-9 2-12 0z' fill='%233fbf3f' stroke='%231e0b22' stroke-width='2.6'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/lilita-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin>
+<title>Chili Firm 2: Replanted</title>
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body class="day">
+<div id="world">
+  <div class="wallbg"></div>
+  <div class="floorbg"></div>
+  <div id="scene"></div>
+  <div class="vig"></div>
+</div>
+<header id="hud"></header>
+<div id="quest" data-action="quest-toggle"></div>
+<div id="event-chip" data-action="event-toggle" hidden></div>
+<div id="ticker"></div>
+<div id="roomname"></div>
+<button class="roomnav l" data-action="room" data-dir="-1" aria-label="Previous room"></button>
+<button class="roomnav r" data-action="room" data-dir="1" aria-label="Next room"></button>
+<nav id="dock"></nav>
+<button id="mainbtn" data-action="main"></button>
+<div id="panel-root"></div>
+<div id="dlg"></div>
+<div id="celebrate"></div>
+<div id="toasts"></div>
+<div id="fx"></div>
+<div id="title"></div>
+<script src="js/core/defs.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/logic.js"></script>
+<script src="js/story/story.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui/art.js"></script>
+<script src="js/content/expansion1.js"></script>
+<script src="js/content/expansion2.js"></script>
+<script src="js/ui/juice.js"></script>
+<script src="js/ui/scene.js"></script>
+<script src="js/ui/panels.js"></script>
+<script src="js/ui/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

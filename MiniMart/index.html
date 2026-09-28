@@ -708,6 +708,15 @@
         /* Responsive */
         @media (max-width: 900px) {
             .layout { grid-template-columns: 1fr; }
+            /* grid items default to min-width:auto, so the 1fr column was being
+               forced out to its widest child's min-content width (383px) and
+               overflowed the 326px container. min-width:0 lets it shrink. */
+            .layout > * { min-width: 0; }
+            /* the header is `row nowrap`: its title and its control group were
+               laid out side by side and the selects were pushed past the right
+               edge. Let it wrap so the controls drop to their own line. */
+            .page-header { flex-wrap: wrap; }
+            .page-header > * { min-width: 0; }
             .sidebar { position: static; }
             .header-content { flex-wrap: wrap; }
             .search-bar { order: 3; max-width: 100%; width: 100%; }

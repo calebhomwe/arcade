@@ -205,7 +205,7 @@ export function start(root, api) {
       if (answer.length) strip.append(el('span', {
         style:'align-self:center;font-family:var(--display);font-size:1.15rem;margin-left:8px'
       }, '→ ' + answer.map(k => M[k].t).join('')));
-      bank.replaceChildren(bankKeys.map((k, i) => el('button', {
+      bank.replaceChildren(...bankKeys.map((k, i) => el('button', {
         class:'chip' + (answer.includes(k) ? ' used' : ''),
         onclick: () => { if (!answer.includes(k)) { answer.push(k); api.Sound.click(); paint(); } }
       }, M[k].t)));

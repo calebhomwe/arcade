@@ -835,7 +835,8 @@ function drawPlayer(p,tt){
   ctx.fillStyle='#e8e0d0';ctx.fillRect(x+(p.face>0?14:2),p.y+6,8,8); /* helm visor */
   ctx.fillStyle='#a33';ctx.fillRect(x+10,p.y-6,4,8);            /* plume */
   const lg=Math.sin(p.anim*8)*(p.onG&&Math.abs(p.vx)>20?4:0);
-  ctx.fillStyle='#223';
+  /* legs were #223 against the #0b0d12 backdrop — all but invisible while running */
+  ctx.fillStyle='#5a6b95';
   ctx.fillRect(x+3,p.y+18+Math.max(0,lg),8,16-Math.max(0,lg));
   ctx.fillRect(x+13,p.y+18+Math.max(0,-lg),8,16-Math.max(0,-lg));
   ctx.fillStyle='#543';ctx.fillRect(x+(p.face>0?24:-6),p.y+8,6,4); /* torch */

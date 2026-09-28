@@ -181,7 +181,7 @@ export function start(root, api) {
       strip.replaceChildren();
       if (!chosen.length) strip.append(el('span', { class:'note' }, 'Tap blocks below to build your sentence…'));
       chosen.forEach((p, i) => strip.append(tile(p, true, i)));
-      tiles.replaceChildren(bank.map(p =>
+      tiles.replaceChildren(...bank.map(p =>
         el('div', { style: chosen.includes(p) ? 'opacity:.28;pointer-events:none' : '' }, tile(p, false))));
       preview.textContent = compose(chosen) || '—';
       check.disabled = !chosen.length;

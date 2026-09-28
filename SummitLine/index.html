@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b1a30">
+<title>Summit Line — Snowboard Racing</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m8 3 4 8 5-5 5 15H2L8 3z'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.min.js"}}</script>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="vignette"></div>
+
+<!-- loading -->
+<div id="loading" class="screen show">
+  <div class="load-inner">
+    <div class="logo small"><span class="logo-a">SUMMIT</span><span class="logo-b">LINE</span></div>
+    <div class="load-bar"><i id="loadFill"></i></div>
+    <div class="load-txt" id="loadTxt">Loading the mountain</div>
+  </div>
+</div>
+
+<!-- title -->
+<div id="title" class="screen">
+  <div class="title-top">
+    <div class="logo"><span class="logo-a">SUMMIT</span><span class="logo-b">LINE</span></div>
+    <div class="tagline"><svg class="ic"><use href="#i-mountain"/></svg>Aiguille Noire &middot; 2.0 km downhill race &middot; 4 riders</div>
+  </div>
+  <div class="menu">
+    <button class="btn primary" id="btnPlay"><svg class="ic"><use href="#i-play"/></svg><span>Drop in</span></button>
+    <button class="btn" id="btnControls"><svg class="ic"><use href="#i-keyboard"/></svg><span>Controls</span></button>
+    <div class="row">
+      <button class="btn small" id="btnQuality"><svg class="ic"><use href="#i-gauge"/></svg><span id="qualityLbl">Quality: Medium</span></button>
+      <button class="btn small icon-only" id="btnSound" aria-label="Sound"><svg class="ic"><use href="#i-vol"/></svg></button>
+    </div>
+    <div class="best" id="bestLbl"></div>
+  </div>
+  <div class="credit">Photo-scanned trees, rock and sky from Poly Haven (CC0) &middot; rider base mesh by Quaternius (CC0)</div>
+</div>
+
+<!-- controls help -->
+<div id="help" class="screen panel-screen">
+  <div class="panel">
+    <div class="panel-h"><svg class="ic"><use href="#i-keyboard"/></svg>Controls<button class="close" id="helpClose" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button></div>
+    <div class="help-grid">
+      <div class="help-col">
+        <h3><svg class="ic"><use href="#i-keyboard"/></svg>Keyboard</h3>
+        <dl>
+          <dt><kbd>A</kbd><kbd>D</kbd> / <kbd>&larr;</kbd><kbd>&rarr;</kbd></dt><dd>Carve left / right &middot; spin in the air</dd>
+          <dt><kbd>W</kbd> / <kbd>&uarr;</kbd></dt><dd>Tuck for speed &middot; front flip in the air</dd>
+          <dt><kbd>S</kbd> / <kbd>&darr;</kbd></dt><dd>Brake (skid) &middot; back flip in the air</dd>
+          <dt><kbd>Space</kbd></dt><dd>Hold to crouch, release to ollie</dd>
+          <dt><kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd></dt><dd>Grabs in the air: Indy, Melon, Method</dd>
+          <dt><kbd>Shift</kbd></dt><dd>Boost (fill the meter with tricks)</dd>
+          <dt><kbd>Esc</kbd> / <kbd>P</kbd></dt><dd>Pause</dd>
+        </dl>
+      </div>
+      <div class="help-col">
+        <h3><svg class="ic"><use href="#i-phone"/></svg>Touch</h3>
+        <dl>
+          <dt>Left thumb pad</dt><dd>Steer, tuck and brake &middot; spin and flip in the air</dd>
+          <dt>JUMP</dt><dd>Hold to crouch, release to ollie</dd>
+          <dt>GRAB</dt><dd>Hold in the air for a grab</dd>
+          <dt>BOOST</dt><dd>Burn the boost meter</dd>
+        </dl>
+        <h3><svg class="ic"><use href="#i-trophy"/></svg>Scoring</h3>
+        <p>Land spins, flips, grabs and rail grinds to score and fill boost. Land with the board lined up with your direction of travel or you will crash. Beat the three rivals to the finish arch. Rail points bank only after a clean landing. Try the beginner jump at 90 metres.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div class="hud-tl">
+    <div class="pos"><span id="hudPos">1</span><sup id="hudPosSuf">st</sup><small>/4</small></div>
+    <div class="timer"><svg class="ic"><use href="#i-timer"/></svg><span id="hudTime">0:00.00</span></div>
+  </div>
+  <div class="hud-tr">
+    <div class="speed"><span id="hudSpeed">0</span><small>km/h</small></div>
+    <div class="score"><span id="hudScore">0</span><small>pts</small></div>
+  </div>
+  <div class="progress"><div class="track"><i id="progFill"></i></div><div id="progDots"></div><svg class="ic flag"><use href="#i-flag"/></svg></div>
+  <div class="boost"><svg class="ic"><use href="#i-zap"/></svg><div class="boost-bar"><i id="boostFill"></i></div></div>
+  <div id="trickPop" class="trick-pop"></div>
+  <div id="combo" class="combo"></div>
+  <div id="countdown" class="countdown"></div>
+  <button class="pause-btn" id="btnPause" aria-label="Pause"><svg class="ic"><use href="#i-pause"/></svg></button>
+</div>
+
+<!-- touch controls -->
+<div id="touch" class="hidden">
+  <div class="stick" id="stick" role="application" aria-label="Carve and brake thumb pad"><div class="knob" id="knob"></div></div>
+  <div class="tbtns">
+    <button class="tbtn grab" id="tGrab">GRAB</button>
+    <button class="tbtn boostb" id="tBoost" aria-label="Boost"><svg class="ic"><use href="#i-zap"/></svg></button>
+    <button class="tbtn jump" id="tJump">JUMP</button>
+  </div>
+</div>
+
+<!-- pause -->
+<div id="pause" class="screen panel-screen">
+  <div class="panel narrow">
+    <div class="panel-h">Paused</div>
+    <div class="menu">
+      <button class="btn primary" id="btnResume"><svg class="ic"><use href="#i-play"/></svg><span>Resume</span></button>
+      <button class="btn" id="btnRestart"><svg class="ic"><use href="#i-restart"/></svg><span>Restart run</span></button>
+      <button class="btn" id="btnPauseHelp"><svg class="ic"><use href="#i-keyboard"/></svg><span>Controls</span></button>
+      <button class="btn" id="btnQuit"><svg class="ic"><use href="#i-back"/></svg><span>Quit to title</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- results -->
+<div id="results" class="screen panel-screen">
+  <div class="panel results">
+    <div class="res-head">
+      <div class="medal" id="resMedal"><svg class="ic"><use href="#i-medal"/></svg><span id="resPlace">1st</span></div>
+      <div>
+        <div class="res-title" id="resTitle">Run complete</div>
+        <div class="res-sub" id="resSub">Aiguille Noire &middot; Red Run 7</div>
+      </div>
+      <div class="rank" id="resRank">A</div>
+    </div>
+    <div class="res-stats">
+      <div class="stat"><small>Time</small><b id="resTime">0:00.00</b></div>
+      <div class="stat"><small>Trick score</small><b id="resScore">0</b></div>
+      <div class="stat"><small>Top speed</small><b id="resTop">0 km/h</b></div>
+      <div class="stat"><small>Air time</small><b id="resAir">0.0 s</b></div>
+      <div class="stat wide"><small>Best trick</small><b id="resBest">-</b></div>
+    </div>
+    <div class="res-board" id="resBoard"></div>
+    <div class="menu row">
+      <button class="btn primary" id="btnAgain"><svg class="ic"><use href="#i-restart"/></svg><span>Race again</span></button>
+      <button class="btn" id="btnTitle"><svg class="ic"><use href="#i-back"/></svg><span>Title</span></button>
+    </div>
+  </div>
+</div>
+
+<div id="flash"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/><path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/><path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+    <symbol id="i-mountain" viewBox="0 0 24 24"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/><path d="M4.14 15.08c2.62-1.57 5.24-1.43 7.86.42 2.74 1.94 5.49 2 8.23.19"/></symbol>
+    <symbol id="i-vol" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="M11 4.702a.7.7 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.7.7 0 0 0 11 19.298z"/><path d="m16.5 14.5 5-5"/><path d="m16.5 9.5 5 5"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/></symbol>
+    <symbol id="i-medal" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol>
+  </defs>
+</svg>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
+

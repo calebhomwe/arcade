@@ -1,0 +1,1431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>SneakerDrop - Hype Market Tycoon</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;width:100%;background:#05060a;overflow:hidden;
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;color:#eaf0ff;
+    -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;}
+  #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
+  #stage{position:relative;box-shadow:0 0 0 1px #1b2333,0 24px 80px rgba(0,0,0,.85);background:#0a0d16;}
+  canvas{display:block;width:100%;height:100%;touch-action:none;}
+  #ui{position:absolute;inset:0;pointer-events:none;}
+  #ui button{pointer-events:auto;font-family:inherit;-webkit-appearance:none;appearance:none;}
+  #startBtn{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);
+    width:70%;min-height:64px;border:0;border-radius:16px;cursor:pointer;
+    background:linear-gradient(180deg,#ffe066,#ffa31a);color:#2a1700;font-weight:800;
+    font-size:clamp(15px,4.4vh,26px);letter-spacing:1.5px;
+    box-shadow:0 8px 0 #a35f00,0 14px 30px rgba(0,0,0,.55);}
+  #startBtn:active{transform:translate(-50%,-50%) translateY(4px);box-shadow:0 4px 0 #a35f00;}
+  #sndRow{position:absolute;left:0;right:0;bottom:4%;display:flex;gap:10px;justify-content:center;}
+  #ui .mini{background:#121a2c;color:#9fb0d0;border:1px solid #26334d;border-radius:10px;
+    padding:10px 16px;font-size:13px;font-weight:700;min-height:44px;cursor:pointer;}
+  .hide{display:none !important;}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <canvas id="cv"></canvas>
+  <div id="ui">
+    <div id="titleUI">
+      <button id="startBtn">TAP TO START</button>
+      <div id="sndRow"><button class="mini" id="sndBtn">SOUND: ON</button></div>
+    </div>
+  </div>
+</div></div>
+<script>
+"use strict";
+(function(){
+/* =====================================================================
+   SneakerDrop - a sneaker-resale market sim.
+   hype calendar -> snipe a drop -> hold or flip into a live bid auction
+   -> reinvest in storage / grading / verified-seller reputation.
+   Deterministic seeds; score = profit per week.
+   ===================================================================== */
+
+/* ---------------- persistence (ONE key, never throws) --------------- */
+var SKEY='sneakerdrop_save';
+function loadSave(){try{var r=localStorage.getItem(SKEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function putSave(o){try{localStorage.setItem(SKEY,JSON.stringify(o));}catch(e){}}
+var SAVE=loadSave()||{};
+
+/* ---------------- deterministic rng -------------------------------- */
+function mulberry32(a){var t=a>>>0;return function(){t=(t+0x6D2B79F5)>>>0;var x=t;x=Math.imul(x^(x>>>15),1|x);x=(x+Math.imul(x^(x>>>7),61|x))^x;return ((x^(x>>>14))>>>0)/4294967296;};}
+
+/* ---------------- constants ---------------------------------------- */
+var LW=540,LH=960,FIXED=1/60,WEEKS=10,START_CASH=800;
+var TIER={
+  CORE:{c:'#93a0b8',hype:0.30,speed:0.85,tc:10,mul:1.0},
+  RARE:{c:'#3fa9ff',hype:0.55,speed:1.00,tc:25,mul:1.0},
+  HYPE:{c:'#ff8f2e',hype:0.80,speed:1.15,tc:45,mul:1.0},
+  GRAIL:{c:'#ffd23f',hype:1.15,speed:1.30,tc:70,mul:1.0}};
+var BRANDS={
+  VOLTA:{n:'VOLTA',c1:'#16233f',c2:'#3fd8ff',heat:1.00},
+  KODA:{n:'KODA',c1:'#2a1c14',c2:'#ff6a3d',heat:1.00},
+  RIVET:{n:'RIVET',c1:'#1c2a1e',c2:'#d9c37c',heat:1.00},
+  HALO:{n:'HALO',c1:'#2a1030',c2:'#ff7fd0',heat:1.00}};
+var BK=['VOLTA','KODA','RIVET','HALO'];
+var MODELS=[
+  {id:'aeroflux',n:'AEROFLUX 1',b:'VOLTA',t:'CORE',retail:120,base:108,vol:0.9,hi:0.25,sole:0.9,acc:'#3fd8ff'},
+  {id:'photon',n:'PHOTON RACER',b:'VOLTA',t:'RARE',retail:180,base:268,vol:1.15,hi:0.10,sole:1.15,acc:'#5ce1ff'},
+  {id:'novacage',n:'NOVA CAGE',b:'VOLTA',t:'HYPE',retail:245,base:430,vol:1.35,hi:0.75,sole:1.00,acc:'#7af0ff'},
+  {id:'eclipse',n:'ECLIPSE ZERO',b:'VOLTA',t:'GRAIL',retail:340,base:620,vol:1.5,hi:0.90,sole:1.20,acc:'#a6fbff'},
+  {id:'district',n:'DISTRICT LOW',b:'KODA',t:'CORE',retail:100,base:96,vol:0.85,hi:0.15,sole:0.80,acc:'#ff6a3d'},
+  {id:'block',n:'CONCRETE BLOCK',b:'KODA',t:'RARE',retail:155,base:232,vol:1.1,hi:0.50,sole:1.00,acc:'#ff8b5e'},
+  {id:'nightbus',n:'NIGHTBUS 88',b:'KODA',t:'HYPE',retail:225,base:405,vol:1.3,hi:0.80,sole:0.95,acc:'#ffb37a'},
+  {id:'yarddog',n:'YARD DOG',b:'RIVET',t:'CORE',retail:110,base:118,vol:0.9,hi:0.35,sole:1.05,acc:'#d9c37c'},
+  {id:'gantry',n:'GANTRY MID',b:'RIVET',t:'RARE',retail:165,base:252,vol:1.1,hi:0.30,sole:1.05,acc:'#e8d79a'},
+  {id:'ironwood',n:'IRONWOOD GT',b:'RIVET',t:'HYPE',retail:250,base:455,vol:1.3,hi:0.60,sole:1.25,acc:'#f4e6b4'},
+  {id:'royale',n:'COURT ROYALE',b:'HALO',t:'CORE',retail:130,base:142,vol:0.95,hi:0.60,sole:0.85,acc:'#ff7fd0'},
+  {id:'vellum',n:'VELLUM HIGH',b:'HALO',t:'RARE',retail:190,base:292,vol:1.15,hi:0.85,sole:0.90,acc:'#ff9fdc'},
+  {id:'static',n:'STATIC BLOOM',b:'HALO',t:'HYPE',retail:215,base:376,vol:1.35,hi:0.45,sole:1.10,acc:'#ffc0ea'},
+  {id:'aureum',n:'AUREUM 24K',b:'HALO',t:'GRAIL',retail:340,base:620,vol:1.5,hi:0.95,sole:1.00,acc:'#ffe9a3'}];
+var MIDX={};for(var mi=0;mi<MODELS.length;mi++)MIDX[MODELS[mi].id]=mi;
+
+var UPG={
+  storage:{n:'STORAGE UNIT',d:'+2 pairs of shelf space',base:260,mult:1.85,max:3},
+  grade:{n:'GRADING BENCH',d:'Cheaper fees, better grades',base:300,mult:1.90,max:3},
+  rep:{n:'VERIFIED SELLER',d:'+5% top bids, -1% fees',base:200,mult:2.00,max:5}};
+
+/* ---------------- audio: lazy, built on first play ------------------ */
+var SFX=(function(){
+  var BASE='audio/',VOICES=3;
+  var BANK={snipe_win:'snipe_win.mp3',snipe_miss:'snipe_miss.mp3',bid:'bid.mp3',
+            sold:'sold.mp3',cashout:'cashout.mp3',hype_riser:'hype_riser.mp3',bed:'shop_bed.mp3'};
+  var pools={},bed=null;
+  function voices(n){
+    var p=pools[n];if(p)return p;
+    var els=[],i;
+    for(i=0;i<VOICES;i++){(function(){var a=new Audio();a.preload='none';a.volume=0.001;
+      a.addEventListener('error',function(){pools[n].failed=true;},{once:true});
+      a.addEventListener('loadeddata',function(){pools[n].loaded=true;},{once:true});
+      els.push(a);})();}
+    return (pools[n]={els:els,i:0,failed:false,loaded:false});
+  }
+  function play(n,o){
+    o=o||{};
+    try{
+      var p=voices(n);if(p.failed)return;
+      var a=p.els[p.i];p.i=(p.i+1)%p.els.length;
+      if(a.getAttribute('src')!==BASE+BANK[n])a.src=BASE+BANK[n];
+      try{a.pause();if(a.readyState>0)a.currentTime=0;}catch(e2){}
+      var j=(o.jitter===undefined)?0.05:o.jitter;
+      a.playbackRate=Math.max(0.25,Math.min(4,(o.rate||1)*(1+(Math.random()*2-1)*j)));
+      a.volume=Math.max(0,Math.min(1,(o.vol===undefined?0.8:o.vol)*(o.gain===undefined?1:o.gain)));
+      var pr=a.play();if(pr&&pr.catch)pr.catch(function(){});
+    }catch(e){}
+  }
+  function music(on,vol){
+    try{
+      if(!on){if(bed)bed.pause();return;}
+      if(!bed){bed=new Audio();bed.preload='none';bed.loop=true;bed.volume=0;bed.src=BASE+BANK.bed;}
+      bed.volume=Math.max(0,Math.min(1,vol));
+      var pr=bed.play();if(pr&&pr.catch)pr.catch(function(){});
+    }catch(e){}
+  }
+  function stats(){var o={},n;for(n in BANK){var p=pools[n];o[n]=p?(p.failed?'failed':(p.loaded?'loaded':'pending')):'idle';}return o;}
+  return {play:play,music:music,stats:stats,ready:function(n){var p=pools[n];return p?!!p.loaded:null;}};
+})();
+window.__SFX=SFX;
+var AU={
+  on:(SAVE.snd===undefined?true:!!SAVE.snd),
+  gain:function(){return this.on?1:0;},
+  win:function(){SFX.play('snipe_win',{vol:0.9,gain:this.gain()});},
+  miss:function(){SFX.play('snipe_miss',{vol:0.85,gain:this.gain()});},
+  bid:function(n){SFX.play('bid',{vol:0.7,gain:this.gain(),rate:1+Math.min(n||0,14)*0.035,jitter:0.02});},
+  sold:function(){SFX.play('sold',{vol:0.95,gain:this.gain()});},
+  cash:function(){SFX.play('cashout',{vol:0.9,gain:this.gain()});},
+  riser:function(){SFX.play('hype_riser',{vol:0.75,gain:this.gain(),jitter:0.0});},
+  bed:function(on){SFX.music(this.on&&on!==false,0.20);}
+};
+
+/* ---------------- canvas / layout ---------------------------------- */
+var wrap=document.getElementById('wrap'),stage=document.getElementById('stage'),
+    cv=document.getElementById('cv'),ctx=cv.getContext('2d'),
+    titleUI=document.getElementById('titleUI'),
+    startBtn=document.getElementById('startBtn'),sndBtn=document.getElementById('sndBtn'),
+    ui=document.getElementById('ui');
+/* The 540x960 world keeps its own coordinate space; the canvas now covers the whole
+   viewport and the world is drawn centred inside it, so the phone's letterbox bands and
+   the desktop side gutters become designed space instead of dead black. */
+var scale=1,shakeX=0,shakeY=0,cssW=0,cssH=0;
+var DPR=1,VW=540,VH=960,gs=1,offX=0,offY=0,WIDE=false;
+var RM=(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+var SHAKEK=RM?0:1,PARTK=RM?0.35:1;
+
+function resize(){
+  var aw=Math.max(240,window.innerWidth),ah=Math.max(320,window.innerHeight);
+  DPR=Math.min(2.5,window.devicePixelRatio||1);
+  VW=aw;VH=ah;
+  gs=Math.min(aw/LW,ah/LH);
+  offX=(aw-LW*gs)/2;offY=(ah-LH*gs)/2;
+  WIDE=(offX>=260);                        // only fill gutters when there is real room
+  cssW=aw;cssH=ah;
+  stage.style.width=aw+'px';stage.style.height=ah+'px';
+  cv.width=Math.round(aw*DPR);cv.height=Math.round(ah*DPR);
+  cv.style.width=aw+'px';cv.style.height=ah+'px';
+  scale=gs*DPR;
+  /* the DOM overlay rides the world rect, so buttons stay on their canvas art */
+  ui.style.left=offX+'px';ui.style.top=offY+'px';
+  ui.style.width=Math.round(LW*gs)+'px';ui.style.height=Math.round(LH*gs)+'px';
+}
+window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',function(){setTimeout(resize,120);});
+
+/* ---------------- drawing helpers ---------------------------------- */
+function rr(g,x,y,w,h,r){
+  if(w<0){x+=w;w=-w;}if(h<0){y+=h;h=-h;}
+  r=Math.min(r,Math.abs(w)/2,Math.abs(h)/2);
+  g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);
+  g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();
+}
+function shade(hex,amt){
+  var c=hex.replace('#','');if(c.length===3)c=c.charAt(0)+c.charAt(0)+c.charAt(1)+c.charAt(1)+c.charAt(2)+c.charAt(2);
+  var r=parseInt(c.substr(0,2),16),g2=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);
+  function cl(v){return Math.max(0,Math.min(255,Math.round(v)));}
+  if(amt>0){r=cl(r+(255-r)*amt);g2=cl(g2+(255-g2)*amt);b=cl(b+(255-b)*amt);}
+  else{r=cl(r*(1+amt));g2=cl(g2*(1+amt));b=cl(b*(1+amt));}
+  return 'rgb('+r+','+g2+','+b+')';
+}
+var FONT='"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif';
+function tx(g,s,x,y,size,col,align,weight){
+  /* at 0.75 scale an authored 11px caption lands at ~8px; on a desktop viewport lift the
+     small end of the scale so the market's numbers are readable without zooming */
+  if(WIDE&&size<=13)size=Math.round(size*1.25);
+  g.font=(weight||700)+' '+size+'px '+FONT;
+  g.fillStyle=col;g.textAlign=align||'left';g.textBaseline='middle';g.fillText(s,x,y);
+}
+function money(v){var n=Math.round(v);var neg=n<0;n=Math.abs(n);var s=String(n),out='',c=0,i;
+  for(i=s.length-1;i>=0;i--){out=s.charAt(i)+out;c++;if(c%3===0&&i>0)out=','+out;}
+  return (neg?'-$':'$')+out;}
+function moneyK(v){var n=Math.round(v);if(Math.abs(n)>=10000)return (n<0?'-$':'$')+(Math.abs(n)/1000).toFixed(1)+'k';return money(n);}
+
+/* ---------------- particles / pops (pre-allocated) ------------------ */
+var P_MAX=320,parts=[],pcur=0,pi;
+for(pi=0;pi<P_MAX;pi++)parts.push({live:false,x:0,y:0,vx:0,vy:0,life:0,max:1,col:'#fff',size:3,grav:700});
+function spawn(x,y,vx,vy,life,col,size,grav){
+  var p=parts[pcur];pcur=(pcur+1)%P_MAX;
+  p.live=true;p.x=x;p.y=y;p.vx=vx;p.vy=vy;p.life=life;p.max=life;p.col=col;
+  p.size=size;(p.grav=grav===undefined?700:grav);
+}
+function burst(x,y,n,col,spd,life,size){
+  n=Math.round(n*PARTK);
+  for(var i=0;i<n;i++){
+    var a=Math.random()*Math.PI*2,s=spd*(0.35+Math.random());
+    spawn(x,y,Math.cos(a)*s,Math.sin(a)*s,life*(0.6+Math.random()*0.7),col,size*(0.6+Math.random()*0.9));
+  }
+}
+var pops=[];
+function pop(x,y,text,col,size){pops.push({x:x,y:y,t:text,c:col,s:size||20,life:1.25,max:1.25});if(pops.length>24)pops.shift();}
+
+/* ---------------- state -------------------------------------------- */
+var S={phase:'title',seed:0,over:false};
+function dailySeed(){var d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();}
+function newRun(seed){
+  seed=seed>>>0;
+  S={
+    phase:'market',seed:seed,over:false,
+    day:1,week:1,cash:START_CASH,
+    up:{storage:0,grade:0,rep:0},
+    storage:3,rep:0,
+    inv:[],
+    attempted:false,attempts:0,hits:0,flips:0,
+    streak:0,bestStreak:0,bestFlip:0,worstFlip:0,earned:0,
+    ticker:[],prices:[],
+    trauma:0,timeScale:1,stopT:0,simT:0,
+    snipe:null,auction:null,pairSel:-1,shopMsg:'',shopMsgT:0,scroll:0,scrollTarget:0,
+    confirm:false,summary:null,flash:0,flashCol:'#ff3355'
+  };
+  S.rngM=mulberry32((seed^0x9E3779B9)>>>0);
+  S.rngA=mulberry32((seed^0x85EBCA6B)>>>0);
+  S.rngS=mulberry32((seed^0xC2B2AE35)>>>0);
+  BRANDS.VOLTA.heat=1.0;BRANDS.KODA.heat=1.0;BRANDS.RIVET.heat=1.0;BRANDS.HALO.heat=1.0;
+  S.models=[];
+  for(var i=0;i<MODELS.length;i++){
+    var m=MODELS[i];
+    S.models.push({i:i,id:m.id,n:m.n,b:m.b,t:m.t,retail:m.retail,base:m.base,vol:m.vol,hi:m.hi,sole:m.sole,acc:m.acc,
+      price:m.base*(0.94+S.rngM()*0.10),hype:0,hist:[]});
+  }
+  S.cal=buildCal(S.rngM);
+  for(var k=0;k<S.models.length;k++){
+    S.models[k].hist.push(S.models[k].price);
+    for(var z=0;z<9;z++){S.models[k].hist.unshift(S.models[k].price*(1-0.01*z));}
+    S.models[k].hist.reverse();
+  }
+  applyDayEvents(0,0);
+  marketTick();
+  buildTicker();
+  titleUI.classList.add('hide');
+}
+function sModel(mid){return S.models[MIDX[mid]];}
+function heat(b){return BRANDS[b].heat;}
+function fair(m){return m.base*(0.55+0.45*heat(m.b));}
+function marketValue(m,grade){
+  var mul=grade==='S'?1.5:grade==='A'?1.25:grade==='B'?1.08:1.0;
+  return m.price*mul;
+}
+function heldValue(it){return marketValue(sModel(it.mid),it.grade)*0.92;}
+function netWorth(){var v=S.cash,i;for(i=0;i<S.inv.length;i++)v+=heldValue(S.inv[i]);return v;}
+function elapsedWeeks(){return Math.max(1,(S.week-1)+(S.day-1)/7);}
+function scorePerWeek(){return (netWorth()-START_CASH)/elapsedWeeks();}
+
+/* ---------------- calendar ----------------------------------------- */
+function pickModel(rng){
+  var w=[5,5,5,3,3,2,2,2,0.8];
+  var total=0,i;for(i=0;i<MODELS.length;i++)total+=w[i]||1;
+  var r=rng()*total;
+  for(i=0;i<MODELS.length;i++){r-=(w[i]||1);if(r<=0)return MODELS[i];}
+  return MODELS[0];
+}
+function buildCal(rng){
+  var cal=[],w,d,i,j;
+  for(w=0;w<WEEKS;w++){var wk=[];for(d=0;d<7;d++)wk.push([]);cal.push(wk);}
+  cal[0][0].push({kind:'DROP',mid:'photon',done:false});
+  cal[0][1].push({kind:'DROP',mid:'district',done:false});
+  for(w=0;w<WEEKS;w++){
+    var days=[0,1,2,3,4,5,6];
+    for(i=6;i>0;i--){j=Math.floor(rng()*(i+1));var t=days[i];days[i]=days[j];days[j]=t;}
+    var nd=2+Math.floor(rng()*3);
+    // one drop per model per week: no duplicate silhouettes on the calendar
+    var used={},d0,kk0;
+    for(d0=0;d0<7;d0++)for(kk0=0;kk0<cal[w][d0].length;kk0++)if(cal[w][d0][kk0].kind==='DROP')used[cal[w][d0][kk0].mid]=1;
+    for(i=0;i<nd&&i<7;i++){
+      var di=days[i],has=false,kk;
+      for(kk=0;kk<cal[w][di].length;kk++)if(cal[w][di][kk].kind==='DROP')has=true;
+      if(has)continue;
+      var pm=null,guard=0;
+      while(guard++<40){var cand=pickModel(rng);if(!used[cand.id]){pm=cand;break;}}
+      if(!pm)continue;
+      used[pm.id]=1;
+      cal[w][di].push({kind:'DROP',mid:pm.id,done:false});
+    }
+    var nn=1+Math.floor(rng()*2);
+    for(i=0;i<nn;i++){
+      var di2=days[4+(i%3)];
+      if(cal[w][di2].length>0)continue;
+      var r=rng(),m=pickModel(rng);
+      if(r<0.34)cal[w][di2].push({kind:'HYPE',mid:m.id,done:false,amt:0.35+rng()*0.45});
+      else if(r<0.68)cal[w][di2].push({kind:'RESTOCK',mid:m.id,done:false,amt:0.26+rng()*0.32});
+      else cal[w][di2].push({kind:(rng()<0.5?'HEAT':'COLD'),brand:BK[Math.floor(rng()*4)],done:false,amt:0.12+rng()*0.10});
+    }
+  }
+  return cal;
+}
+function evDay(w,d){if(!S.cal[w]||!S.cal[w][d])return [];return S.cal[w][d];}
+function todayEvents(){return evDay(S.week-1,S.day-1);}
+function todayDrop(){var e=todayEvents(),i;for(i=0;i<e.length;i++)if(e[i].kind==='DROP'&&!e[i].done)return e[i];return null;}
+function applyDayEvents(w,d){
+  var evs=evDay(w,d),i;
+  for(i=0;i<evs.length;i++){
+    var e=evs[i];
+    if(e.kind==='DROP'){var m=sModel(e.mid);m.hype+=TIER[m.t].hype*(0.75+S.rngM()*0.55);}
+    else if(e.kind==='HYPE'){sModel(e.mid).hype+=(e.amt||0.4);}
+    else if(e.kind==='RESTOCK'){sModel(e.mid).hype-=(e.amt||0.3);if(sModel(e.mid).hype<-0.35)sModel(e.mid).hype=-0.35;}
+    else if(e.kind==='HEAT'){BRANDS[e.brand].heat=Math.min(1.6,BRANDS[e.brand].heat+(e.amt||0.15));}
+    else if(e.kind==='COLD'){BRANDS[e.brand].heat=Math.max(0.60,BRANDS[e.brand].heat-(e.amt||0.15));}
+  }
+}
+function marketTick(){
+  for(var i=0;i<S.models.length;i++){
+    var m=S.models[i];
+    m.hype*=0.90;if(Math.abs(m.hype)<0.002)m.hype=0;
+    var target=fair(m)*(1+m.hype);
+    var drift=(S.rngM()-0.5)*0.045*m.vol;
+    m.price+=(target-m.price)*0.22+m.price*drift;
+    if(m.price<8)m.price=8;
+    m.hist.push(m.price);
+    while(m.hist.length>26)m.hist.shift();
+  }
+}
+function buildTicker(){
+  var arr=[],i;
+  for(i=0;i<S.models.length;i++){
+    var m=S.models[i],h=m.hist;
+    var prev=h.length>2?h[h.length-2]:m.price;
+    arr.push({id:m.id,d:(m.price-prev)/Math.max(1,prev)});
+  }
+  arr.sort(function(a,b){return Math.abs(b.d)-Math.abs(a.d);});
+  S.ticker=arr.slice(0,3);
+}
+function weekRoll(){
+  for(var i=0;i<BK.length;i++){
+    var b=BK[i];
+    BRANDS[b].heat=Math.max(0.60,Math.min(1.6,BRANDS[b].heat+(S.rngM()-0.5)*0.16));
+  }
+}
+function advanceDay(){
+  if(S.over||S.phase==='over')return;
+  // defensive: never let a stale modal block the day loop (headless/debug drivers)
+  if(S.phase==='snipe'&&S.snipe)finishSnipe();
+  if(S.phase==='auction'&&S.auction){if(!S.auction.done)hammer();closeAuction();}
+  if(S.phase==='pair'||S.phase==='shop'||S.phase==='confirm')S.phase='market';
+  S.day++;
+  if(S.day>7){S.day=1;S.week++;weekRoll();}
+  if(S.week>WEEKS){endRun(false);return;}
+  applyDayEvents(S.week-1,S.day-1);
+  marketTick();
+  S.attempted=false;
+  buildTicker();
+  S.scrollTarget=0;
+  // anti-softlock: broke and empty-handed earns a pawn-shop shift, never a dead end
+  if(S.cash<60&&S.inv.length===0){S.cash+=45;pop(270,520,'PAWN SHOP SHIFT  +$45','#ffd23f',22);}
+}
+function activeSnipes(){return S.attempts;}
+
+/* ---------------- feel helpers -------------------------------------- */
+function trauma(t){S.trauma=Math.min(1,S.trauma+t);}
+function hitstop(t){S.timeScale=0.12;S.stopT=t;}
+function flash(col){S.flash=1;S.flashCol=col||'#ff3355';}
+/* a blocked action has to say why: the red pulse alone told the player nothing */
+function blocked(msg){pop(270,632,msg,'#ffc2cd',19);S.flashCol='#ff3355';}
+
+/* ---------------- snipe mini-game ----------------------------------- */
+function openSnipe(mid){
+  var m=sModel(mid);
+  if(!m)return;
+  if(S.attempted){ flash('#ff3355'); blocked('ONE SNIPE PER DAY'); return; }
+  if(S.inv.length>=S.storage){flash('#ff3355');blocked('STORAGE FULL - FLIP OR UPGRADE');return;}
+  if(S.cash<m.retail){flash('#ff3355');blocked('NOT ENOUGH CASH - ' + money(m.retail) + ' NEEDED');return;}
+  var rng=S.rngS;
+  S.snipe={mid:mid,pos:0,dir:1,t:0,count:1.6,go:false,zone:0.30+rng()*0.40,widen:1+(S.streak>=3?0.25:0),
+    speed:TIER[m.t].speed*(0.92+rng()*0.16),result:null,resT:0,locked:false};
+  S.phase='snipe';
+  AU.riser();
+  trauma(0.18);
+}
+function snipeGrade(d){
+  var z=S.snipe.zone,wide=S.snipe.widen;
+  if(d<0.050*wide)return 'PERFECT';
+  if(d<0.110*wide)return 'GREAT';
+  if(d<0.190*wide)return 'GOOD';
+  return 'MISS';
+}
+function lockSnipe(force){
+  var sn=S.snipe;if(!sn||sn.locked)return;
+  if(force){
+    if(force==='PERFECT')sn.pos=sn.zone;
+    else if(force==='GREAT')sn.pos=sn.zone+0.055*sn.widen;
+    else if(force==='GOOD')sn.pos=sn.zone+0.12*sn.widen;
+    else sn.pos=sn.zone+0.30;
+  }
+  var d=Math.abs(sn.pos-sn.zone),g=snipeGrade(d);
+  sn.locked=true;sn.result=g;sn.resT=0;
+  S.attempted=true;S.attempts++;
+  var m=sModel(sn.mid);
+  var cx=90+sn.pos*360,cy=560;
+  if(g==='MISS'){
+    AU.miss();trauma(0.42);flash('#ff3355');burst(cx,cy,14,'#ff5a6e',260,0.6,3);
+    pop(270,470,'MISSED','#ff7a8a',30);
+    S.streak=0;
+  }else{
+    S.hits++;S.streak++;if(S.streak>S.bestStreak)S.bestStreak=S.streak;
+    S.cash-=m.retail;
+    AU.win();
+    var power=g==='PERFECT'?1:g==='GREAT'?0.7:0.45;
+    trauma(0.30+power*0.45);
+    hitstop(g==='PERFECT'?0.09:0.05);
+    burst(cx,cy,Math.round(16+power*26),TIER[m.t].c,300+power*220,0.8,3.6);
+    pop(270,470,g,'#ffe066',32);
+    if(S.streak>=3)pop(270,510,'STREAK x'+S.streak,'#7af0ff',20);
+  }
+}
+function finishSnipe(){
+  var sn=S.snipe;if(!sn)return;
+  if(sn.result==='MISS'){S.snipe=null;S.phase='market';return;}
+  var m=sModel(sn.mid);
+  if(S.inv.length<S.storage)S.inv.push({mid:sn.mid,buy:m.retail,grade:'',graded:false,basis:m.retail,day:S.day+((S.week-1)*7),id:Math.floor(S.simT*1000)+'_'+S.inv.length});
+  S.snipe=null;S.phase='market';
+}
+
+/* ---------------- auction ------------------------------------------- */
+var BIDDERS=['kicks_kaz','SOLEja','deadstock_d','pumpqueen','retro_ray','mintbox','hype_hana','crepeking','boxfresh','lowball_lou'];
+function openAuction(idx){
+  if(idx<0||idx>=S.inv.length)return;
+  var it=S.inv[idx],m=sModel(it.mid);
+  var base=marketValue(m,it.grade);
+  var floor=base*0.72,peak=base*(0.96+0.06*S.up.rep+Math.min(0.28,m.hype*0.18));
+  var dur=7.4,bids=[],n=12+Math.floor(S.rngA()*6),i;
+  for(i=0;i<n;i++){
+    var t=(i+1)/n*dur*0.84;
+    var u=n>1?i/(n-1):0;
+    var amt=(floor+(peak-floor)*Math.pow(u,0.85))*(1+(S.rngA()-0.5)*0.05);
+    bids.push({t:t,amt:amt,who:BIDDERS[Math.floor(S.rngA()*BIDDERS.length)],kind:'bid'});
+  }
+  var finale=S.rngA()<0.55?'bump':'dip';
+  if(finale==='bump'){
+    bids.push({t:dur*0.90,amt:peak*(1.05+S.rngA()*0.07),who:BIDDERS[Math.floor(S.rngA()*BIDDERS.length)],kind:'bid'});
+  }else{
+    var pk=bids[bids.length-1].amt;
+    bids.push({t:dur*0.88,amt:pk*(0.76+S.rngA()*0.07),who:'OUTBID_RETRACT',kind:'retract'});
+    bids.push({t:dur*0.96,amt:pk*(0.84+S.rngA()*0.07),who:BIDDERS[Math.floor(S.rngA()*BIDDERS.length)],kind:'bid'});
+  }
+  S.auction={idx:idx,mid:it.mid,it:it,dur:dur,t:0,bids:bids,top:base*0.70,who:'',list:[],done:false,
+    sale:0,net:0,profit:0,t0:S.simT,lastIdx:-1,feeFinal:0,peak:peak,base:base};
+  S.phase='auction';
+  AU.riser();
+  trauma(0.25);
+}
+function auctionFee(){return Math.max(0.05,0.10-0.01*S.up.rep);}
+function hammer(){
+  var A=S.auction;if(!A||A.done)return;
+  A.done=true;
+  A.sale=Math.max(1,A.top);
+  A.feeFinal=A.sale*auctionFee();
+  A.net=A.sale-A.feeFinal;
+  A.profit=A.net-A.it.basis;
+  if(A.profit>0){AU.cash();pop(270,430,'+'+money(A.profit),'#7dffa8',34);trauma(0.5);hitstop(0.08);
+    burst(270,470,30,'#7dffa8',340,0.9,4);}
+  else{AU.sold();pop(270,430,money(A.profit),'#ff7a8a',34);trauma(0.6);flash('#ff3355');
+    burst(270,470,22,'#ff5a6e',260,0.8,3.6);}
+  AU.sold();
+  S.flips++;
+  if(A.profit>S.bestFlip)S.bestFlip=A.profit;
+  if(A.profit<S.worstFlip)S.worstFlip=A.profit;
+  S.earned+=A.profit;
+}
+function closeAuction(){
+  var A=S.auction;if(!A)return;
+  if(!A.done){hammer();return;}
+  S.cash+=A.net;
+  S.inv.splice(A.idx,1);
+  S.auction=null;S.phase='market';
+  if(S.cash<0)S.cash=0;
+}
+
+/* ---------------- upgrades / run end -------------------------------- */
+function upCost(k){var u=UPG[k],lvl=S.up[k];return Math.round(u.base*Math.pow(u.mult,lvl));}
+function buyUpgrade(k){
+  var u=UPG[k],lvl=S.up[k];
+  if(lvl>=u.max){S.shopMsg='MAXED';S.shopMsgT=1.4;return;}
+  var c=upCost(k);
+  if(S.cash<c){S.shopMsg='NOT ENOUGH CASH';S.shopMsgT=1.4;flash('#ff3355');return;}
+  S.cash-=c;S.up[k]=lvl+1;
+  if(k==='storage')S.storage=3+2*S.up.storage;
+  if(k==='rep')S.rep=S.up.rep;
+  S.shopMsg=u.n+' UPGRADED';S.shopMsgT=1.4;
+  AU.cash();trauma(0.25);burst(270,300,18,'#7af0ff',260,0.7,3);
+}
+function gradeFee(m){return Math.round((30+TIER[m.t].tc)*(1-0.15*S.up.grade));}
+function gradePair(idx){
+  var it=S.inv[idx];if(!it)return;
+  /* the pop says why in every phase; the shop-line duplicate was noise */
+  if(it.graded){flash('#ff3355');blocked('ALREADY GRADED');return;}
+  var m=sModel(it.mid),f=gradeFee(m);
+  if(S.cash<f){flash('#ff3355');blocked('GRADING FEE ' + money(f) + ' - NOT ENOUGH CASH');return;}
+  S.cash-=f;it.graded=true;it.basis+=f;
+  var r=S.rngS(),pS=0.08+0.045*S.up.grade,pA=0.27+0.035*S.up.grade;
+  it.grade=r<pS?'S':(r<pS+pA?'A':'B');
+  AU.cash();hitstop(0.05);trauma(0.3);
+  pop(270,360,'GRADE '+it.grade,'#ffd23f',32);
+  burst(270,380,20,'#ffd23f',240,0.8,3.4);
+}
+function endRun(cashed){
+  S.over=true;S.phase='over';
+  S.summary={score:scorePerWeek(),weeks:elapsedWeeks(),net:netWorth()-START_CASH,
+    worth:netWorth(),best:S.bestFlip,worst:S.worstFlip,flips:S.flips,
+    acc:S.attempts?Math.round(S.hits/S.attempts*100):0,streak:S.bestStreak};
+  if(SAVE.best===undefined||S.summary.score>SAVE.best){SAVE.best=S.summary.score;SAVE.bestSeed=S.seed;}
+  SAVE.runs=(SAVE.runs||0)+1;
+  SAVE.lastSeed=S.seed;
+  putSave(SAVE);
+  AU.bed(false);
+  AU.cash();trauma(0.5);
+}
+function rankOf(v){
+  if(v<0)return 'BAG HOLDER';
+  if(v<40)return 'PART-TIME RESELLER';
+  if(v<90)return 'SOLE BROKER';
+  if(v<170)return 'HYPE ARCHITECT';
+  if(v<300)return 'MARKET MAKER';
+  return 'DROP GOD';
+}
+
+/* ---------------- sneaker drawing ----------------------------------- */
+function drawSneaker(g,x,y,w,h,m,opt){
+  opt=opt||{};
+  var B=BRANDS[m.b],T=TIER[m.t];
+  var c1=opt.c1||B.c1,c2=opt.c2||m.acc||B.c2;
+  g.save();g.translate(x,y);
+  var soleH=h*0.19*(m.sole||1),baseY=h*0.93;
+  g.globalAlpha=0.30;g.fillStyle='#000';g.beginPath();g.ellipse(w*0.5,baseY+h*0.035,w*0.45,h*0.05,0,0,7);g.fill();g.globalAlpha=1;
+  var grd=g.createLinearGradient(0,0,w,h);
+  grd.addColorStop(0,shade(c1,0.10));grd.addColorStop(1,shade(c1,-0.25));
+  var collarY=h*0.16+(1-(m.hi||0.3))*h*0.30;
+  g.beginPath();
+  g.moveTo(w*0.05,baseY-soleH*0.9);
+  g.lineTo(w*0.02,h*0.46);
+  g.quadraticCurveTo(w*0.03,collarY,w*0.22,collarY);
+  g.quadraticCurveTo(w*0.40,collarY+h*0.02,w*0.58,h*0.54);
+  g.quadraticCurveTo(w*0.82,h*0.50,w*1.00,baseY-soleH*1.05);
+  g.lineTo(w*1.00,baseY-soleH*0.9);
+  g.closePath();
+  g.fillStyle=grd;g.fill();
+  g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=Math.max(1,w*0.012);g.stroke();
+  g.save();g.clip();
+  g.globalAlpha=0.5;g.fillStyle=c2;
+  g.beginPath();g.moveTo(w*0.10,h*0.72);g.lineTo(w*0.52,h*0.40);g.lineTo(w*0.66,h*0.44);g.lineTo(w*0.20,h*0.80);g.closePath();g.fill();
+  g.beginPath();g.moveTo(w*0.14,h*0.84);g.lineTo(w*0.56,h*0.50);g.lineTo(w*0.66,h*0.55);g.lineTo(w*0.24,h*0.90);g.closePath();g.fill();
+  g.globalAlpha=0.18;g.fillStyle='#fff';
+  g.beginPath();g.moveTo(w*0.70,h*0.30);g.lineTo(w*1.05,h*0.20);g.lineTo(w*1.05,h*0.30);g.lineTo(w*0.72,h*0.42);g.closePath();g.fill();
+  g.globalAlpha=1;g.restore();
+  g.strokeStyle=shade(c2,0.25);g.lineWidth=Math.max(1,w*0.016);g.lineCap='round';
+  var li;for(li=0;li<4;li++){
+    var lx=w*(0.54+li*0.075),ly=h*(0.55-li*0.045);
+    g.beginPath();g.moveTo(lx,ly);g.lineTo(lx+w*0.075,ly-h*0.035);g.stroke();
+  }
+  g.fillStyle=shade(c1,0.28);
+  g.beginPath();g.ellipse(w*0.24,collarY+h*0.015,w*0.10,h*0.035,0,0,7);g.fill();
+  g.fillStyle='#e9edf5';
+  rr(g,w*0.01,baseY-soleH,w*0.99,soleH,soleH*0.42);g.fill();
+  g.fillStyle=shade(c2,-0.1);g.globalAlpha=0.55;
+  rr(g,w*0.01,baseY-soleH*0.62,w*0.99,soleH*0.30,soleH*0.20);g.fill();g.globalAlpha=1;
+  g.fillStyle='rgba(0,0,0,.35)';g.globalAlpha=0.5;
+  rr(g,w*0.01,baseY-soleH*0.16,w*0.99,soleH*0.16,soleH*0.14);g.fill();g.globalAlpha=1;
+  g.fillStyle=shade(c2,0.1);
+  rr(g,w*0.86,h*0.30,w*0.14,h*0.18,3);g.fill();
+  g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1;
+  rr(g,w*0.02,h*0.30,w*0.20,h*0.16,3);g.stroke();
+  g.restore();
+}
+
+/* ---------------- layout constants ---------------------------------- */
+var HOT=[],HOTON=true;
+function hit(id,x,y,w,h,fn,opt){if(!HOTON)return;HOT.push({id:id,x:x,y:y,w:w,h:h,fn:fn,opt:opt||{}});}
+function drawBtn(id,x,y,w,h,label,opt){
+  opt=opt||{};
+  var dis=!!opt.disabled,col=opt.col||'#ffb020';
+  var g2=ctx,grd;
+  g2.save();
+  if(dis){
+    rr(g2,x,y,w,h,opt.r||12);g2.fillStyle='#1a2030';g2.fill();
+    rr(g2,x,y,w,h,opt.r||12);g2.strokeStyle='#2b3550';g2.lineWidth=2;g2.stroke();
+    tx(g2,label,x+w/2,y+h/2,opt.size||18,'#5b6a86',opt.align||'center',800);
+  }else{
+    rr(g2,x,y,w,h,opt.r||12);g2.fillStyle=col;g2.fill();
+    rr(g2,x+w*0.06,y+h*0.10,w*0.88,h*0.40,opt.r||10);g2.fillStyle='rgba(255,255,255,.20)';g2.fill();
+    rr(g2,x,y+5,w,h,opt.r||12);g2.fillStyle=shade(col,-0.45);g2.fill();
+    rr(g2,x,y,w,h,opt.r||12);g2.fillStyle=col;g2.fill();
+    tx(g2,label,x+w/2,y+h/2,opt.size||18,opt.tc||'#1b1200',opt.align||'center',800);
+    hit(id,x,y,w,h,opt.fn,opt);
+  }
+  g2.restore();
+}
+function bar(x,y,w,h,v,col,bg){
+  ctx.save();
+  rr(ctx,x,y,w,h,h/2);ctx.fillStyle=bg||'rgba(255,255,255,.09)';ctx.fill();
+  v=Math.max(0,Math.min(1,v));
+  /* a vertical bar (h>w) must grow downward, not sideways: Math.max(h,w*v) here
+     turned the 4px storage scroll track into a 198px-wide blue disc over the UI */
+  if(h>w)rr(ctx,x,y,w,Math.max(w,h*v),w/2);
+  else rr(ctx,x,y,Math.max(h,w*v),h,h/2);
+  ctx.fillStyle=col;ctx.fill();
+  ctx.restore();
+}
+function spark(x,y,w,h,hist,col){
+  ctx.save();
+  rr(ctx,x,y,w,h,6);ctx.fillStyle='rgba(255,255,255,.05)';ctx.fill();
+  if(hist.length>1){
+    var mn=1e9,mx=-1e9,i;for(i=0;i<hist.length;i++){if(hist[i]<mn)mn=hist[i];if(hist[i]>mx)mx=hist[i];}
+    if(mx-mn<0.001)mx=mn+1;
+    ctx.beginPath();
+    for(i=0;i<hist.length;i++){
+      var px=x+3+(i/(hist.length-1))*(w-6),py=y+h-5-((hist[i]-mn)/(mx-mn))*(h-10);
+      if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+    ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.lineJoin='round';ctx.stroke();
+    var lx=x+w-3,ly=y+h-5-((hist[hist.length-1]-mn)/(mx-mn))*(h-10);
+    ctx.beginPath();ctx.arc(lx,ly,3.2,0,7);ctx.fillStyle=col;ctx.fill();
+  }
+  ctx.restore();
+}
+function tierChip(x,y,t){
+  var T=TIER[t];
+  ctx.save();
+  rr(ctx,x,y,58,18,9);ctx.fillStyle=shade(T.c,-0.55);ctx.fill();
+  rr(ctx,x,y,58,18,9);ctx.strokeStyle=T.c;ctx.lineWidth=1.4;ctx.stroke();
+  tx(ctx,t,x+29,y+10,10,T.c,'center',800);
+  ctx.restore();
+}
+
+/* ---------------- screens ------------------------------------------- */
+function drawBg(){
+  var g=ctx;
+  var grd=g.createLinearGradient(0,0,0,LH);
+  grd.addColorStop(0,'#0b1020');grd.addColorStop(0.5,'#080b14');grd.addColorStop(1,'#0d0a14');
+  g.fillStyle=grd;g.fillRect(0,0,LW,LH);
+  g.globalAlpha=0.5;
+  for(var i=0;i<7;i++){
+    g.fillStyle=i%2?'rgba(120,180,255,.030)':'rgba(255,180,80,.022)';
+    g.fillRect(0,i*140-((S.simT*6)%140),LW,70);
+  }
+  g.globalAlpha=1;
+  if(S.flash>0){
+    g.globalAlpha=S.flash*0.30;g.fillStyle=S.flashCol;g.fillRect(0,0,LW,LH);g.globalAlpha=1;
+  }
+}
+function renderTitle(){
+  var g=ctx;
+  var t=S.simT;
+  g.save();
+  g.translate(0,Math.sin(t*1.2)*4*SHAKEK);
+  tx(g,'SNEAKERDROP',270,150,44,'#ffffff','center',900);
+  g.restore();
+  tx(g,'HYPE MARKET TYCOON',270,186,15,'#7af0ff','center',700);
+  if(S.models){
+    var line=['photon','novacage','aureum'],i;
+    for(i=0;i<3;i++){
+      var mm=S.models[MIDX[line[i]]];
+      if(mm)drawSneaker(g,36+i*166,222+(i===1?-10:6),148,96,mm);
+    }
+  }
+  tx(g,'BUY THE DROP  -  RIDE THE HYPE  -  SELL THE HAMMER',270,400,13,'#9fb0d0','center',700);
+  tx(g,'Score = profit per week.  Same seed, same market.',270,424,13,'#6f7f9e','center',600);
+  var seedTxt=(S.seed?('SEED '+S.seed):('SEED '+dailySeed()));
+  tx(g,seedTxt,270,462,14,'#ffd23f','center',800);
+  if(SAVE.best!==undefined)tx(g,'BEST $/WK  '+money(SAVE.best)+(SAVE.bestSeed?('   SEED '+SAVE.bestSeed):''),270,488,13,'#7dffa8','center',700);
+  tx(g,'tap / space to start',270,652,13,'#5b6a86','center',600);
+  titleUI.classList.remove('hide');
+}
+function renderHeader(){
+  var g=ctx;
+  g.save();
+  g.fillStyle='rgba(10,14,24,.85)';g.fillRect(0,0,LW,64);
+  g.strokeStyle='rgba(255,255,255,.07)';g.lineWidth=1;
+  g.beginPath();g.moveTo(0,64.5);g.lineTo(LW,64.5);g.stroke();
+  tx(g,'SNEAKERDROP',14,18,11,'#5b6a86','left',800);
+  tx(g,'WEEK '+S.week+'  ·  DAY '+S.day,14,44,21,'#eaf0ff','left',800);
+  tx(g,'CASH',526,18,11,'#7f8fb0','right',800);
+  tx(g,money(S.cash),526,42,24,'#ffd23f','right',900);
+  var nw=netWorth()-START_CASH;
+  tx(g,(nw>=0?'NET +':'NET ')+money(nw),380,18,12,nw>=0?'#7dffa8':'#ff7a8a','right',800);
+  tx(g,'$/WK '+money(scorePerWeek()),380,42,15,'#9fd0ff','right',800);
+  // streak
+  rr(g,14,72,104,24,8);g.fillStyle=S.streak>0?'rgba(255,180,32,.18)':'rgba(255,255,255,.05)';g.fill();
+  rr(g,14,72,104,24,8);g.strokeStyle=S.streak>0?'#ffb020':'#2b3550';g.lineWidth=1.4;g.stroke();
+  tx(g,'STREAK x'+S.streak,66,84,12,S.streak>0?'#ffd980':'#6f7f9e','center',800);
+  // ticker chips
+  for(var i=0;i<S.ticker.length;i++){
+    var t=S.ticker[i],m=sModel(t.id),up2=t.d>=0;
+    var x=126+i*136;
+    rr(g,x,72,128,24,8);g.fillStyle=up2?'rgba(60,220,130,.14)':'rgba(255,70,90,.14)';g.fill();
+    tx(g,m.n,x+6,84,10.5,up2?'#7dffa8':'#ff8a98','left',800);
+    tx(g,(up2?'+':'')+Math.round(t.d*100)+'%',x+122,84,10.5,up2?'#7dffa8':'#ff8a98','right',800);
+  }
+  g.restore();
+}
+function renderHeat(){
+  var g=ctx;
+  for(var i=0;i<4;i++){
+    var b=BK[i],H=BRANDS[b],x=12+i*131,y=96,w=125,h=54;
+    rr(g,x,y,w,h,10);g.fillStyle='rgba(255,255,255,.045)';g.fill();
+    rr(g,x,y,w,h,10);g.strokeStyle=shade(H.c2,-0.4);g.lineWidth=1.2;g.stroke();
+    tx(g,H.n,x+9,y+15,12,H.c2,'left',800);
+    var hv=H.heat,up2=hv>=1.0;
+    tx(g,(up2?'':'')+hv.toFixed(2),x+w-9,y+15,12,up2?'#7dffa8':'#ff8a98','right',800);
+    bar(x+9,y+28,w-18,7,(hv-0.5)/1.1,hv>1.05?'#ff8f2e':'#3fa9ff');
+    tx(g,hv>1.15?'ON FIRE':hv>1.02?'HOT':hv>0.92?'STEADY':hv>0.8?'COOLING':'COLD',x+9,y+45,10,'#8b9ab8','left',700);
+  }
+}
+function renderCal(){
+  var g=ctx;
+  tx(g,'HYPE CALENDAR',14,168,13,'#9fb0d0','left',800);
+  tx(g,'week '+S.week+' of '+WEEKS+'  ·  plan the hold',526,168,11,'#5b6a86','right',600);
+  for(var d=0;d<7;d++){
+    var x=20+d*72,y=178,w=68,h=62,today=(d===S.day-1);
+    var evs=evDay(S.week-1,d);
+    rr(g,x,y,w,h,9);
+    g.fillStyle=today?'rgba(255,208,63,.14)':'rgba(255,255,255,.04)';g.fill();
+    rr(g,x,y,w,h,9);g.strokeStyle=today?'#ffd23f':'rgba(255,255,255,.08)';g.lineWidth=today?2:1;g.stroke();
+    tx(g,'D'+(d+1),x+8,y+14,11,today?'#ffd23f':'#7f8fb0','left',800);
+    if(today)tx(g,'TODAY',x+w-7,y+15,8.5,'#ffd23f','right',800);
+    for(var e=0;e<evs.length;e++){
+      var ev=evs[e],cx=x+12+e*16,cy=y+38;
+      if(ev.kind==='DROP'){
+        var m=sModel(ev.mid),col=TIER[m.t].c;
+        g.beginPath();g.arc(cx,cy,6,0,7);g.fillStyle=ev.done?'#2b3550':col;g.fill();
+        if(!ev.done){g.beginPath();g.arc(cx,cy,8.5,0,7);g.strokeStyle=col;g.globalAlpha=.5;g.lineWidth=1.6;g.stroke();g.globalAlpha=1;}
+      }else if(ev.kind==='HYPE'){
+        g.fillStyle='#7dffa8';g.beginPath();g.moveTo(cx,cy-7);g.lineTo(cx+6,cy+4);g.lineTo(cx-6,cy+4);g.closePath();g.fill();
+      }else if(ev.kind==='RESTOCK'){
+        g.fillStyle='#ff7a8a';g.beginPath();g.moveTo(cx,cy+7);g.lineTo(cx+6,cy-4);g.lineTo(cx-6,cy-4);g.closePath();g.fill();
+      }else if(ev.kind==='HEAT'){
+        g.fillStyle='#ff8f2e';g.fillRect(cx-5,cy-5,10,10);
+      }else{
+        g.fillStyle='#5fa8ff';g.fillRect(cx-5,cy-5,10,10);
+      }
+    }
+  }
+}
+function renderDropCard(){
+  var g=ctx,x=14,y=248,w=512,h=312;
+  var ev=todayDrop();
+  rr(g,x,y,w,h,14);g.fillStyle='rgba(16,22,38,.92)';g.fill();
+  rr(g,x,y,w,h,14);g.strokeStyle='rgba(255,255,255,.09)';g.lineWidth=1.4;g.stroke();
+  if(!ev){
+    tx(g,'NO DROP TODAY',x+w/2,y+70,24,'#5b6a86','center',800);
+    tx(g,'Scheduled releases are on the calendar above.',x+w/2,y+104,13,'#4d5a75','center',600);
+    tx(g,'Flip something from storage, or upgrade the shop house,',x+w/2,y+126,13,'#4d5a75','center',600);
+    tx(g,'then hit NEXT DAY.',x+w/2,y+148,13,'#4d5a75','center',600);
+    var hot=S.models.slice().sort(function(a,b){
+      return (b.hype*2+(heat(b.b)-1))-(a.hype*2+(heat(a.b)-1));}).slice(0,3);
+    tx(g,'HOT RIGHT NOW',x+24,y+196,12,'#9fb0d0','left',800);
+    for(var i=0;i<hot.length;i++){
+      var m=hot[i],ry=y+218+i*28;
+      tx(g,m.n,x+24,ry,13,'#cdd8ef','left',700);
+      tx(g,money(m.price),x+300,ry,13,TIER[m.t].c,'right',800);
+      var pct=Math.round((m.price/m.retail-1)*100);
+      tx(g,(pct>=0?'+':'')+pct+'% vs retail',x+490,ry,12,pct>=0?'#7dffa8':'#ff8a98','right',700);
+    }
+    return;
+  }
+  var m=sModel(ev.mid),T=TIER[m.t];
+  g.save();
+  rr(g,x,y,w,h,14);g.clip();
+  g.globalAlpha=0.16;g.fillStyle=T.c;
+  g.beginPath();g.arc(x+w-40,y+30,120,0,7);g.fill();g.globalAlpha=1;
+  g.restore();
+  tx(g,'TODAY: DROP',x+18,y+24,12,'#7af0ff','left',800);
+  tierChip(x+w-78,y+15,m.t);
+  drawSneaker(g,x+22,y+40,168,104,m);
+  tx(g,m.n,x+206,y+58,19,'#ffffff','left',900);
+  tx(g,BRANDS[m.b].n+'  ·  '+m.t,x+206,y+82,12,'#8b9ab8','left',700);
+  tx(g,'RETAIL',x+206,y+112,11,'#6f7f9e','left',800);
+  tx(g,money(m.retail),x+206,y+132,20,'#eaf0ff','left',900);
+  tx(g,'EST',x+320,y+112,11,'#6f7f9e','left',800);
+  tx(g,money(m.price),x+320,y+132,20,T.c,'left',900);
+  var pct=Math.round((m.price/m.retail-1)*100);
+  rr(g,x+420,y+114,74,24,8);g.fillStyle=pct>=0?'rgba(60,220,130,.16)':'rgba(255,70,90,.16)';g.fill();
+  tx(g,(pct>=0?'+':'')+pct+'%',x+457,y+126,13,pct>=0?'#7dffa8':'#ff8a98','center',800);
+  spark(x+206,y+150,288,44,m.hist,T.c);
+  tx(g,'26-DAY',x+206,y+203,9,'#4d5a75','left',700);
+  var dis=S.attempted,cost=m.retail;
+  var lbl=S.attempted?'QUEUED TODAY - COME BACK TOMORROW':('SNIPE AT RETAIL  '+money(cost));
+  if(!S.attempted&&S.cash<m.retail)lbl='NEED '+money(m.retail-S.cash)+' MORE';
+  if(!S.attempted&&S.inv.length>=S.storage)lbl='STORAGE FULL ('+S.storage+')';
+  var can=!S.attempted&&S.cash>=m.retail&&S.inv.length<S.storage;
+  drawBtn('snipe',x+18,y+228,w-36,64,lbl,{col:'#ffb020',size:19,disabled:!can,
+    fn:function(){openSnipe(ev.mid);}});
+  if(S.streak>=3)tx(g,'streak bonus: wider timing window',x+w-18,y+305,11,'#7af0ff','right',700);
+}
+function renderInventory(){
+  var g=ctx,x=14,y=566,w=512;
+  tx(g,'STORAGE '+S.inv.length+'/'+S.storage,x,y+14,13,'#9fb0d0','left',800);
+  tx(g,'tap a pair to flip or grade',x+w,y+14,11,'#5b6a86','right',600);
+  var listY=y+30,rowH=64,visH=198;
+  g.save();
+  g.beginPath();g.rect(x,listY,w,visH);g.clip();
+  if(S.inv.length===0){
+    tx(g,'EMPTY SHELVES - win a drop to fill them',x+w/2,listY+60,14,'#3f4a63','center',700);
+  }
+  for(var i=0;i<S.inv.length;i++){
+    var it=S.inv[i],m=sModel(it.mid),ry=listY+i*rowH-S.scroll;
+    if(ry>listY-60&&ry<listY+visH+10){
+      var sel=(S.pairSel===i);
+      rr(g,x,ry,w,rowH-4,10);g.fillStyle=sel?'rgba(122,240,255,.12)':'rgba(255,255,255,.045)';g.fill();
+      if(sel){rr(g,x,ry,w,rowH-4,10);g.strokeStyle='#7af0ff';g.lineWidth=1.6;g.stroke();}
+      drawSneaker(g,x+8,ry+6,52,40,m);
+      tx(g,m.n,x+68,ry+15,13,'#eaf0ff','left',800);
+      tx(g,'BUY '+money(it.buy)+(it.graded?('   GRADE '+it.grade):''),x+68,ry+34,11,'#7f8fb0','left',700);
+      var mv=marketValue(m,it.grade),pl=mv-it.basis;
+      var pct2=Math.round((pl/it.basis)*100);
+      tx(g,money(mv),x+w-16,ry+15,14,TIER[m.t].c,'right',900);
+      tx(g,(pct2>=0?'+':'')+pct2+'%',x+w-16,ry+34,12,pct2>=0?'#7dffa8':'#ff8a98','right',800);
+      var yy=ry;hit('row'+i,x,yy,w,rowH,function(ii){return function(){S.pairSel=ii;S.phase='pair';};}(i),{late:true});
+    }
+  }
+  g.restore();
+  if(S.inv.length*rowH>visH){
+    var mxS=Math.max(1,S.inv.length*rowH-visH);
+    var f=S.scroll/mxS;
+    var th=Math.max(28,Math.round(visH*visH/(S.inv.length*rowH)));
+    rr(g,x+w-6,listY,4,visH,2);g.fillStyle='rgba(255,255,255,.09)';g.fill();
+    rr(g,x+w-6,listY+(visH-th)*f,4,th,2);g.fillStyle='#3fa9ff';g.fill();
+  }
+}
+function renderBottom(){
+  var g=ctx;
+  drawBtn('next',14,820,348,64,'NEXT DAY',{col:'#ffb020',size:22,fn:function(){advanceDay();}});
+  drawBtn('shop',370,820,156,64,'SHOP',{col:'#3fa9ff',tc:'#04121f',size:20,fn:function(){S.phase='shop';}});
+  drawBtn('cash',14,886,240,62,'CASH OUT RUN',{col:'#1b2336',tc:'#cfe0ff',size:15,fn:function(){S.phase='confirm';}});
+  var snd=AU.on?'SOUND ON':'SOUND OFF';
+  drawBtn('snd',262,886,130,62,snd,{col:'#1b2336',tc:'#cfe0ff',size:13,fn:function(){setSound(!AU.on);}});
+  tx(g,'SEED '+S.seed,526,922,12,'#3f4a63','right',700);
+}
+function renderMarket(){
+  renderHeader();renderHeat();renderCal();renderDropCard();renderInventory();renderBottom();
+}
+function drawOverBg(m){
+  var g=ctx,col=m?TIER[m.t].c:'#3fa9ff';
+  g.fillStyle='rgba(4,6,12,.84)';g.fillRect(0,0,LW,LH);
+  var rg=g.createRadialGradient(270,320,20,270,320,520);
+  rg.addColorStop(0,shade(col,-0.70));rg.addColorStop(1,'rgba(4,6,12,0)');
+  g.save();g.globalAlpha=0.55;g.fillStyle=rg;g.fillRect(0,0,LW,LH);g.restore();
+  g.save();g.globalAlpha=0.05;g.strokeStyle='#9fb0d0';g.lineWidth=1;
+  for(var i=-6;i<22;i++){g.beginPath();g.moveTo(i*64,0);g.lineTo(i*64+260,LH);g.stroke();}
+  g.restore();
+  if(m){g.save();g.globalAlpha=0.07;tx(g,BRANDS[m.b].n,270,924,86,'#ffffff','center',900);g.restore();}
+}
+function renderPair(){
+  var it=S.inv[S.pairSel];
+  var g=ctx;
+  drawOverBg(it?sModel(it.mid):null);
+  if(!it){S.phase='market';return;}
+  var m=sModel(it.mid),x=34,y=210,w=472,h=540;
+  rr(g,x,y,w,h,16);g.fillStyle='#0e1526';g.fill();
+  rr(g,x,y,w,h,16);g.strokeStyle=TIER[m.t].c;g.lineWidth=1.6;g.stroke();
+  drawSneaker(g,x+70,y+30,220,140,m);
+  tierChip(x+w-78,y+26,m.t);
+  tx(g,m.n,x+w/2,y+196,24,'#ffffff','center',900);
+  tx(g,BRANDS[m.b].n+'  '+(it.graded?('·  GRADE '+it.grade):'·  UNGRADED'),x+w/2,y+224,13,'#8b9ab8','center',700);
+  var mv=marketValue(m,it.grade),pl=mv-it.basis;
+  tx(g,'BOUGHT',x+30,y+268,11,'#6f7f9e','left',800);
+  tx(g,money(it.buy),x+30,y+290,19,'#eaf0ff','left',900);
+  tx(g,'ALL-IN',x+150,y+268,11,'#6f7f9e','left',800);
+  tx(g,money(it.basis),x+150,y+290,19,'#eaf0ff','left',900);
+  tx(g,'MARKET NOW',x+300,y+268,11,'#6f7f9e','left',800);
+  tx(g,money(mv),x+300,y+290,19,TIER[m.t].c,'left',900);
+  tx(g,'P/L',x+w-30,y+268,11,'#6f7f9e','right',800);
+  tx(g,(pl>=0?'+':'')+money(pl),x+w-30,y+290,19,pl>=0?'#7dffa8':'#ff8a98','right',900);
+  spark(x+30,y+312,w-60,54,m.hist,TIER[m.t].c);
+  tx(g,'HYPE '+(m.hype*100).toFixed(0)+'%   HEAT '+heat(m.b).toFixed(2)+'   RETAIL '+money(m.retail),x+w/2,y+376,12,'#7f8fb0','center',700);
+  tx(g,'grading lifts the sale price:  B +8%   A +25%   S +50%',x+w/2,y+396,11,'#5b6a86','center',600);
+  drawBtn('flip',x+30,y+408,w-60,64,'FLIP INTO AUCTION',{col:'#ffb020',size:20,fn:function(){openAuction(S.pairSel);}});
+  var gf=gradeFee(m),canG=!it.graded&&S.cash>=gf;
+  drawBtn('grade',x+30,y+474,(w-72)/2,64,it.graded?('GRADED '+it.grade):('GRADE  '+money(gf)),
+    {col:'#ffd23f',size:16,disabled:!canG,fn:function(){gradePair(S.pairSel);}});
+  drawBtn('back',x+42+(w-72)/2,y+474,(w-72)/2,64,'BACK',{col:'#1b2336',tc:'#cfe0ff',size:16,fn:function(){S.phase='market';}});
+}
+function renderShop(){
+  var g=ctx;
+  drawOverBg(sModel(S.inv.length?S.inv[0].mid:'aureum'));
+  tx(g,'RESELL HQ',34,150,28,'#ffffff','left',900);
+  tx(g,'reinvest the profit',34,178,13,'#7f8fb0','left',700);
+  tx(g,'CASH '+money(S.cash),506,150,20,'#ffd23f','right',900);
+  var keys=['storage','grade','rep'],i;
+  for(i=0;i<keys.length;i++){
+    var k=keys[i],u=UPG[k],lvl=S.up[k],y=214+i*140,x=34,w=472,h=124;
+    rr(g,x,y,w,h,14);g.fillStyle='rgba(255,255,255,.05)';g.fill();
+    rr(g,x,y,w,h,14);g.strokeStyle='rgba(255,255,255,.10)';g.lineWidth=1.2;g.stroke();
+    tx(g,u.n,x+18,y+26,17,'#eaf0ff','left',800);
+    tx(g,u.d,x+18,y+50,12,'#8b9ab8','left',600);
+    tx(g,'LEVEL '+lvl+' / '+u.max,x+18,y+78,13,lvl>=u.max?'#7dffa8':'#7af0ff','left',800);
+    for(var p=0;p<u.max;p++){
+      rr(g,x+18+p*20,y+92,14,8,4);g.fillStyle=p<lvl?'#7dffa8':'#2b3550';g.fill();
+    }
+    drawBtn('buy'+k,x+w-176,y+30,158,64,lvl>=u.max?'MAXED':money(upCost(k)),
+      {col:k==='storage'?'#ffb020':(k==='grade'?'#ffd23f':'#3fa9ff'),tc:'#101010',size:19,
+       disabled:lvl>=u.max||S.cash<upCost(k),fn:function(kk){return function(){buyUpgrade(kk);};}(k)});
+  }
+  if(S.shopMsgT>0)tx(g,S.shopMsg,270,660,16,'#ffd23f','center',800);
+  drawBtn('shopback',34,760,472,64,'BACK TO MARKET',{col:'#1b2336',tc:'#cfe0ff',size:18,fn:function(){S.phase='market';}});
+  tx(g,'Storage caps how many pairs you can hold. Grading raises sale value. Reputation lifts auction bids.',270,860,11,'#4d5a75','center',600);
+  tx(g,'Bids +5% per rep level. Fees '+(auctionFee()*100).toFixed(0)+'% now.',270,880,11,'#4d5a75','center',600);
+}
+function renderConfirm(){
+  var g=ctx;
+  drawOverBg(sModel('eclipse'));
+  var x=44,y=290,w=452,h=352;
+  rr(g,x,y,w,h,16);g.fillStyle='#0e1526';g.fill();
+  rr(g,x,y,w,h,16);g.strokeStyle='#ffd23f';g.lineWidth=1.6;g.stroke();
+  tx(g,'CASH OUT THE RUN?',x+w/2,y+40,22,'#ffffff','center',900);
+  tx(g,'Score is profit per WEEK - bailing early',x+w/2,y+74,13,'#8b9ab8','center',600);
+  tx(g,'with a strong week can beat a long grind.',x+w/2,y+94,13,'#8b9ab8','center',600);
+  tx(g,'LOCKED IN',x+w/2,y+138,12,'#6f7f9e','center',800);
+  tx(g,money(scorePerWeek())+' / week',x+w/2,y+168,32,'#7dffa8','center',900);
+  tx(g,'net worth '+money(netWorth())+'  ·  '+elapsedWeeks().toFixed(1)+' weeks',x+w/2,y+198,12,'#7f8fb0','center',700);
+  drawBtn('yes',x+24,y+h-138,w-48,64,'CASH OUT  '+money(scorePerWeek())+'/WK',{col:'#ffb020',size:18,fn:function(){endRun(true);}});
+  drawBtn('no',x+24,y+h-70,w-48,64,'KEEP PLAYING',{col:'#1b2336',tc:'#cfe0ff',size:15,fn:function(){S.phase='market';}});
+}
+/* ---------------- share card: a plain-PNG run card ------------------
+   Canvas 2D only, no library, no network, no external font. It reuses the
+   exact numbers renderOver() just printed (S.summary) in the market palette. */
+function drawCard(g){
+  var S2=S.summary||{};
+  g.fillStyle='#0a0d16';g.fillRect(0,0,880,520);
+  g.fillStyle='#0e1526';g.fillRect(0,0,880,96);
+  g.fillStyle='#7af0ff';g.font="800 26px 'Segoe UI',system-ui,Arial,sans-serif";
+  g.fillText('SNEAKERDROP',40,46);
+  g.fillStyle='#8b9ab8';g.font="600 14px 'Segoe UI',system-ui,Arial,sans-serif";
+  g.fillText('HYPE MARKET TYCOON  ·  SEED '+S.seed,40,74);
+  /* the headline score, same as renderOver */
+  g.fillStyle='#7dffa8';g.font="900 58px 'Segoe UI',system-ui,Arial,sans-serif";
+  g.fillText(money(S2.score)+' / WEEK',40,186);
+  g.fillStyle='#8b9ab8';g.font="700 14px 'Segoe UI',system-ui,Arial,sans-serif";
+  g.fillText('net '+money(S2.net)+'   ·   worth '+money(S2.worth)+'   ·   '+S2.weeks.toFixed(1)+' weeks',40,220);
+  /* rank, right side */
+  g.textAlign='right';
+  g.fillStyle='#ffd23f';g.font="900 34px 'Segoe UI',system-ui,Arial,sans-serif";
+  g.fillText(rankOf(S2.score),840,180);
+  g.fillStyle='#8b9ab8';g.font="700 13px 'Segoe UI',system-ui,Arial,sans-serif";
+  g.fillText('RANK',840,206);
+  g.textAlign='left';
+  var rows=[['DROPS WON',S2.acc+'%'],['SNIPE STREAK',S2.streak],['FLIPS',S2.flips],
+            ['BEST FLIP',money(S2.best)],['WORST HOLD',money(S2.worst)]];
+  for(var i=0;i<rows.length;i++){
+    var y=300+i*36;
+    g.fillStyle='#8b9ab8';g.font="700 15px 'Segoe UI',system-ui,Arial,sans-serif";
+    g.fillText(rows[i][0],40,y);
+    g.fillStyle=(i===4&&S2.worst<0)?'#ff8a98':'#eaf0ff';
+    g.font="800 24px 'Segoe UI',system-ui,Arial,sans-serif";
+    g.fillText(String(rows[i][1]),400,y);
+  }
+  g.fillStyle='#5b6a86';g.font="500 13px 'Segoe UI',system-ui,Arial,sans-serif";
+  g.fillText(new Date().toLocaleDateString(),40,500);
+  g.textAlign='right';
+  g.fillStyle='#7dffa8';
+  g.fillText(SAVE.best!==undefined?('BEST EVER  '+money(SAVE.best)+' /wk'):'',840,500);
+  g.textAlign='left';
+}
+function saveCard(){
+  try{
+    var c=document.createElement('canvas');c.width=880;c.height=520;
+    drawCard(c.getContext('2d'));
+    c.toBlob(function(blob){
+      if(!blob)return;
+      var u=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=u;a.download='sneakerdrop-seed'+S.seed+'.png';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(u);},2000);
+    },'image/png');
+  }catch(e){}
+}
+window.__shareCard=saveCard;   /* test hook: same function the button calls */
+
+function renderOver(){
+  var g=ctx,S2=S.summary||{};
+  drawOverBg(sModel('aureum'));
+  tx(g,'RUN CLOSED',270,120,30,'#ffffff','center',900);
+  tx(g,'SEED '+S.seed+'   ·   '+S2.weeks.toFixed(1)+' WEEKS',270,152,13,'#7af0ff','center',800);
+  tx(g,money(S2.score)+' / WEEK',270,220,44,'#7dffa8','center',900);
+  tx(g,'net '+money(S2.net)+'   worth '+money(S2.worth),270,258,14,'#8b9ab8','center',700);
+  var x=44,y=290,w=452;
+  rr(g,x,y,w,58,12);g.fillStyle='rgba(255,208,63,.14)';g.fill();
+  tx(g,'RANK',x+20,y+29,13,'#ffd23f','left',800);
+  tx(g,rankOf(S2.score),x+w-20,y+29,22,'#ffd23f','right',900);
+  var rows=[['DROPS WON',S2.acc+'%'],['SNIPE STREAK',S2.streak],['FLIPS',S2.flips],
+            ['BEST FLIP',money(S2.best)],['WORST HOLD',money(S2.worst)]];
+  for(var i=0;i<rows.length;i++){
+    var ry=y+72+i*34;
+    rr(g,x,ry,w,30,8);g.fillStyle='rgba(255,255,255,.045)';g.fill();
+    tx(g,rows[i][0],x+16,ry+16,12,'#8b9ab8','left',700);
+    tx(g,String(rows[i][1]),x+w-16,ry+16,14,(i===4&&S2.worst<0)?'#ff8a98':'#eaf0ff','right',800);
+  }
+  if(SAVE.best!==undefined)tx(g,'BEST EVER  '+money(SAVE.best)+' /wk',270,y+270,13,'#7dffa8','center',700);
+  drawBtn('again',44,y+296,316,62,'SAME SEED AGAIN',{col:'#ffb020',size:17,fn:function(){restartRun(S.seed);}});
+  drawBtn('newseed',370,y+296,126,62,'NEW SEED',{col:'#3fa9ff',tc:'#04121f',size:15,fn:function(){restartRun((Math.random()*1e9)>>>0);}});
+  drawBtn('sharecard',44,y+372,452,64,'SAVE THE SCORE CARD',{col:'#7af0ff',tc:'#04121f',size:18,fn:saveCard});
+}
+function renderSnipe(){
+  var g=ctx,sn=S.snipe;
+  if(!sn)return;
+  var m=sModel(sn.mid),T=TIER[m.t];
+  tx(g,'LIVE DROP',270,86,13,'#7af0ff','center',800);
+  tx(g,m.n,270,120,26,'#ffffff','center',900);
+  tx(g,BRANDS[m.b].n+'  ·  '+m.t+'  ·  retail '+money(m.retail),270,148,13,'#8b9ab8','center',700);
+  drawSneaker(g,160,180,220,140,m);
+  if(sn.count>0){
+    var c=Math.ceil(sn.count);
+    var pu=1-(sn.count-Math.floor(sn.count));
+    g.save();g.globalAlpha=0.20+0.8*(1-pu);
+    tx(g,String(c),270,470,90,'#ffd23f','center',900);g.restore();
+    tx(g,'QUEUE OPENING...',270,540,14,'#8b9ab8','center',700);
+    return;
+  }
+  tx(g,'TAP WHEN THE NEEDLE IS IN THE ZONE',270,380,13,'#9fb0d0','center',700);
+  var bx=60,by=470,bw=420,bh=54;
+  rr(g,bx,by,bw,bh,10);g.fillStyle='rgba(255,255,255,.05)';g.fill();
+  var zc=bx+sn.zone*bw;
+  g.fillStyle='rgba(147,160,184,.35)';g.fillRect(zc-0.19*sn.widen*bw,by,0.38*sn.widen*bw,bh);
+  g.fillStyle='rgba(63,169,255,.45)';g.fillRect(zc-0.11*sn.widen*bw,by,0.22*sn.widen*bw,bh);
+  g.fillStyle='rgba(255,210,63,.85)';g.fillRect(zc-0.05*sn.widen*bw,by,0.10*sn.widen*bw,bh);
+  rr(g,bx,by,bw,bh,10);g.strokeStyle='rgba(255,255,255,.20)';g.lineWidth=1.4;g.stroke();
+  var nx=bx+sn.pos*bw;
+  g.save();g.shadowColor='#ffffff';g.shadowBlur=14;g.fillStyle='#ffffff';
+  g.fillRect(nx-2.5,by-12,5,bh+24);g.restore();
+  tx(g,'PERFECT',zc,by+bh+18,10,'#ffd23f','center',800);
+  tx(g,'GOOD',zc-0.135*sn.widen*bw,by+bh+18,10,'#93a0b8','center',700);
+  tx(g,'GOOD',zc+0.135*sn.widen*bw,by+bh+18,10,'#93a0b8','center',700);
+  if(sn.result){
+    var col=sn.result==='MISS'?'#ff7a8a':'#7dffa8';
+    tx(g,sn.result==='MISS'?'MISSED THE QUEUE':'COPPED!',270,600,38,col,'center',900);
+    if(sn.result!=='MISS'){
+      tx(g,'COPPED for '+money(m.retail)+'   ·   now worth '+money(m.price),270,660,14,'#7dffa8','center',700);
+      drawBtn('flipnow',60,700,420,64,'FLIP INTO AUCTION NOW',{col:'#ffb020',size:19,fn:function(){var m2=S.snipe.mid;finishSnipe();openAuction(S.inv.length-1);}});
+      drawBtn('keep',60,770,420,64,'SEND TO STORAGE',{col:'#1b2336',tc:'#cfe0ff',size:16,fn:function(){finishSnipe();}});
+    }else{
+      tx(g,'the queue refreshed in seconds. streak reset.',270,660,14,'#ff8a98','center',700);
+      drawBtn('back2',60,700,420,64,'BACK TO MARKET',{col:'#1b2336',tc:'#cfe0ff',size:18,fn:function(){finishSnipe();}});
+    }
+    return;
+  }
+  drawBtn('lockbtn',60,700,420,72,'LOCK IT IN',{col:'#ffb020',size:24,fn:function(){lockSnipe();}});
+  tx(g,'space / tap anywhere',270,800,12,'#5b6a86','center',600);
+}
+function renderAuction(){
+  var g=ctx,A=S.auction;
+  if(!A)return;
+  var m=sModel(A.mid),T=TIER[m.t],it=A.it;
+  tx(g,'LIVE AUCTION',270,60,13,'#7af0ff','center',800);
+  tx(g,m.n,270,92,24,'#ffffff','center',900);
+  tx(g,BRANDS[m.b].n+'  ·  '+m.t+(it.graded?('  ·  GRADE '+it.grade):''),270,118,13,'#8b9ab8','center',700);
+  if(!A.done){
+    var left=Math.max(0,A.dur-A.t);
+    tx(g,'TOP BID',270,168,12,'#6f7f9e','center',800);
+    var pulse=1+Math.sin(S.simT*14)*0.012;
+    g.save();g.translate(270,222);g.scale(pulse,pulse);
+    tx(g,money(A.top),0,0,56,'#7dffa8','center',900);g.restore();
+    tx(g,A.who?('bidder: '+A.who):'waiting for opening bid...',270,262,13,'#9fb0d0','center',700);
+    var fw=Math.max(0,left/A.dur);
+    bar(60,286,420,14,fw,left<1.6?'#ff5a6e':'#3fa9ff');
+    tx(g,left<1.6?'FINAL CALL':'auction '+left.toFixed(1)+'s',270,320,13,left<1.6?'#ff8a98':'#7f8fb0','center',800);
+    var bx=60,by=352,bw=420,bh=170;
+    rr(g,bx,by,bw,bh,12);g.fillStyle='rgba(255,255,255,.04)';g.fill();
+    tx(g,'BID LADDER',bx+12,by+18,11,'#6f7f9e','left',800);
+    tx(g,'mark + fee '+(auctionFee()*100).toFixed(0)+'%',bx+bw-12,by+18,11,'#6f7f9e','right',700);
+    var mn=Math.min(A.base*0.6,A.top*0.9),mx=Math.max(A.peak*1.15,A.top*1.05);
+    g.beginPath();
+    for(var i=0;i<A.bids.length;i++){
+      var b=A.bids[i],px=bx+14+(b.t/A.dur)*(bw-28),py=by+bh-14-((b.amt-mn)/(mx-mn))*(bh-46);
+      if(i===0)g.moveTo(px,py);else g.lineTo(px,py);
+    }
+    g.strokeStyle='#3fa9ff';g.lineWidth=2;g.stroke();
+    for(var i2=0;i2<A.bids.length;i2++){
+      var b2=A.bids[i2];
+      if(b2.t>A.t)continue;
+      var px2=bx+14+(b2.t/A.dur)*(bw-28),py2=by+bh-14-((b2.amt-mn)/(mx-mn))*(bh-46);
+      g.beginPath();g.arc(px2,py2,3,0,7);g.fillStyle=b2.kind==='retract'?'#ff5a6e':'#7dffa8';g.fill();
+    }
+    var curx=bx+14+(Math.min(A.t,A.dur)/A.dur)*(bw-28);
+    g.beginPath();g.moveTo(curx,by+30);g.lineTo(curx,by+bh-8);g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1;g.stroke();
+    var marX=bx+14+((A.base-mn)/(mx-mn))*0;marX=bx+14+((A.base-mn)/(mx-mn))*(bw-28);
+    g.beginPath();g.moveTo(marX,by+30);g.lineTo(marX,by+bh-8);g.strokeStyle=TIER[m.t].c;g.setLineDash([4,4]);g.stroke();g.setLineDash([]);
+    tx(g,'market est',marX+4,by+bh-8,10,TIER[m.t].c,'left',700);
+    var netNow=A.top*(1-auctionFee()),plNow=netNow-it.basis;
+    tx(g,'if you sell now:  net '+money(netNow)+'   ('+(plNow>=0?'+':'')+money(plNow)+')',270,556,14,plNow>=0?'#7dffa8':'#ff8a98','center',800);
+    var last3=A.list.slice(-3);
+    for(var j=0;j<last3.length;j++){
+      var ly=592+j*26;
+      tx(g,last3[j].who+'  '+money(last3[j].amt),270,ly,13,'#8b9ab8','center',700);
+    }
+    drawBtn('hammer',60,760,420,86,'SELL NOW  '+money(A.top),{col:'#ffb020',size:24,fn:function(){hammer();}});
+    tx(g,'space / enter to hammer',270,872,12,'#5b6a86','center',600);
+    return;
+  }
+  var win=A.profit>=0;
+  tx(g,win?'SOLD!':'HAMMERED...',270,260,44,win?'#7dffa8':'#ff8a98','center',900);
+  tx(g,'sale '+money(A.sale)+'   fee '+money(A.feeFinal),270,312,15,'#9fb0d0','center',700);
+  tx(g,win?'NET PROFIT':'NET LOSS',270,368,13,'#6f7f9e','center',800);
+  tx(g,(win?'+':'')+money(A.profit),270,412,44,win?'#7dffa8':'#ff8a98','center',900);
+  if(!win)tx(g,'held too long - hype cooled off',270,452,13,'#ff8a98','center',700);
+  tx(g,'paid '+money(it.basis)+' all-in  ·  sold for '+money(A.sale),270,494,13,'#8b9ab8','center',700);
+  var nowIdx=(S.week-1)*7+(S.day-1),held=Math.max(0,nowIdx-it.day);
+  tx(g,'held '+held+' day'+(held===1?'':'s')+'  ·  market now '+money(m.price),270,518,12,'#6f7f9e','center',600);
+  g.save();g.globalAlpha=0.9;drawSneaker(g,170,536,200,104,m);g.restore();
+  drawBtn('closeA',60,672,420,64,'BACK TO MARKET',{col:'#ffb020',size:18,fn:function(){closeAuction();}});
+}
+function drawPops(){
+  for(var i=pops.length-1;i>=0;i--){
+    var p=pops[i];
+    var k=1-p.life/p.max;
+    ctx.save();
+    ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.8));
+    var sc=1+ (1-Math.min(1,k*3))*0.6;
+    ctx.translate(p.x,p.y-(1-Math.max(0,p.life/p.max))*26);
+    ctx.scale(sc,sc);
+    tx(ctx,p.t,0,0,p.s,p.c,'center',900);
+    ctx.restore();
+  }
+}
+function drawParts(){
+  for(var i=0;i<P_MAX;i++){
+    var p=parts[i];if(!p.live)continue;
+    ctx.globalAlpha=Math.max(0,Math.min(1,p.life/p.max*1.6));
+    ctx.fillStyle=p.col;
+    ctx.fillRect(p.x-p.size/2,p.y-p.size/2,p.size,p.size);
+  }
+  ctx.globalAlpha=1;
+}
+
+/* ---------------- update ------------------------------------------- */
+function update(dt){
+  S.simT+=dt;
+  S.trauma=Math.max(0,S.trauma-dt*1.6);
+  if(S.stopT>0){S.stopT-=dt;if(S.stopT<=0)S.timeScale=1;}
+  S.flash=Math.max(0,S.flash-dt*2.4);
+  if(S.shopMsgT>0)S.shopMsgT-=dt;
+  S.scroll+=(S.scrollTarget-S.scroll)*Math.min(1,dt*12);
+  var sh=S.trauma*S.trauma*15*SHAKEK;
+  shakeX=(Math.sin(S.simT*61.3)+Math.sin(S.simT*37.7))*sh*0.5;
+  shakeY=(Math.cos(S.simT*53.1)+Math.sin(S.simT*29.3))*sh*0.5;
+  for(var i=0;i<P_MAX;i++){
+    var p=parts[i];if(!p.live)continue;
+    p.life-=dt;
+    if(p.life<=0){p.live=false;continue;}
+    p.vy+=p.grav*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=0.99;
+  }
+  for(var j=pops.length-1;j>=0;j--){
+    pops[j].life-=dt;
+    if(pops[j].life<=0)pops.splice(j,1);
+  }
+  if(S.phase==='snipe'&&S.snipe){
+    var sn=S.snipe;
+    if(sn.count>0){sn.count-=dt;if(sn.count<=0){sn.count=0;sn.t=0;}}
+    else if(!sn.locked){
+      sn.t+=dt*sn.speed;
+      var ph=sn.t%2;
+      sn.pos=ph<1?ph:2-ph;
+      if(sn.pos>1)sn.pos=1;
+      if(sn.pos<0)sn.pos=0;
+    }else{
+      sn.resT+=dt;
+      if(sn.resT>1.5&&sn.result==='MISS')finishSnipe();
+    }
+  }
+  if(S.phase==='auction'&&S.auction){
+    var A=S.auction;
+    if(!A.done){
+      A.t+=dt;
+      while(A.lastIdx+1<A.bids.length&&A.bids[A.lastIdx+1].t<=A.t){
+        A.lastIdx++;
+        var b=A.bids[A.lastIdx];
+        A.top=b.amt;A.who=b.who;
+        A.list.push(b);
+        if(b.kind==='retract'){flash('#ff3355');trauma(0.45);burst(380,420,18,'#ff5a6e',240,0.6,3);
+          pop(270,470,'RETRACTED','#ff8a98',22);}
+        else{AU.bid(A.lastIdx);trauma(0.12+0.02*A.lastIdx);
+          if(A.lastIdx%2===0)burst(120,420,6,'#7dffa8',160,0.5,2.6);}
+      }
+      if(A.t>=A.dur)hammer();
+    }
+  }
+}
+var acc=0,last=0;
+function frame(ts){
+  requestAnimationFrame(frame);
+  if(!last)last=ts;
+  var dt=(ts-last)/1000;last=ts;
+  if(dt>0.25)dt=0.25;
+  acc+=dt*S.timeScale;
+  var steps=0;
+  while(acc>=FIXED&&steps<5){update(FIXED);acc-=FIXED;steps++;}
+  if(steps>=5)acc=0;
+  render();
+}
+/* ---------------- backdrop: the viewport the world does not use ----- */
+function drawBackdrop(){
+  ctx.setTransform(DPR,0,0,DPR,0,0);                 // CSS pixels, crisp at native size
+  var W=VW,H=VH,gx=offX,gy=offY,gw=LW*gs,gh=LH*gs;
+  var bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0b1120');bg.addColorStop(.5,'#05070d');bg.addColorStop(1,'#0b1120');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  ctx.save();
+  ctx.beginPath();ctx.rect(0,0,W,H);ctx.rect(gx,gy,gw,gh);
+  ctx.clip('evenodd');                               // stripes outside the world only
+  ctx.globalAlpha=.045;ctx.fillStyle='#7af0ff';
+  for(var i=-H;i<W+H;i+=28){ctx.save();ctx.translate(i,0);ctx.rotate(.42);ctx.fillRect(0,-H,3,2*H);ctx.restore();}
+  ctx.restore();
+  ctx.strokeStyle='#1b2333';ctx.lineWidth=1;ctx.strokeRect(gx+.5,gy+.5,gw-1,gh-1);
+  if(WIDE)drawWings(gx,gw);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.globalAlpha=1;
+}
+function drawWings(gx,gw){
+  var W=VW,H=VH,mid=H*0.5;
+  ctx.textBaseline='middle';
+  ctx.textAlign='right';
+  ctx.fillStyle='#5b6a8a';ctx.font='700 13px '+FONT;ctx.fillText('HYPE MARKET TYCOON',gx-36,mid-152);
+  ctx.fillStyle='#ffd23f';ctx.font='900 42px '+FONT;ctx.fillText('SNEAKER',gx-36,mid-104);
+  ctx.fillStyle='#eaf0ff';ctx.font='900 42px '+FONT;ctx.fillText('DROP',gx-36,mid-58);
+  ctx.fillStyle='#7d8aa8';ctx.font='600 15px '+FONT;
+  var tips=['tap SNIPE AT RETAIL to time the drop','hold a pair and ride the hype calendar','flip into the live auction for the top bid','same seed, same market - score = profit / week'];
+  for(var i=0;i<tips.length;i++)ctx.fillText(tips[i],gx-36,mid+2+i*24);
+  var x0=gx+gw+36, x1=W-36;
+  ctx.textAlign='left';
+  ctx.fillStyle='#5b6a8a';ctx.font='700 13px '+FONT;ctx.fillText('LIVE MARKET',x0,mid-172);
+  var rows=[['WEEK / DAY',(S?S.week:1)+' / '+(S?S.day:1)],['CASH',money(S?S.cash:0)],
+    ['HOLD',(S?S.inv.length:0)+' / '+(S?S.storage:0)],['STREAK','x'+(S?S.streak:0)],
+    ['FLIPS',String(S?S.flips:0)],['BEST FLIP',money(S?S.bestFlip:0)],['SEED',String(S?S.seed:0)]];
+  for(var r=0;r<rows.length;r++){
+    var y=mid-146+r*44;
+    rr(ctx,x0,y,x1-x0,36,10);ctx.fillStyle='#101728';ctx.fill();
+    ctx.strokeStyle='#1e2a42';ctx.lineWidth=1;ctx.stroke();
+    ctx.textAlign='left';ctx.fillStyle='#7d8aa8';ctx.font='700 13px '+FONT;
+    ctx.fillText(rows[r][0],x0+14,y+19);
+    ctx.textAlign='right';ctx.fillStyle='#ffd23f';ctx.font='800 20px '+FONT;
+    ctx.fillText(rows[r][1],x1-14,y+19);
+  }
+  ctx.textAlign='left';
+}
+function render(){
+  HOT.length=0;
+  drawBackdrop();
+  ctx.setTransform(scale,0,0,scale,offX*DPR,offY*DPR);
+  ctx.clearRect(0,0,LW,LH);
+  ctx.save();
+  ctx.translate(shakeX,shakeY);
+  drawBg();
+  if(S.phase==='title'){
+    renderTitle();
+  }else if(S.phase==='market'){
+    renderMarket();
+  }else if(S.phase==='snipe'||S.phase==='auction'){
+    drawOverBg(null);HOT.length=0;
+    if(S.phase==='snipe')renderSnipe();else renderAuction();
+  }else{
+    if(S.phase==='pair')renderPair();
+    else if(S.phase==='shop')renderShop();
+    else if(S.phase==='confirm')renderConfirm();
+    else if(S.phase==='over')renderOver();
+  }
+  drawPops();drawParts();
+  ctx.restore();
+}
+
+/* ---------------- input --------------------------------------------- */
+function toLocal(e){
+  var r=cv.getBoundingClientRect();
+  var s=Math.min(r.width/LW,r.height/LH);
+  var ox=(r.width-LW*s)/2, oy=(r.height-LH*s)/2;
+  return {x:(e.clientX-r.left-ox)/s,y:(e.clientY-r.top-oy)/s};
+}
+function findHot(p){
+  for(var i=HOT.length-1;i>=0;i--){
+    var h=HOT[i];
+    if(p.x>=h.x&&p.x<=h.x+h.w&&p.y>=h.y&&p.y<=h.y+h.h)return h;
+  }
+  return null;
+}
+var downPt=null,downHot=null;
+cv.addEventListener('pointerdown',function(e){
+  e.preventDefault();
+  var p=toLocal(e);
+  if(S.phase==='title'){startGame();return;}
+  if(S.phase==='snipe'&&S.snipe&&!S.snipe.locked&&S.snipe.count<=0){lockSnipe();return;}
+  var h=findHot(p);
+  downPt={x:p.x,y:p.y,t:performance.now()};downHot=h;
+  if(h&&!h.opt.late&&h.fn)h.fn();
+  if(!h){
+    if(S.phase==='pair'||S.phase==='shop'||S.phase==='confirm'){S.phase='market';}
+    downPt=null;downHot=null;
+  }
+},{passive:false});
+cv.addEventListener('pointermove',function(e){
+  if(!downPt)return;
+  var p=toLocal(e);
+  var dy=downPt.y-p.y;
+  if(Math.abs(dy)>6){
+    downHot=null;
+    if(S.phase==='market'){
+      var maxS=Math.max(0,S.inv.length*64-198);
+      S.scroll=Math.max(0,Math.min(maxS,S.scroll+dy));
+      S.scrollTarget=S.scroll;
+    }
+    downPt.y=p.y;
+  }
+},{passive:false});
+cv.addEventListener('pointerup',function(e){
+  if(!downPt)return;
+  var p=toLocal(e);
+  var moved=Math.abs(p.x-downPt.x)+Math.abs(p.y-downPt.y);
+  if(downHot&&downHot.opt.late&&moved<12&&downHot.fn)downHot.fn();
+  downPt=null;downHot=null;
+});
+cv.addEventListener('pointercancel',function(){downPt=null;downHot=null;});
+window.addEventListener('wheel',function(e){
+  if(S.phase!=='market')return;
+  var maxS=Math.max(0,S.inv.length*64-198);
+  S.scrollTarget=Math.max(0,Math.min(maxS,S.scrollTarget+e.deltaY*0.6));
+},{passive:true});
+window.addEventListener('keydown',function(e){
+  var k=e.key;
+  if(S.phase==='title'){if(k===' '||k==='Enter'||k==='ArrowRight'){e.preventDefault();startGame();}return;}
+  if(k===' '||k==='Enter'){
+    e.preventDefault();
+    if(S.phase==='snipe'){if(S.snipe&&!S.snipe.locked&&S.snipe.count<=0)lockSnipe();}
+    else if(S.phase==='auction'){hammer();}
+    else if(S.phase==='market'){advanceDay();}
+    else if(S.phase==='over'){restartRun(S.seed);}
+    else if(S.phase==='confirm'){endRun(true);}
+    else if(S.phase==='shop'){S.phase='market';}
+    else if(S.phase==='pair'){S.phase='market';}
+    return;
+  }
+  if(k==='ArrowDown'||k==='ArrowUp'){
+    e.preventDefault();
+    if(S.phase==='market'&&S.inv.length){
+      S.pairSel=(S.pairSel+(k==='ArrowDown'?1:-1)+S.inv.length)%S.inv.length;
+      S.scrollTarget=Math.max(0,Math.min(Math.max(0,S.inv.length*64-198),S.pairSel*64-80));
+    }
+    return;
+  }
+  if(k==='ArrowRight'){e.preventDefault();if(S.phase==='market')advanceDay();return;}
+  if(k==='ArrowLeft'){e.preventDefault();if(S.phase==='auction')hammer();return;}
+  if(k==='s'||k==='S'){if(S.phase==='market')S.phase='shop';else if(S.phase==='shop')S.phase='market';return;}
+  if(k==='Escape'){if(S.phase==='pair'||S.phase==='shop'||S.phase==='confirm')S.phase='market';}
+});
+function setSound(on){
+  AU.on=!!on;SAVE.snd=AU.on;putSave(SAVE);
+  AU.bed(true);
+  sndBtn.textContent='SOUND: '+(AU.on?'ON':'OFF');
+}
+sndBtn.addEventListener('click',function(e){e.stopPropagation();setSound(!AU.on);});
+startBtn.addEventListener('click',function(e){e.stopPropagation();startGame();});
+function restartRun(seed){newRun(seed);AU.bed(true);}
+function startGame(){
+  if(S.phase!=='title')return;
+  var seed=dailySeed();
+  try{
+    var q=new URLSearchParams(location.search).get('seed');
+    if(q!==null&&q!==''&&!isNaN(parseInt(q,10)))seed=parseInt(q,10)>>>0;
+  }catch(e2){}
+  newRun(seed);
+  AU.bed(true);
+  setTimeout(function(){titleUI.classList.add('hide');},30);
+}
+
+/* ---------------- boot ---------------------------------------------- */
+resize();
+newRun(dailySeed());
+S.phase='title';S.over=false;
+titleUI.classList.remove('hide');
+sndBtn.textContent='SOUND: '+(AU.on?'ON':'OFF');
+requestAnimationFrame(frame);
+
+/* ---------------- debug hook ---------------------------------------- */
+window.__DEBUG={
+  seed:function(){return S.seed;},
+  state:function(){return {phase:S.phase,week:S.week,day:S.day,cash:Math.round(S.cash),
+    net:Math.round(netWorth()-START_CASH),worth:Math.round(netWorth()),
+    inv:S.inv.length,storage:S.storage,rep:S.rep,streak:S.streak,
+    score:+(scorePerWeek().toFixed(2)),over:S.over,seed:S.seed,
+    models:S.models.length,weeks:WEEKS,audio:SFX.stats()};},
+  start:function(seed){newRun(seed===undefined?dailySeed():seed);return S.seed;},
+  grant:function(n){S.cash+=n;return S.cash;},
+  market:function(){return S.models.map(function(m){return {id:m.id,n:m.n,t:m.t,b:m.b,
+    retail:m.retail,price:+m.price.toFixed(2),fair:+fair(m).toFixed(2),hype:+m.hype.toFixed(3),
+    heat:+heat(m.b).toFixed(3)};});},
+  calendar:function(){return S.cal.map(function(w){return w.map(function(evs){
+    return evs.map(function(e){return e.kind+':'+(e.mid||e.brand)+(e.done?'*':'');});});});},
+  today:function(){return todayEvents().map(function(e){return {kind:e.kind,mid:e.mid,brand:e.brand,done:!!e.done};});},
+  inventory:function(){return S.inv.map(function(it,i){return {i:i,mid:it.mid,grade:it.grade,
+    buy:it.buy,basis:it.basis,value:+marketValue(sModel(it.mid),it.grade).toFixed(2)};});},
+  snipe:function(mid){if(!mid){var d=todayDrop();mid=d?d.mid:null;}if(mid)openSnipe(mid);return S.phase;},
+  lock:function(force){lockSnipe(force);return S.snipe?S.snipe.result:null;},
+  finishSnipe:function(){finishSnipe();},
+  flip:function(i){openAuction(i===undefined?0:i);return S.phase;},
+  hammer:function(){hammer();return S.auction?S.auction.profit:null;},
+  closeAuction:function(){closeAuction();},
+  nextDay:function(n){n=n||1;for(var i=0;i<n;i++){if(!S.over)advanceDay();}return {week:S.week,day:S.day};},
+  shopBuy:function(k){buyUpgrade(k);return S.up;},
+  gradePair:function(i){gradePair(i);return S.inv[i]?S.inv[i].grade:null;},
+  cashOut:function(){endRun(true);return S.summary;},
+  shareCard:saveCard,
+  hotRect:function(id){for(var i=0;i<HOT.length;i++){if(HOT[i].id===id)return {x:HOT[i].x,y:HOT[i].y,w:HOT[i].w,h:HOT[i].h};}return null;},
+  view:function(){return {gs:gs,offX:offX,offY:offY};},
+  setSound:setSound
+};
+})();
+</script>
+</body>
+</html>

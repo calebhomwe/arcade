@@ -91,7 +91,13 @@ const SPECIES = ["Carp","Perch","Trout","Bass","Pike","Salmon","Catfish","Koi","
 const cv = document.getElementById("cv");
 const ctx = cv.getContext("2d");
 let VW = 0, VH = 0;
-function resize(){ VW = cv.width = window.innerWidth; VH = cv.height = window.innerHeight; }
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  VW = window.innerWidth; VH = window.innerHeight;
+  cv.width = Math.round(VW*dpr); cv.height = Math.round(VH*dpr);
+  cv.style.width = VW+"px"; cv.style.height = VH+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
 window.addEventListener("resize", resize); resize();
 
 const R  = (a,b)=>a+Math.random()*(b-a);

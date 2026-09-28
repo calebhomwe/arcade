@@ -405,9 +405,11 @@ function button(x,y,w,h,label,fn,accent){
   rr(cx,x,y,w,h,h/2);cx.fill();
   cx.lineWidth=4;cx.strokeStyle=accent?'#d94f72':'#5a3410';rr(cx,x,y,w,h,h/2);cx.stroke();
   cx.fillStyle='#5a3410';
-  cx.font=`bold ${clamp(h*.4,13,26)}px "Comic Sans MS","Segoe UI",system-ui,sans-serif`;
+  let fs=clamp(h*.4,13,26);
+  if(label.length>20)fs=Math.max(11,fs*.8);
+  cx.font=`bold ${fs}px "Comic Sans MS","Segoe UI",system-ui,sans-serif`;
   cx.textAlign='center';cx.textBaseline='middle';
-  cx.fillText(label,x+w/2,y+h/2+1);
+  cx.fillText(label,x+w/2,y+h/2+1,w-16);
 }
 
 /* ── scenes ─────────────────────────────────────────────────────────── */
@@ -520,9 +522,9 @@ function earnedWord(){
 }
 function playScene(){
   drawSky();
-  for(const b of state.balloons)drawBalloon(b);
   const qw=Math.min(W*0.86,state.q&&state.q.prompt.length>26?620:540);
   drawBlimp(W/2,H*0.14,qw,104,state.q?state.q.prompt:'',state.q?state.q.note:'');
+  for(const b of state.balloons)drawBalloon(b);
   drawHUD();
   drawHint();
 }
