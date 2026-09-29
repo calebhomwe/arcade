@@ -1,0 +1,13 @@
+@font-face{font-family:"Lilita One";src:url(LilitaOne.woff2) format("woff2");font-display:swap}
+:root{--ink:#3b2a1a;--cream:#fff4d6;--wood:#b9803f;--wood-d:#8a5a2b;--leaf:#58b947;--leaf-d:#3a8f33;--sun:#ffc93c;--orange:#ff9b2f;--red:#e4453b;--sky:#7ec8f0;--panel:#fff7e0;--edge:#6b4423}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#cde7fb;font-family:"Lilita One",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;overscroll-behavior:none;touch-action:none}
+#gl{position:fixed;left:0;top:0;width:100vw;height:100vh;display:block;touch-action:none;outline:none}
+#ui{position:fixed;inset:0;pointer-events:none;z-index:5}
+#splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:linear-gradient(#5db4ee,#bfe6fb 60%,#e6f5d0)}
+#splash.gone{opacity:0;pointer-events:none;transition:opacity .5s}
+.sp-card{text-align:center;padding:24px}
+.sp-logo{font-size:min(16vw,84px);line-height:.95;color:#fff;-webkit-text-stroke:0;text-shadow:0 4px 0 #b9803f,0 8px 0 rgba(0,0,0,.18);letter-spacing:1px}
+.sp-bar{width:min(70vw,320px);height:16px;border-radius:9px;background:rgba(255,255,255,.55);margin:22px auto 10px;overflow:hidden;box-shadow:inset 0 2px 3px rgba(0,0,0,.2)}
+.sp-bar i{display:block;height:100%;width:6%;background:linear-gradient(#8de65b,#3fae2e);border-radius:9px;transition:width .25s}
+.sp-msg{font-size:16px;color:#3b2a1a;opacity:.85}
