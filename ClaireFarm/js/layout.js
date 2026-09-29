@@ -10,6 +10,9 @@ export const PATCHES = [
   { id: 'D', x: -8, z: 17, cost: 1100, level: 9 },
   { id: 'E', x: 0, z: 17, cost: 2600, level: 14 },
   { id: 'F', x: 8, z: 17, cost: 5200, level: 20 },
+  { id: 'G', x: -8, z: 25, cost: 9000, level: 27 },
+  { id: 'H', x: 0, z: 25, cost: 14000, level: 33 },
+  { id: 'I', x: 8, z: 25, cost: 21000, level: 40 },
 ];
 export const PLOT = 2.0;
 export const PATCH_COLS = 3, PATCH_ROWS = 2;
@@ -26,8 +29,9 @@ export const PENS = [
   { id: 'chicken', name: 'Chicken coop', x: -21, z: -1, w: 7, d: 6, level: 2, cost: 100, animal: 'chicken', cap: 4, model: 'coop' },
   { id: 'cow', name: 'Cow paddock', x: -22, z: 8, w: 9, d: 8, level: 4, cost: 350, animal: 'cow', cap: 4, model: 'open_barn' },
   { id: 'pig', name: 'Pig pen', x: -22, z: 18, w: 8, d: 6, level: 8, cost: 900, animal: 'pig', cap: 3, model: null },
-  { id: 'sheep', name: 'Sheep meadow', x: -12, z: 26, w: 10, d: 6, level: 12, cost: 1800, animal: 'sheep', cap: 4, model: null },
-  { id: 'llama', name: 'Alpaca yard', x: 6, z: 27, w: 9, d: 6, level: 20, cost: 4200, animal: 'llama', cap: 3, model: null },
+  { id: 'sheep', name: 'Sheep meadow', x: -23, z: 28, w: 10, d: 6, level: 12, cost: 1800, animal: 'sheep', cap: 4, model: null },
+  { id: 'llama', name: 'Alpaca yard', x: -25, z: -16, w: 8, d: 6, level: 20, cost: 4200, animal: 'llama', cap: 3, model: null },
+  { id: 'bees', name: 'Bee garden', x: 16, z: -20, w: 6, d: 5, level: 24, cost: 5200, animal: 'bee', cap: 4, model: null },
 ];
 
 // production buildings: a lot each, unlocked and bought with coins

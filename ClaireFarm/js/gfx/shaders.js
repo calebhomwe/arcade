@@ -494,3 +494,33 @@ void main(){
   gl_FragColor = vec4(vColor.rgb, vColor.a * a);
   #include <colorspace_fragment>
 }`;
+
+// ---------------------------------------------------------------------------------------------
+// Dirt paths: ribbons laid on the ground, ragged at the edges, with pebbles and wheel ruts.
+// uv.x runs across the path (0..1), uv.y along it (world units).
+// ---------------------------------------------------------------------------------------------
+export const PATH_VERT = /* glsl */`
+varying vec2 vUv; varying vec3 vW;
+void main(){ vUv = uv; vec4 wp = modelMatrix * vec4(position, 1.0); vW = wp.xyz; gl_Position = projectionMatrix * viewMatrix * wp; }`;
+export const PATH_FRAG = /* glsl */`
+${COMMON_FRAG}
+uniform sampler2D uPaint;
+varying vec2 vUv; varying vec3 vW;
+void main(){
+  float n = texture2D(uPaint, vW.xz * 0.21).g;
+  float n2 = texture2D(uPaint, vW.xz * 0.9 + 0.3).r;
+  float across = abs(vUv.x - 0.5) * 2.0;
+  float edge = smoothstep(1.0, 0.55 + 0.3 * n, across + (n2 - 0.5) * 0.25);
+  if (edge < 0.02) discard;
+  vec3 dirt = mix(vec3(0.62, 0.46, 0.27), vec3(0.74, 0.58, 0.36), n);
+  float rut = smoothstep(0.08, 0.0, abs(across - 0.4)) * 0.12;
+  dirt *= 1.0 - rut - (1.0 - edge) * 0.12;
+  float peb = step(0.86, texture2D(uPaint, vW.xz * 2.7).b) * 0.25;
+  dirt = mix(dirt, vec3(0.86, 0.8, 0.7), peb);
+  vec3 N = vec3(0.0, 1.0, 0.0), V = normalize(uCamPos - vW);
+  vec3 c = toonLight(dirt, N, V, 0.0);
+  c = satur(c, uSat);
+  c = mix(c, uFogCol, fogAmt(vW));
+  gl_FragColor = vec4(c, edge);
+  #include <colorspace_fragment>
+}`;
