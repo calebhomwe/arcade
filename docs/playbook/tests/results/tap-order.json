@@ -1,0 +1,15 @@
+{
+ "chromium": {
+  "version": "141.0.7390.37",
+  "orders": {
+   "pointerdown > touchstart > pointerup > touchend > click": 1,
+   "pointerdown > touchstart > pointerup > touchend > mousedown > mouseup > click": 5
+  }
+ },
+ "webkit": {
+  "version": "26.0",
+  "orders": {
+   "pointerdown > touchstart > pointerup > touchend > mousedown > mouseup > click": 6
+  }
+ }
+}

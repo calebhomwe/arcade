@@ -34,7 +34,7 @@ export const RX = {
   cosmetics: /\bskins?\b|\bcosmetics?\b|\boutfits?\b|\bcostumes?\b|\bhats?\b|\bthemes?\b|\bcustomi[sz]e\b|\bwardrobe\b|\bavatars?\b|\bpalettes?\b|\bcharacter select\b|\bequipped\b|\bdress\b/i,
 };
 const CURRENCY = /\bcoins?\b|\bgems?\b|\bgold\b|\bcash\b|\bmoney\b|\bdiamonds?\b|\btokens?\b|\bbux\b|\bcredits?\b|\bbalance\b|\bwallet\b/i;
-const BEST = /\b(best|high[_ -]?score|hi[_ -]?score|record|personal[_ -]?best|top[_ -]?score|highest|bestTime|best[_ -]?streak)\b|best|highscore|hiscore/i;
+const BEST = /best|high[_ -]?score|hi[_ -]?score|\brecord|personal|top[_ -]?score|highest|(^|[_ -])rec($|[_ -])|[a-z]rec$|_rec_/i;
 const SETTINGS = /^(arcade_|__)|sound|music|mute|volume|sfx|settings|quality|lang|tutorial|seen|hint|onboard|intro|version|^ver$|haptic|vibrat|sensitiv|controls?|cookie|consent|analytics|uuid|clientid|firstrun|first_run|firsttime|welcome|howto|orientation|reduced|debug|cheat/i;
 const GENRE_EXPECT = {
   'board-sports': ['levels', 'unlocks', 'stars', 'cosmetics', 'achievements'],

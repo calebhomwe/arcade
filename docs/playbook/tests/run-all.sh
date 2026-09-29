@@ -10,6 +10,7 @@ OUT=results; SH=${SHOTS:-/tmp/playbook-shots}; mkdir -p "$OUT" "$SH"
 node run.mjs $B/tests/feel-test.html          > $OUT/feel.json 2>&1
 node run.mjs $B/tests/iphone-test.html        > $OUT/iphone.json 2>&1
 node run.mjs $B/tests/progression-test.html   > $OUT/progression.json 2>&1
+node tap-order.mjs                            > $OUT/tap-order.json 2>&1
 node iphone-interact.mjs                      > $OUT/iphone-interact.json 2>&1
 node look-check.mjs "still=1&ui=1" $SH/look-default > $OUT/look-default.json 2>&1
 node look-matrix.mjs $SH/matrix               > $OUT/look-matrix.log 2>&1; cp $SH/matrix/matrix.json $OUT/look-matrix.json

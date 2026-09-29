@@ -1,0 +1,231 @@
+{
+ "id": "hole-grind",
+ "title": "Hole Grind",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "HoleGrind/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 20.73 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.4; raw p95 28.4, median 5.55, p99 113.58, max 289.4; time inside WebGL calls excluded, p95 of it 4)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/hole-grind-1-title.jpg",
+  "2-mid": "shots/hole-grind-2-mid.jpg",
+  "3-end": "shots/hole-grind-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.09,
+  "cores": 4,
+  "load1End": 16.48,
+  "contention": 1.37,
+  "contentionSamples": [
+   1.14,
+   1.37,
+   2.09,
+   2.27,
+   2.8,
+   1.13,
+   1.36
+  ]
+ },
+ "loadMs": 1572,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:37965/HoleGrind/index.html",
+ "startPath": "http://127.0.0.1:37965/HoleGrind/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 147.8,
+  "bench1Ms": 40.8,
+  "effectiveSlowdown": 3.6
+ },
+ "start": {
+  "how": "#btnPlay",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.37,
+  "loadMs": 1144,
+  "playMs": 292,
+  "loadRawMs": 1599,
+  "playRawMs": 402,
+  "playGlMs": 3,
+  "loadGlMs": 31,
+  "longTasksPlay": 15,
+  "longTasks100Play": 5,
+  "tbtLoadMs": 1005,
+  "tbtPlayMs": 781,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 8,
+  "slowestPollMs": 115,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 31.3,
+  "shaderCompileMaxCallMs": 9.5
+ },
+ "loafTop": [
+  {
+   "ms": 1500.8,
+   "blocking": 869,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Response.arrayBuffer.then",
+     48
+    ],
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     8
+    ],
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     375
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1083.8,
+   "blocking": 1033.5,
+   "scripts": [
+    [
+     "HoleGrind/index.html",
+     "http://127.0.0.1:37965/HoleGrind/index.html",
+     1043
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     5
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 829.3,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     13
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 398,
+  "jsMedian": 5.55,
+  "jsP95": 20.73,
+  "jsP99": 113.58,
+  "jsMax": 289.4,
+  "jsP95Raw": 28.4,
+  "rawWithGlP95": 29.4,
+  "glP95": 4,
+  "gapP95": 283.4,
+  "gapMedian": 100.1,
+  "over100": 4,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.8,
+  "heap1MB": 5.8,
+  "heapGrowthPct": 1,
+  "heapMeasured": true,
+  "nodesStart": 142,
+  "nodesEnd": 143,
+  "nodesMax": 143,
+  "listeners0": 70,
+  "listeners1": 70,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 3,
+   "totalMB": 2.2,
+   "biggest": [
+    {
+     "w": 390,
+     "h": 664,
+     "mpx": 0.26,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 195,
+     "h": 332,
+     "mpx": 0.06,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 16,
+  "scriptPct": 9,
+  "layoutPerSec": 8.5
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 36,
+  "swipes": 4,
+  "holds": 2,
+  "keys": 2,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 244,
+  "inputLatencyP95Ms": 2266,
+  "inputLatencyMaxMs": 2438,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 64.1,
+  "maxChangeFromStartPct": 79.7,
+  "samples": 13
+ },
+ "severity": 43.1
+}

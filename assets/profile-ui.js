@@ -69,7 +69,7 @@
     var kill = function () { t.classList.remove('in'); setTimeout(function () { t.remove(); }, 300); };
     if (o.actions) t.addEventListener('click', function (e) { var bt = e.target.closest('button[data-i]'); if (bt) { try { o.actions[+bt.dataset.i].run(); } catch (x) {} kill(); } });
     b.appendChild(t); while (b.children.length > 3) b.firstChild.remove();
-    requestAnimationFrame(function () { requestAnimationFrame(function () { t.classList.add('in'); }); });
+    void t.offsetWidth; t.classList.add('in');   // a reflow first, so the slide-in plays even where animation frames are throttled
     setTimeout(kill, o.ms || 4200);
     return t;
   }

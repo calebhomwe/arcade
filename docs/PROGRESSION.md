@@ -23,8 +23,8 @@ link or a phone number is refused.
 ## XP and levels
 
 Level *n* to *n+1* needs `xpNeed(n) = 5 * round((40 + 8k + 0.3k^2) / 5)` XP with `k = n - 1`. The rise between levels is
-linear, so the threshold curve is a gentle quadratic: the first level takes the first visit, level 5 about a day,
-level 10 about four to five days, level 30 about six weeks of daily play, level 50 (the cap) a few months. Beyond 50 XP
+linear, so the threshold curve is a gentle quadratic: the first level takes the first visit, level 5 comes on the first day,
+level 10 in about a week, level 30 after a month or two of daily play, and level 50 (the cap) after a few months. Beyond 50 XP
 keeps counting but the level stays 50.
 
 | Level | XP to next | Total XP to reach | Title |
@@ -87,16 +87,31 @@ keeps counting but the level stays 50.
 | Playing | 2 per active minute | The first 15 minutes of each day. "Active" = the game frame is open, the tab is visible, the game is not paused, and the SDK saw a tap, key, pointer move or gamepad input in the last 45 s |
 | First time playing a game | 15 | Once per game, after 30 s of play |
 | First time in a category | 20 | Once per category |
-| A finished round (`state scene:'over'`) | 8 + up to 8 by score against your own best, +4 for a game's first round | 12 rewarded rounds a day (more still count for badges and quests). A round must have 6 s of play, and two rounds must be 4 s apart |
-| A new personal best | +10 | Needs an earlier best to beat. Times and ranks: `state({lower:true})` |
-| A best the SDK noticed in saved data | 8 + 10 | The SDK watches the keys a game lists in its meta `saves` and reports a rising best-like number. At most 3 a game a day, 60 s apart |
-| A streak day | 5 per streak day (from day 2), up to 30 | Once, on the first qualifying play of the day (20 s or a finished round) |
-| Welcome back | 10 per game already played (up to 200) | Once, when the profile is first made on a device that has the arcade's older play history |
-| A daily quest | 20 easy, 35 medium, 50 hard, and 1, 2, 3 stars | Three a day. All three: +25 XP and 1 star |
-| A badge | 15, 30, 60, 120 for bronze, silver, gold, diamond; 1, 2, 3, 5 stars | Once each |
+| A finished round (`state scene:'over'`) | 5 + up to 5 by score against your own best, +3 for a game's first round | 10 rewarded rounds a day (more still count for badges and quests). A round must have 6 s of play, and two rounds must be 4 s apart |
+| A new personal best | +8 | Needs an earlier best to beat. Times and ranks: `state({lower:true})` |
+| A best the SDK noticed in saved data | 5 + 8 | The SDK watches the keys a game lists in its meta `saves` and reports a rising best-like number. At most 3 a game a day, 60 s apart |
+| A streak day | 3 per streak day (from day 2), up to 20 | Once, on the first qualifying play of the day (20 s or a finished round) |
+| Welcome back | 5 per game already played (up to 100) | Once, when the profile is first made on a device that has the arcade's older play history |
+| A daily quest | 15 easy, 25 medium, 35 hard, and 1, 2, 3 stars | Three a day. All three: +20 XP and 1 star |
+| A badge | 10, 20, 40, 80 for bronze, silver, gold, diamond; 1, 2, 3, 5 stars | Once each |
+| A game's own `award` | 1 to 30 per call | 60 a day per game |
+| A game's own badge | 8, 12, 20, 20 by tier | 5 a day per game |
 
 Scores have no common scale between games, so a round is scaled against the player's own best in that game. Cheat codes
 turn all of it off for the session: no XP, no best, no quest progress, no badge. (The day still counts for the streak.)
+
+### How fast is it?
+
+A simulated child (a fresh profile, a real catalogue, the rules above, quests completed as play allows; the child tries a new
+game most days, which is generous early on). Level after N days:
+
+| Pattern | Day 1 | Day 7 | Day 30 | Day 60 |
+| ------- | ----- | ----- | ------ | ------ |
+| 12 minutes a day, no game reports rounds | level 4 | level 12 | level 22 | level 29 |
+| 30 minutes a day, ~8 reported rounds | level 8 | level 19 | level 34 | level 43 |
+
+So the first level-ups come in the first minutes, the hats and colours flow in the first week, then it slows to a level every
+few days; level 50 is a few months for a very keen player. Run `node qa/harness/profile-test.mjs` to check the curve.
 
 ## Streak, with a rest day
 
@@ -118,9 +133,9 @@ round, and name the games that report. Nothing expires with a penalty: they simp
 
 | Tier | Quest kinds |
 | ---- | ----------- |
-| Easy (20 XP, 1 star) | Play 3 to 5 minutes. Try something new. Give a game a heart. Try a learning game. Finish 2 rounds |
-| Medium (35 XP, 2 stars) | Play 2 different games. Play a learning game for 5 minutes. Play 8 to 12 minutes. Try a game in a category you have not. Play your favourite category for 6 minutes. Finish 3 rounds |
-| Hard (50 XP, 3 stars) | Beat your best in a runner (or in a named game). Play 15 minutes. Play 4 different games. Try 2 new games. Play 3 kinds of game. Finish 2 learning rounds |
+| Easy (15 XP, 1 star) | Play 3 to 5 minutes. Try something new. Give a game a heart. Try a learning game. Finish 2 rounds |
+| Medium (25 XP, 2 stars) | Play 2 different games. Play a learning game for 5 minutes. Play 8 to 12 minutes. Try a game in a category you have not. Play your favourite category for 6 minutes. Finish 3 rounds |
+| Hard (35 XP, 3 stars) | Beat your best in a runner (or in a named game). Play 15 minutes. Play 4 different games. Try 2 new games. Play 3 kinds of game. Finish 2 learning rounds |
 
 A game can add up to three extra goals a day with `ArcadeSDK.profile.quest`, shown under the three.
 
@@ -165,7 +180,7 @@ Nothing is required. To do more, see the header of `assets/profile-core.js` and 
 ```js
 ArcadeSDK.state({scene: 'play'});                               // a round starts
 ArcadeSDK.state({scene: 'over', score: 120, level: 4, stars: 2}); // a round ends (lower:true when smaller is better)
-ArcadeSDK.profile.award({xp: 20, reason: 'Beat the boss'});      // 1..50 XP, 100 a day per game
+ArcadeSDK.profile.award({xp: 20, reason: 'Beat the boss'});      // 1..30 XP, 60 a day per game
 ArcadeSDK.profile.achievement('first-win', {title: 'First Win', desc: 'Win a match', tier: 'silver'});
 ArcadeSDK.profile.quest('clear-w5', 0.6, {title: 'Clear wave 5'}); // 0..1, pays when it reaches 1
 ArcadeSDK.profile.get();                                          // {level, xp, into, need, streak, stars, avatar, title}

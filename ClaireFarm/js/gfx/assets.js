@@ -152,6 +152,20 @@ export class Assets {
     return { group: wrap, body, parts, box: fin, size: fin.getSize(new THREE.Vector3()), scale: s, inner: group };
   }
 
+  // An InstancedMesh of one model (outline included), sized like model(); capacity copies at most.
+  instanced(id, opts, cap) {
+    const m = this.model(id, Object.assign({}, opts, { shell: opts.shell !== false }));
+    m.group.updateMatrixWorld(true);
+    let geo = null, mat = null;
+    m.group.traverse((o) => { if (o.isMesh && !geo) { geo = o.geometry.clone(); geo.applyMatrix4(o.matrixWorld); mat = o.material; } });
+    const im = new THREE.InstancedMesh(geo, mat, cap);
+    im.count = 0; im.frustumCulled = false;
+    if (geo.userData.baseIndexCount === undefined && geo.attributes.aShell) geo.userData.baseIndexCount = geo.index.count / 2;
+    if (geo.userData.baseIndexCount) this.models.push(im);
+    im.userData.size = m.size;
+    return im;
+  }
+
   // Raw geometry baked into world-of-model space (for instancing many copies)
   bakedGeometry(id, opts = {}) {
     const m = this.model(id, Object.assign({}, opts, { shell: false }));

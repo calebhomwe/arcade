@@ -3,7 +3,7 @@
 Status: every recipe below runs in [`look-demo.html`](look-demo.html) (a small farm, three.js r180 vendored from `HoleGrind/vendor/three`, no CDN).
 Code blocks are copied verbatim from tested files (`tests/check-snippets.py` checks that). Numbers are from `tests/results/`, measured in
 **Chromium 141 (SwiftShader)** and **Playwright WebKit 26.0** at the iPhone 13 profile (390x664 CSS px, DPR 3). Limits are stated in the last section.
-Open it: `http://localhost:8765/arcade/docs/playbook/look-demo.html` (add `?tm=aces&toon=0&outline=0&shadow=map&fog=0&grass=0` to A/B any recipe).
+three r180 is ES-module only: copy the demo's `<script type="importmap">` (maps `three` and `three/addons/` to `HoleGrind/vendor/three/`) and `import * as THREE from 'three'`; `mergeVertices` comes from `three/addons/utils/BufferGeometryUtils.js`. Open it: `http://localhost:8765/arcade/docs/playbook/look-demo.html` (add `?tm=aces&toon=0&outline=0&shadow=map&fog=0&grass=0` to A/B any recipe).
 
 ![look demo in WebKit at iPhone size](img/look-webkit-iphone.jpg)
 
@@ -138,14 +138,18 @@ Fill cost is passes x pixels: on a 390x844 screen one full-screen pass is 1.32 M
 
 ## 11. UI kit and type
 
-@@from look-demo.html | .big{pointer-events:auto | touch-action:manipulation} | css@@
-Chunky rounded face: Fredoka (used here, self-hosted in `assets/fonts/`) or Baloo 2, both OFL ([font guide](https://freebies.fluxes.com/blog/best-fonts-for-mobile-game-ui/)). A game repo's note says Baloo 2 ships tabular digits (`tnum`) while Fredoka and Lilita One do not, so use Baloo 2 for fast-changing scores ([PR note](https://github.com/Mohith26/sideout/pull/10), search snippet, not fetched). Outline text with a ring of `text-shadow` (works everywhere) plus a bottom shadow for depth. Buttons: light top highlight (`inset`), dark bottom "lip", `:active` moves down 3 px. Icons: inline SVG with 2.5 to 3 px strokes so they match the type weight. HUD in `env(safe-area-inset-*)` padding. Keep three things on screen: level, coins, one primary button.
+<!-- from look-demo.html -->
+```css
+.big{pointer-events:auto;min-width:230px;min-height:64px;padding:8px 28px;border-radius:32px;border:4px solid #1b5a10;background:linear-gradient(#9cf06a,#4cc02a 55%,#39a51c);box-shadow:inset 0 5px 0 rgba(255,255,255,.5),inset 0 -5px 0 rgba(0,0,0,.15),0 6px 0 #1b5a10,0 12px 18px rgba(0,0,0,.28);color:#fff;font:700 30px/1 Fredoka,system-ui,sans-serif;text-shadow:0 -2px 0 #1b5a10,0 2px 0 #1b5a10,-2px 0 0 #1b5a10,2px 0 0 #1b5a10,-2px -2px 0 #1b5a10,2px -2px 0 #1b5a10,-2px 2px 0 #1b5a10,2px 2px 0 #1b5a10,0 4px 0 #1b5a10;touch-action:manipulation}
+```
+Chunky rounded face: Fredoka (used here, self-hosted in `assets/fonts/`) or Baloo 2, both OFL ([font guide](https://freebies.fluxes.com/blog/best-fonts-for-mobile-game-ui/)). A game repo's note says Baloo 2 ships tabular digits (`tnum`) while Fredoka and Lilita One do not, so use Baloo 2 for fast-changing scores ([PR note](https://github.com/Mohith26/sideout/pull/10), search snippet, not fetched). Outline text with a ring of `text-shadow` (works everywhere) plus a bottom shadow for depth. Buttons: light top highlight (`inset`), dark bottom "lip", `:active` moves down 3 px. Icons: inline SVG with 2.5 to 3 px strokes so they match the type weight (the demo's coin and gear are hand-written SVG). Licences the project already allows for icons and art: CC0 (Kenney, Quaternius, Poly Haven, ambientCG), OFL fonts, ISC/MIT icons such as Lucide, CC-BY only with credits in a `LICENSES.md` (`scratchpad/QUALITY_GATE.md`); the Claire builds used real Fluent 3D icons and one display face and the critic still called the UI "one skin" as a strength (`claire_r2_critic.md`, D). HUD in `env(safe-area-inset-*)` padding. Keep three things on screen: level, coins, one primary button.
 
 ## 12. How Poki and CrazyGames present games
 
 - Land the player in play at once (CrazyGames: "a maximum of 1 click"), no splash screens, few menus, skippable cutscenes, visual tutorials ([CrazyGames](https://docs.crazygames.com/requirements/gameplay/), [Poki](https://developers.poki.com/guide/requirements-quality)).
 - Must read from 800x450 mobile to 1920x1080 desktop; scale a 16:9 game to 640x360, 836x470 or 1031x580 (same pages). Custom fullscreen buttons are not allowed on CrazyGames.
 - Mobile homepage on CrazyGames needs an initial download of 20 MB or less, 250 MB total, 20 s to gameplay ([technical](https://docs.crazygames.com/requirements/technical/)). Their launch test wants 10+ minutes average play, 10-15% day-1 return and under 10 s loading ([metrics](https://docs.crazygames.com/resources/basic-launch-metrics/)).
+- The arcade's own tiles follow the same rule: key art from a real frame, HUD cropped out, one shared grade (saturation 1.3, contrast 1.1, vignette), a heavy-outlined Fredoka logotype, 480x300 plus 960x600 for big tiles (`qa/portal/NOTES.md`, `tools/keyart.py`).
 - Poki blocks external requests and wants `localStorage` wrapped in try/catch (incognito); CrazyGames sets DPR to 1 on iOS and low-memory Android (both pages above).
 
 ## 13. What makes it look cheap
@@ -160,7 +164,7 @@ Pure-black shadows; a grey (tone-mapped) sky at the horizon; a single green with
 | Tone-mapper A/B, flags A/B, draw counts | yes | yes | `tests/results/look-matrix.json`, `look-probe.json` |
 | Sky/fog seam probe | yes | yes | identical in both |
 | Tap Harvest: squash, coins fly, number pop, counter +30 | yes | yes | `look-interact.json` |
-| Landscape 664x390 and 320x568 layout | not run | screenshot only | checked by eye |
+| Landscape 664x390 and 320x568 layout | not run | screenshot only | `img/look-landscape-and-320.jpg`, checked by eye |
 
 **Not verified:** any real iPhone GPU frame time, thermal behaviour, colour on an OLED panel, or the look under iOS's own tone/brightness handling. Chromium here uses SwiftShader and WebKit uses a software GL too, so both engines agreed to the pixel; that proves the code, not the speed.
 

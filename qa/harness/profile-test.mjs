@@ -50,6 +50,9 @@ console.log('-- XP curve');
   check('levelInfo at the start', eq(Core.levelInfo(0), { level: 1, xp: 0, into: 0, need: 40, pct: 0, max: false, next: 40 }));
   check('levelInfo halfway to level 2', Core.levelInfo(20).pct === 0.5 && Core.levelInfo(20).into === 20);
   check('pace: level 2 at 40 XP, level 10 by 800, level 30 by 7,000, level 50 by 23,000', Core.LEVEL_XP[2] === 40 && Core.LEVEL_XP[10] <= 800 && Core.LEVEL_XP[30] <= 7000 && Core.LEVEL_XP[50] <= 23000, [2, 10, 30, 50].map(l => Core.LEVEL_XP[l]).join('/'));
+  const doc = fs.readFileSync(path.join(root, 'docs/PROGRESSION.md'), 'utf8'), rows = [...doc.matchAll(/^\| (\d+) \| (\d+|-) \| ([\d,]+) \| ([^|]+) \|$/gm)];
+  check('docs/PROGRESSION.md level table matches the code (all 50 rows)', rows.length === 50 && rows.every(m => +m[1] === 0 || (Core.LEVEL_XP[+m[1]] === +m[3].replace(/,/g, '') && (m[2] === '-' ? +m[1] === 50 : Core.xpNeed(+m[1]) === +m[2]) && Core.levelTitle(+m[1]) === m[4].trim())), rows.length + ' rows');
+  check('docs/PROGRESSION.md states the XP numbers in use', doc.includes('| Playing | ' + X.minute + ' per active minute') && doc.includes('The first ' + X.minuteCap + ' minutes') && doc.includes(X.quest.hard[0] + ' hard') && doc.includes('1 to ' + X.awardMax + ' per call'));
   check('negative and junk XP read as level 1', Core.levelOf(-5) === 1 && Core.levelOf('x') === 1 && Core.levelOf(NaN) === 1);
 }
 

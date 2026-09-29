@@ -4,7 +4,7 @@ Written for Caleb from what is in `/home/user/arcade` (`docs/`, `qa/`, `git log`
 
 ## The honest one-paragraph story
 
-You asked an AI swarm to turn a shelf of half-finished web games into a proper arcade. It did the boring, scalable part very well: one portal, one SDK, one 25-point standard, one harness, and 70-plus commits in a week (`git log`: 31 on 28 September alone). It did the *taste* part worse than it said it did. Independent critics kept scoring the games 5 to 6 out of 10 while the builders scored themselves 7 to 8, and the last two rounds on the flagship (Claire's Big Life) went sideways. Then your sister opened the arcade on an iPhone, and the sharpest problems were ones nobody had been able to see: the tests ran in Chromium, not Safari, and the biggest games are 65 to 115 MB downloads. The fix that matters is not more polish: it is testing in the engine your audience uses.
+You asked an AI swarm to turn a shelf of half-finished web games into a proper arcade. It did the boring, scalable part very well: one portal, one SDK, one 25-point standard, one harness, and 70-plus commits in a week (`git log`: 31 on 28 September alone). It did the *taste* part worse than it said it did. Independent critics kept scoring the games 5 to 6 out of 10 while the builders scored themselves 7 to 8, and the fifth round on the flagship (Claire's Big Life) scored lower than the fourth (5.6 vs 6.1). Then your sister opened the arcade on an iPhone, and the sharpest problems were ones nobody had been able to see: the tests ran in Chromium, not Safari, and the biggest games are 65 to 115 MB downloads. The fix that matters is not more polish: it is testing in the engine your audience uses.
 
 ## What worked (with proof)
 
@@ -47,7 +47,7 @@ Draw this as a two-line chart: builder self-score above, critic score below, bot
 1. **Portal tiles:** `qa/portal/tiles_before.jpg` then `tiles_after.jpg` (flat placeholders to key art from real frames).
 2. **Claire first view, r3 to r5:** `claire_r3_critic/d03_first_view.png` vs `claire_r5_critic/d03_first_view.png` (planks on lawn and black squares to crops in rows, a red barn, cows).
 3. **Claire title:** `d01_title.png` in r3 vs r5 (flat slab to a sky, a logo, a bridge, a port).
-4. **The black-square bug:** `claire_r3_critic/crop_d03_beds.png` and `crop_d03_house.png` (shadow blobs rendered as solid black squares) vs `claire_r5_critic/crop_d03_field.png`.
+4. **The black-square bug:** `claire_r3_critic/crop_d03_beds.png` and `crop_d03_house.png` (shadow blobs rendered as solid black squares) vs `claire_r5_critic/crop_d03_field.png` (the round-5 critic no longer reports them).
 5. **Claire on a phone:** `claire_r3_critic/p03_first_view.png` (chrome covers 55%) vs `claire_r5_critic/p03_first_view.png` (40%), then `p06_market_sell.png` (the new overflow bug). The failure and the fix in one cut.
 6. **Reference vs ours (internal only):** `scratchpad/3d1/compare_sheet.png` (Hole Grind / Helix Smash / Stack Ball beside the games they chase). **Do not put commercial screenshots in a public video**; the gate says references are for internal comparison. Show only your side, or blur the reference.
 7. **SwellRider:** `surf_critic/desk_01_title.png` and `desk_13_wipeout_b.png` (60% of the frame washed white) next to the real Pipeline photo `swellrider-godot/qa/web/refs/pipeline_barrel.jpg` (round 3 fixed the white-out, `surf_critic/r3/REPORT.md`).

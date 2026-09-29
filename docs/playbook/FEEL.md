@@ -1,7 +1,7 @@
 # FEEL: juice recipes that survive an iPhone
 
 All code is in [`feel-kit.js`](feel-kit.js) (one dependency-free file, dt in seconds, no hidden clock). Blocks below are verbatim from it and are checked by `tests/check-snippets.py`.
-Tests: [`tests/feel-test.html`](tests/feel-test.html), 12 checks, **12 of 12 pass in Chromium 141 and in Playwright WebKit 26.0** (`tests/results/feel.json`).
+Tests: [`tests/feel-test.html`](tests/feel-test.html), 13 checks, **13 of 13 pass in Chromium 141 and in Playwright WebKit 26.0** (`tests/results/feel.json`).
 Live: tap Harvest in [`look-demo.html`](look-demo.html) (squash, coins fly to the counter, number pop, haptic call).
 
 ## Do this first (15 rules)
@@ -87,7 +87,7 @@ Tested: `hit(80)` froze 5 of 12 frames at 60 fps and the lost sim time was 80 ms
   }
   const squashScale = x => { const sy = Math.max(0.2, 1 + x); return { sx: 1 / sy, sy }; };
 ```
-Use: on tap `spring.punch(-0.18)`; each frame `const {sx, sy} = squashScale(spring.update(dt))`. Tested: overshoot to +0.064, settles below 0.002, stable even with 500 ms frames (sub-stepped). The same class kicks a camera: `spring.impulse(6)` then `camera.fov = base + spring.update(dt) * 4`.
+Use: on tap `spring.punch(-0.18)`; each frame `const {sx, sy} = squashScale(spring.update(dt))`. Tested: overshoot to +0.064, settles below 0.002, stable even with 500 ms frames (sub-stepped). **Camera kick:** `const kick = new Spring(180, 12)`; on a hit `kick.impulse(6)`; each frame `camera.fov = base + 4 * kick.update(dt)` (then `updateProjectionMatrix()`). Tested: peak 0.2 to 0.3 about 90 ms after the hit (about +1 degree of fov), settled under 0.005 within 1.5 s.
 
 ## 5. Anticipation and follow-through
 
@@ -196,7 +196,7 @@ Static reward card, nothing flies to the counter; harvested bed looks like unpla
 
 | Recipe | Chromium 141 | WebKit 26.0 |
 |---|---|---|
-| easing, shake, hit-stop, spring, track, coin path, combo, varied | pass | pass |
+| easing, shake, hit-stop, spring, camera kick, track, coin path, combo, varied | pass | pass |
 | flyCoins and popNumber (real rAF and WAAPI) | pass | pass |
 | coinSfx render (OfflineAudioContext) | pass | pass |
 | Haptics path selection | `vibrate` | `switch` (toggled) |

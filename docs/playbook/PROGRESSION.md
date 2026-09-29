@@ -63,7 +63,7 @@ Total XP to reach level 5 / 10 / 20 / 30: polynomial `60*n^1.6` = 1,141 / 8,023 
     return k;
   };
 ```
-Tested: 15-coin item costs 15, 18, 20, 23, 27 ... 70 (12th); doubling about every 5 buys; `1000` coins buys 17 of a 15-coin item; closed-form `costOfMany` matches a loop. Slower shop growth (1.07) makes the 100th cost 13,016 for base 15; racing/sim upgrades use 1.25 (100, 125, 157, 196, 245 ...).
+Tested: 15-coin item costs 15, 18, 20, 23, 27 ... 70 (12th); doubling about every 5 buys; `1000` coins buys 17 of a 15-coin item; closed-form `costOfMany` matches a loop. Slower shop growth (1.07) makes the next purchase cost 13,016 after 100 owned (base 15); racing/sim upgrades use 1.25 (100, 125, 157, 196, 245 ...).
 <!-- from progression-kit.js -->
 ```js
   const stars = (value, [one, two, three], { lowerIsBetter = false } = {}) => {

@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
 <title>feel-kit tests</title>
 <body style="font:14px system-ui;padding:12px"><h3>feel-kit.js tests</h3><pre id="out"></pre><div id="hud" style="position:fixed;right:20px;top:20px;width:40px;height:40px"></div>
 <script src="../feel-kit.js"></script>
@@ -56,6 +57,10 @@ const zc = arr => { let n = 0; for (let i = 1; i < arr.length; i++) if ((arr[i -
     return `min ${mn.toFixed(3)}, max ${mx.toFixed(3)}, rest ${s.x.toExponential(1)}`;
   });
 
+  await test('camera kick: an impulse on a spring peaks fast and settles', () => {
+    const k = new Spring(180, 12); k.impulse(6); let peak = 0, at = 0; for (let i = 1; i <= 90; i++) { const x = k.update(1 / 60); if (x > peak) { peak = x; at = i * 1000 / 60; } }
+    yes(peak > 0.2 && peak < 0.3 && at >= 60 && at <= 130, `peak ${peak} at ${at} ms`); yes(Math.abs(k.x) < 0.005, 'settled ' + k.x); return `peak ${peak.toFixed(3)} at ${at.toFixed(0)} ms (fov +${(peak * 4).toFixed(2)} deg), rest ${k.x.toExponential(1)}`;
+  });
   await test('anticipation and follow-through track hits its keyframes', () => {
     const t = popTrack(1), at = ms => { const p = popTrack(1); let v; for (let i = 0; i < ms; i++) v = p.update(0.001); return +v.toFixed(3); };
     eq(at(90), 0.85, 0.01, 'dip'); eq(at(200), 1.25, 0.01, 'peak'); eq(at(500), 1, 1e-6, 'rest');

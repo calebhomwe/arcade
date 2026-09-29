@@ -14,7 +14,7 @@ Helpers: [`iphone-kit.js`](iphone-kit.js) (blocks below are verbatim, checked by
 8. **Cache and downloads:** GitHub Pages gzips `godot.wasm` to 10.2 MB (39.5 MB raw). CrazyGames wants 20 MB or less for the mobile homepage ([docs](https://docs.crazygames.com/requirements/technical/)). Claire's pack is 64.9 MB gz, LA City's 75.0 MB.
 9. **Root layout:** `position:fixed; inset:0`, `height:100dvh` with a `100vh` fallback, `viewport-fit=cover`, `env(safe-area-inset-*)` padding, `overscroll-behavior:none`.
 10. **Zoom and gestures:** iOS ignores `user-scalable=no`. Use `touch-action:manipulation`, block `gesturestart`, guard the double-tap.
-11. **Use Pointer Events only.** WebKit fires `mousedown/mouseup` after `touchend` (measured); listening to both double-fires.
+11. **Use Pointer Events only.** Both engines usually fire compatibility `mousedown/mouseup` after `touchend` (6 of 6 taps in WebKit, 5 of 6 in Chromium, `results/tap-order.json`) but not always; listening to touch and mouse together double-fires.
 12. **You cannot lock orientation on iPhone Safari** (`screen.orientation.lock` is `undefined` in WebKit). Show a "turn your phone" card.
 13. **Pause on `visibilitychange` and `pagehide`, and stay paused on return.** Never auto-resume (a critic caught the surf game doing exactly that).
 14. **Wrap all storage in try/catch;** private windows and blocked data throw.
@@ -31,7 +31,7 @@ Helpers: [`iphone-kit.js`](iphone-kit.js) (blocks below are verbatim, checked by
 | No-threads build crashes in seconds (4.3 dev3) | Unknown; closed "not planned" | Do not use dev builds | [#88321](https://github.com/godotengine/godot/issues/88321) |
 
 Official guidance: single-threaded is the default since 4.3 and "works very well on macOS and iOS"; web audio defaults to sample playback (no effects, reverb, doppler); only the Compatibility renderer (WebGL 2) exists on web; "Safari has several issues with WebGL 2.0" ([docs](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html)). Threads need the COOP/COEP headers ([Bugnet](https://bugnet.io/blog/fix-godot-html5-web-export-white-black-screen)); GitHub Pages lets you set no custom headers (the live `godot.wasm` response has none, and the export sets `ensureCrossOriginIsolationHeaders:false`), so single-threaded is the only option there.
-**Tested here:** `city-builder` and `heat-firm` (Godot v4.7.stable, Emscripten 4.0.20, single-threaded) boot to their title screens in Playwright WebKit 26.0 within about 30 s on this loaded box (`results/godot-webkit.json`). The DPR shim below is verified on `heat-firm`. **Not verified:** any iPhone hardware, memory over time, or audio (no sound card).
+**Tested here:** `city-builder` and `heat-firm` (Godot v4.7.stable, Emscripten 4.0.20, single-threaded) boot to their title screens in Playwright WebKit 26.0 (canvas created 6.4 s and 5.2 s after navigation on a lightly loaded moment; over 30 s when the box was busy). The console showed repeated `WebGL: INVALID_OPERATION: glBlitFramebuffer: Read and write color attachments cannot be the same image` (9 and 19 lines in about 11 s) in the second run and none in the first; the title screen still drew. It may be this Linux WebKit's GL layer, or a Godot 4.7 MSAA/resolve path: read a real iPhone's Web Inspector console before dismissing it (`results/godot-webkit.json`). The DPR shim below is verified on `heat-firm`. **Not verified:** any iPhone hardware, memory over time, or audio (no sound card).
 Put this in the export's HTML shell before `godot.js`:
 
 <!-- from tests/godot-dpr.mjs -->
@@ -120,7 +120,7 @@ Rules: WebKit needs a gesture it counts; sources list `touchend`, `click`, `keyd
 - **100vh / dvh:** `100vh` includes the browser bars on mobile; `dvh` tracks them ([summary](https://csstoolkit.net/blog/css-dvh-svh-lvh-guide/), search result). `CSS.supports` for `dvh`, `svh`, `lvh`, `env()`, `touch-action:manipulation`, `overscroll-behavior:none` is true in both engines. Emulation has no toolbar animation, so `dvh` = `innerHeight` = 664 here; the toolbar bug is **not reproducible in Playwright**. Fallback: `IPhone.fitViewport()` sets `--app-h` from `visualViewport` (tested).
 - **Safe areas:** `viewport-fit=cover` plus `padding: max(12px, env(safe-area-inset-left))` ([WebKit](https://webkit.org/blog/7929/designing-websites-for-iphone-x/)). Playwright returns `0px` (no notch): layout with real insets is unverified.
 - **Zoom:** iOS Safari ignores `user-scalable=no`; `touch-action:manipulation` removes double-tap zoom; block `gesturestart` for pinch; the double-tap guard cancels the second `touchend` inside 350 ms and clicks the button itself ([examples](https://github.com/kevpeng/random-mobile-game/pull/3), search result). Tested logic only; real iOS zoom cannot be triggered in Playwright, and `ongesturestart` is `false` in Playwright WebKit (iOS-only event).
-- **Pointer vs touch:** measured tap order. WebKit: `pointerdown, touchstart, pointerup, touchend, mousedown, mouseup, click`. Chromium: `pointerdown, touchstart, pointerup, touchend, click`. Use Pointer Events only.
+- **Pointer vs touch:** six real taps per engine (`tests/tap-order.mjs`). WebKit: `pointerdown, touchstart, pointerup, touchend, mousedown, mouseup, click` on all 6. Chromium: the same on 5, and without the mouse pair on 1. Earlier single runs also saw the pair missing once in each engine, so the order is not guaranteed. Use Pointer Events only, and `click` for buttons.
 - **Rubber-banding:** `html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none}` plus `touchmove` `preventDefault({passive:false})` on the canvas. `overscroll-behavior` was Chrome-only in 2017 ([Chrome](https://developer.chrome.com/blog/overscroll-behavior)); supported (`CSS.supports`) in WebKit 26.0. The bounce itself is unverified.
 - **Orientation:** `orientationGate('portrait', wrong => card.hidden = !wrong)` (tested in both orientations: `matchMedia` flips at 390x664 vs 664x390). The arcade SDK already draws the card (`orientation:'landscape'`).
 - **Wake lock:** Safari 16.4+, but broken in Home Screen apps until iOS 18.4 ([WebKit bug 254545](https://bugs.webkit.org/show_bug.cgi?id=254545)); re-request on every `visibilitychange` (`keepAwake()`, safe when unsupported).
@@ -168,7 +168,7 @@ Tested recipe: `ENGINE=webkit node qa/harness/iphone.mjs` (the lead's harness) o
 | Item | Chromium 141 | WebKit 26.0 |
 |---|---|---|
 | 14 unit checks in `iphone-test.html` (dpr, adaptive, memory maths, audio gate, context guard, lifecycle, orientation, wake lock, touch guards, viewport, storage, breadcrumb, capability report) | pass | pass |
-| Tap event order | no mouse events | mouse events follow |
+| Tap event order (6 taps) | mouse pair after touchend on 5 of 6 | on 6 of 6 |
 | Trusted tap unlocks AudioContext | `running` | `suspended` (no sound card) |
 | Godot 4.7 boots | yes (slow, software GL) | yes |
 | Godot DPR cap 3 to 2 | not run | 1170x1992 to 780x1328 |
