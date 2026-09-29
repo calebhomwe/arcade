@@ -4,10 +4,12 @@
      ca_favs      favourite ids           ca_plays  id -> {n, ts}
      ca_likes     id -> 1 | -1            ca_stage  per-game screen size
      ca_notes     tester feedback         <game>_rec the cabinets' own records (read only)
+     ca_profile   the arcade-wide player profile (assets/profile-core.js owns it; profile-ui.js draws it)
 */
 (() => {
 'use strict';
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const PU = window.ArcadeProfileUI || null, CO = window.ArcadeProfileCore || null;   // the profile is optional: the portal works without it
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
@@ -21,7 +23,7 @@ const favs = () => new Set(store.get('ca_favs', []));
 const plays = () => store.get('ca_plays', {});
 const likes = () => store.get('ca_likes', {});
 const isFav = id => favs().has(id);
-function toggleFav(id) { const f = favs(); f.has(id) ? f.delete(id) : f.add(id); store.set('ca_favs', [...f]); document.dispatchEvent(new CustomEvent('favchange', { detail: id })); return f.has(id); }
+function toggleFav(id) { const f = favs(), was = f.has(id); was ? f.delete(id) : f.add(id); store.set('ca_favs', [...f]); if (PU) PU.noteFav(f.size, !was); document.dispatchEvent(new CustomEvent('favchange', { detail: id })); return f.has(id); }
 function recordPlay(id) { const p = plays(); const e = p[id] || { n: 0 }; e.n++; e.ts = Date.now(); p[id] = e; store.set('ca_plays', p); }
 function bestOf(g) { if (!g.rec) return null; const r = store.get(g.rec, null); if (!r) return null; const v = typeof r === 'number' ? r : r.best; return (typeof v === 'number' && v > 0) ? v : null; }
 const notes = () => store.get('ca_notes', {});
@@ -43,8 +45,8 @@ const ico = (n, cls) => '<svg class="i' + (cls ? ' ' + cls : '') + '" aria-hidde
 /* ---------- settings ---------- */
 const DEF = { theme: 'dark', accent: 'lime', size: 'comfy', motion: 'auto', labels: true, sort: 'featured', stage: 'fit', extnew: false, rail: 'full' };
 const OPTS = {
-  theme: [['light', 'Day'], ['dark', 'Night'], ['system', 'Match device']],
-  accent: [['violet', 'Grape'], ['pink', 'Bubblegum'], ['cyan', 'Lagoon'], ['lime', 'Lime'], ['amber', 'Mango']],
+  theme: CO ? CO.COSMETICS.theme.map(d => [d.id, d.name]) : [['light', 'Day'], ['dark', 'Night'], ['system', 'Match device']],   // ocean, sunset and candy unlock with levels
+  accent: CO ? CO.COSMETICS.accent.map(d => [d.id, d.name]) : [['violet', 'Grape'], ['pink', 'Bubblegum'], ['cyan', 'Lagoon'], ['lime', 'Lime'], ['amber', 'Mango']],
   size: [['compact', 'Compact'], ['comfy', 'Comfortable'], ['large', 'Large']],
   motion: [['auto', 'Match device'], ['on', 'On'], ['off', 'Off']],
   stage: [['fit', 'Fit'], ['wide', '16:9'], ['classic', '4:3'], ['tall', 'Tall'], ['fill', 'Fill']],
@@ -55,11 +57,13 @@ const touch = matchMedia('(hover: none)');
 // iPhone, iPod and iPad (iPadOS reports itself as a Mac with touch). Games carry g.iphone from qa/harness/iphone.mjs.
 const isApple = /iPhone|iPod|iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const darkMq = matchMedia('(prefers-color-scheme: dark)');
-const isDark = () => S.theme === 'dark' || (S.theme === 'system' && darkMq.matches);
+const isDark = () => S.theme === 'dark' || S.theme === 'ocean' || S.theme === 'sunset' || (S.theme === 'system' && darkMq.matches);
 function saveSettings() { store.set('ca_settings', S); applySettings(); document.dispatchEvent(new CustomEvent('settings')); }
+window.ArcadePortal = { setLook(kind, id) { if (!OPTS[kind] || S[kind] === id || !OPTS[kind].some(([v]) => v === id)) return false; S[kind] = id; saveSettings(); return true; } };   // the profile sheet's Colours tab
 function applySettings() {
   const h = document.documentElement;
-  h.dataset.theme = S.theme; h.dataset.accent = S.accent; h.dataset.size = S.size; h.dataset.motion = S.motion;
+  // a look the player has not unlocked yet (or lost) shows as the default; the choice itself is kept
+  h.dataset.theme = PU && PU.locked('theme', S.theme) ? DEF.theme : S.theme; h.dataset.accent = PU && PU.locked('accent', S.accent) ? DEF.accent : S.accent; h.dataset.size = S.size; h.dataset.motion = S.motion;
   h.dataset.labels = S.labels === true ? '1' : '0';
   const tb = $('#theme-btn'); if (tb) { const d = isDark(); tb.innerHTML = ico(d ? 'sun' : 'moon'); tb.setAttribute('aria-label', d ? 'Switch to day theme' : 'Switch to night theme'); tb.title = tb.getAttribute('aria-label'); }
 }
@@ -233,12 +237,15 @@ function shellInit() {
 
 /* ---------- settings sheet ---------- */
 function seg(key, opts, cur, swatch) {
-  return '<div class="seg" role="radiogroup" data-key="' + key + '">' + opts.map(([v, n]) => '<button type="button" role="radio" data-v="' + v + '" aria-checked="' + (v === cur) + '">' + (swatch ? '<i class="sw" style="background:var(--' + v + ')"></i>' : '') + n + '</button>').join('') + '</div>';
+  return '<div class="seg" role="radiogroup" data-key="' + key + '">' + opts.map(([v, n]) => {
+    const lock = PU && (key === 'theme' || key === 'accent') ? PU.locked(key, v) : '';
+    return '<button type="button" role="radio" data-v="' + v + '" aria-checked="' + (v === cur) + '"' + (lock ? ' data-locked="' + esc(lock) + '" title="' + esc(lock) + '"' : '') + '>' + (swatch ? '<i class="sw" style="background:var(--' + v + ')"></i>' : '') + n + '</button>';
+  }).join('') + '</div>';
 }
 const swRow = (key, on, label, sub) => '<div class="row2"><div class="lbl" id="lbl-' + key + '">' + label + (sub ? '<small>' + sub + '</small>' : '') + '</div><button type="button" class="switch" role="switch" data-key="' + key + '" aria-checked="' + on + '" aria-labelledby="lbl-' + key + '"></button></div>';
 function copyReport() { const txt = testerReport(); (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => toast('Tester report copied — paste it to Caleb'), () => { const blob = new Blob([txt], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'arcade-tester-report.txt'; a.click(); }); }
 function exportData() {
-  const data = { app: 'calebs-arcade', v: 2, at: new Date().toISOString(), settings: S, favs: [...favs()], plays: plays(), likes: likes(), stage: store.get('ca_stage', {}), notes: notes(), report: testerReport(), records: {} };
+  const data = { app: 'calebs-arcade', v: 2, at: new Date().toISOString(), settings: S, favs: [...favs()], plays: plays(), likes: likes(), stage: store.get('ca_stage', {}), notes: notes(), report: testerReport(), records: {}, profile: PU ? PU.pack() : undefined };
   for (const g of CATALOG) if (g.rec) { const r = store.get(g.rec, null); if (r != null) data.records[g.rec] = r; }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'calebs-arcade-' + new Date().toISOString().slice(0, 10) + '.json'; document.body.appendChild(a); a.click(); a.remove();
@@ -255,6 +262,7 @@ function importData(file, done) {
       if (d.stage) store.set('ca_stage', Object.assign(store.get('ca_stage', {}), d.stage));
       if (d.notes) { const n = notes(); for (const [id, e] of Object.entries(d.notes)) if (byId[id] && (!n[id] || (e.ts || 0) > (n[id].ts || 0))) n[id] = e; store.set('ca_notes', n); }
       if (d.records) for (const g of CATALOG) if (g.rec && d.records[g.rec] != null) { const cur = store.get(g.rec, null), inc = d.records[g.rec]; const cv = typeof cur === 'number' ? cur : (cur && cur.best) || 0, iv = typeof inc === 'number' ? inc : (inc && inc.best) || 0; if (iv > cv) store.set(g.rec, inc); }
+      if (d.profile && PU) PU.importPack(d.profile);
       if (d.settings) { Object.assign(S, DEF, d.settings); saveSettings(); }
       toast('Imported — favourites, history and bests merged'); done && done(true);
     } catch (e) { toast('That file is not an arcade backup'); done && done(false); }
@@ -275,7 +283,7 @@ function openPrefs(focus) {
   const onPlay = !!$('#player'), labelsOn = document.documentElement.dataset.labels === '1';
   const ext = CATALOG.filter(g => g.ext).length;
   d.innerHTML = '<form method="dialog"><header><h2 id="prefs-h">Settings</h2><button class="ico" type="submit" aria-label="Close settings">' + ico('x') + '</button></header><div class="body">' +
-    '<h3>Look</h3>' +
+    (PU ? PU.prefsRow() : '') + '<h3>Look</h3>' +
     '<div class="row2"><div class="lbl">Theme</div>' + seg('theme', OPTS.theme, S.theme) + '</div>' +
     '<div class="row2"><div class="lbl">Accent colour</div>' + seg('accent', OPTS.accent, S.accent, true) + '</div>' +
     '<div class="row2"><div class="lbl">Tile size<small>How big the game tiles are in rows and lists</small></div>' + seg('size', OPTS.size, S.size) + '</div>' +
@@ -298,7 +306,13 @@ function openPrefs(focus) {
 function onSheetClick(e) {
   const d = e.currentTarget;
   const r = e.target.closest('.seg button[data-v]');
-  if (r) { const k = r.parentElement.dataset.key; S[k] = r.dataset.v; saveSettings(); $$('button', r.parentElement).forEach(b => b.setAttribute('aria-checked', b === r)); return; }
+  if (r) {
+    const k = r.parentElement.dataset.key;
+    if (r.dataset.locked) { toast('Locked: ' + r.dataset.locked + '. Play to unlock it.'); return; }
+    const changed = S[k] !== r.dataset.v; S[k] = r.dataset.v; saveSettings(); $$('button', r.parentElement).forEach(b => b.setAttribute('aria-checked', b === r));
+    if (changed && PU && (k === 'theme' || k === 'accent')) PU.noteStyle();
+    return;
+  }
   const s = e.target.closest('.switch');
   if (s) { const on = s.getAttribute('aria-checked') !== 'true'; S[s.dataset.key] = on; saveSettings(); s.setAttribute('aria-checked', on); return; }
   const b = e.target.closest('[data-act]'); if (!b) return;
@@ -342,6 +356,7 @@ function home() {
     const intro = document.createElement('div'); intro.className = 'welcome';
     intro.innerHTML = '<div><div class="eyebrow">YOUR NEXT GOOD TIME</div><h1>Find your next favourite.</h1><p>Little breaks. Big adventures. Just press play.</p></div><a class="library-count" href="./?view=all">' + CATALOG.length + ' games to explore ' + ico('right') + '</a>';
     frag.appendChild(intro);
+    if (PU) frag.appendChild(PU.homeCard());
     const feature = document.createElement('section'); feature.className = 'feature-layout'; feature.setAttribute('aria-label', 'Featured games');
     feature.innerHTML = '<a class="feature-lead" href="' + playHref(lead) + '"><img class="feature-image" src="assets/feature-kingdom.webp" alt="A castle surrounded by forests in Kingdom Defense" fetchpriority="high" width="960" height="600"><div class="feature-copy"><span class="feature-kicker">IN THE SPOTLIGHT · STRATEGY</span><h2>Build your kingdom.<br>Hold your ground.</h2><p>Command your army. Defend the castle.<br>Make every move count.</p><span class="feature-cta">' + ico('play') + ' Play Kingdom Defense</span></div><span class="feature-index">FEATURED</span></a><div class="feature-picks"></div>';
     const picks = $('.feature-picks', feature);
@@ -389,6 +404,7 @@ function home() {
     const v = st.view;
     if (v === 'new') { const l = newest(); frag.appendChild(phead({ icon: 'spark', cc: 'var(--c-learning)', title: 'New games', desc: 'The latest additions to the arcade, newest first.', count: l.length })); frag.appendChild(gridOf(l)); }
     else if (v === 'popular') { const l = popular(); frag.appendChild(phead({ icon: 'flame', cc: 'var(--c-hyper)', title: 'Popular games', desc: "Caleb's most-loved picks, nudged by what you play most.", count: l.length })); frag.appendChild(gridOf(l, { ranked: true })); }
+    else if (v === 'trophies' && PU) frag.appendChild(PU.trophyRoom());
     else if (v === 'iphone') {
       const l = iphoneList(); frag.appendChild(phead({ icon: 'phone', title: 'Plays on iPhone', desc: 'Checked on an iPhone-sized touch screen: loads cleanly, fits the screen, starts with a tap and has touch controls. Tip: Share, then Add to Home Screen, to keep the arcade one tap away.', count: l.length }));
       frag.appendChild(gridOf(l));
@@ -418,7 +434,7 @@ function home() {
     const c = st.cat && catOf(st.cat);
     if (st.q) renderSearch(frag); else if (c) renderCat(frag, c); else if (st.view && st.view !== 'home') renderList(frag); else renderHome(frag);
     view.innerHTML = ''; view.appendChild(frag);
-    document.title = st.q ? 'Search: ' + st.q + " — Caleb's Arcade" : c ? c.name + " games — Caleb's Arcade" : st.view && st.view !== 'home' ? ({ new: 'New games', popular: 'Popular games', iphone: 'Plays on iPhone', recent: 'Recently played', favourites: 'Your favourites', all: 'All games' }[st.view] || 'Games') + " — Caleb's Arcade" : TITLE;
+    document.title = st.q ? 'Search: ' + st.q + " — Caleb's Arcade" : c ? c.name + " games — Caleb's Arcade" : st.view && st.view !== 'home' ? ({ new: 'New games', popular: 'Popular games', iphone: 'Plays on iPhone', recent: 'Recently played', favourites: 'Your favourites', trophies: 'Trophy room', all: 'All games' }[st.view] || 'Games') + " — Caleb's Arcade" : TITLE;
     markNav(st.q ? null : st);
     if (q.value !== st.q && document.activeElement !== q) q.value = st.q;
     $('#qclear').hidden = !q.value;
@@ -508,6 +524,7 @@ function play() {
     const done = () => { load.classList.add('off'); try { frame.focus(); } catch (e) {} };
     frame.addEventListener('load', done, { once: true }); setTimeout(() => load.classList.add('off'), 9000);
     recordPlay(g.id); facts();
+    if (PT) PT.start();
   }
   // phones: Play goes straight to fullscreen (theatre where the browser has no fullscreen API)
   const phonePlay = () => { start(); if (touch.matches && innerWidth <= 760) fs.click(); };
@@ -580,6 +597,9 @@ function play() {
   window.ArcadeHost = sdk;   // read by qa/harness/standard.mjs
   const gp = $('#gpause'), gm = $('#gmute'), gh = $('#ghelp');
   const toGame = (type, extra) => { try { frame.contentWindow.postMessage(Object.assign({ arcade: 1, type }, extra || {}), '*'); } catch (e) {} };
+  // The profile watches the frame: play time, rounds, and the game's opt-in profile calls (assets/profile-ui.js).
+  const PT = PU ? PU.track(g, { isPaused: () => sdk.paused, send: toGame, pause: () => toGame('pause', { reason: 'user' }) }) : null;
+  if (PU) window.ArcadeHost.profile = PU.store;   // read by qa/harness/profile-test.mjs
   const paintSdk = () => {
     [gp, gm, gh].forEach(b => { b.disabled = !sdk.ready; b.title = sdk.ready ? b.title.replace(/ — .*/, '') : b.getAttribute('aria-label') + ' — this game has not joined the arcade controls yet'; });
     gp.setAttribute('aria-pressed', sdk.paused); gp.querySelector('use').setAttribute('href', sdk.paused ? '#i-play' : '#i-pause'); gp.setAttribute('aria-label', sdk.paused ? 'Resume the game' : 'Pause the game');
@@ -589,9 +609,10 @@ function play() {
   metaP.then(m => { sdk.meta = m; paintMeta(m); });
   window.addEventListener('message', e => {
     const m = e.data; if (!m || m.arcade !== 1 || e.source !== frame.contentWindow) return;
+    if (PT) PT.message(m);
     if (m.type === 'ready') {
       sdk.ready = true; sdk.caps = m.caps; paintSdk();
-      metaP.then(meta => toGame('config', { meta: Object.assign({ title: g.title }, meta) }));
+      metaP.then(meta => toGame('config', { meta: Object.assign({ title: g.title }, meta), profile: PU ? PU.snapshot() : null }));
       if (sdk.muted) toGame('mute');
     } else if (m.type === 'state') {
       if ('paused' in m) sdk.paused = !!m.paused; if ('muted' in m) { sdk.muted = !!m.muted; store.set('ca_muted', sdk.muted); }
@@ -607,10 +628,10 @@ function play() {
     else if (m.type === 'ack') { sdk.acks.push(m); if (sdk.acks.length > 100) sdk.acks.shift(); }
   });
   // A new game document is starting whenever the frame's src changes; the SDK in it says ready again.
-  new MutationObserver(() => { sdk.ready = false; sdk.paused = false; sdk.caps = null; paintSdk(); }).observe(frame, { attributes: true, attributeFilter: ['src'] });
+  new MutationObserver(() => { sdk.ready = false; sdk.paused = false; sdk.caps = null; paintSdk(); if (PT) PT.reset(); }).observe(frame, { attributes: true, attributeFilter: ['src'] });
   gp.addEventListener('click', () => toGame(sdk.paused ? 'resume' : 'pause', { reason: 'user' }));
   gm.addEventListener('click', () => toGame(sdk.muted ? 'unmute' : 'mute'));
-  gh.addEventListener('click', () => toGame('howto'));
+  gh.addEventListener('click', () => { toGame('howto'); if (PT) PT.howto(); });
   document.addEventListener('visibilitychange', () => { if (sdk.ready) toGame(document.hidden ? 'pause' : 'resume', { reason: document.hidden ? 'hidden' : 'visible' }); });
   document.addEventListener('keydown', e => {
     if (!sdk.ready || e.ctrlKey || e.metaKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName || '')) return;

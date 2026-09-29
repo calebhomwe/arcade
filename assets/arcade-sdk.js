@@ -28,6 +28,17 @@
  *   if (ArcadeSDK.cheated) skipSavingBest();
  *   ArcadeSDK.sfx('coin');                      // a sound from the arcade's shared kit (assets/sfx/kit.json)
  *
+ * The arcade-wide profile (XP, level, streak, daily quests, badges; see docs/PROGRESSION.md) needs NO game code:
+ * the portal counts play time from this SDK's input heartbeats, counts a round when the game reports
+ * ArcadeSDK.state({scene:'over', score}), and notices a new best saved under a key the game lists in its meta
+ * `saves`. Games that want to do more can, and every call is safe to make when the profile is not there:
+ *   ArcadeSDK.state({scene:'over', score:120, level:4, stars:2});   // also: lower:true when a smaller score is better
+ *   ArcadeSDK.profile.award({xp:20, reason:'Beat the boss'});       // 1..50 XP, 100 a day per game
+ *   ArcadeSDK.profile.achievement('first-win', {title:'First Win', desc:'Win a match', tier:'silver'});   // a badge in the Trophy room
+ *   ArcadeSDK.profile.quest('clear-w5', 0.6, {title:'Clear wave 5'});   // 0..1 (1 = done): an extra goal on the quests card
+ *   ArcadeSDK.profile.get();                                        // {level, xp, streak, stars, avatar, title} or null
+ * Cheat codes on: every profile call is ignored and the run earns no XP (ArcadeSDK.cheated).
+ *
  * Nothing in here may break a game: every hook is guarded and falls back to the original.
  */
 (function () {
@@ -35,7 +46,8 @@
   if (window.ArcadeSDK) return;
   var V = 1, W = window, D = document;
   var inFrame = false; try { inFrame = W.parent && W.parent !== W; } catch (e) { inFrame = true; }
-  function post(type, data) { if (!inFrame) return; try { var m = { arcade: V, type: type }; for (var k in data) m[k] = data[k]; W.parent.postMessage(m, '*'); } catch (e) {} }
+  var sid = Math.random().toString(36).slice(2, 9);   // one per page load: tells the arcade a new game document started
+  function post(type, data) { if (!inFrame) return; try { var m = {}; for (var k in data) m[k] = data[k]; m.arcade = V; m.type = type; if (type === 'ready') m.sid = sid; W.parent.postMessage(m, '*'); } catch (e) {} }
 
   var cfg = {}, meta = {}, paused = false, reason = '', muted = false, cheated = false, events = [], glTypes = [];
   var rawST = W.setTimeout.bind(W), rawCT = W.clearTimeout.bind(W), rawSI = W.setInterval.bind(W), rawCI = W.clearInterval.bind(W);
@@ -380,7 +392,7 @@
       c.appendChild(el('table', {}, (cfg.tricks || meta.tricks || []).map(function (t) { return el('tr', {}, [el('td', { text: t.name }), el('td', { text: t.input || '' })]); })));
       c.appendChild(el('button', { class: 'p', 'data-a': 'back', text: 'Back' }));
     } else if (panel === 'codes') {
-      c.appendChild(el('h2', { text: 'Codes' })); c.appendChild(el('p', { class: 'sub', text: 'Codes are just for fun: a run with codes on never replaces your best score.' }));
+      c.appendChild(el('h2', { text: 'Codes' })); c.appendChild(el('p', { class: 'sub', text: 'Codes are just for fun: a run with codes on never earns XP or replaces your best score.' }));
       var inp = el('input', { id: 'arcade-sdk-code', 'aria-label': 'Code', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false' });
       inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); act('enter-code'); } });
       c.appendChild(inp); c.appendChild(el('p', { class: 'msg', id: 'arcade-sdk-msg' }));
@@ -431,7 +443,8 @@
   /* ---------- messages from the arcade page ---------- */
   W.addEventListener('message', function (e) {
     var m = e.data; if (!m || m.arcade !== V || e.source !== W.parent) return;
-    if (m.type === 'config') { meta = m.meta || {}; pauseButton(); pauseKeys = cfg.pauseKeys != null ? cfg.pauseKeys : (meta.pauseKeys || ''); }
+    if (m.type === 'config') { meta = m.meta || {}; if (m.profile) setSnap(m.profile); pauseButton(); pauseKeys = cfg.pauseKeys != null ? cfg.pauseKeys : (meta.pauseKeys || ''); watchSaves(meta.saves); }
+    else if (m.type === 'profile-state') setSnap(m.p);
     else if (m.type === 'pause') pause(m.reason || 'user');
     else if (m.type === 'resume') resume(m.reason || 'user');
     else if (m.type === 'mute') setMuted(true);
@@ -447,9 +460,64 @@
 
   function caps() {
     return { sdk: V, pause: true, mute: true, menu: !cfg.ownPauseUI, ownPauseUI: !!cfg.ownPauseUI, restart: !!cfg.onRestart, exit: !!cfg.onExit,
-      tutorial: !!cfg.onTutorial, hints: hasHints(), cheats: hasCheats(), tricks: (cfg.tricks || []).length, declared: !!cfg.declared };
+      tutorial: !!cfg.onTutorial, hints: hasHints(), cheats: hasCheats(), tricks: (cfg.tricks || []).length, declared: !!cfg.declared, profile: true };
   }
   function log(name, data, at) { events.push({ t: Math.round(at == null ? rawNow() : at), name: name, data: data || null }); if (events.length > 200) events.shift(); }
+
+  /* ---------- the arcade profile: heartbeats, saved bests, and the opt-in calls ---------- */
+  var snap = null, snapCbs = [], lastBeat = 0, gpTimer = 0, doneAch = {}, hits = {}, saveKeys = [], saveLast = {}, saveTimer = 0;
+  function setSnap(p) {
+    if (!p || typeof p !== 'object') return; snap = { level: +p.level || 1, xp: +p.xp || 0, into: +p.into || 0, need: +p.need || 0, streak: +p.streak || 0, stars: +p.stars || 0, avatar: String(p.avatar || ''), title: String(p.title || '') };
+    snapCbs.slice().forEach(function (f) { try { f(snap); } catch (e) {} });
+  }
+  function rate(kind, max, ms) {   // a game cannot flood the portal
+    var t = rawNow(), a = (hits[kind] = (hits[kind] || []).filter(function (x) { return t - x < ms; }));
+    if (a.length >= max) return false; a.push(t); return true;
+  }
+  function beat() { var t = rawNow(); if (t - lastBeat > 8000 && !(paused && !soft)) { lastBeat = t; post('profile', { op: 'active' }); } }
+  ['pointerdown', 'pointermove', 'keydown', 'touchstart', 'touchmove', 'wheel'].forEach(function (n) { try { W.addEventListener(n, beat, { capture: true, passive: true }); } catch (e) {} });
+  try {
+    W.addEventListener('gamepadconnected', function () {   // a pad makes no DOM events: look at it every few seconds
+      if (gpTimer) return;
+      gpTimer = rawSI(function () { try { var pads = W.navigator.getGamepads ? W.navigator.getGamepads() : []; for (var i = 0; i < pads.length; i++) { var g = pads[i]; if (!g) continue; if (g.buttons.some(function (b) { return b.pressed; }) || g.axes.some(function (a) { return Math.abs(a) > 0.4; })) { beat(); return; } } } catch (e) {} }, 2500);
+    });
+  } catch (e) {}
+  // A new best under a key the game declares in its meta `saves`: the number that looks like a best, found in the value.
+  function readKey(k) { try { return W.localStorage.getItem(k); } catch (e) { return null; } }
+  function bestIn(raw, key) {
+    if (raw == null) return null; var val; try { val = JSON.parse(raw); } catch (e) { val = raw; }
+    var low = /time|lap|rank|moves/i.test(key), found = [];
+    (function walk(x, name, depth) {
+      if (depth > 4 || found.length > 40) return;
+      if (typeof x === 'number' && isFinite(x)) { if (/best|high|record|hi_?score|top/i.test(name) || (depth === 0 && /rec|score|best|high/i.test(key))) found.push(x); }
+      else if (typeof x === 'string' && depth === 0 && x !== '' && isFinite(+x) && /rec|score|best|high/i.test(key)) found.push(+x);
+      else if (x && typeof x === 'object' && !Array.isArray(x)) for (var k in x) walk(x[k], k, depth + 1);
+    })(val, key, 0);
+    if (!found.length) return null; return { v: low ? Math.min.apply(null, found) : Math.max.apply(null, found), low: low };
+  }
+  function pollSaves() {
+    if (!inFrame) return;
+    saveKeys.forEach(function (k) { var v = readKey(k); if (v === saveLast[k]) return; saveLast[k] = v; var b = bestIn(v, k); if (b && !cheated) post('profile', { op: 'saved', key: k, best: b.v, lower: b.low }); });
+  }
+  function watchSaves(list) {
+    if (!inFrame || saveTimer || !Array.isArray(list)) return;
+    saveKeys = list.filter(function (k) { return typeof k === 'string' && !/^idb:/.test(k); }).slice(0, 8); if (!saveKeys.length) return;
+    saveKeys.forEach(function (k) { saveLast[k] = readKey(k); }); saveTimer = rawSI(pollSaves, 2500);
+  }
+  var profileApi = {
+    award: function (o) { if (cheated || !inFrame || !o || !(+o.xp >= 1) || !rate('award', 8, 60000)) return false; post('profile', { op: 'award', xp: Math.min(50, Math.floor(+o.xp)), reason: String(o.reason || '').slice(0, 50) }); return true; },
+    achievement: function (id, o) {
+      id = String(id); if (cheated || !inFrame || !/^[A-Za-z0-9_.-]{1,32}$/.test(id) || doneAch[id] || !rate('ach', 10, 60000)) return false; doneAch[id] = 1; o = o || {};
+      post('profile', { op: 'achievement', id: id, title: String(o.title || '').slice(0, 40), desc: String(o.desc || '').slice(0, 100), tier: /^(bronze|silver|gold|diamond)$/.test(o.tier) ? o.tier : 'bronze' }); return true;
+    },
+    quest: function (id, progress, o) {
+      id = String(id); if (cheated || !inFrame || !/^[A-Za-z0-9_.-]{1,32}$/.test(id) || !rate('quest:' + id, 4, 5000)) return false; o = o || {};
+      var p = progress && typeof progress === 'object' ? (+progress.value) / Math.max(1e-9, +progress.target || 1) : +progress; if (!(p >= 0)) return false;
+      post('profile', { op: 'quest', id: id, progress: Math.min(1, p), title: String(o.title || '').slice(0, 60), xp: o.xp, stars: o.stars }); return true;
+    },
+    get: function () { return snap; },
+    onChange: function (cb) { if (typeof cb === 'function') snapCbs.push(cb); if (inFrame && !snap) post('profile', { op: 'get' }); }
+  };
 
   var api = {
     version: V,
@@ -457,7 +525,8 @@
     pause: function () { pause('user'); }, resume: function () { resume('user'); }, gamePaused: gamePaused,
     get paused() { return paused; }, get muted() { return muted; }, get cheated() { return cheated; },
     setMuted: setMuted, restart: restart, showMenu: function (w) { pause('user'); showMenu(w || 'pause'); },
-    state: function (s) { post('state', s || {}); if (s && s.scene) log('scene', { scene: s.scene }); },
+    state: function (s) { var o = {}; s = s || {}; for (var k in s) o[k] = s[k]; if (typeof o.score === 'string' && o.score !== '' && isFinite(+o.score)) o.score = +o.score; if (cheated) o.cheated = true; post('state', o); if (s.scene) log('scene', { scene: s.scene }); },
+    profile: profileApi,
     event: function (name, data) { log(name, data); post('event', { name: name, data: data || null }); },
     now: vnow,
     sfx: playSfx,
@@ -468,7 +537,7 @@
       return { version: V, paused: paused, soft: soft, reason: reason, pauseKeys: pauseKeys, muted: muted, cheated: cheated, clock: vnow(), raw: rawNow(), pausedTotal: pausedTotal, caps: caps(), meta: !!meta.title,
         audio: Array.from(ctxs).map(function (c) { var m = masters.get(c); return { state: c.state, master: m ? m.gain.value : null }; }),
         media: Array.from(media).map(function (el) { return { muted: el.muted, paused: el.paused }; }),
-        gl: glTypes.slice(), frames: frames.size, timers: timers.size, heldAnims: heldAnims.length, events: events.slice(-40), menu: panel };
+        gl: glTypes.slice(), profile: { snap: !!snap, watching: saveKeys.slice(), cheated: cheated }, frames: frames.size, timers: timers.size, heldAnims: heldAnims.length, events: events.slice(-40), menu: panel };
     }
   };
   W.ArcadeSDK = api;
