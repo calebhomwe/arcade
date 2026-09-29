@@ -1,0 +1,183 @@
+{
+ "id": "hub-merge-blocks",
+ "title": "Merge Blocks",
+ "cat": "puzzle",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/merge-blocks.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [],
+ "shots": {
+  "1-title": "shots/hub-merge-blocks-1-title.jpg",
+  "2-mid": "shots/hub-merge-blocks-2-mid.jpg",
+  "3-end": "shots/hub-merge-blocks-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 19.24,
+  "cores": 4,
+  "load1End": 18.66,
+  "contention": 2.04,
+  "contentionSamples": [
+   2.66,
+   2.15,
+   1.52,
+   2.04,
+   2.15,
+   1.5,
+   1.5
+  ]
+ },
+ "loadMs": 650,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/merge-blocks.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/merge-blocks.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 146.7,
+  "bench1Ms": 72.6,
+  "effectiveSlowdown": 2
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 2.04,
+  "loadMs": 338,
+  "playMs": 150,
+  "loadRawMs": 690,
+  "playRawMs": 306,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 6,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 60,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 2,
+  "slowestPollMs": 172,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 727.3,
+   "blocking": 0,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     22
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     9
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     34
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 446.6,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 344.1,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 0,
+  "jsMedian": null,
+  "jsP95": null,
+  "jsP99": null,
+  "jsMax": null,
+  "jsP95Raw": null,
+  "rawWithGlP95": null,
+  "glP95": null,
+  "gapP95": null,
+  "gapMedian": null,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.8,
+  "heap1MB": 2,
+  "heapGrowthPct": 16,
+  "heapMeasured": true,
+  "nodesStart": 104,
+  "nodesEnd": 105,
+  "nodesMax": 108,
+  "listeners0": 60,
+  "listeners1": 61,
+  "audioContexts": 1,
+  "audioElements": 12,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 0,
+   "totalMB": 0,
+   "biggest": [],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 11,
+  "scriptPct": 1,
+  "layoutPerSec": 6.4
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 60,
+  "swipes": 8,
+  "holds": 4,
+  "keys": 4,
+  "buttonPresses": 26,
+  "resumes": 1,
+  "touchApi": null,
+  "inputLatencyMedianMs": 67,
+  "inputLatencyP95Ms": 1101,
+  "inputLatencyMaxMs": 1800,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0.5,
+  "changeTitleToPlayPct": 79,
+  "maxChangeFromStartPct": 44.8,
+  "samples": 14
+ },
+ "severity": 0.3
+}

@@ -519,7 +519,7 @@ export class Game {
     this.weatherUpdate(dt);
     this.ambient.update(dt, c.x, c.z, SU.uNight.value, this.curSeason, this.weather.type, this.particleScale || 1);
     // title cinematic
-    if (this.mode === 'title') {
+    if (this.mode === 'title' && !this.freezeTitleCam) {
       this.titleT += dt; const t = this.titleT;
       const T = this.rig.tgt, C = this.rig.cur;
       T.yaw = C.yaw = 0.55 + Math.sin(t * 0.09) * 0.5; T.pitch = C.pitch = (17 + Math.sin(t * 0.13) * 2.5) * Math.PI / 180; T.size = C.size = this.rig.aspect < 1 ? 30 : 28; T.x = C.x = 4 + Math.sin(t * 0.07) * 6; T.z = C.z = -4 + Math.cos(t * 0.05) * 4;
@@ -663,7 +663,19 @@ export class Game {
       case 'newFarmYes': ui.closeDialog(true); return f.reset();
       case 'finaleDone': return this.finaleDone();
       case 'claimAway': ui.closeDialog(); return;
+      case 'sellFromDialog': { const r = f.sell(d.id, 1); if (r.ok) ui.toast(`Sold 1 for ${r.coins} coins`, 'good', 1400); ui.closeDialog(); return; }
     }
+  }
+  // one friendly suggestion for the SDK Hint button
+  hintText() {
+    const f = this.farm, S = f.S, c = f.chapter();
+    if (f.ripePlots().length) return 'Golden crops are ready. Tap them, or drag across a row to harvest.';
+    for (const s of SITES) if (f.buildingBuilt(s.id) && f.readyJobs(s.id)) return `${s.name} has something ready. Tap the glowing icon above it.`;
+    for (const p of PENS) { const i = f.penBuilt(p.id) ? f.penInfo(p.id) : null; if (i && i.ready) return 'An animal pen has something to collect. Tap the glowing icon.'; if (i && i.hungry) return 'Some animals are hungry. Tap their pen to feed them.'; }
+    if (S.orders.some((o) => f.canFill(o))) return 'You can fill an order right now. Tap the order board.';
+    if (Object.keys(S.plots).length < 6) return 'Tap an empty field, pick a seed and drag over more fields to plant them.';
+    if (!c.done) return `Goal: ${c.ch.goal} (${c.have}/${c.target})`;
+    return 'Plant something, then check the order board and the daily gift.';
   }
   itemDialog(id) {
     const it = ITEMS[id], f = this.farm;

@@ -175,7 +175,7 @@
   /* ---------- level badge, level ring, flame ---------- */
   function levelBadge(n, size) {
     size = size || 34; var t = String(n), fs = t.length > 2 ? 15 : t.length > 1 ? 17 : 19;
-    return '<svg class="pf-lvl" viewBox="0 0 40 44" width="' + size + '" height="' + Math.round(size * 1.1) + '" role="img" aria-label="Level ' + n + '"><path d="M20 2.6 L35.6 11.2 V29.4 L20 41.4 L4.4 29.4 V11.2Z" fill="#4a2bb0" transform="translate(0 2)" stroke-linejoin="round" stroke="#4a2bb0" stroke-width="4"/><path d="M20 2.6 L35.6 11.2 V29.4 L20 41.4 L4.4 29.4 V11.2Z" fill="url(#pf-lvl)" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/><text x="20" y="' + (fs > 17 ? 28 : 27.4) + '" text-anchor="middle" font-size="' + fs + '" font-weight="900" fill="#fff" font-family="Fredoka,Nunito,system-ui,sans-serif" style="paint-order:stroke" stroke="#4a2bb0" stroke-width="2.2" stroke-linejoin="round">' + t + '</text></svg>';
+    return '<svg class="pf-lvl" viewBox="0 0 40 46" width="' + size + '" height="' + Math.round(size * 1.15) + '" role="img" aria-label="Level ' + n + '"><path d="M20 2.6 L35.6 11.2 V29.4 L20 41.4 L4.4 29.4 V11.2Z" fill="#4a2bb0" transform="translate(0 2)" stroke-linejoin="round" stroke="#4a2bb0" stroke-width="4"/><path d="M20 2.6 L35.6 11.2 V29.4 L20 41.4 L4.4 29.4 V11.2Z" fill="url(#pf-lvl)" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/><text x="20" y="' + (fs > 17 ? 28 : 27.4) + '" text-anchor="middle" font-size="' + fs + '" font-weight="900" fill="#fff" font-family="Fredoka,Nunito,system-ui,sans-serif" style="paint-order:stroke" stroke="#4a2bb0" stroke-width="2.2" stroke-linejoin="round">' + t + '</text></svg>';
   }
   function ring(pct, size, w) {
     w = w || 4; var r = 50 - w / 2;

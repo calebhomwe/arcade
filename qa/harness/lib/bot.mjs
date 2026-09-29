@@ -169,11 +169,16 @@ export function makeBot(page, ctx, { rand, hasPlay, keyboard = false, startKey =
       const out = { how: '', viaKey: false };
       const start = meta.start || '';
       const ts = /^tap:([\d.]+)%,([\d.]+)%$/.exec(meta.touchStart || '');
-      const waitPlay = async (n) => { for (let i = 0; i < n; i++) { await wait(1000); if (sceneReached('play')) return true; } return sceneReached('play'); };
+      const waitPlay = async (n) => { for (let i = 0; i < n; i++) { await wait(1000); if (await sceneReached('play')) return true; } return !!(await sceneReached('play')); };
       if (ts) { await api.tap(vp.width * ts[1] / 100, vp.height * ts[2] / 100); out.how = meta.touchStart; }
       else if (start && !/^key:/.test(start) && start !== 'auto') {
         const ok = await fingerTap(page, page.locator(start).first(), 5000);
-        out.how = ok ? start : 'centre (start button not tappable)'; if (!ok) await api.tap(vp.width / 2, vp.height / 2);
+        out.how = ok ? start : 'declared start button not tappable';
+        if (!ok) {   // the declared selector may be stale: look for any visible Play / Start button before tapping the middle
+          const btn = page.locator('button, [role=button], a, .btn').filter({ hasText: /^\s*(▶\s*)?(play|start|tap to (play|start)|let'?s go|begin|go)\b/i }).first();
+          const ok2 = await btn.isVisible().catch(() => false) && await fingerTap(page, btn, 4000);
+          if (ok2) out.how += ' -> Play/Start button'; else { await api.tap(vp.width / 2, vp.height / 2); out.how += ' -> tap centre'; }
+        }
       } else {
         const btn = page.locator('button, [role=button], a, .btn').filter({ hasText: /^\s*(▶\s*)?(play|start|tap to (play|start)|let'?s go|begin|go)\b/i }).first();
         const ok = await btn.isVisible().catch(() => false) && await fingerTap(page, btn, 5000);
@@ -181,7 +186,7 @@ export function makeBot(page, ctx, { rand, hasPlay, keyboard = false, startKey =
       }
       if (await waitPlay(5)) return out;
       // a how-to / coach card first: press up to three continue buttons
-      for (let extra = 0; extra < 3 && !sceneReached('play'); extra++) {
+      for (let extra = 0; extra < 3 && !(await sceneReached('play')); extra++) {
         const c = await api.probe(); if (!c) break;
         const p = c.items.filter(i => !i.sdk && CONTINUE.test(i.txt) && !AVOID.test(i.txt));
         if (!p.length) break;

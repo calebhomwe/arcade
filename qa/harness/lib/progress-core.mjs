@@ -138,12 +138,14 @@ export async function checkProgression(g, browser, o) {
   if (!ok) { r.level = 0; r.label = 'P0'; r.notes.push('did not load'); await finish(); return r; }
   if (!o.landscape && await page.locator('#arcade-sdk-rotate').isVisible().catch(() => false)) { await finish(); return checkProgression(g, browser, { ...o, landscape: true }); }
   await drain();
+  const startSel = g.start && !/^key:|^auto$/.test(g.start) ? g.start : null, t1text = (await bot.probe() || {}).text || '';
+  const startedVisually = async () => { if (startSel && await race(page.locator(startSel).first().isVisible().catch(() => true), 3000) === false) return true; const c = await bot.probe(); return !!c && c.text !== t1text && c.text.length > 0 && Math.abs(c.text.length - t1text.length) > 20; };
   const snap0 = await snap();
   await grab('title-1');
   await race(page.screenshot({ type: 'jpeg', quality: 55, timeout: 12000, scale: 'css' }).then(b => fs.writeFile(path.join(shotDir, `${g.id}-1-title.jpg`), b)).catch(() => {}), 15000);
   const poll = setInterval(() => drain().catch(() => {}), 800);
   let st = { how: '' };
-  try { st = await bot.startGame(g, s => D.S.some(x => x[1] && x[1].scene === s)); } catch (e) { r.notes.push('start: ' + e.message.slice(0, 60)); }
+  try { st = await bot.startGame(g, async s => D.S.some(x => x[1] && x[1].scene === s) || (D.S.length === 0 && s === 'play' && await startedVisually())); } catch (e) { r.notes.push('start: ' + e.message.slice(0, 60)); }
   const tEnd = Date.now() + DURATION * 1000; let nextGrab = Date.now() + 5000;
   while (Date.now() < tEnd) {
     await race(bot.step().catch(() => {}), 12000);
@@ -170,7 +172,7 @@ export async function checkProgression(g, browser, o) {
     P2 = await race(page.evaluate(() => JSON.parse(JSON.stringify(window.__P || {}))).catch(() => null), 6000);
     await race(page.screenshot({ type: 'jpeg', quality: 55, timeout: 12000, scale: 'css' }).then(b => fs.writeFile(path.join(shotDir, `${g.id}-3-session2-title.jpg`), b)).catch(() => {}), 15000);
     const poll2 = setInterval(() => drain().catch(() => {}), 800);
-    try { await bot.startGame(g, s => D.S.some(x => x[1] && x[1].scene === s)); } catch {}
+    try { await bot.startGame(g, async s => D.S.some(x => x[1] && x[1].scene === s) || (D.S.length === 0 && s === 'play' && await startedVisually())); } catch {}
     const t2 = Date.now() + DURATION2 * 1000;
     while (Date.now() < t2) { await race(bot.step().catch(() => {}), 12000); await wait(100 + rand() * 250); if (page.isClosed()) break; }
     clearInterval(poll2); await grab('play-2');

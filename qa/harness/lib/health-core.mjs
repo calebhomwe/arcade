@@ -110,10 +110,23 @@ export async function checkHealth(g, browser, o) {
   // drain while starting so the scene events are visible to startGame
   const startPoll = setInterval(() => { drain().catch(() => {}); }, 700);
   let st = { how: '', viaKey: false };
-  try { st = await track(() => bot.startGame(meta, s => hasScene(s))); } catch (e) { r.notes.push('start threw: ' + e.message.slice(0, 80)); }
+  // Games that report scenes through the SDK are judged by them. Others (no ArcadeSDK.state) count as started when the start
+  // button has gone or the screen changed by more than 10% from the title.
+  const sdkKnown = () => r.sdk || D.S.length > 0;
+  let startedBy = null;
+  const startedNow = async s => {
+    if (sdkKnown()) { const ok = hasScene(s); if (ok) startedBy = 'sdk'; return ok; }
+    if (s !== 'play') return false;
+    const sel0 = meta.start && !/^key:|^auto$/.test(meta.start) ? meta.start : null;
+    if (sel0 && await race(page.locator(sel0).first().isVisible().catch(() => true), 3000) === false) { startedBy = 'start button gone'; return true; }
+    const sg = await sample();
+    if (sg && sig0 && sigDiff(sig0, sg) > 0.10) { startedBy = 'screen changed ' + Math.round(sigDiff(sig0, sg) * 100) + '%'; return true; }
+    return false;
+  };
+  try { st = await track(() => bot.startGame(meta, startedNow)); } catch (e) { r.notes.push('start threw: ' + e.message.slice(0, 80)); }
   clearInterval(startPoll);
   await drain();
-  r.start = { how: st.how, viaKey: st.viaKey };
+  r.start = { how: st.how, viaKey: st.viaKey, detectedBy: startedBy };
   const sel = meta.start && !/^key:|^auto$/.test(meta.start) ? meta.start : null;
   if (sel) r.start.buttonStillVisible = await race(page.locator(sel).first().isVisible().catch(() => false), 3000);
   await setPhase('play');

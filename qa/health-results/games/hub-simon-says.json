@@ -1,0 +1,236 @@
+{
+ "id": "hub-simon-says",
+ "title": "Simon Says",
+ "cat": "classic",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/simon-says.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 2708 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 2100 ms of JS; long-task API + timer heartbeat"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/hub-simon-says-1-title.jpg",
+  "2-mid": "shots/hub-simon-says-2-mid.jpg",
+  "3-end": "shots/hub-simon-says-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 15.06,
+  "cores": 4,
+  "load1End": 17.26,
+  "contention": 1.29,
+  "contentionSamples": [
+   1.07,
+   2.04,
+   1.78,
+   1.29,
+   1.12,
+   2.76,
+   1.27
+  ]
+ },
+ "loadMs": 3413,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/simon-says.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/simon-says.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 61,
+  "bench1Ms": 37.6,
+  "effectiveSlowdown": 1.6
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.29,
+  "loadMs": 2100,
+  "playMs": 78,
+  "loadRawMs": 2708,
+  "playRawMs": 100,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 2,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 0,
+  "slowestPollMs": 39,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 1291.2,
+   "blocking": 1241.2,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 693.3,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 487.5,
+   "blocking": 437.5,
+   "scripts": [],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 2,
+  "jsMedian": 0.16,
+  "jsP95": 0.16,
+  "jsP99": 0.16,
+  "jsMax": 0.2,
+  "jsP95Raw": 0.2,
+  "rawWithGlP95": 0.2,
+  "glP95": 0,
+  "gapP95": 16.7,
+  "gapMedian": 16.7,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.7,
+  "heap1MB": 2,
+  "heapGrowthPct": 17,
+  "heapMeasured": true,
+  "nodesStart": 66,
+  "nodesEnd": 67,
+  "nodesMax": 80,
+  "listeners0": 68,
+  "listeners1": 69,
+  "audioContexts": 1,
+  "audioElements": 12,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 0,
+   "totalMB": 0,
+   "biggest": [],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 10,
+  "scriptPct": 1,
+  "layoutPerSec": 3.6
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 8,
+  "restartsAfterOver": 8
+ },
+ "gameScore": {
+  "updates": 8,
+  "first": 10,
+  "last": 0,
+  "max": 10,
+  "trajectory": [
+   [
+    13,
+    10
+   ],
+   [
+    18,
+    0
+   ],
+   [
+    22,
+    0
+   ],
+   [
+    25,
+    0
+   ],
+   [
+    30,
+    0
+   ],
+   [
+    38,
+    10
+   ],
+   [
+    43,
+    0
+   ],
+   [
+    47,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 53,
+  "swipes": 7,
+  "holds": 4,
+  "keys": 3,
+  "buttonPresses": 28,
+  "resumes": 1,
+  "touchApi": null,
+  "inputLatencyMedianMs": 98,
+  "inputLatencyP95Ms": 1018,
+  "inputLatencyMaxMs": 1826,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 4.5,
+  "changeTitleToPlayPct": 77.6,
+  "maxChangeFromStartPct": 76.7,
+  "samples": 14
+ },
+ "severity": 104.1,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "page reloaded 1x without a button press (https://calebhomwe.github.io/arcade-hub/games/simon-says.htm; last input was canvas 62 ms earlier)",
+  "blockPlayMs": 46,
+  "blockLoadMs": 445,
+  "load1": 16.44
+ }
+}

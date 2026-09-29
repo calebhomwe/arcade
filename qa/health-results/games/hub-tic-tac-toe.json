@@ -1,0 +1,207 @@
+{
+ "id": "hub-tic-tac-toe",
+ "title": "Tic Tac Toe",
+ "cat": "classic",
+ "genre": "board",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/tic-tac-toe.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "bot navigated away to https://calebhomwe.github.io/arcade-hub/index.html and was sent back",
+  "page reloaded 1x right after a button press (the game's own restart): Play"
+ ],
+ "shots": {
+  "1-title": "shots/hub-tic-tac-toe-1-title.jpg",
+  "2-mid": "shots/hub-tic-tac-toe-2-mid.jpg",
+  "3-end": "shots/hub-tic-tac-toe-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 18.32,
+  "cores": 4,
+  "load1End": 15.06,
+  "contention": 1.41,
+  "contentionSamples": [
+   2.72,
+   1.41,
+   1.23,
+   3.68,
+   1.49,
+   1.02,
+   1.02
+  ]
+ },
+ "loadMs": 1089,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/tic-tac-toe.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/tic-tac-toe.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 120,
+  "bench1Ms": 33.4,
+  "effectiveSlowdown": 3.6
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.41,
+  "loadMs": 414,
+  "playMs": 165,
+  "loadRawMs": 584,
+  "playRawMs": 233,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 8,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 32,
+  "tbtPlayMs": 14,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 1,
+  "slowestPollMs": 88,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 2003.4,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 257.2,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 233,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "navigations": [
+  {
+   "at": 40966,
+   "abs": "https://calebhomwe.github.io/arcade-hub/games/tic-tac-toe.html",
+   "url": "https://calebhomwe.github.io/arcade-hub/games/tic-tac-toe.html",
+   "afterAction": 541,
+   "kind": "button",
+   "txt": "Play"
+  }
+ ],
+ "frames": {
+  "n": 2,
+  "jsMedian": 0.14,
+  "jsP95": 0.14,
+  "jsP99": 0.14,
+  "jsMax": 0.1,
+  "jsP95Raw": 0.2,
+  "rawWithGlP95": 0.2,
+  "glP95": 0,
+  "gapP95": 33.2,
+  "gapMedian": 33.2,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.7,
+  "heap1MB": 1.5,
+  "heapGrowthPct": -14,
+  "heapMeasured": true,
+  "nodesStart": 62,
+  "nodesEnd": 62,
+  "nodesMax": 96,
+  "listeners0": 62,
+  "listeners1": 49,
+  "audioContexts": 1,
+  "audioElements": 12,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 0,
+   "totalMB": 0,
+   "biggest": [],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 11,
+  "scriptPct": 2,
+  "layoutPerSec": 4.3
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 3,
+  "restartsAfterOver": 3
+ },
+ "gameScore": {
+  "updates": 3,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    22,
+    0
+   ],
+   [
+    35,
+    0
+   ],
+   [
+    5,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 67,
+  "swipes": 13,
+  "holds": 3,
+  "keys": 8,
+  "buttonPresses": 21,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 32,
+  "inputLatencyP95Ms": 667,
+  "inputLatencyMaxMs": 1303,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 68.7,
+  "maxChangeFromStartPct": 68.9,
+  "samples": 16
+ },
+ "severity": 0.4
+}

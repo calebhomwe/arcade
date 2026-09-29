@@ -206,3 +206,7 @@ svg.coin{flex:none;vertical-align:middle;filter:drop-shadow(0 2px 0 rgba(90,50,0
 @media (max-height:520px){.sheet{max-height:92%}.rail{gap:8px}.rail .hudbtn{width:46px;height:46px}.camctl{gap:6px}.camctl .hudbtn{width:40px;height:40px}}
 @media (min-width:700px){.sheet{border-radius:26px;bottom:14px}.sheet .head{border-radius:22px 22px 0 0}.rail .hudbtn{width:58px;height:58px}}
 @media (max-width:380px){.pill{font-size:16px;min-width:74px}.lvl{min-width:118px}}
+/* context lost / load failure */
+#lost{position:fixed;inset:0;z-index:90;display:none;place-items:center;background:rgba(10,20,40,.72);color:#fff;font-size:20px;text-align:center;padding:24px}
+#lost.on{display:grid}
+.sp-msg.err{color:#8d1f14;font-weight:700;opacity:1}
