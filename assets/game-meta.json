@@ -781,12 +781,12 @@
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "tr",
    "howto": [
     "Pick Math Pop (sums within 20) or Word Pop (first words), and a speed. Tapping the sky starts the highlighted (pink) mode.",
@@ -2544,20 +2544,20 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/game-2048.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "br",
    "howto": [
     "Pick a board (Easy 5x5, Normal 4x4, Hard 3x3) and Classic or the Daily board, then press Play.",
@@ -2824,29 +2824,29 @@
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "tr",
    "howto": [
-    "Choose Classic or the Daily blocks and press Play.",
-    "Tap one of the three blocks under the grid to pick it up.",
-    "Tap the grid: the block lands with its top-left corner on that square.",
-    "Fill a whole row or column to blast it. The game ends when none of your blocks fits."
+    "Pick Adventure (24 levels with stars), Classic (play as long as you can) or Daily blocks.",
+    "Drag one of the three blocks from the tray onto the board. It floats above your finger so you can see where it lands.",
+    "Fill a whole row or column to blast it away; clear lines on back-to-back moves for a combo.",
+    "The game ends when none of your blocks fits. In Adventure, reach the goal before your blocks run out."
    ],
    "tips": [
     "Blocks never rotate, so keep room for long bars and the big L.",
-    "Clearing lines on back-to-back moves builds a combo that multiplies the points.",
-    "Every clear charges the Blast meter; at 5 you get a bomb that wipes a 3x3 area.",
-    "Hint tries every block in every spot and shows a ghost where the best one goes.",
-    "Undo takes back your last drop, as often as you like."
+    "The board glows the lines a block would finish before you let go.",
+    "Every clear charges the bomb meter; at 5 a bomb joins your tray and wipes a 3x3 area.",
+    "Gems hide inside blocks in Adventure: clear the row or column that holds one.",
+    "Undo (3 per game) and Swap (2 per game) can rescue a crowded board; Hint shows a good spot."
    ],
    "controls": {
-    "keyboard": "1, 2 or 3 picks a block, arrow keys move it, Enter drops it, Z undoes. P or Esc pauses.",
-    "touch": "Tap a block, then tap the grid. Undo, Hint and New Game sit under the tray."
+    "keyboard": "1, 2 or 3 picks a block, arrow keys move it, Enter drops it, Z undoes, H hints. P or Esc pauses.",
+    "touch": "Drag a block from the tray onto the board and lift your finger to drop it. Undo, Swap, Hint and Menu sit under the tray."
    },
    "tricks": [],
    "cheats": [
@@ -2861,20 +2861,28 @@
     {
      "code": "FRESHTRAY",
      "effect": "Fresh tray: swap your blocks for three new ones"
+    },
+    {
+     "code": "MOREUNDO",
+     "effect": "More undo: ten undos and ten swaps"
     }
    ],
-   "difficulty": "An adaptive curve: the first eight blocks are small, blocks get smaller again when the grid is crowded, and a new tray is re-rolled toward small pieces when nothing would fit.",
+   "difficulty": "Adventure levels get tighter from world to world (fewer blocks, more filled squares). Classic and Daily use an adaptive curve: small blocks first, small again when the board is crowded, and every tray can be finished.",
    "features": {
-    "hints": "Hint button (and Pause > Hint): tries every block in every spot, picks the drop that clears most and leaves the fewest gaps, and shows it as a ghost on the grid",
-    "undo": "Undo button (or Z) takes back the last drop, any number of times",
-    "level-select-or-daily": "Daily blocks on the title: everyone gets the same blocks in the same order today, with its own daily best",
-    "results": "The grid shows GAME OVER with the run's points, clears and best combo in a card, and the score board updates"
+    "hints": "Hint button (and Pause > Hint): tries every block in every spot, picks the drop that clears most (or grabs a gem) and shows it as a breathing outline on the board",
+    "undo": "Undo button (or Z) takes back the last drop, restoring the same blocks; 3 per game",
+    "level-select-or-daily": "Adventure: 3 worlds x 8 levels with a 3-star rating each; Daily blocks: everyone gets the same blocks in the same order today, with its own daily best",
+    "results": "A result card with score, best, lines, best combo, bombs and XP earned; Adventure shows the stars",
+    "tutorial": "First game: a guided board where you drag a two-square block into a gap and blast your first row; skippable, replayed from How to play",
+    "progression": "Adventure 24 levels x 3 stars (worlds unlock at 10 and 28 stars); XP levels unlock 6 board looks; 3 daily goals, a weekly stamp card with a chest; 8 trophies"
    },
    "saves": [
     "blockblast_best",
-    "blockblast_clears"
+    "blockblast_clears",
+    "blockblast_adv",
+    "pz_blockblast"
    ],
-   "start": "#playBtn",
+   "start": "#mCls",
    "authored": [
     "cheats",
     "controls",
@@ -7335,101 +7343,6 @@
     "pauseButton",
     "saves",
     "start",
-    "tips"
-   ]
-  },
-  "godot-claire-big-life": {
-   "title": "Claire's Big Life Adventure",
-   "cat": "sim",
-   "genre": "life-sim",
-   "genreName": "Life / farm / world sim",
-   "modules": [
-    "autosave",
-    "goals-or-quests",
-    "day-time-ui",
-    "inventory"
-   ],
-   "tier": "3D-S",
-   "should3d": true,
-   "why3d": "",
-   "cheatPolicy": "eligible",
-   "frozen": false,
-   "ownerActive": false,
-   "ext": false,
-   "src": "Godot/claire-big-life/index.html",
-   "scan": {
-    "engine": "godot",
-    "render": "godot-3d",
-    "saves": true,
-    "reducedMotion": true,
-    "audio": true,
-    "gamepad": false,
-    "usesP": true,
-    "usesEsc": true,
-    "ownPause": true,
-    "sdk": true,
-    "sdkInit": true
-   },
-   "pauseKeys": "",
-   "pauseButton": "tr",
-   "howto": [
-    "Tap the golden wheat in your garden beds to harvest it, then tap an empty bed to plant again.",
-    "Follow the task card: it always names your next step, and Show me takes you straight there.",
-    "Use the bar along the bottom (the left rail on phones) to Grow, Raise animals, Produce treats, Trade and Build.",
-    "Meet Milo, June, Hazel and Theo and finish the twelve chapters of the Lantern Fair story."
-   ],
-   "tips": [
-    "Drag across several ripe beds in one stroke to harvest them all at once.",
-    "Hungry animals eat wheat and berries; collect eggs, milk and wool from Milo's paddock when they are ready.",
-    "Crops and bakery batches keep growing while the game is closed.",
-    "The trader's boat docks at the harbour after Chapter 2: fill its crates for a big reward.",
-    "Open the Barn to see everything you have stored, and upgrade it before it fills up."
-   ],
-   "controls": {
-    "keyboard": "Click to walk and use things, or WASD to walk and Space for the nearest action. G shows your task, Q and E turn the camera, the wheel zooms, right-drag pans, Esc closes a menu.",
-    "touch": "Tap the ground to walk; tap beds, buildings, animals and neighbours to use them; drag across beds to harvest many at once. The menus sit on the left rail (More shows the rest)."
-   },
-   "tricks": [],
-   "cheats": [
-    {
-     "code": "COINS500",
-     "effect": "+500 coins in your purse"
-    },
-    {
-     "code": "GROWNOW",
-     "effect": "Every planted crop is ready to harvest"
-    },
-    {
-     "code": "BUILDALL",
-     "effect": "Unlock every building in the Build menu"
-    }
-   ],
-   "difficulty": "A relaxed farm and life sim with no fail state: crops, animals and batches take real minutes, and the story opens one chapter at a time.",
-   "features": {
-    "autosave": "Every harvest, purchase and chapter saves at once, and the day clock and needs save every 30 seconds (browser IndexedDB, /userfs)",
-    "goals-or-quests": "The task card: five starter goals, then the twelve chapters of the Lantern Fair story, each with Show me and a coin reward",
-    "day-time-ui": "Day number, morning, afternoon or evening and the clock under Claire's name; the sky dims through dusk and the village lanterns glow at night",
-    "inventory": "The Barn (the Barn quick button on desktop, or Menu > Shared barn on any screen) lists every good you hold, the barn's capacity and its upgrade",
-    "tutorial": "Milo's welcome and the first-harvest goal on a new farm; Replay tutorial in the arcade menu brings them back",
-    "results": "Each finished goal and chapter shows a reward card; the Lantern Fair finale ends with credits and Keep playing",
-    "codes-on": "Using a code marks the farm Codes on for good (a red tag under the header) and pauses its achievements"
-   },
-   "settings": {
-    "quality": "Menu > Settings > Graphics: Shadows on or off, Smooth edges on or off, and Render scale (lower is faster and softer)",
-    "sound": "Menu > Settings > Sound: master, music, effects, Claire's voice, ambience and interface volumes, plus Mute all"
-   },
-   "saves": [
-    "idb:/userfs"
-   ],
-   "authored": [
-    "cheats",
-    "controls",
-    "difficulty",
-    "features",
-    "howto",
-    "pauseButton",
-    "saves",
-    "settings",
     "tips"
    ]
   },
