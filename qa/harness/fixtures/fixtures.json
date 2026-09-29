@@ -1,0 +1,158 @@
+{
+ "pass": {
+  "title": "Fixture: passes",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "pass.html",
+  "start": "#play",
+  "expect": "OK",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "freeze": {
+  "title": "Fixture: blocks the main thread 8 s",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "freeze.html",
+  "start": "#play",
+  "expect": "FREEZE",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "never-starts": {
+  "title": "Fixture: never starts",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "never-starts.html",
+  "start": "#play",
+  "expect": "STALL",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "hang": {
+  "title": "Fixture: hangs forever",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "hang.html",
+  "start": "#play",
+  "expect": "FREEZE",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "raf-dies": {
+  "title": "Fixture: game loop throws",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "raf-dies.html",
+  "start": "#play",
+  "expect": "FREEZE+ERRORS",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "key-only": {
+  "title": "Fixture: starts by keyboard only",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "key-only.html",
+  "start": "key:Enter",
+  "expect": "STALL",
+  "controls": {
+   "touch": "tap",
+   "keyboard": "Enter"
+  }
+ },
+ "jank": {
+  "title": "Fixture: 80 ms per frame",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "jank.html",
+  "start": "#play",
+  "expect": "JANK",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "leak": {
+  "title": "Fixture: keeps everything",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "leak.html",
+  "start": "#play",
+  "expect": "LEAK",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "reload": {
+  "title": "Fixture: reloads itself",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "reload.html",
+  "start": "#play",
+  "expect": "FREEZE",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "no-restart": {
+  "title": "Fixture: dead end at game over",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "no-restart.html",
+  "start": "#play",
+  "expect": "STALL",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "prog-none": {
+  "title": "Fixture: saves nothing",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "prog-none.html",
+  "start": "#play",
+  "expect": "P0",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "prog-best": {
+  "title": "Fixture: best score only",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "prog-best.html",
+  "start": "#play",
+  "expect": "P1",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ },
+ "prog-rich": {
+  "title": "Fixture: coins, shop, levels, daily streak",
+  "cat": "arcade",
+  "genre": "arcade",
+  "file": "prog-rich.html",
+  "start": "#play",
+  "expect": "P2+",
+  "controls": {
+   "touch": "tap",
+   "keyboard": ""
+  }
+ }
+}

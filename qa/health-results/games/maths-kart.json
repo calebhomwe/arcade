@@ -1,0 +1,234 @@
+{
+ "id": "maths-kart",
+ "title": "Maths Kart GP",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "MathsKart/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 20.74 ms over 16 ms (CPU throttled x4, divided by machine slowdown x3.9; raw p95 81.7, median 1.85, p99 213.3, max 398.8; time inside WebGL calls excluded, p95 of it 4.2)"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x3.9)"
+ ],
+ "shots": {
+  "1-title": "shots/maths-kart-1-title.jpg",
+  "2-mid": "shots/maths-kart-2-mid.jpg",
+  "3-end": "shots/maths-kart-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 19.2,
+  "cores": 4,
+  "load1End": 23.45,
+  "contention": 3.94,
+  "contentionSamples": [
+   10.32,
+   1.53,
+   3.94,
+   1.59,
+   1.79,
+   8.25,
+   4.45
+  ]
+ },
+ "loadMs": 5425,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:39437/MathsKart/index.html",
+ "startPath": "http://127.0.0.1:39437/MathsKart/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 127,
+  "bench1Ms": 54.1,
+  "effectiveSlowdown": 2.3
+ },
+ "start": {
+  "how": "#bPlay",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 3.94,
+  "loadMs": 952,
+  "playMs": 566,
+  "loadRawMs": 3764,
+  "playRawMs": 2237,
+  "playGlMs": 7,
+  "loadGlMs": 13,
+  "longTasksPlay": 39,
+  "longTasks100Play": 5,
+  "tbtLoadMs": 1135,
+  "tbtPlayMs": 1141,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 7,
+  "slowestPollMs": 1022,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 127.9,
+  "shaderCompileMaxCallMs": 69.2
+ },
+ "loafTop": [
+  {
+   "ms": 4353.6,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     16
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3986.7,
+   "blocking": 3680.1,
+   "scripts": [
+    [
+     "MathsKart/kart3d.js",
+     "http://127.0.0.1:39437/MathsKart/kart3d.js",
+     3661
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "boot",
+     9
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     42
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1596,
+   "blocking": 1532.6,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     358
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     1222
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 312,
+  "jsMedian": 1.85,
+  "jsP95": 20.74,
+  "jsP99": 213.3,
+  "jsMax": 398.8,
+  "jsP95Raw": 81.7,
+  "rawWithGlP95": 84.4,
+  "glP95": 4.2,
+  "gapP95": 433.4,
+  "gapMedian": 116.6,
+  "over100": 5,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.7,
+  "heap1MB": 6.5,
+  "heapGrowthPct": 13,
+  "heapMeasured": true,
+  "nodesStart": 141,
+  "nodesEnd": 148,
+  "nodesMax": 148,
+  "listeners0": 84,
+  "listeners1": 84,
+  "audioContexts": 2,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 16,
+   "totalMB": 4.6,
+   "biggest": [
+    {
+     "w": 1024,
+     "h": 512,
+     "mpx": 0.52,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 24,
+  "scriptPct": 17,
+  "layoutPerSec": 4
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 22,
+  "swipes": 3,
+  "holds": 2,
+  "keys": 3,
+  "buttonPresses": 7,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 412,
+  "inputLatencyP95Ms": 2562,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 87.1,
+  "maxChangeFromStartPct": 70.7,
+  "samples": 11
+ },
+ "severity": 43
+}
