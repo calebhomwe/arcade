@@ -53,6 +53,7 @@ ICONS = {
   'key':    '<rect x="2.5" y="6.5" width="19" height="11" rx="2.5"/><path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M7.5 14h9"/>',
   'mic':    '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
   'download':'<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/>',
+  'phone':  '<rect x="6.5" y="2.5" width="11" height="19" rx="2.8"/><path d="M10.5 18.5h3"/>',
 }
 LOGO = ('<symbol id="logo" viewBox="0 0 48 48"><defs><linearGradient id="lg-a" x1="0" y1="0" x2="1" y2="1">'
         '<stop offset="0" stop-color="#ffb000"/><stop offset=".48" stop-color="#ff3d8b"/><stop offset="1" stop-color="#6d4aff"/></linearGradient></defs>'
@@ -73,7 +74,8 @@ def rail(G, CATS):
     out = ['<nav class="rail" id="rail" aria-label="Browse games">']
     for key, label, icon, href in (('home', 'Home', 'home', './'), ('recent', 'Recently played', 'clock', './?view=recent'),
                                    ('favourites', 'Favourites', 'heart', './?view=favourites'), ('new', 'New games', 'spark', './?view=new'),
-                                   ('popular', 'Popular', 'flame', './?view=popular'), ('all', 'All games', 'grid', './?view=all')):
+                                   ('popular', 'Popular', 'flame', './?view=popular'), ('iphone', 'Plays on iPhone', 'phone', './?view=iphone'),
+                                   ('all', 'All games', 'grid', './?view=all')):
         extra = '<span class="n">%d</span>' % len(G) if key == 'all' else ''
         out.append('  <a href="%s" data-view="%s" title="%s"><span class="dot">%s</span><span>%s</span>%s</a>' % (href, key, label, ico(icon), label, extra))
     out.append('  <hr><h4>Categories</h4>')
@@ -89,7 +91,8 @@ def chips(G, CATS):
     out = ['<nav class="chips" id="chips" aria-label="Browse games">',
            '  <a class="chip" href="./" data-view="home">%s Home</a>' % ico('home'),
            '  <a class="chip" href="./?view=new" data-view="new" style="--cc:var(--c-learning)">%s New</a>' % ico('spark'),
-           '  <a class="chip" href="./?view=popular" data-view="popular" style="--cc:var(--c-hyper)">%s Popular</a>' % ico('flame')]
+           '  <a class="chip" href="./?view=popular" data-view="popular" style="--cc:var(--c-hyper)">%s Popular</a>' % ico('flame'),
+           '  <a class="chip" href="./?view=iphone" data-view="iphone">%s iPhone</a>' % ico('phone')]
     for cid, name, icon, _ in CATS:
         out.append('  <a class="chip" href="./?cat=%s" data-cat="%s" style="--cc:var(--c-%s)">%s %s</a>' % (cid, cid, cid, ico(icon), html.escape(name)))
     out += ['  <a class="chip" href="./?view=recent" data-view="recent">%s Recent</a>' % ico('clock'),
@@ -107,7 +110,7 @@ def foot(G, CATS):
       '      <p>%d free games you can play right now in the browser: arcade, puzzle, learning, sims and more. No downloads, no sign-ups, nothing to install.</p>' % len(G),
       '      <div class="perks"><span>%s No ads</span><span>%s No accounts</span><span>%s Saves on your device</span></div></div>' % (ico('check'), ico('shield'), ico('offline')),
       '    <div><h2 class="fh">Categories</h2><ul>%s</ul></div>' % cats,
-      '    <div><h2 class="fh">Explore</h2><ul><li><a href="./?view=new">New games</a></li><li><a href="./?view=popular">Popular</a></li><li><a href="./?view=all">All %d games</a></li><li><a href="play.html?g=random">Surprise me</a></li><li><a href="./?view=recent">Recently played</a></li><li><a href="./?view=favourites">Favourites</a></li></ul></div>' % len(G),
+      '    <div><h2 class="fh">Explore</h2><ul><li><a href="./?view=new">New games</a></li><li><a href="./?view=popular">Popular</a></li><li><a href="./?view=iphone">Plays on iPhone</a></li><li><a href="./?view=all">All %d games</a></li><li><a href="play.html?g=random">Surprise me</a></li><li><a href="./?view=recent">Recently played</a></li><li><a href="./?view=favourites">Favourites</a></li></ul></div>' % len(G),
       '    <div><h2 class="fh">Your arcade</h2><ul><li><button type="button" data-open-prefs>Settings &amp; theme</button></li><li><button type="button" data-open-prefs="data">Back up your progress</button></li><li><button type="button" data-open-prefs="report">Tester report for Caleb</button></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>',
       '    <div class="base"><span>© %d Caleb\'s Arcade. Every game here was made by Caleb.</span><span class="keys"><span><kbd class="kbd">/</kbd> search</span><span><kbd class="kbd">S</kbd> surprise me</span><span><kbd class="kbd">,</kbd> settings</span></span></div>' % year,
       '  </div>', '</footer>'])

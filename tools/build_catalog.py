@@ -200,6 +200,11 @@ for g in G:
     if not g['ext']:
         d = os.path.dirname(os.path.join(ROOT, g['src']))
         g['mb'] = round(sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(d) for f in fs) / 1048576, 1)
+# iPhone verdicts from qa/harness/iphone.mjs (iPhone 13 emulation): 'ready', 'check' or 'no'; '' = not tested.
+IPH = os.path.join(ROOT, 'qa/iphone-results/iphone.json')
+iph = {r['id']: r.get('verdict', '').lower() for r in json.load(open(IPH))['results']} if os.path.exists(IPH) else {}
+for g in G:
+    g['iphone'] = iph.get(g['id'], '')
 unknown=[i for i in POPULAR if i not in {g['id'] for g in G}]; assert not unknown, 'POPULAR has unknown ids: %s' % unknown
 
 # ---------- verify thumbs exist ----------

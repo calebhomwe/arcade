@@ -52,6 +52,8 @@ const OPTS = {
 const S = Object.assign({}, DEF, store.get('ca_settings', {}));
 for (const k of ['theme', 'accent', 'size', 'motion', 'stage']) if (!OPTS[k].some(([v]) => v === S[k])) S[k] = DEF[k];
 const touch = matchMedia('(hover: none)');
+// iPhone, iPod and iPad (iPadOS reports itself as a Mac with touch). Games carry g.iphone from qa/harness/iphone.mjs.
+const isApple = /iPhone|iPod|iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const darkMq = matchMedia('(prefers-color-scheme: dark)');
 const isDark = () => S.theme === 'dark' || (S.theme === 'system' && darkMq.matches);
 function saveSettings() { store.set('ca_settings', S); applySettings(); document.dispatchEvent(new CustomEvent('settings')); }
@@ -77,6 +79,7 @@ function popular() {
 const newest = () => CATALOG.filter(g => g.new).reverse().concat(CATALOG.filter(g => !g.new).reverse());
 const recentList = () => Object.entries(plays()).sort((a, b) => b[1].ts - a[1].ts).map(([id]) => byId[id]).filter(Boolean);
 const favList = () => [...favs()].map(id => byId[id]).filter(Boolean);
+const iphoneList = () => sortList(CATALOG.filter(g => g.iphone === 'ready'), 'featured');
 function related(g, n) {
   return CATALOG.filter(x => x.id !== g.id).map(x => [x, (x.cat === g.cat ? 3 : 0) + 2 * x.tags.filter(t => g.tags.includes(t)).length + (x.from === g.from ? .5 : 0) + (x.pop ? (30 - Math.min(29, x.pop)) / 30 : 0)])
     .sort((a, b) => b[1] - a[1] || order[a[0].id] - order[b[0].id]).slice(0, n).map(([x]) => x);
@@ -116,7 +119,7 @@ function tile(g, o = {}) {
   d.className = 'tile' + (o.size ? ' ' + o.size : '') + (o.caption ? ' captioned' : '') + (o.labeled ? ' labeled' : '');
   d.dataset.id = g.id;
   const best = bestOf(g), f = isFav(g.id);
-  const flag = o.rank ? '<span class="flag hot">' + ico('flame') + '#' + o.rank + '</span>' : g.new ? '<span class="flag">New</span>' : (o.hot && g.pop && g.pop <= 8) ? '<span class="flag hot">' + ico('flame') + 'Hot</span>' : '';
+  const flag = o.rank ? '<span class="flag hot">' + ico('flame') + '#' + o.rank + '</span>' : g.new ? '<span class="flag">New</span>' : (o.hot && g.pop && g.pop <= 8) ? '<span class="flag hot">' + ico('flame') + 'Hot</span>' : (isApple && g.iphone === 'no') ? '<span class="flag desk">Best on a computer</span>' : '';
   d.innerHTML = '<a href="' + playHref(g) + '"><div class="art"><img alt="' + esc(g.title) + '" src="' + ((o.size && g.thumb2x) ? g.thumb2x : g.thumb) + '"' + (!o.size && g.thumb2x ? ' srcset="' + g.thumb + ' 480w, ' + g.thumb2x + ' 960w" sizes="(min-width:761px) 240px, 50vw"' : '') + ' width="480" height="300" decoding="async"' + (o.hi ? ' fetchpriority="high"' : o.eager ? '' : ' loading="lazy"') + '>' +
     '<div class="cap" aria-hidden="true">' + esc(g.title) + '<small>' + esc(catName(g.cat)) + '</small></div></div>' +
     '<div class="under" aria-hidden="true">' + esc(g.title) + '<small>' + esc(catName(g.cat)) + (best != null ? ' · ' + esc(g.label || 'best') + ' ' + best : '') + '</small></div></a>' + flag +
@@ -351,6 +354,7 @@ function home() {
     const moods = document.createElement('nav'); moods.className = 'mood-nav'; moods.setAttribute('aria-label','Choose a category');
     moods.innerHTML = CATS.map(c => '<a href="./?cat=' + c.id + '">' + ico(c.icon) + '<span>' + esc(c.name.replace('Hyper-Casual','Quick play')) + '</span></a>').join('');
     frag.appendChild(moods);
+    if (isApple) { const ip = rowSection('Plays great on iPhone', iphoneList().slice(0, 16), { icon: 'phone', more: './?view=iphone', id: 'iphone' }); if (ip) frag.appendChild(ip); }
     const recent = recentList();
     const rs = rowSection('Continue playing', recent.slice(0, 16), { icon: 'clock', more: './?view=recent', id: 'recent' }); if (rs) frag.appendChild(rs);
     if (recent.length) {
@@ -385,6 +389,10 @@ function home() {
     const v = st.view;
     if (v === 'new') { const l = newest(); frag.appendChild(phead({ icon: 'spark', cc: 'var(--c-learning)', title: 'New games', desc: 'The latest additions to the arcade, newest first.', count: l.length })); frag.appendChild(gridOf(l)); }
     else if (v === 'popular') { const l = popular(); frag.appendChild(phead({ icon: 'flame', cc: 'var(--c-hyper)', title: 'Popular games', desc: "Caleb's most-loved picks, nudged by what you play most.", count: l.length })); frag.appendChild(gridOf(l, { ranked: true })); }
+    else if (v === 'iphone') {
+      const l = iphoneList(); frag.appendChild(phead({ icon: 'phone', title: 'Plays on iPhone', desc: 'Checked on an iPhone-sized touch screen: loads cleanly, fits the screen, starts with a tap and has touch controls. Tip: Share, then Add to Home Screen, to keep the arcade one tap away.', count: l.length }));
+      frag.appendChild(gridOf(l));
+    }
     else if (v === 'recent') {
       const l = recentList(); frag.appendChild(phead({ icon: 'clock', title: 'Recently played', desc: 'Pick up where you left off. This list lives on this device only.', count: l.length }));
       frag.appendChild(l.length ? gridOf(l) : emptyBox('clock', 'Nothing played yet', 'Games you open appear here, most recent first.', '<a class="chip on" href="./?view=popular">' + ico('flame') + 'Try a popular game</a>'));
@@ -410,7 +418,7 @@ function home() {
     const c = st.cat && catOf(st.cat);
     if (st.q) renderSearch(frag); else if (c) renderCat(frag, c); else if (st.view && st.view !== 'home') renderList(frag); else renderHome(frag);
     view.innerHTML = ''; view.appendChild(frag);
-    document.title = st.q ? 'Search: ' + st.q + " — Caleb's Arcade" : c ? c.name + " games — Caleb's Arcade" : st.view && st.view !== 'home' ? ({ new: 'New games', popular: 'Popular games', recent: 'Recently played', favourites: 'Your favourites', all: 'All games' }[st.view] || 'Games') + " — Caleb's Arcade" : TITLE;
+    document.title = st.q ? 'Search: ' + st.q + " — Caleb's Arcade" : c ? c.name + " games — Caleb's Arcade" : st.view && st.view !== 'home' ? ({ new: 'New games', popular: 'Popular games', iphone: 'Plays on iPhone', recent: 'Recently played', favourites: 'Your favourites', all: 'All games' }[st.view] || 'Games') + " — Caleb's Arcade" : TITLE;
     markNav(st.q ? null : st);
     if (q.value !== st.q && document.activeElement !== q) q.value = st.q;
     $('#qclear').hidden = !q.value;
@@ -512,6 +520,7 @@ function play() {
   const snote = $('#snote');
   if (/Godot web build/.test(g.note)) { snote.hidden = false; snote.textContent = 'Godot game: ' + (g.mb >= 1 ? Math.round(g.mb) + ' MB to download, plus ' : '') + 'the shared 38 MB engine the first time. Desktop browsers are happiest.'; }
   else if (/Unity WebGL/.test(g.note)) { snote.hidden = false; snote.textContent = 'About 16 MB to load the first time. Happiest in a desktop browser.'; }
+  else if (isApple && g.iphone === 'no') { snote.hidden = false; snote.textContent = 'This one is built for a computer: it may not load or fit well on an iPhone. Plays on iPhone lists the ones that do.'; }
   else if (mic) { snote.hidden = false; snote.textContent = 'Some rounds use your microphone. The browser asks first; everything else works without it.'; }
   $('#open').href = g.src;
 
