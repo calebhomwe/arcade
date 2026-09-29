@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="../assets/arcade-sdk.js"></script>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
+<link rel="modulepreload" href="vendor/three/three.module.min.js">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>HOLE GRIND</title>
 <style>
@@ -16,9 +19,18 @@
   /* A canvas is a REPLACED element: with width:auto, `inset:0` does NOT stretch it --
      it keeps its 300x150 intrinsic size and the whole game renders into a postage
      stamp in the top-left. Explicit viewport units are required. */
-  #game{position:fixed;left:0;top:0;width:100vw;height:100vh;display:block}
+  #game,#hudc{position:fixed;left:0;top:0;width:100vw;height:100vh;display:block}
+  #hudc{pointer-events:none;z-index:2}
+  #fx{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+  #fx .pop{position:absolute;left:0;top:0;font-size:16px;font-weight:800;color:#ffe08a;letter-spacing:1px;
+    text-shadow:0 2px 0 #3a2a00,0 0 10px rgba(0,0,0,.6);white-space:nowrap;will-change:transform,opacity}
+  #fx .pop.big{font-size:22px;color:#fff3b0}
+  #fx .tag{position:absolute;left:0;top:0;font-size:12px;font-weight:800;letter-spacing:2px;padding:2px 8px;border-radius:6px;
+    background:rgba(10,14,20,.62);color:#cfe0ff;white-space:nowrap}
+  #fx .tag.you{color:#9cc6ff;border:1px solid rgba(127,184,255,.6)}
+  #loading{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:30;font-size:12px;letter-spacing:3px;color:var(--dim)}
   .layer{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-    background:rgba(6,8,12,.86);backdrop-filter:blur(3px);z-index:10}
+    background:linear-gradient(180deg,rgba(6,8,12,.30),rgba(6,8,12,.62));z-index:10}
   .layer.on{display:flex}
   .card{width:min(760px,94vw);max-height:92vh;overflow:auto;background:var(--panel);
     border:1px solid var(--line);border-radius:14px;padding:22px 24px;
@@ -30,10 +42,11 @@
   .stat{flex:1 1 120px;background:var(--panel2);border:1px solid var(--line);
     border-radius:9px;padding:9px 11px}
   .stat b{display:block;font-size:19px;color:var(--gold)}
-  .stat span{font-size:10px;color:var(--dim);letter-spacing:2px}
+  .stat span{font-size:12px;color:var(--dim);letter-spacing:2px}
   button{font-family:inherit;font-size:13px;color:var(--text);background:var(--panel2);
     border:1px solid var(--line);border-radius:9px;padding:10px 16px;cursor:pointer;
-    letter-spacing:1px;transition:background .12s,border-color .12s}
+    letter-spacing:1px;transition:background .12s,border-color .12s;min-height:44px}
+  button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   button:hover:not(:disabled){background:#28324a;border-color:#455madd}
   button:disabled{opacity:.4;cursor:not-allowed}
   button.go{background:#2a6cf0;border-color:#4a86ff;font-size:15px;padding:13px 26px;font-weight:700}
@@ -41,18 +54,48 @@
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:8px}
   .up{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
   .up .t{font-size:12px;font-weight:700;letter-spacing:1px}
-  .up .d{font-size:10px;color:var(--dim);margin:3px 0 8px;line-height:1.5;min-height:28px}
+  .up .d{font-size:12px;color:var(--dim);margin:3px 0 8px;line-height:1.5;min-height:28px}
   .up .b{display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .pips{font-size:11px;color:var(--gold);letter-spacing:2px}
+  .pips{font-size:12px;color:var(--gold);letter-spacing:2px}
   .dist{background:var(--panel2);border:1px solid var(--line);border-radius:9px;
-    padding:9px 11px;cursor:pointer;font-size:12px}
+    padding:9px 11px;cursor:pointer;font-size:12px;display:block;width:100%;text-align:left;color:var(--text);letter-spacing:0}
   .dist.sel{border-color:var(--gold);background:#2a2517}
   .dist.lock{opacity:.5;cursor:pointer}
   .dist .n{font-weight:700;letter-spacing:1px}
-  .dist .m{font-size:10px;color:var(--dim);margin-top:3px}
+  .dist .m{font-size:12px;color:var(--dim);margin-top:3px}
   .bar{height:7px;background:#0d1017;border-radius:4px;overflow:hidden;margin-top:6px}
   .bar i{display:block;height:100%;background:linear-gradient(90deg,#2a6cf0,#57d98a)}
-  .keys{font-size:10px;color:var(--dim);margin-top:14px;letter-spacing:1px}
+  .keys{font-size:12px;color:var(--dim);margin-top:14px;letter-spacing:1px}
+  /* codes-on tag and the first-run coach card, in the hub's panel style */
+  .codes-on{position:fixed;left:14px;top:132px;z-index:6;font-size:12px;font-weight:700;letter-spacing:2px;color:#0b0d12;
+    background:var(--gold);border-radius:6px;padding:4px 9px;pointer-events:none}
+  .codes-on[hidden]{display:none}
+  #coach{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:8;width:min(420px,calc(100vw - 32px));
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px 12px;text-align:center;
+    box-shadow:0 18px 60px rgba(0,0,0,.6);pointer-events:none;display:none}
+  #coach.on{display:block}
+  #coach h2{margin:0 0 4px;color:var(--gold)}
+  #coach .big{font-size:22px;font-weight:700;letter-spacing:4px}
+  #coach .sub{margin:6px 0 0}
+  #coach button{pointer-events:auto;margin-top:10px}
+  .demo{position:relative;width:200px;height:56px;margin:8px auto 0}
+  .demo .h{position:absolute;left:12px;top:10px;width:36px;height:36px;border-radius:50%;
+    background:radial-gradient(#000 55%,#14203a);box-shadow:0 0 0 2px rgba(120,170,255,.85);animation:hgSteer 2.6s ease-in-out infinite}
+  .demo .c{position:absolute;top:22px;width:12px;height:12px;border-radius:50%;background:#ffd75e;animation:hgGulp 2.6s linear infinite}
+  .demo .c1{left:80px}.demo .c2{left:120px;animation-delay:.35s}.demo .c3{left:160px;animation-delay:.7s}
+  @keyframes hgSteer{0%{left:12px}80%,100%{left:156px}}
+  @keyframes hgGulp{0%,20%{opacity:1;transform:scale(1)}40%,100%{opacity:0;transform:scale(.2)}}
+  .gfx{margin-left:auto}
+  /* DROP IN stays in view at the bottom of the hub card on short screens, even while the shop scrolls */
+  #hubActions{position:sticky;bottom:-22px;z-index:1;background:var(--panel);padding:10px 0 12px;
+    box-shadow:0 -10px 14px -8px var(--panel)}
+  @media (max-width:560px){ #coach{bottom:calc(50% + 34px);padding:10px 14px} }   /* phones: above the hole; the minimap owns the bottom corner */
+  html body #arcade-sdk-btn{position:fixed;width:44px;height:44px;border-radius:9px;background:rgba(10,14,20,.72);
+    border:1px solid var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;min-height:0}
+  @media (prefers-reduced-motion:reduce){
+    .demo .h,.demo .c{animation:none}
+    #toast{transition:none}
+  }
   #toast{position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:20;
     pointer-events:none;font-size:13px;letter-spacing:2px;color:var(--gold);
     text-shadow:0 2px 10px #000;opacity:0;transition:opacity .25s}
@@ -61,7 +104,18 @@
 </head>
 <body>
 <canvas id="game"></canvas>
+<canvas id="hudc"></canvas>
+<div id="fx"></div>
+<div id="loading">LOADING THE CITY…</div>
 <div id="toast"></div>
+<div class="codes-on" id="codesOn" hidden>CODES ON · NOT SAVED</div>
+<div id="coach" role="status" aria-live="polite">
+  <h2 id="coachKick">FIRST DROP</h2>
+  <div class="big" id="coachBig">STEER THE HOLE</div>
+  <div class="demo" id="coachDemo" aria-hidden="true"><i class="c c1"></i><i class="c c2"></i><i class="c c3"></i><i class="h"></i></div>
+  <div class="sub" id="coachText"></div>
+  <button id="coachSkip">SKIP</button>
+</div>
 
 <div class="layer on" id="hub"><div class="card">
   <h1>HOLE GRIND</h1>
@@ -72,11 +126,12 @@
   <div class="grid" id="districts"></div>
   <h2>UPGRADES</h2>
   <div class="grid" id="upgrades"></div>
-  <div class="row" style="margin-top:18px">
+  <div class="row" id="hubActions" style="margin-top:18px">
     <button class="go" id="btnPlay">DROP IN</button>
     <button id="btnWipe">WIPE SAVE</button>
+    <button class="gfx" id="btnGfx" aria-label="Graphics quality">GRAPHICS: HIGH</button>
   </div>
-  <div class="keys">WASD / ARROWS / hold MOUSE to move &nbsp;·&nbsp; ESC pauses &nbsp;·&nbsp;
+  <div class="keys">WASD / ARROWS / hold MOUSE or FINGER to move &nbsp;·&nbsp; P or ESC pauses &nbsp;·&nbsp;
     everything saves locally, works offline</div>
 </div></div>
 
@@ -99,39 +154,49 @@
   <button id="btnQuit">ABANDON RUN</button></div>
 </div></div>
 
-<script>
-"use strict";
+<script type="module">
 /* ------------------------------------------------------------------ *
- * HOLE GRIND — hole.io-style absorb-and-grow grinder.
- * Single file, Canvas 2D, zero network. Meta-progression in localStorage.
+ * HOLE GRIND: hole.io-style absorb-and-grow grinder, in 3D.
+ * The simulation runs on a flat 2400 x 2400 "px" map (1 px = 10 cm); hole3d.js draws it as a
+ * toon-shaded Kenney city (three.js, vendored). Meta-progression in localStorage.
  * ------------------------------------------------------------------ */
+import { HoleWorld, REDUCED } from './hole3d.js';
+import * as THREE from 'three';
 
 //// ---------- tuning ----------
 const BASE_R      = 9;      // starting hole radius (px, world space)
 const GROW        = 1.15;   // r = sqrt(BASE^2 + mass*GROW)  -> area-linear growth
-const BASE_SPEED  = 340;    // px/s
+const BASE_SPEED  = 250;    // px/s (3D camera sits closer than the old top-down view, so it is slower)
 const RUN_TIME    = 90;     // seconds before upgrades
 const ARENA       = 2400;   // square world side
 const EAT_RATIO   = 1.00;   // obj is edible when obj.r < hole.r * EAT_RATIO
+const M           = 0.1;    // metres per px
+const BLOCK = 400, ROAD = 80, WALK = 25;   // city grid: a road every 40 m, 8 m wide, 2.5 m sidewalks
 
-// prop tiers: name, radius, mass, colour, shape
+// prop tiers: name, radius, mass, colour, and the Kenney models that stand in for it
 const TIERS = [
-  {n:"coin",   r:5,  m:2,    c:"#ffd75e", s:"disc"},
-  {n:"cone",   r:8,  m:6,    c:"#ff8b3d", s:"cone"},
-  {n:"bench",  r:12, m:18,   c:"#a97b4f", s:"box"},
-  {n:"tree",   r:18, m:45,   c:"#4ea86a", s:"tree"},
-  {n:"car",    r:26, m:120,  c:"#e05a63", s:"car"},
-  {n:"bus",    r:38, m:320,  c:"#4a90e2", s:"car"},
-  {n:"house",  r:55, m:850,  c:"#c9c4b4", s:"box"},
-  {n:"tower",  r:80, m:2200, c:"#8e96ad", s:"box"},
+  {n:"coin",   r:5,  m:2,    c:"#ffd75e", mods:["coin"]},
+  {n:"cone",   r:8,  m:6,    c:"#ff8b3d", mods:["cone","cone2","cone"]},
+  {n:"bench",  r:12, m:18,   c:"#a97b4f", mods:["bench","planter","bench","lamp"]},
+  {n:"tree",   r:18, m:45,   c:"#4ea86a", mods:["treeOak","treeDef","treeDet","treeS","treeL","pineR","treeOakD"]},
+  {n:"car",    r:26, m:120,  c:"#e05a63", mods:["sedan","taxi","suv","hatch","police","van"]},
+  {n:"truck",  r:38, m:320,  c:"#4a90e2", mods:["delivery","truck","ambulance","firetruck","garbage"]},
+  {n:"house",  r:55, m:850,  c:"#c9c4b4", mods:["houseA","houseB","houseC","houseD","houseF","houseH","houseK","houseM"]},
+  {n:"tower",  r:80, m:2200, c:"#8e96ad", mods:["towerA","towerC","towerE","towerG","skyA","skyB","skyC","skyE"]},
 ];
 
+// district look: ground palette and sky
 const DISTRICTS = [
-  {n:"SUBURB",    cost:0,     rivals:1, dens:1.00, top:5, mult:1.00, tint:"#1b2a1f"},
-  {n:"DOWNTOWN",  cost:900,   rivals:2, dens:1.15, top:6, mult:1.35, tint:"#1b2130"},
-  {n:"HARBOUR",   cost:4500,  rivals:3, dens:1.25, top:7, mult:1.75, tint:"#152730"},
-  {n:"SKYLINE",   cost:18000, rivals:4, dens:1.35, top:8, mult:2.30, tint:"#251c2e"},
-  {n:"THE VOID",  cost:60000, rivals:5, dens:1.50, top:8, mult:3.20, tint:"#241a1a"},
+  {n:"SUBURB",    cost:0,     rivals:1, dens:1.00, top:5, mult:1.00, tint:"#1b2a1f",
+   look:{lawn:"#8fd06a", lawn2:"#83c65f", walk:"#ece6d8", road:"#5d6573", line:"#ffffff", lot:"#9ad978", sky:["#63b3ff","#e4f5ff"], hemi:0.95, sun:1.9}},
+  {n:"DOWNTOWN",  cost:900,   rivals:2, dens:1.15, top:6, mult:1.35, tint:"#1b2130",
+   look:{lawn:"#d8d1c4", lawn2:"#cfc7b8", walk:"#f1ece2", road:"#4f5664", line:"#ffe27a", lot:"#e3dccf", sky:["#7aa9ff","#ffe8d2"], hemi:0.9, sun:2.0}},
+  {n:"HARBOUR",   cost:4500,  rivals:3, dens:1.25, top:7, mult:1.75, tint:"#152730",
+   look:{lawn:"#bfc9c3", lawn2:"#b4beb8", walk:"#e4e0d4", road:"#56606b", line:"#ffffff", lot:"#cad3cd", sky:["#4fb4ff","#d9f4ff"], hemi:0.95, sun:1.85}},
+  {n:"SKYLINE",   cost:18000, rivals:4, dens:1.35, top:8, mult:2.30, tint:"#251c2e",
+   look:{lawn:"#a7a2b8", lawn2:"#9d98ae", walk:"#d9d3e0", road:"#474556", line:"#ffd27a", lot:"#b3aec4", sky:["#3f4f9a","#ffb38a"], hemi:0.8, sun:1.75}},
+  {n:"THE VOID",  cost:60000, rivals:5, dens:1.50, top:8, mult:3.20, tint:"#241a1a",
+   look:{lawn:"#5b4f78", lawn2:"#54486f", walk:"#8a7fa6", road:"#2b273a", line:"#c69bff", lot:"#665a84", sky:["#1d1545","#8a4fb0"], hemi:0.75, sun:1.4}},
 ];
 
 const UPGRADES = [
@@ -148,6 +213,7 @@ const UPGRADES = [
   {id:"digest",t:"DIGESTION",   max:8,  cost:i=>300*Math.pow(1.7,i),
    d:"Each prop feeds you more mass.",    f:i=>`+${i*5}% mass gain`},
 ];
+const RIVAL_NAMES = ["VORTEX","GULP","MAW","ABYSS","CHOMPY","SINKHOLE","NOMAD","PIT"];
 
 //// ---------- save ----------
 const SAVE_KEY = "holegrind.save.v2";
@@ -157,6 +223,20 @@ const FRESH = () => ({
   unlocked:[0], district:0, cleared:[]
 });
 let save = FRESH();
+
+//// ---------- arcade wiring, codes, graphics quality, reduced motion ----------
+const SDK = window.ArcadeSDK || null;
+const sdk = (fn,a)=>{ try{ if(SDK) SDK[fn](a); }catch(e){} };
+const sfx = n=>{ try{ if(SDK && SDK.sfx) SDK.sfx(n); }catch(e){} };
+const cheated = ()=>!!(SDK && SDK.cheated);
+const RM = {matches: REDUCED};
+const COARSE = window.matchMedia ? matchMedia("(pointer: coarse)").matches : false;
+// Codes turn the session into a sandbox: nothing is written to the real save until a reload.
+const CHEAT = {ghost:false, big:false};
+let GFX = "high";
+try{ const g=localStorage.getItem("holegrind.gfx"); GFX = g==="low" ? "low" : g==="high" ? "high" : "auto"; }catch(e){ GFX="auto"; }
+let tut = 0;   // first-run coach: 0 off, 1 steer, 2 grow tip
+let tutEaten = 0, tutMoved = 0, coachT = null;
 
 function load(){
   try{
@@ -171,21 +251,26 @@ function load(){
   }catch(e){ save = FRESH(); }
 }
 function persist(){
+  if(cheated()) return;   // a codes-on session never overwrites the real save
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){}
 }
 const playerLevel = () => 1 + Math.floor(Math.sqrt(save.xp/900));
 const xpInto  = () => save.xp - 900*Math.pow(playerLevel()-1,2);
 const xpNeed  = () => 900*(Math.pow(playerLevel(),2)-Math.pow(playerLevel()-1,2));
 
-//// ---------- canvas ----------
-const cv = document.getElementById("game"), ctx = cv.getContext("2d");
-let VW=1280, VH=720, DPR=1;
+//// ---------- 3D stage + HUD canvas ----------
+const cv = document.getElementById("game");
+const W3 = new HoleWorld(cv, {quality:GFX});
+GFX = W3.quality;   // "auto" starts on Low when WebGL runs on the CPU
+const hudCv = document.getElementById("hudc"), ctx = hudCv.getContext("2d");
+let VW=1280, VH=720, DPR=1, ready=false;
 function resize(){
-  DPR = Math.min(2, window.devicePixelRatio||1);
-  VW = cv.clientWidth || window.innerWidth;
-  VH = cv.clientHeight|| window.innerHeight;
-  cv.width = Math.round(VW*DPR); cv.height = Math.round(VH*DPR);
+  DPR = GFX==="low" ? 1 : Math.min(2, window.devicePixelRatio||1);
+  VW = hudCv.clientWidth || window.innerWidth;
+  VH = hudCv.clientHeight|| window.innerHeight;
+  hudCv.width = Math.round(VW*DPR); hudCv.height = Math.round(VH*DPR);
   ctx.setTransform(DPR,0,0,DPR,0,0);
+  W3.resize();
 }
 addEventListener("resize", resize);
 
@@ -194,7 +279,8 @@ const keys = Object.create(null);
 let mouseDown=false, mouseX=0, mouseY=0;
 addEventListener("keydown", e=>{
   keys[e.code]=true;
-  if(e.code==="Escape"){ togglePause(); }
+  // with the arcade SDK, P and Esc open its pause menu instead (it catches them first)
+  if(e.code==="Escape" && !SDK){ togglePause(); }
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(e.code)) e.preventDefault();
 });
 addEventListener("keyup", e=>{ keys[e.code]=false; });
@@ -204,20 +290,23 @@ addEventListener("mousemove", e=>{mouseX=e.clientX;mouseY=e.clientY;});
 cv.addEventListener("touchstart", e=>{mouseDown=true;const t=e.touches[0];mouseX=t.clientX;mouseY=t.clientY;e.preventDefault();},{passive:false});
 cv.addEventListener("touchmove",  e=>{const t=e.touches[0];mouseX=t.clientX;mouseY=t.clientY;e.preventDefault();},{passive:false});
 addEventListener("touchend",  ()=>{mouseDown=false;});
+addEventListener("blur", ()=>{ for(const k in keys) keys[k]=false; mouseDown=false; });
 
 //// ---------- run state ----------
 const R = {
-  on:false, paused:false, over:false, t:0, timeLeft:0, district:0,
-  hole:null, props:[], rivals:[], parts:[], score:0, eaten:0,
-  wave:0, endReason:"", cam:{x:0,y:0,z:1}, shake:0, autopilot:false, apTarget:null
+  on:false, paused:false, over:false, demo:false, t:0, timeLeft:0, district:0,
+  hole:null, props:[], rivals:[], score:0, eaten:0,
+  wave:0, endReason:"", cam:{x:0,y:0,z:1}, shake:0, autopilot:false, apTarget:null,
+  lots:[], pulse:0, squash:0, tierSeen:0
 };
 const rnd  = (a,b)=>a+Math.random()*(b-a);
 const clamp= (v,a,b)=>v<a?a:v>b?b:v;
+const pick = a=>a[(Math.random()*a.length)|0];
 const radiusFor = m => Math.sqrt(BASE_R*BASE_R + m*GROW);
 
 function upLvl(id){ return save.up[id]|0; }
 function startMass(){ // mass equivalent of the size upgrade
-  const r = BASE_R*(1+upLvl("size")*0.07);
+  const r = BASE_R*(1+upLvl("size")*0.07)*(CHEAT.big?3:1);
   return Math.max(0,(r*r-BASE_R*BASE_R)/GROW);
 }
 function moveSpeed(h){
@@ -234,6 +323,62 @@ function makeHole(x,y,mass,isPlayer){
           hue:isPlayer?0:Math.floor(rnd(0,360)),dead:false,tx:0,ty:0,think:0};
 }
 
+//// ---------- city layout: blocks, lots, roads ----------
+// Every 400 px there is a road; each block between roads has a sidewalk ring and 2 x 2 lots.
+const NB = ARENA/BLOCK;
+function makeLots(){
+  const L=[]; const inner = BLOCK-ROAD-WALK*2, half = inner/2;
+  for(let bx=0;bx<NB;bx++) for(let by=0;by<NB;by++){
+    const x0 = bx*BLOCK+ROAD/2+WALK, y0 = by*BLOCK+ROAD/2+WALK;
+    for(let i=0;i<2;i++) for(let j=0;j<2;j++)
+      L.push({x:x0+half*(i+0.5), y:y0+half*(j+0.5), half:half/2, by:null});
+  }
+  return L;
+}
+function lotAt(x,y){
+  for(const l of R.lots) if(Math.abs(x-l.x)<l.half && Math.abs(y-l.y)<l.half) return l;
+  return null;
+}
+function lotBusy(l){ return l.by && !l.by.gone; }
+function roadSpot(pad){
+  // a point on a road lane, facing along it
+  const horiz = Math.random()<0.5, line = 1+((Math.random()*(NB-1))|0);
+  const along = rnd(pad, ARENA-pad), lane = (Math.random()<0.5?-1:1)*ROAD*0.24;
+  return horiz ? {x:along, y:line*BLOCK+lane, rot: lane>0?0:Math.PI, axis:0, dir:lane>0?1:-1}
+               : {x:line*BLOCK+lane, y:along, rot: lane>0?-Math.PI/2:Math.PI/2, axis:1, dir:lane>0?-1:1};
+}
+function walkSpot(){
+  // a point on a sidewalk ring, inside a block
+  const bx=(Math.random()*NB)|0, by=(Math.random()*NB)|0;
+  const x0=bx*BLOCK+ROAD/2, y0=by*BLOCK+ROAD/2, inner=BLOCK-ROAD, s=rnd(0,inner), k=WALK*0.5;
+  switch((Math.random()*4)|0){
+    case 0: return {x:x0+s, y:y0+k, rot:0};
+    case 1: return {x:x0+s, y:y0+inner-k, rot:Math.PI};
+    case 2: return {x:x0+k, y:y0+s, rot:Math.PI/2};
+    default:return {x:x0+inner-k, y:y0+s, rot:-Math.PI/2};
+  }
+}
+function lotSpot(pad){
+  // somewhere inside a lot that has no building on it
+  for(let tries=0;tries<12;tries++){
+    const l = pick(R.lots); if(lotBusy(l)) continue;
+    return {x:l.x+rnd(-l.half+pad,l.half-pad), y:l.y+rnd(-l.half+pad,l.half-pad), rot:rnd(0,6.283)};
+  }
+  return walkSpot();
+}
+function buildingLot(){
+  // a free lot, preferring one with nothing bigger than a bench on it
+  let fallback=null;
+  for(let tries=0;tries<40;tries++){
+    const l = pick(R.lots); if(lotBusy(l)) continue;
+    let clutter=false;
+    for(const p of R.props){ if(!p.gone && p.tier>=3 && Math.abs(p.x-l.x)<l.half && Math.abs(p.y-l.y)<l.half){ clutter=true; break; } }
+    if(!clutter) return l;
+    fallback = fallback || l;
+  }
+  return fallback;
+}
+
 function spawnProp(d, forceTier){
   const D = DISTRICTS[d];
   let ti;
@@ -245,46 +390,80 @@ function spawnProp(d, forceTier){
   }
   const T = TIERS[ti];
   const pad = T.r+20;
-  return {x:rnd(pad,ARENA-pad), y:rnd(pad,ARENA-pad), tier:ti, r:T.r, m:T.m,
-          c:T.c, s:T.s, rot:rnd(0,Math.PI*2), fall:0, gone:false};
+  let s, lot=null;
+  if(ti>=6){ lot = buildingLot(); s = lot ? {x:lot.x, y:lot.y, rot:((Math.random()*4)|0)*Math.PI/2} : lotSpot(0); }
+  else if(ti>=4) s = roadSpot(pad);
+  else if(ti===3) s = Math.random()<0.6 ? walkSpot() : lotSpot(T.r);
+  else if(ti===0) s = Math.random()<0.5 ? roadSpot(pad) : lotSpot(T.r);
+  else s = Math.random()<0.55 ? walkSpot() : lotSpot(T.r);
+  const p = {x:clamp(s.x,pad,ARENA-pad), y:clamp(s.y,pad,ARENA-pad), tier:ti, r:T.r, m:T.m,
+          c:T.c, rot:s.rot, fall:0, gone:false, mod:pick(T.mods), drop:0, spd:0, axis:s.axis|0, dir:s.dir||0, wob:rnd(0,6.28)};
+  if(lot) lot.by = p;
+  if(ti===4||ti===5) p.spd = rnd(18,34)*(Math.random()<0.25?0:1);   // cars drive along their lane; some are parked
+  return p;
 }
 
-function beginRun(d){
+function beginRun(d, forceTut){
+  R.demo = false;
+  startSim(d);
+  showLayer(null);
+  coachHide();
+  let seen=false; try{ seen=!!localStorage.getItem("holegrind.tut"); }catch(e){}
+  if(forceTut===true || !seen) coachShow();
+  hudTags();
+  sdk("state",{scene:"play"});
+  sfx("go");
+}
+function startSim(d){
   R.district = clamp(d,0,DISTRICTS.length-1);
   const D = DISTRICTS[R.district];
   R.on=true; R.paused=false; R.over=false; R.t=0; R.wave=0;
   R.timeLeft = RUN_TIME + upLvl("time")*6;
-  R.score=0; R.eaten=0; R.parts.length=0; R.endReason=""; R.apTarget=null;
-  R.hole = makeHole(ARENA/2, ARENA/2, startMass(), true);
+  R.score=0; R.eaten=0; R.endReason=""; R.apTarget=null; R.pulse=0; R.squash=0;
+  R.hole = makeHole(ARENA/2, ARENA/2, R.demo?0:startMass(), true);
+  R.tierSeen = tierIndexFor(R.hole.r);
+  R.lots = makeLots();
   R.props.length=0;
   const n = Math.round(760*D.dens);
   for(let i=0;i<n;i++) R.props.push(spawnProp(R.district));
   R.rivals.length=0;
   for(let i=0;i<D.rivals;i++){
     const a = (i/D.rivals)*Math.PI*2 + rnd(0,1);
-    R.rivals.push(makeHole(ARENA/2+Math.cos(a)*700, ARENA/2+Math.sin(a)*700,
-                           startMass()*0.75, false));
+    const rv = makeHole(ARENA/2+Math.cos(a)*700, ARENA/2+Math.sin(a)*700, startMass()*0.75, false);
+    rv.name = RIVAL_NAMES[(i+R.district*2)%RIVAL_NAMES.length];
+    R.rivals.push(rv);
   }
   R.cam.x=R.hole.x; R.cam.y=R.hole.y; R.cam.z=zoomFor(R.hole.r);
-  showLayer(null);
+  if(ready) dressCity();
+  labels();
+}
+// the hub runs a quiet demo round behind the menu: an autopilot hole in the chosen district
+function startDemo(){
+  R.demo = true; R.autopilot = true;
+  startSim(save.unlocked.includes(save.district)?save.district:0);
 }
 
 function zoomFor(r){ return clamp(30/(r*0.55+19), 0.40, 1.30); }
+function tierIndexFor(r){ let i=0; for(let k=0;k<TIERS.length;k++) if(TIERS[k].r<r*EAT_RATIO) i=k; return i; }
 
 function endRun(reason){
   if(R.over) return;
+  if(R.demo){ startDemo(); return; }
   R.over=true; R.on=false; R.endReason=reason;
+  coachHide();
   const D = DISTRICTS[R.district];
   const coins = Math.floor(R.score*0.075*D.mult*(1+upLvl("greed")*0.18));
   const xp    = Math.floor(R.score*0.25*D.mult);
   save.coins += coins; save.xp += xp; save.runs++; save.totalScore += R.score;
-  const pb = R.score > save.best; if(pb) save.best = R.score;
+  const pb = !cheated() && R.score > save.best; if(pb) save.best = R.score;
   // clearing = beating the district quota unlocks the next one for purchase view
   const quota = districtQuota(R.district);
   const clr = R.score >= quota;
   if(clr && !save.cleared.includes(R.district)) save.cleared.push(R.district);
   persist();
   showOver({coins,xp,pb,clr,quota});
+  sfx(reason==="swallowed" ? "lose" : (clr||pb) ? "win" : "reward");
+  sdk("state",{scene:"over",score:R.score});
 }
 function districtQuota(d){ return Math.round(25000*Math.pow(2.8,d)); }
 
@@ -293,10 +472,14 @@ function absorb(h, mass, isPlayerGain){
   h.mass += mass*(h.isPlayer?massGain():1);
   h.r = radiusFor(h.mass);
 }
-function burst(x,y,c,n){
-  for(let i=0;i<n;i++){
-    const a=rnd(0,6.28), s=rnd(30,150);
-    R.parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rnd(.25,.6),t:0,c});
+let sfxT = 0;
+function swallowFx(h, p){
+  const x=p.x*M, z=p.y*M;
+  W3.burst(x, 0.3, z, p.c, Math.min(GFX==="low"?5:12, 3+p.tier*2), 4+p.tier*1.2, 0.18+p.tier*0.06);
+  if(h.isPlayer && !R.demo){
+    R.pulse = 1; R.squash = Math.min(1, R.squash + 0.3 + p.tier*0.1);
+    floater("+"+Math.round(p.m*4*DISTRICTS[R.district].mult), x, z, p.tier>=4);
+    if(sfxT<=0){ sfx(p.tier===0?"coin":p.tier>=6?"explode":p.tier>=4?"hit":"pop"); sfxT = 0.07; }
   }
 }
 
@@ -315,25 +498,27 @@ function eatPass(h, dt){
     const dx=h.x-p.x, dy=h.y-p.y, d=Math.hypot(dx,dy);
     const edible = p.r < h.r*EAT_RATIO;
     if(!edible){
-      // too big: it physically blocks the rim a touch (visual nudge only)
+      // too big: it wobbles on the rim (drawn), nothing else
+      if(h.isPlayer && d < h.r + p.r) p.shiver = 0.25;
       continue;
     }
     if(p.fall>0){
+      if(p.eater!==h) continue;
       p.fall += dt*3.2;
       p.x += dx*dt*6; p.y += dy*dt*6;
       if(p.fall>=1){
         p.gone=true;
         absorb(h,p.m);
         if(h.isPlayer){
-          R.score += Math.round(p.m*4*DISTRICTS[R.district].mult);
-          R.eaten++;
-          burst(p.x,p.y,p.c,Math.min(14,3+p.tier*2));
-          R.shake = Math.min(9, R.shake + 0.6 + p.tier*0.35);
+          if(!R.demo){ R.score += Math.round(p.m*4*DISTRICTS[R.district].mult); R.eaten++; }
+          swallowFx(h,p);
+          if(!RM.matches && !R.demo) R.shake = Math.min(9, R.shake + 0.6 + p.tier*0.35);   // reduced motion: no shake
+          if(tut===1 && ++tutEaten>=3) coachGrow();
         }
       }
       continue;
     }
-    if(d < h.r*0.95 + p.r*0.20){ p.fall = 0.01; continue; }
+    if(d < h.r*0.95 + p.r*0.20){ p.fall = 0.01; p.eater = h; continue; }
     if(h.isPlayer && d < pr){ // gravity well drag
       const f = (1 - d/pr) * 260 * dt;
       p.x += dx/d*f; p.y += dy/d*f;
@@ -347,7 +532,7 @@ function rivalThink(h, dt){
     h.think = rnd(0.4,1.1);
     // hunt the player when clearly bigger, else nearest edible cluster
     const P=R.hole;
-    if(P && !P.dead && h.r > P.r*1.08 && Math.hypot(P.x-h.x,P.y-h.y) < 900){
+    if(P && !P.dead && !R.demo && h.r > P.r*1.08 && Math.hypot(P.x-h.x,P.y-h.y) < 900){
       h.tx=P.x; h.ty=P.y;
     }else{
       let best=null,bd=1e9;
@@ -373,7 +558,7 @@ function rivalThink(h, dt){
 function rivalScale(dt){
   for(let i=0;i<R.rivals.length;i++){
     const rv=R.rivals[i];
-    const want = Math.max(0, R.hole.mass*(0.72 + R.district*0.14 + i*0.05));
+    const want = Math.max(0, R.hole.mass*(R.demo?0.6:(0.72 + R.district*0.14 + i*0.05)));
     // clamp DOWN hard, converge UP smoothly -- a rival that swallowed a bus used to
     // spike 25% over its cap for a second and eat the player in the tutorial district.
     if(rv.mass > want) rv.mass = want;
@@ -390,20 +575,24 @@ function holeVsHole(dt){
     const d=Math.hypot(a.x-b.x,a.y-b.y);
     const big = a.r>=b.r?a:b, small = a.r>=b.r?b:a;
     if(big.r > small.r*1.05 && d < big.r*0.85){
+      if(small.isPlayer && (CHEAT.ghost || R.demo)) continue;   // GHOSTHOLE: rivals slide right over you
       small.dead=true;
       absorb(big, small.mass*0.7);
-      burst(small.x,small.y,"#ffffff",22);
+      W3.burst(small.x*M, 0.4, small.y*M, "#ffffff", 22, 8, 0.3);
       if(small.isPlayer){ endRun("swallowed"); }
       else if(big.isPlayer){
         R.score += Math.round(small.mass*6*DISTRICTS[R.district].mult);
-        R.shake = 10; toast("RIVAL SWALLOWED");
+        if(!RM.matches) R.shake = 10; toast("RIVAL SWALLOWED"); sfx("explode");
+        floater("+"+Math.round(small.mass*6*DISTRICTS[R.district].mult), small.x*M, small.y*M, true);
       }
     }
   }
   R.rivals = R.rivals.filter(h=>!h.dead);
+  labels();
 }
 
 function playerInput(){
+  if(R.demo) return autoTarget();
   let ix=0, iy=0;
   if(keys.KeyA||keys.ArrowLeft) ix-=1;
   if(keys.KeyD||keys.ArrowRight)ix+=1;
@@ -414,52 +603,67 @@ function playerInput(){
     return {x:R.hole.x+ix/l*400, y:R.hole.y+iy/l*400};
   }
   if(mouseDown){
-    return {x:R.cam.x+(mouseX-VW/2)/R.cam.z, y:R.cam.y+(mouseY-VH/2)/R.cam.z};
+    // steer toward the ground point under the pointer
+    const g = W3.pick(mouseX, mouseY);
+    if(g) return {x:g.x/M, y:g.z/M};
   }
-  if(R.autopilot){
-    // COMMIT to one target until it is swallowed or becomes invalid. Re-picking the
-    // nearest prop every frame makes the hole orbit a moving centroid and eat almost
-    // nothing -- that bug made the autopilot look like the game was broken.
-    let best = R.apTarget;
-    const stale = !best || best.gone || best.r >= R.hole.r*EAT_RATIO ||
-                  Math.hypot(best.x-R.hole.x, best.y-R.hole.y) > 900;
-    if(stale){
-      best=null; let bd=1e9;
-      for(const p of R.props){
-        if(p.gone||p.r>=R.hole.r*EAT_RATIO) continue;
-        const d=Math.hypot(p.x-R.hole.x,p.y-R.hole.y)/(1+p.m*0.05);
-        if(d<bd){bd=d;best=p;}
-      }
-      R.apTarget = best;
+  if(R.autopilot) return autoTarget();
+  return null;
+}
+function autoTarget(){
+  // COMMIT to one target until it is swallowed or becomes invalid. Re-picking the
+  // nearest prop every frame makes the hole orbit a moving centroid and eat almost
+  // nothing -- that bug made the autopilot look like the game was broken.
+  let best = R.apTarget;
+  const stale = !best || best.gone || best.r >= R.hole.r*EAT_RATIO ||
+                Math.hypot(best.x-R.hole.x, best.y-R.hole.y) > 900;
+  if(stale){
+    best=null; let bd=1e9;
+    for(const p of R.props){
+      if(p.gone||p.r>=R.hole.r*EAT_RATIO) continue;
+      const d=Math.hypot(p.x-R.hole.x,p.y-R.hole.y)/(1+p.m*0.05);
+      if(d<bd){bd=d;best=p;}
     }
-    // dodge anything clearly bigger than us
-    for(const rv of R.rivals){
-      const d=Math.hypot(rv.x-R.hole.x,rv.y-R.hole.y);
-      if(rv.r>R.hole.r*1.12 && d < rv.r*3.5+70){
-        const ax=(R.hole.x-rv.x)/(d||1), ay=(R.hole.y-rv.y)/(d||1);
-        return {x:clamp(R.hole.x+ax*500,120,ARENA-120), y:clamp(R.hole.y+ay*500,120,ARENA-120)};
-      }
-    }
-    if(best) return {x:best.x,y:best.y};
+    R.apTarget = best;
   }
+  // dodge anything clearly bigger than us
+  for(const rv of R.rivals){
+    const d=Math.hypot(rv.x-R.hole.x,rv.y-R.hole.y);
+    if(rv.r>R.hole.r*1.12 && d < rv.r*3.5+70){
+      const ax=(R.hole.x-rv.x)/(d||1), ay=(R.hole.y-rv.y)/(d||1);
+      return {x:clamp(R.hole.x+ax*500,120,ARENA-120), y:clamp(R.hole.y+ay*500,120,ARENA-120)};
+    }
+  }
+  if(best) return {x:best.x,y:best.y};
   return null;
 }
 
 function step(dt){
+  sfxT -= dt;
   if(!R.on || R.paused || R.over) return;
   R.t += dt;
-  R.timeLeft -= dt;
+  if(tut!==1 && !R.demo) R.timeLeft -= dt;   // the clock waits while the first-run card teaches steering
+  if(R.demo && R.t>70) { startDemo(); return; }
   if(R.timeLeft<=0){ R.timeLeft=0; endRun("time"); return; }
 
   const h=R.hole;
   const tgt = playerInput();
-  if(tgt) steerHole(h, dt, tgt.x, tgt.y, moveSpeed(h));
+  if(tgt) steerHole(h, dt, tgt.x, tgt.y, moveSpeed(h)*(R.demo?0.7:1));
   else { h.vx*=0.85; h.vy*=0.85; h.x+=h.vx*dt; h.y+=h.vy*dt; }
   eatPass(h, dt);
 
   for(const rv of R.rivals) rivalThink(rv, dt);
   rivalScale(dt);
   holeVsHole(dt);
+  if(!R.on) return;
+
+  // growing into a new tier is a moment: say what you can eat now
+  const ti = tierIndexFor(h.r);
+  if(ti>R.tierSeen){
+    R.tierSeen = ti;
+    if(!R.demo && ti>=1){ toast("NOW YOU CAN SWALLOW "+TIERS[ti].n.toUpperCase()+"S"); sfx("levelup"); R.pulse=1;
+      W3.burst(h.x*M, 0.2, h.y*M, "#8fc1ff", GFX==="low"?10:26, 7, 0.22); }
+  }
 
   // escalating difficulty: waves of progressively bigger props, and rivals fed
   const wantWave = Math.floor(R.t/12);
@@ -467,20 +671,27 @@ function step(dt){
     R.wave = wantWave;
     const D=DISTRICTS[R.district];
     const lift = Math.min(D.top-1, 1+Math.floor(R.wave*0.7));
-    for(let i=0;i<26;i++) R.props.push(spawnProp(R.district, Math.min(D.top-1,
-       lift - (Math.random()<0.45?1:0))));
-    if(R.wave%2===0) toast("WAVE "+R.wave+" — BIGGER PREY");
+    for(let i=0;i<26;i++){ const p=spawnProp(R.district, Math.min(D.top-1, lift - (Math.random()<0.45?1:0))); p.drop=1+Math.random()*0.6; R.props.push(p); }
+    if(R.wave%2===0 && !R.demo){ toast("WAVE "+R.wave+" — BIGGER PREY"); sfx("whoosh"); }
   }
   // keep the field stocked
   let alive=0; for(const p of R.props) if(!p.gone) alive++;
   if(alive < 420*DISTRICTS[R.district].dens){
-    for(let i=0;i<70;i++) R.props.push(spawnProp(R.district));
+    for(let i=0;i<70;i++){ const p=spawnProp(R.district); p.drop=0.6+Math.random(); R.props.push(p); }
   }
   if(R.props.length>1400) R.props = R.props.filter(p=>!p.gone);
 
-  // particles
-  for(const q of R.parts){ q.t+=dt; q.x+=q.vx*dt; q.y+=q.vy*dt; q.vx*=.92; q.vy*=.92; }
-  R.parts = R.parts.filter(q=>q.t<q.life);
+  // traffic: cars and trucks roll along their lane and turn round at the edge of the map
+  for(const p of R.props){
+    if(p.gone) continue;
+    if(p.drop>0) p.drop = Math.max(0, p.drop-dt*2.2);
+    if(p.shiver>0) p.shiver -= dt;
+    if(p.spd && p.fall===0){
+      const v = p.spd*p.dir*dt;
+      if(p.axis===0){ p.x += v; if(p.x<60||p.x>ARENA-60){ p.dir*=-1; p.rot+=Math.PI; p.x=clamp(p.x,60,ARENA-60); } }
+      else { p.y += v; if(p.y<60||p.y>ARENA-60){ p.dir*=-1; p.rot+=Math.PI; p.y=clamp(p.y,60,ARENA-60); } }
+    }
+  }
 
   // camera
   const z = zoomFor(h.r);
@@ -488,92 +699,174 @@ function step(dt){
   R.cam.x += (h.x-R.cam.x)*Math.min(1,dt*7);
   R.cam.y += (h.y-R.cam.y)*Math.min(1,dt*7);
   R.shake = Math.max(0, R.shake-dt*14);
+  R.pulse = Math.max(0, R.pulse-dt*2.5);
+  R.squash = Math.max(0, R.squash-dt*3.5);
 }
 
-//// ---------- render ----------
-function w2s(x,y){ return [ (x-R.cam.x)*R.cam.z+VW/2, (y-R.cam.y)*R.cam.z+VH/2 ]; }
-
-function drawProp(p){
-  const [sx,sy]=w2s(p.x,p.y), z=R.cam.z, r=p.r*z;
-  if(sx<-r*3||sy<-r*3||sx>VW+r*3||sy>VH+r*3) return;
-  const k = p.fall>0 ? Math.max(0.05,1-p.fall) : 1;
-  ctx.save(); ctx.translate(sx,sy); ctx.scale(k,k); ctx.rotate(p.rot);
-  ctx.globalAlpha = p.fall>0 ? Math.max(0,1-p.fall*0.8) : 1;
-  // shadow
-  ctx.fillStyle="rgba(0,0,0,.22)";
-  ctx.beginPath(); ctx.ellipse(r*0.14,r*0.20,r,r*0.85,0,0,6.283); ctx.fill();
-  ctx.fillStyle=p.c;
-  if(p.s==="disc"){ ctx.beginPath(); ctx.arc(0,0,r,0,6.283); ctx.fill();
-    ctx.fillStyle="rgba(255,255,255,.35)"; ctx.beginPath(); ctx.arc(-r*.25,-r*.25,r*.4,0,6.283); ctx.fill(); }
-  else if(p.s==="cone"){ ctx.beginPath(); ctx.moveTo(0,-r); ctx.lineTo(r*.85,r*.7);
-    ctx.lineTo(-r*.85,r*.7); ctx.closePath(); ctx.fill();
-    ctx.fillStyle="rgba(255,255,255,.5)"; ctx.fillRect(-r*.5,-r*.1,r,r*.22); }
-  else if(p.s==="tree"){ ctx.fillStyle="#6b4a2c"; ctx.fillRect(-r*.14,0,r*.28,r*.8);
-    ctx.fillStyle=p.c; ctx.beginPath(); ctx.arc(0,-r*.15,r*.85,0,6.283); ctx.fill();
-    ctx.fillStyle="rgba(255,255,255,.14)"; ctx.beginPath(); ctx.arc(-r*.3,-r*.45,r*.35,0,6.283); ctx.fill(); }
-  else if(p.s==="car"){ const w=r*1.9,hh=r*1.05;
-    ctx.fillStyle=p.c; rr(-w/2,-hh/2,w,hh,r*.3); ctx.fill();
-    ctx.fillStyle="rgba(20,28,40,.75)"; rr(-w*.16,-hh*.36,w*.44,hh*.72,r*.16); ctx.fill();
-    ctx.fillStyle="rgba(255,255,255,.16)"; rr(-w/2,-hh/2,w,hh*.28,r*.2); ctx.fill(); }
-  else { const w=r*1.75,hh=r*1.6;
-    ctx.fillStyle=p.c; rr(-w/2,-hh/2,w,hh,r*.14); ctx.fill();
-    ctx.fillStyle="rgba(0,0,0,.20)"; rr(-w/2,-hh/2,w,hh*.22,r*.1); ctx.fill();
-    ctx.fillStyle="rgba(255,255,255,.10)";
-    for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) ctx.fillRect(i*w*.26-w*.07,j*hh*.26-hh*.06,w*.14,hh*.12); }
-  ctx.restore();
+//// ---------- 3D drawing ----------
+const WHITE = new THREE.Color(1,1,1);
+const holeCol = new THREE.Color();
+function propY(p){
+  // waves drop in from the sky and bounce
+  if(p.drop>0){ const t=p.drop; return t>0.25 ? (t-0.25)*(t-0.25)*60 : Math.sin(t/0.25*Math.PI)*0.4; }
+  return 0;
 }
-function rr(x,y,w,h,r){ ctx.beginPath();
-  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
-
-function drawHole(h){
-  const [sx,sy]=w2s(h.x,h.y), r=h.r*R.cam.z;
-  const g=ctx.createRadialGradient(sx,sy,r*0.1,sx,sy,r);
-  if(h.isPlayer){ g.addColorStop(0,"#000"); g.addColorStop(.72,"#05070c"); g.addColorStop(1,"#14203a"); }
-  else{ g.addColorStop(0,"#000"); g.addColorStop(.72,"#0a0508"); g.addColorStop(1,`hsl(${h.hue},55%,22%)`); }
-  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(sx,sy,r,0,6.283); ctx.fill();
-  ctx.lineWidth=Math.max(1.4,r*0.07);
-  ctx.strokeStyle = h.isPlayer ? "rgba(120,170,255,.85)" : `hsla(${h.hue},80%,60%,.85)`;
-  ctx.beginPath(); ctx.arc(sx,sy,r*0.98,0,6.283); ctx.stroke();
-  // swirl
-  ctx.globalAlpha=.35; ctx.lineWidth=Math.max(1,r*.04);
-  ctx.strokeStyle=h.isPlayer?"#6ea8ff":`hsl(${h.hue},80%,65%)`;
-  for(let k=0;k<3;k++){ ctx.beginPath();
-    ctx.arc(sx,sy,r*(0.3+k*0.22), R.t*(1.6+k)*(h.isPlayer?1:-1), R.t*(1.6+k)*(h.isPlayer?1:-1)+2.1);
-    ctx.stroke(); }
-  ctx.globalAlpha=1;
-}
-
-function drawWorld(){
-  const D=DISTRICTS[R.district];
-  ctx.fillStyle=D.tint; ctx.fillRect(0,0,VW,VH);
-  const z=R.cam.z;
-  // ground plates
-  const cell=200*z;
-  const ox=((-R.cam.x*z+VW/2)%cell+cell)%cell, oy=((-R.cam.y*z+VH/2)%cell+cell)%cell;
-  ctx.fillStyle="rgba(255,255,255,.020)";
-  for(let x=-1;x*cell+ox<VW+cell;x++) for(let y=-1;y*cell+oy<VH+cell;y++)
-    if((x+y)&1) ctx.fillRect(x*cell+ox,y*cell+oy,cell,cell);
-  // roads
-  ctx.strokeStyle="rgba(255,255,255,.055)"; ctx.lineWidth=Math.max(1,26*z);
-  for(let i=0;i<=6;i++){
-    const wx=i*(ARENA/6);
-    const [ax]=w2s(wx,0), [,ay]=w2s(0,wx);
-    ctx.beginPath(); ctx.moveTo(ax,0); ctx.lineTo(ax,VH); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0,ay); ctx.lineTo(VW,ay); ctx.stroke();
+function drawProps(time){
+  W3.begin();
+  const fx=R.cam.x*M, fz=R.cam.y*M, rr=W3.drawRadius(), rr2=rr*rr;
+  for(const p of R.props){
+    if(p.gone) continue;
+    const x=p.x*M, z=p.y*M, dx=x-fx, dz=z-fz;
+    if(dx*dx+dz*dz > rr2) continue;
+    const s = W3.scaleFor(p.mod, p.r*M*0.86);
+    let y = propY(p), ang=0, tx=0, tz=0, sy=1, yaw=p.rot;
+    if(p.tier===0){ yaw = time*2.4 + p.wob; y += 0.25 + Math.sin(time*3+p.wob)*0.12; }
+    if(p.fall>0 && p.eater){
+      const hx=p.eater.x*M, hz=p.eater.y*M;
+      tx = hx-x; tz = hz-z; ang = Math.min(1.4, p.fall*1.6);
+      y = -Math.pow(p.fall,1.6)*(W3.heightOf(p.mod,s)+p.r*M*1.2);
+    } else if(p.shiver>0 && !RM.matches){
+      ang = Math.sin(time*40+p.wob)*0.05; tx=1; tz=0.3;
+    } else if(p.drop>0 && p.drop<0.25){ sy = 1-Math.sin(p.drop/0.25*Math.PI)*0.25; }
+    if(p.tier===7) sy *= Math.min(1, 3.4*p.r*M*0.86/Math.max(1,W3.heightOf(p.mod,s)));
+    W3.put(p.mod, x, y, z, yaw, s, sy, tx, tz, ang, null);
   }
-  // arena border
-  const [bx,by]=w2s(0,0);
-  ctx.strokeStyle="rgba(255,90,90,.45)"; ctx.lineWidth=3;
-  ctx.strokeRect(bx,by,ARENA*z,ARENA*z);
+  W3.end();
+}
+function drawHoles(){
+  const all=[R.hole].concat(R.rivals);
+  W3.setHoleCount(all.length);
+  all.forEach((h,i)=>{
+    if(h.isPlayer) holeCol.set("#7fb8ff"); else holeCol.setHSL(h.hue/360,0.85,0.6);
+    W3.setHole(i, h.x*M, h.y*M, h.r*M, holeCol, h.isPlayer?R.pulse:0, h.isPlayer?R.squash:0);
+  });
+}
+// the camera sits behind and above the hole; it pulls back as the hole grows
+function camDist(){
+  // vis = metres of ground across the shorter side of the screen
+  const vis = 30*(1.25/R.cam.z), a = VW/Math.max(1,VH), half = W3.fov/2*Math.PI/180;
+  const across = a<1 ? vis/a : vis;          // portrait: the vertical fov has to cover more
+  return Math.min(across, vis*1.9)/(2*Math.tan(half))*0.92;
 }
 
+//// ---------- DOM effects: score pop-ups and rival name tags ----------
+const fxEl = document.getElementById("fx");
+const pops = [];
+function floater(text, x, z, big){
+  if(pops.length>14){ const o=pops.shift(); o.el.remove(); }
+  const el=document.createElement("div"); el.className="pop"+(big?" big":""); el.textContent=text;
+  fxEl.appendChild(el); pops.push({el, x, z, t:0});
+}
+function stepPops(dt){
+  for(let i=pops.length-1;i>=0;i--){
+    const o=pops[i]; o.t+=dt;
+    if(o.t>0.9){ o.el.remove(); pops.splice(i,1); continue; }
+    const s=W3.project(o.x, 1.5+o.t*3, o.z);
+    if(!s){ o.el.style.opacity=0; continue; }
+    o.el.style.transform=`translate(${s.x}px,${s.y}px) translate(-50%,-50%) scale(${RM.matches?1:0.8+Math.min(0.3,o.t*3)})`;
+    o.el.style.opacity=String(1-Math.pow(o.t/0.9,2));
+  }
+}
+let tags=[];
+function labels(){
+  for(const t of tags) t.el.remove();
+  tags=[];
+  const list = R.on ? [R.hole].concat(R.rivals) : [];
+  for(const h of list){
+    const el=document.createElement("div"); el.className="tag"+(h.isPlayer?" you":"");
+    el.textContent = h.isPlayer ? (R.demo?"":"YOU") : h.name;
+    if(!h.isPlayer) el.style.color=`hsl(${h.hue},90%,72%)`;
+    fxEl.appendChild(el); tags.push({el,h});
+  }
+}
+function stepTags(){
+  for(const t of tags){
+    const h=t.h, s=W3.project(h.x*M, 0, (h.y-h.r)*M - 1.2);
+    if(!s || h.dead || (h.isPlayer&&R.demo)){ t.el.style.display="none"; continue; }
+    t.el.style.display=""; t.el.style.transform=`translate(${s.x}px,${s.y}px) translate(-50%,-100%)`;
+  }
+}
+
+//// ---------- city dressing: ground tile, border and skyline ----------
+function paintTile(look){
+  return (g, P)=>{
+    const k=P/BLOCK;   // texture px per sim px
+    g.fillStyle=look.road; g.fillRect(0,0,P,P);
+    // asphalt grain
+    for(let i=0;i<P*P/90;i++){ g.fillStyle=`rgba(${Math.random()<.5?255:0},${Math.random()<.5?255:0},${Math.random()<.5?255:0},0.035)`; g.fillRect(Math.random()*P,Math.random()*P,2,2); }
+    const r=ROAD/2*k, w=WALK*k;
+    // sidewalk slab with joints
+    g.fillStyle=look.walk; g.fillRect(r,r,P-2*r,P-2*r);
+    g.strokeStyle="rgba(0,0,0,.10)"; g.lineWidth=Math.max(1,P/512);
+    for(let x=r;x<P-r;x+=w){ g.beginPath(); g.moveTo(x,r); g.lineTo(x,r+w); g.moveTo(x,P-r-w); g.lineTo(x,P-r); g.stroke(); }
+    for(let y=r;y<P-r;y+=w){ g.beginPath(); g.moveTo(r,y); g.lineTo(r+w,y); g.moveTo(P-r-w,y); g.lineTo(P-r,y); g.stroke(); }
+    // kerb shadow
+    g.strokeStyle="rgba(0,0,0,.22)"; g.lineWidth=Math.max(2,P/300); g.strokeRect(r,r,P-2*r,P-2*r);
+    // lawn or plaza inside, split into 4 lots by paths
+    const i0=r+w, inner=P-2*i0;
+    g.fillStyle=look.lawn; g.fillRect(i0,i0,inner,inner);
+    for(let i=0;i<inner*inner/60;i++){ g.fillStyle=Math.random()<0.5?look.lawn2:"rgba(255,255,255,.05)"; g.fillRect(i0+Math.random()*inner,i0+Math.random()*inner,3,3); }
+    g.fillStyle=look.lot; const pw=Math.max(3,P/110);
+    g.fillRect(i0+inner/2-pw/2,i0,pw,inner); g.fillRect(i0,i0+inner/2-pw/2,inner,pw);
+    g.strokeStyle="rgba(0,0,0,.08)"; g.lineWidth=Math.max(1,P/400);
+    for(let i=0;i<2;i++) for(let j=0;j<2;j++){ const q=inner/2; g.strokeRect(i0+i*q+q*0.12,i0+j*q+q*0.12,q*0.76,q*0.76); }
+    // lane markings: dashed centre line on the tile edges, zebra crossings at the corners
+    g.fillStyle=look.line;
+    const dash=P/20, lw=Math.max(2,P/260);
+    for(let s=r+dash*0.5;s<P-r-dash;s+=dash*2){ g.fillRect(s,0,dash,lw/2); g.fillRect(s,P-lw/2,dash,lw/2); g.fillRect(0,s,lw/2,dash); g.fillRect(P-lw/2,s,lw/2,dash); }
+    g.globalAlpha=0.9; const zw=Math.max(3,P/120);
+    for(const [cx,cy] of [[0,0],[P,0],[0,P],[P,P]]){
+      for(let s=-r+zw;s<r-zw;s+=zw*2){
+        g.fillRect(cx+(cx?-r-w*0.9:r), cy+s-zw/2, w*0.9, zw);   // across the vertical road
+        g.fillRect(cx+s-zw/2, cy+(cy?-r-w*0.9:r), zw, w*0.9);
+      }
+    }
+    g.globalAlpha=1;
+  };
+}
+let dressedFor = -1;
+function dressCity(){
+  const D=DISTRICTS[R.district], L=D.look;
+  W3.setSky(L.sky[0], L.sky[1]);
+  W3.hemi.intensity = L.hemi; W3.sun.intensity = L.sun;
+  if(dressedFor===R.district*10+(GFX==="low"?1:0)) return;
+  dressedFor = R.district*10+(GFX==="low"?1:0);
+  W3.setGround(0, 0, ARENA*M, BLOCK*M, paintTile(L), 140);
+  W3.clearStatics();
+  // barrier ring along the map edge
+  const bar=[]; const bs=W3.scaleFor("barrier",1.2);
+  for(let s=0;s<=ARENA*M;s+=2.6){ bar.push({x:s,z:-0.8,s:bs,yaw:0},{x:s,z:ARENA*M+0.8,s:bs,yaw:0},{x:-0.8,z:s,s:bs,yaw:Math.PI/2},{x:ARENA*M+0.8,z:s,s:bs,yaw:Math.PI/2}); }
+  W3.addStatic("barrier", bar, false);
+  // skyline beyond the edge: towers and houses that frame the map (decoration, out of reach)
+  const ring={}; const ids=["skyA","skyB","skyC","skyE","towerA","towerC","towerE","towerG","houseA","houseC","houseF","houseK"];
+  const A=ARENA*M;
+  for(let side=0;side<4;side++) for(let s=-60;s<A+60;s+=16){
+    for(let row=0;row<3;row++){
+      if(Math.random()<0.2) continue;
+      const id = row===0 ? pick(ids.slice(8)) : pick(ids.slice(0,8));
+      const off = 22+row*18+rnd(-3,3), sc=W3.scaleFor(id, 6+row*1.5);
+      const t = side===0?{x:s,z:-off}:side===1?{x:s,z:A+off}:side===2?{x:-off,z:s}:{x:A+off,z:s};
+      t.s=sc; t.yaw=[0,Math.PI,Math.PI/2,-Math.PI/2][side]+Math.PI;
+      (ring[id]=ring[id]||[]).push(t);
+    }
+  }
+  for(const id in ring) W3.addStatic(id, ring[id], true);
+  // street lamps at the block corners
+  const lamps=[]; const ls=W3.scaleFor("lamp",0.5);
+  for(let bx=0;bx<NB;bx++) for(let by=0;by<NB;by++){
+    const x0=(bx*BLOCK+ROAD/2+6)*M, y0=(by*BLOCK+ROAD/2+6)*M, x1=((bx+1)*BLOCK-ROAD/2-6)*M, y1=((by+1)*BLOCK-ROAD/2-6)*M;
+    lamps.push({x:x0,z:y0,s:ls,yaw:Math.PI*0.75},{x:x1,z:y1,s:ls,yaw:-Math.PI*0.25});
+  }
+  W3.addStatic("lamp", lamps, true);
+}
+
+//// ---------- HUD (2D canvas over the 3D view) ----------
 function drawHUD(){
   const pad=14;
   ctx.font="700 13px ui-monospace,Consolas,monospace"; ctx.textBaseline="top";
   // time bar
   const full = RUN_TIME + upLvl("time")*6;
-  const w=Math.min(360,VW-28);
+  const w=Math.min(360,VW-28-(SDK?54:0));
   ctx.fillStyle="rgba(10,14,20,.72)"; rr(pad,pad,w,58,8); ctx.fill();
   ctx.fillStyle="#8b97ad"; ctx.fillText("TIME", pad+12, pad+9);
   ctx.fillStyle= R.timeLeft<15?"#ff6b6b":"#e8edf7";
@@ -600,47 +893,49 @@ function drawHUD(){
     ctx.fillStyle="#0d1017"; rr(pad+12,pad+94,w-24,7,4); ctx.fill();
     ctx.fillStyle="#57d98a"; rr(pad+12,pad+94,(w-24)*f,7,4); ctx.fill();
   }
-  // district + rivals right side
+  // district + rivals right side (left of the arcade's pause button when it is there)
   ctx.textAlign="right";
-  ctx.fillStyle="#8b97ad";
-  ctx.fillText(DISTRICTS[R.district].n+"  ·  x"+DISTRICTS[R.district].mult.toFixed(2), VW-pad-4, pad+9);
-  ctx.fillText("RIVALS "+R.rivals.length, VW-pad-4, pad+28);
+  const rx = VW-pad-4-(SDK?54:0);
+  // on a narrow phone the left panel spans the width, so the right block drops below the minimap row
+  const ry = VW<560 ? VH-pad-110-66 : pad;
+  const rxx = VW<560 ? VW-pad-4 : rx;
+  ctx.fillStyle="rgba(10,14,20,.62)"; rr(rxx-176, ry+2, 180, 64, 8); ctx.fill();
+  ctx.fillStyle="#c9d3e6";
+  ctx.fillText(DISTRICTS[R.district].n+"  ·  x"+DISTRICTS[R.district].mult.toFixed(2), rxx-8, ry+9);
+  ctx.fillText("RIVALS "+R.rivals.length, rxx-8, ry+28);
   const q=districtQuota(R.district);
-  ctx.fillStyle=R.score>=q?"#57d98a":"#8b97ad";
-  ctx.fillText("QUOTA "+R.score+" / "+q, VW-pad-4, pad+47);
+  ctx.fillStyle=R.score>=q?"#57d98a":"#c9d3e6";
+  ctx.fillText("QUOTA "+R.score+" / "+q, rxx-8, ry+47);
   ctx.textAlign="left";
 
   // minimap
   const ms=110, mx=VW-ms-pad, my=VH-ms-pad;
   ctx.fillStyle="rgba(10,14,20,.7)"; rr(mx,my,ms,ms,8); ctx.fill();
   const k=ms/ARENA;
+  ctx.strokeStyle="rgba(255,255,255,.08)"; ctx.lineWidth=1;
+  for(let i=1;i<NB;i++){ ctx.beginPath(); ctx.moveTo(mx+i*BLOCK*k,my); ctx.lineTo(mx+i*BLOCK*k,my+ms); ctx.moveTo(mx,my+i*BLOCK*k); ctx.lineTo(mx+ms,my+i*BLOCK*k); ctx.stroke(); }
   for(const rv of R.rivals){ ctx.fillStyle=`hsl(${rv.hue},80%,60%)`;
     ctx.beginPath(); ctx.arc(mx+rv.x*k,my+rv.y*k,Math.max(2,rv.r*k*2),0,6.283); ctx.fill(); }
   ctx.fillStyle="#6ea8ff";
   ctx.beginPath(); ctx.arc(mx+R.hole.x*k,my+R.hole.y*k,Math.max(2.5,R.hole.r*k*2),0,6.283); ctx.fill();
 }
+function rr(x,y,w,h,r){ ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 
-function render(){
+let orbit = 0;
+function render(dt, time){
   ctx.setTransform(DPR,0,0,DPR,0,0);
-  if(!R.hole){ ctx.fillStyle="#0b0d12"; ctx.fillRect(0,0,VW,VH); return; }
-  if(R.shake>0.05){
-    ctx.translate(rnd(-R.shake,R.shake), rnd(-R.shake,R.shake));
-  }
-  drawWorld();
-  // sort so bigger props draw later (cheap depth feel)
-  const vis=R.props;
-  for(let i=0;i<vis.length;i++) if(!vis[i].gone && vis[i].tier<4) drawProp(vis[i]);
-  for(const rv of R.rivals) drawHole(rv);
-  drawHole(R.hole);
-  for(let i=0;i<vis.length;i++) if(!vis[i].gone && vis[i].tier>=4) drawProp(vis[i]);
-  for(const q of R.parts){
-    const [sx,sy]=w2s(q.x,q.y);
-    ctx.globalAlpha=1-q.t/q.life; ctx.fillStyle=q.c;
-    ctx.fillRect(sx-2,sy-2,4,4);
-  }
-  ctx.globalAlpha=1;
-  ctx.setTransform(DPR,0,0,DPR,0,0);
-  if(R.on && !R.over) drawHUD();
+  ctx.clearRect(0,0,VW,VH);
+  if(!ready || !R.hole) return;
+  drawProps(time);
+  drawHoles();
+  let pitch=1.05, yaw=0, dist=camDist();
+  if(R.demo || !R.on){ orbit += dt*0.06; yaw = Math.sin(orbit)*0.9; pitch = 0.88; dist*=1.15; }
+  W3.view(R.cam.x*M, R.cam.y*M + (R.demo?0:dist*0.04), dist, pitch, yaw, R.shake*0.05);
+  W3.render(dt);
+  stepPops(dt); stepTags();
+  if(R.on && !R.over && !R.demo) drawHUD();
 }
 
 //// ---------- loop ----------
@@ -649,7 +944,7 @@ function frame(now){
   const dt=Math.min(0.05,(now-last)/1000); last=now;
   fAcc++; fT+=dt; if(fT>=1){ fps=fAcc/fT; fAcc=0; fT=0; }
   step(dt);
-  render();
+  render(dt, now/1000);
   requestAnimationFrame(frame);
 }
 
@@ -664,7 +959,7 @@ function toast(msg){
   clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("on"),1400);
 }
 function togglePause(){
-  if(!R.on||R.over) return;
+  if(!R.on||R.over||R.demo) return;
   R.paused=!R.paused; showLayer(R.paused?"pause":null);
 }
 function fmt(n){ return n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e4?(n/1e3).toFixed(1)+"k":String(n); }
@@ -680,20 +975,20 @@ function renderHub(){
      <div class="stat"><b>${save.runs}</b><span>RUNS</span></div>`;
   $("districts").innerHTML = DISTRICTS.map((d,i)=>{
     const un = save.unlocked.includes(i);
-    return `<div class="dist ${un?"":"lock"} ${i===selDistrict?"sel":""}" data-d="${i}">
+    return `<button type="button" class="dist ${un?"":"lock"} ${i===selDistrict?"sel":""}" data-d="${i}" aria-pressed="${i===selDistrict}">
       <div class="n">${un?"":"🔒 "}${d.n}</div>
       <div class="m">${un?`payout x${d.mult.toFixed(2)} · ${d.rivals} rivals · quota ${fmt(districtQuota(i))}`
                         :`unlock for ${fmt(d.cost)} coins`}
-        ${save.cleared.includes(i)?" · ✔ cleared":""}</div></div>`;
+        ${save.cleared.includes(i)?" · ✔ cleared":""}</div></button>`;
   }).join("");
   for(const el of $("districts").children){
     el.onclick = ()=>{
       const i=+el.dataset.d;
-      if(save.unlocked.includes(i)){ save.district=i; persist(); renderHub(); }
+      if(save.unlocked.includes(i)){ save.district=i; persist(); renderHub(); sfx("tap"); if(R.demo && R.district!==i) startDemo(); }
       else if(save.coins>=DISTRICTS[i].cost){
         save.coins-=DISTRICTS[i].cost; save.unlocked.push(i); save.district=i;
-        persist(); toast(DISTRICTS[i].n+" UNLOCKED"); renderHub();
-      } else toast("NEED "+fmt(DISTRICTS[i].cost-save.coins)+" MORE COINS");
+        persist(); toast(DISTRICTS[i].n+" UNLOCKED"); sfx("unlock"); renderHub(); if(R.demo) startDemo();
+      } else { toast("NEED "+fmt(DISTRICTS[i].cost-save.coins)+" MORE COINS"); sfx("error"); }
     };
   }
   $("upgrades").innerHTML = UPGRADES.map(u=>{
@@ -712,8 +1007,8 @@ function buyUpgrade(id){
   const u=UPGRADES.find(x=>x.id===id); if(!u) return false;
   const lv=upLvl(id); if(lv>=u.max) return false;
   const cost=Math.round(u.cost(lv));
-  if(save.coins<cost){ toast("NOT ENOUGH COINS"); return false; }
-  save.coins-=cost; save.up[id]=lv+1; persist(); renderHub(); toast(u.t+" LV"+(lv+1));
+  if(save.coins<cost){ toast("NOT ENOUGH COINS"); sfx("error"); return false; }
+  save.coins-=cost; save.up[id]=lv+1; persist(); renderHub(); toast(u.t+" LV"+(lv+1)); sfx("powerup");
   return true;
 }
 function showOver(res){
@@ -733,14 +1028,82 @@ function showOver(res){
       :"<span style='color:#ff6b6b'>not met</span>"}<br>
      Bank: <b style="color:#ffc94a">${fmt(save.coins)}</b> coins · LV ${playerLevel()}
      ${nxt&&!save.unlocked.includes(R.district+1)
-        ? `<br>Next district <b>${nxt.n}</b> costs ${fmt(nxt.cost)} coins.`:""}`;
-  showLayer("over");
+        ? `<br>Next district <b>${nxt.n}</b> costs ${fmt(nxt.cost)} coins.`:""}
+     ${cheated()?"<br><span style='color:#ffc94a'>CODES ON — nothing from this session is saved.</span>":""}`;
+  showLayer("over"); hudTags(); labels();
   renderHub();
 }
 
 $("btnPlay").onclick  = ()=>beginRun(save.district);
 $("btnAgain").onclick = ()=>beginRun(save.district);
-$("btnHub").onclick   = ()=>{ renderHub(); showLayer("hub"); };
+$("btnHub").onclick   = ()=>toHub();
+function toHub(){
+  if(R.on && !R.over && !R.demo){ R.paused=false; endRun("time"); }   // same as ABANDON RUN: what you swallowed is banked
+  coachHide(); renderHub(); showLayer("hub"); hudTags();
+  startDemo();
+  sdk("state",{scene:"title"});
+}
+function paintGfx(){ $("btnGfx").textContent = "GRAPHICS: "+GFX.toUpperCase(); }
+$("btnGfx").onclick = ()=>{
+  GFX = GFX==="high" ? "low" : "high";
+  try{ localStorage.setItem("holegrind.gfx", GFX); }catch(e){}
+  W3.setQuality(GFX); paintGfx(); resize(); if(ready) dressCity();
+  sfx("tap");
+};
+paintGfx();
+function hudTags(){ $("codesOn").hidden = !(cheated() && R.on && !R.over && !R.demo); }
+
+//// ---------- first-run coach card: teaches steering by doing it ----------
+function coachShow(){
+  tut=1; tutEaten=0; clearTimeout(coachT);
+  $("coachKick").textContent="FIRST DROP"; $("coachBig").textContent="STEER THE HOLE";
+  $("coachText").textContent = COARSE ? "Hold a finger on the screen and the hole rolls toward it. Swallow 3 things smaller than you."
+                                       : "Hold the mouse button, or use WASD / arrows, to roll the hole. Swallow 3 things smaller than you.";
+  $("coachDemo").style.display=""; $("coachSkip").style.display="";
+  $("coach").classList.add("on");
+}
+function coachGrow(){
+  tut=2; clearTimeout(coachT);
+  try{ localStorage.setItem("holegrind.tut","1"); }catch(e){}
+  sdk("event","tutorial-done");
+  $("coachKick").textContent="NICE — THE CLOCK IS RUNNING"; $("coachBig").textContent="GROW, THEN GO BIGGER";
+  $("coachText").textContent="Every bite makes you wider. NEXT (top left) says what you can swallow next. Stay away from rival holes bigger than you.";
+  $("coachDemo").style.display="none"; $("coachSkip").style.display="none";
+  coachT=setTimeout(coachHide, 4200);
+}
+function coachHide(){ tut=0; clearTimeout(coachT); $("coach").classList.remove("on"); }
+$("coachSkip").onclick = ()=>{ coachHide(); try{ localStorage.setItem("holegrind.tut","1"); }catch(e){} };
+
+//// ---------- hint: where the food is and what to avoid ----------
+function compass(dx,dy){
+  const a=Math.atan2(dy,dx), dirs=["east","south-east","south","south-west","west","north-west","north","north-east"];
+  return dirs[(Math.round(a/(Math.PI/4))+8)%8];
+}
+function hint(){
+  if(!R.on || R.over || R.demo) return "Pick a district you have unlocked, buy upgrades with your coins, then DROP IN. Beat the district quota to clear it.";
+  const h=R.hole;
+  for(const rv of R.rivals){ const d=Math.hypot(rv.x-h.x,rv.y-h.y);
+    if(rv.r>h.r*1.05 && d<rv.r*4+160) return "A rival bigger than you ("+rv.name+") is close to the "+compass(rv.x-h.x,rv.y-h.y)+". Roll the other way and eat small props until you outgrow it."; }
+  let best=null, bd=1e9;
+  for(const p of R.props){ if(p.gone||p.r>=h.r*EAT_RATIO) continue;
+    const d=Math.hypot(p.x-h.x,p.y-h.y)/(1+p.m*0.02); if(d<bd){bd=d;best=p;} }
+  let next=null; for(const T of TIERS) if(T.r>=h.r*EAT_RATIO){ next=T; break; }
+  if(best) return "Good food: a "+TIERS[best.tier].n+" to the "+compass(best.x-h.x,best.y-h.y)+"."+(next?" Grow to "+next.r+" to start swallowing "+next.n+"s.":" You can swallow everything now.");
+  return "Nothing edible nearby: head for the middle of the map, where the waves of new props land.";
+}
+
+//// ---------- codes (the arcade's Codes box): a sandbox that is never saved ----------
+const CODES = {BLACKHOLE:"Start every run three times as wide", GHOSTHOLE:"Rival holes can't swallow you",
+               MONEYPIT:"+50,000 coins to spend (this session only)", UNLOCKALL:"Every district unlocked (this session only)"};
+function code(c){
+  c=String(c||"").toUpperCase(); if(!CODES[c]) return {ok:false};
+  if(c==="BLACKHOLE"){ CHEAT.big=true; if(R.on&&!R.over&&!R.demo&&R.hole&&R.hole.mass<startMass()){ R.hole.mass=startMass(); R.hole.r=radiusFor(R.hole.mass); } }
+  if(c==="GHOSTHOLE") CHEAT.ghost=true;
+  if(c==="MONEYPIT") save.coins+=50000;
+  if(c==="UNLOCKALL") DISTRICTS.forEach((d,i)=>{ if(!save.unlocked.includes(i)) save.unlocked.push(i); });
+  setTimeout(()=>{ renderHub(); hudTags(); toast("CODES ON — THIS SESSION IS NOT SAVED"); },0);
+  return {ok:true, message:CODES[c]};
+}
 $("btnResume").onclick= ()=>togglePause();
 $("btnQuit").onclick  = ()=>{ R.paused=false; endRun("time"); };
 $("btnWipe").onclick  = ()=>{
@@ -751,7 +1114,7 @@ $("btnWipe").onclick  = ()=>{
 window.__DEBUG = {
   get state(){
     return {
-      running:R.on, over:R.over, paused:R.paused, t:+R.t.toFixed(2),
+      running:R.on&&!R.demo, demo:R.demo, over:R.over, paused:R.paused, t:+R.t.toFixed(2),
       timeLeft:+R.timeLeft.toFixed(2), district:R.district,
       holeR: R.hole?+R.hole.r.toFixed(2):0, holeMass: R.hole?+R.hole.mass.toFixed(1):0,
       x:R.hole?Math.round(R.hole.x):0, y:R.hole?Math.round(R.hole.y):0,
@@ -766,7 +1129,7 @@ window.__DEBUG = {
         return b>1e8?-1:+b.toFixed(1); })(),
       fps:Math.round(fps), autopilot:R.autopilot, endReason:R.endReason,
       coins:save.coins, best:save.best, runs:save.runs, level:playerLevel(),
-      unlocked:save.unlocked.slice(), up:Object.assign({},save.up)
+      unlocked:save.unlocked.slice(), up:Object.assign({},save.up), gfx:GFX, ready
     };
   },
   start:(d)=>beginRun(d==null?save.district:d),
@@ -776,6 +1139,7 @@ window.__DEBUG = {
   buy:(id)=>buyUpgrade(id),
   unlock:(i)=>{ if(!save.unlocked.includes(i)) save.unlocked.push(i);
                 save.district=i; persist(); renderHub(); return save.unlocked.slice(); },
+  feed:(m)=>{ absorb(R.hole,m); return +R.hole.r.toFixed(1); },
   end:()=>endRun("time"),
   wipe:()=>{ save=FRESH(); persist(); renderHub(); },
   tiers:TIERS, districts:DISTRICTS, upgrades:UPGRADES.map(u=>u.id),
@@ -783,7 +1147,15 @@ window.__DEBUG = {
 };
 
 //// ---------- boot ----------
-load(); resize(); renderHub(); requestAnimationFrame(frame);
+load(); resize(); renderHub(); startDemo(); requestAnimationFrame(frame);
+W3.load("models/city.glb").then(()=>{ ready=true; dressedFor=-1; dressCity(); $("loading").remove(); })
+  .catch(e=>{ $("loading").textContent="Could not load the city models. Reload to try again."; });
+
+//// ---------- Caleb's Arcade: restart, exit, tutorial, hints and codes go through the SDK ----------
+if(SDK) ArcadeSDK.init({pauseKeys:"p+esc",
+  onRestart:()=>{ const d = (R.on||R.over)&&!R.demo ? R.district : save.district; coachHide(); beginRun(d); },
+  onExit:toHub, onTutorial:()=>beginRun(save.district,true), onHint:hint, onCheat:code});
+sdk("state",{scene:"title"});
 </script>
 </body>
 </html>

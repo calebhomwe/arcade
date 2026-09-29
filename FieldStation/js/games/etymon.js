@@ -151,7 +151,7 @@ export function start(root, api) {
         },
         el('b', { style:'min-width:96px;font-family:var(--display)' }, M[k].t),
         el('span', { style:'color:var(--ink2)' }, `${M[k].m}`),
-        el('span', { style:'margin-left:auto;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dust);font-weight:700' },
+        el('span', { style:'margin-left:auto;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dust);font-weight:700' },
           `${M[k].o} ${M[k].k}`)))),
       el('p', { class:'note', style:'margin-top:12px' },
         `So ${word} is literally “${parts.map(k => M[k].m.split(' — ')[0]).join(' + ')}”.`));
@@ -167,6 +167,8 @@ export function start(root, api) {
     const pct = Math.round(right / seq.length * 100);
     api.complete(pct);
     api.Sound.win();
+    api.done && api.done(pct);
+    api.setHint && api.setHint(() => 'Run it again for a fresh set of words, or go back to the station.');
     host.replaceChildren(
       taskCard('Signal room', 'Transmission decoded.',
         `${right} of ${seq.length} correct.`),
@@ -228,6 +230,15 @@ export function start(root, api) {
       out.scrollIntoView({ behavior:'smooth', block:'nearest' });
     }
 
+    /* hint: the next part to add, by its meaning, never its spelling */
+    api.setHint && api.setHint(() => {
+      const ok = answer.every((k, i) => M[k].t === M[item.p[i]].t);
+      if (!ok) { const bad = answer.findIndex((k, i) => M[k].t !== M[item.p[i]].t);
+        return `Take “${M[answer[bad]].t}” back out: part ${bad + 1} should mean “${M[item.p[bad]].m.split(' — ')[0]}”.`; }
+      if (answer.length >= item.p.length) return 'That is every part. Press Check the word.';
+      const k = item.p[answer.length];
+      return `Part ${answer.length + 1} of ${item.p.length} is a ${M[k].o} ${M[k].k} meaning “${M[k].m.split(' — ')[0]}”.`;
+    });
     host.replaceChildren(
       taskCard(`Signal ${ix + 1} of ${seq.length} · build`, item.d,
         `${item.p.length} parts. Order matters — English builds meaning left to right.`),
@@ -265,6 +276,7 @@ export function start(root, api) {
       }
     }, o.t)));
 
+    api.setHint && api.setHint(() => 'Break it at the seams: ' + item.p.map(k => `${M[k].t} = “${M[k].m.split(' — ')[0]}”`).join(', ') + '. Now read the meanings in order.');
     host.replaceChildren(
       taskCard(`Signal ${ix + 1} of ${seq.length} · decode`,
         item.w,

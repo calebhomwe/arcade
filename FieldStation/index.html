@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script src="../assets/arcade-sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f2e9d8">
 <title>Field Station</title>
@@ -11,6 +12,9 @@
 <body>
 <div class="wrap" id="app"></div>
 <div id="toast"></div>
+<div id="coach" role="dialog" aria-modal="true" aria-label="How it works"><div id="coachSpot"></div><div id="coachCard">
+  <div class="kicker" id="coachK"></div><p id="coachT"></p>
+  <div class="row"><button class="btn ghost" id="coachSkip">Skip</button><button class="btn go" id="coachGo">Next</button></div></div></div>
 
 <script type="module">
 import { $, el, Progress, Sound, toast } from './js/core.js';
@@ -93,12 +97,33 @@ const FIG = {
     <path d="M12 74h120" stroke="#b8543a" stroke-width="2"/></svg>`
 };
 
+/* ── arcade layer: year bands, scenes, hints, coach, grown-up report ── */
+const sdk = (fn, a) => { try { if (window.ArcadeSDK) ArcadeSDK[fn](a); } catch (e) {} };
+const yearsOf = m => { const n = m.years.match(/\d+/g).map(Number); return [n[0], n[n.length - 1]]; };
+const BANDS = [ { id:'all', label:'All years', lo:5, hi:9 }, { id:'y56', label:'Y5–6', lo:5, hi:6 },
+                { id:'y78', label:'Y7–8', lo:7, hi:8 }, { id:'y9', label:'Y9', lo:9, hi:9 } ];
+let band = (() => { try { const b = localStorage.getItem('fieldstation.band'); return BANDS.some(x => x.id === b) ? b : 'all'; } catch (e) { return 'all'; } })();
+const inBand = m => { const B = BANDS.find(x => x.id === band), [lo, hi] = yearsOf(m); return hi >= B.lo && lo <= B.hi; };
+let current = null, hintFn = null;
+function nextModule() {
+  const list = MODULES.filter(inBand);
+  return list.slice().sort((a, b) => Progress.moduleScore(a.id) - Progress.moduleScore(b.id))[0] || MODULES[0];
+}
+function hubHint() {
+  const m = nextModule(), pct = Progress.moduleScore(m.id);
+  const skills = Progress.all().skills, weak = Object.keys(skills).sort((a, b) => skills[a] - skills[b])[0];
+  return `Try ${m.title} next (${m.topic}): it is ${pct ? pct + '% certified' : 'not started yet'}.` +
+    (weak && skills[weak] < 50 ? ` Your weakest skill so far is ${weak.split('/')[1] || weak} (${Math.round(skills[weak])}%).` : '');
+}
+
 /* ── hub ─────────────────────────────────────────────────── */
 function renderHub() {
   const db = Progress.all();
   const done = MODULES.filter(m => Progress.moduleScore(m.id) >= 100).length;
   const app = $('#app');
   app.replaceChildren();
+  current = null; hintFn = null;
+  sdk('state', { scene:'title' });
 
   const head = el('div', { class:'masthead' },
     el('div', {},
@@ -113,11 +138,18 @@ function renderHub() {
       el('div', { style:'font-family:var(--display);font-size:1.5rem;margin-top:4px' },
         `${done}/${MODULES.length} certified`),
       el('div', { class:'note', style:'margin-top:2px' },
-        `${db.totalRight} correct · ${db.streak} day streak`)));
+        `${db.totalRight} correct · ${db.streak} day streak`),
+      el('button', { class:'btn go', id:'playNext', style:'margin-top:10px', onclick: () => open(nextModule()) },
+        'Play · ' + nextModule().title)));
   app.append(head);
 
+  app.append(el('div', { class:'bandrow', id:'bandRow', role:'group', 'aria-label':'Year group' },
+    el('span', { class:'lbl' }, 'Year group'),
+    BANDS.map(B => el('button', { class:'chip' + (B.id === band ? ' on' : ''), 'aria-pressed': String(B.id === band),
+      onclick: () => { band = B.id; try { localStorage.setItem('fieldstation.band', band); } catch (e) {} renderHub(); } }, B.label))));
+
   const grid = el('div', { class:'grid' });
-  MODULES.forEach(m => {
+  MODULES.filter(inBand).forEach(m => {
     const pct = Progress.moduleScore(m.id);
     const fig = el('div', { class:'fig' });
     fig.innerHTML = FIG[m.id];                       // static author-authored SVG
@@ -125,7 +157,7 @@ function renderHub() {
       fig,
       el('div', { class:'body' },
         el('div', { class:'h2' }, m.title),
-        el('div', { class:'note', style:'margin-top:4px;color:var(--rust);font-weight:700;font-size:.74rem' }, m.topic),
+        el('div', { class:'note', style:'margin-top:4px;color:var(--rust);font-weight:700;font-size:.75rem' }, m.topic),
         el('p', {}, m.blurb),
         el('div', { class:'meta' },
           el('span', { class:'tag ' + m.subject }, m.subject === 'sci' ? 'Science' : 'English'),
@@ -139,11 +171,75 @@ function renderHub() {
   app.append(el('div', { class:'panel', style:'margin-top:26px' },
     el('h3', {}, 'Skill map'),
     skillMap(),
-    el('div', { style:'margin-top:14px' },
+    el('div', { style:'margin-top:14px', class:'row' },
+      el('button', { class:'btn', id:'reportBtn', onclick: showReport }, 'Report for grown-ups'),
+      el('button', { class:'btn ghost', onclick: () => coachStart() }, 'How it works'),
       el('button', { class:'btn ghost', onclick: () => {
         if (confirm('Erase all station records?')) { Progress.reset(); renderHub(); }
       }}, 'Reset record'))));
+  let seen = false; try { seen = localStorage.getItem('fieldstation.tut') === '1'; } catch (e) {}
+  if (!seen) setTimeout(() => { if (!current && !COACH) coachStart(); }, 400);
 }
+
+/* A plain progress report a parent or teacher can read (and print): per instrument and per skill. */
+function showReport() {
+  const db = Progress.all(), app = $('#app');
+  const total = db.totalRight + db.totalWrong, acc = total ? Math.round(db.totalRight / total * 100) : 0;
+  const skills = Object.entries(db.skills).sort((a, b) => b[1] - a[1]);
+  const lvl = p => p >= 100 ? 'Certified' : p >= 75 ? 'Advanced' : p >= 50 ? 'Proficient' : p >= 25 ? 'Practised' : p >= 1 ? 'Started' : 'Not started';
+  app.replaceChildren(
+    el('div', { class:'gamebar' },
+      el('button', { class:'btn ghost', onclick: renderHub }, '← Station'),
+      el('div', {}, el('div', { class:'kicker' }, 'For parents and teachers'), el('div', { class:'h2', style:'margin-top:2px' }, 'Progress report'))),
+    el('div', { class:'panel report' },
+      el('h3', {}, 'Summary'),
+      el('p', { class:'note' }, `${db.totalRight} correct and ${db.totalWrong} missed answers (${acc}% accuracy) · ${db.streak} day streak · ` +
+        `${MODULES.filter(m => Progress.moduleScore(m.id) >= 100).length} of ${MODULES.length} instruments certified.`),
+      el('h3', { style:'margin-top:16px' }, 'Instruments'),
+      el('table', {}, el('tr', {}, el('th', {}, 'Instrument'), el('th', {}, 'Years'), el('th', {}, 'Level'), el('th', {}, 'Done')),
+        MODULES.map(m => { const p = Progress.moduleScore(m.id);
+          return el('tr', {}, el('td', {}, m.title + ' — ' + m.topic), el('td', {}, m.years), el('td', {}, lvl(p)), el('td', {}, p + '%')); })),
+      el('h3', { style:'margin-top:16px' }, 'Skills (mastery estimate, mistakes count double)'),
+      skills.length ? el('table', {}, skills.map(([k, v]) => el('tr', {}, el('td', {}, k.replace('/', ' · ')), el('td', {}, Math.round(v) + '%'))))
+                    : el('p', { class:'note' }, 'No graded attempts yet.'),
+      el('p', { class:'note', style:'margin-top:12px' }, skills.length ? `Next step: ${hubHint()}` : 'Next step: open any instrument; every graded answer lands here.'),
+      el('div', { class:'row noprint', style:'margin-top:14px' },
+        el('button', { class:'btn', onclick: () => print() }, 'Print'),
+        el('button', { class:'btn ghost', onclick: renderHub }, 'Back to station'))));
+  scrollTo(0, 0);
+}
+
+/* first-visit coach marks on the station */
+let COACH = null;
+const COACH_STEPS = [
+  { sel:'.grid .mod', k:'1 / 3 · Instruments', t:'Each card is an instrument. Open one and operate it: there is no answer to guess, and every wrong answer explains why.' },
+  { sel:'#bandRow', k:'2 / 3 · Year group', t:'Pick your year group to show the instruments made for it. The Play button opens the one you have done least.' },
+  { sel:'#reportBtn', k:'3 / 3 · Progress', t:'Every graded answer updates the skill map. Grown-ups can open the report, and Hint (in the pause menu) helps on any question.' }
+];
+function coachStart() {
+  if (current) renderHub();
+  COACH = { i:0 }; $('#coach').classList.add('on'); coachPaint(); sdk('event', 'tutorial-start');
+}
+function coachPaint() {
+  if (!COACH) return;
+  const st = COACH_STEPS[COACH.i], e = document.querySelector(st.sel);
+  if (e) e.scrollIntoView({ block:'center' });
+  const r = e ? e.getBoundingClientRect() : { left:0, top:0, width:0, height:0 };
+  const sp = $('#coachSpot'), cc = $('#coachCard');
+  Object.assign(sp.style, { left:(r.left - 6) + 'px', top:(r.top - 6) + 'px', width:(r.width + 12) + 'px', height:(r.height + 12) + 'px' });
+  $('#coachK').textContent = st.k; $('#coachT').textContent = st.t;
+  $('#coachGo').textContent = COACH.i === COACH_STEPS.length - 1 ? 'Start' : 'Next';
+  const low = r.top + r.height / 2 > innerHeight * 0.5;
+  cc.style.top = low ? '16px' : 'auto'; cc.style.bottom = low ? 'auto' : '16px';
+}
+function coachEnd(done) {
+  if (!COACH) return; COACH = null; $('#coach').classList.remove('on');
+  try { localStorage.setItem('fieldstation.tut', '1'); } catch (e) {}
+  if (done) sdk('event', 'tutorial-done');
+}
+$('#coachGo').onclick = () => { if (!COACH) return; COACH.i++; COACH.i >= COACH_STEPS.length ? coachEnd(true) : coachPaint(); };
+$('#coachSkip').onclick = () => coachEnd();
+addEventListener('resize', () => { if (COACH) coachPaint(); });
 
 function skillMap() {
   const skills = Progress.all().skills;
@@ -160,6 +256,8 @@ function skillMap() {
 
 /* ── loader ──────────────────────────────────────────────── */
 async function open(m) {
+  coachEnd();
+  current = m; hintFn = null;
   Sound.init();
   const app = $('#app');
   app.replaceChildren(el('p', { class:'note' }, 'Opening ' + m.title + '…'));
@@ -180,9 +278,12 @@ async function open(m) {
     mod.start(root, {
       record: (skill, ok) => Progress.record(m.id + '/' + skill, ok),
       complete: pct => { Progress.setModule(m.id, pct); },
+      setHint: fn => { hintFn = fn; },                               // each instrument keeps its current hint fresh
+      done: pct => sdk('state', { scene:'over', score: pct }),         // the instrument's end-of-run screen
       toast, Sound, home: renderHub
     });
     scrollTo(0, 0);
+    sdk('state', { scene:'play' });
   } catch (err) {
     app.replaceChildren(
       el('button', { class:'btn ghost', onclick: renderHub }, '← Station'),
@@ -194,6 +295,12 @@ async function open(m) {
 
 renderHub();
 addEventListener('pointerdown', () => Sound.init(), { once:true });
+if (window.ArcadeSDK) ArcadeSDK.init({
+  onRestart: () => { if (current) open(current); else open(nextModule()); },   // run the current instrument again from its first item
+  onExit: renderHub,
+  onTutorial: coachStart,
+  onHint: () => { try { return hintFn ? hintFn() : hubHint(); } catch (e) { return hubHint(); } }
+});
 </script>
 </body>
 </html>

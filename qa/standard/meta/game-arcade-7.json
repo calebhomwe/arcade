@@ -1,0 +1,34 @@
+{
+  "howto": [
+    "Pick a game card on the menu and press PLAY.",
+    "The first time you open each game a card shows its controls; press Let's play.",
+    "Bridge Race, Tetris, Snake, Breakout, Flappy and the Space Shooter end when you fall, top out or lose your lives; Chess ends on checkmate.",
+    "Your best score in every game is listed under the cards on the menu."
+  ],
+  "tips": [
+    "Neon Tetris: clearing four rows at once scores 800 times the level.",
+    "Neon Snake: plan a loop around the walls before your tail gets long.",
+    "Bridge Race: stay on the ground to pick up planks; jumping skips them.",
+    "Neon Breakout: hit the ball with the edge of the paddle to steer it.",
+    "Hyper Chess: the legal moves light up when you click a piece."
+  ],
+  "controls": {
+    "keyboard": "Arrow keys or WASD in every game, Space to jump, flap or fire; P or Esc pauses",
+    "touch": "The on-screen arrow and action buttons under each game, or tap and drag on the canvas; the pause button sits top right"
+  },
+  "difficulty": "Each game ramps on its own: Tetris gets faster every 10 lines, Snake speeds up as it grows, Bridge Race speeds up after 200 m, Breakout and the Space Shooter give three lives.",
+  "cheats": [
+    {"code": "MEGAPLANKS", "effect": "Bridge Race: +50 planks"},
+    {"code": "EXTRALIVES", "effect": "Breakout and Space Shooter: +3 lives"},
+    {"code": "LINEBOMB", "effect": "Neon Tetris: the bottom four rows vanish"}
+  ],
+  "features": {
+    "difficulty": "Per-game ramps: Tetris levels speed up the fall, Snake speeds up as it grows, Bridge Race speeds up after 200 m",
+    "wave-or-level-counter": "Neon Tetris shows Level and Lines; Bridge Race shows distance to the flag; Breakout and the Shooter show lives",
+    "high-score-table": "Best scores table under the game cards on the menu (one best per game, runs with codes excluded)",
+    "results": "Each game shows its own game-over or win screen with the score; the best-score table updates"
+  },
+  "saves": ["arcade7_best", "neonSnakeBest", "neonFlappyBest", "shooterBest"],
+  "start": ".game-card .card-btn",
+  "pauseButton": "tr"
+}

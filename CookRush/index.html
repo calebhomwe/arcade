@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="../assets/arcade-sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Cook Rush</title>
 <style>
@@ -46,7 +47,7 @@
     align-items:center;gap:10px;box-shadow:0 4px 0 #8a6b4a}
   .up .t{flex:1;min-width:0}
   .up b{font-size:21px;font-weight:900;display:block}
-  .up s{display:block;font-size:15px;color:#7b6247;text-decoration:none;font-weight:600}
+  .up s{display:block;font-size:17px;color:#7b6247;text-decoration:none;font-weight:600}
   .up .lv{font-size:17px;letter-spacing:2px;color:#e0a11b;font-weight:900}
   .up .buy{border:0;border-radius:12px;min-height:64px;min-width:120px;font-family:inherit;
     font-size:20px;font-weight:900;cursor:pointer;background:linear-gradient(#8ee070,#4fae35);
@@ -55,7 +56,7 @@
   .stars{font-size:60px;letter-spacing:8px;color:#ffd23f;text-shadow:0 4px 0 #7a4a10}
   .stars .off{color:#5b4936;text-shadow:none}
   .coins{font-size:26px;font-weight:900;color:#ffd23f}
-  .tiny{font-size:15px;color:#a58d73;text-align:center}
+  .tiny{font-size:17px;color:#a58d73;text-align:center}
   /* ---- visible-to-the-DOM controls for the canvas play field ----------------
      The stations and tickets are hit-tested in canvas space, so no assistive tech
      (or target-size audit) could see them. These transparent buttons sit exactly on
@@ -88,12 +89,25 @@
     background:#221812;border:2px solid #3d2c1f;border-radius:12px;padding:8px 13px;box-sizing:border-box;
     font-size:14px;font-weight:800;color:#c2a888;letter-spacing:1px}
   .wing .wrow b{font-size:20px;color:#ffd23f}
+  /* difficulty picker on the day menu, in the grey button look */
+  .diff{display:flex;gap:10px;justify-content:center}
+  .diff .btn{min-height:60px;font-size:20px;padding:10px 18px}
+  .diff .btn[aria-pressed=true]{background:linear-gradient(#ffd23f,#ffab2e);color:#241608;box-shadow:0 5px 0 #a8620f}
+  #coach[hidden]{display:none}
+  /* first-shift coach: sits over the combo/star strip, cleared by doing each step */
+  #coach{position:absolute;left:12px;width:516px;min-height:80px;z-index:4;box-sizing:border-box;display:flex;gap:12px;
+    align-items:center;padding:10px 12px 10px 18px;background:#2b2018;border:3px solid #ffd23f;border-radius:18px;
+    box-shadow:0 6px 16px rgba(0,0,0,.5);color:#f7e8d0;font-size:19px;font-weight:800;line-height:1.3}
+  #coach b{color:#ffd23f}
+  #coach .btn{flex:none;min-height:56px;font-size:18px;padding:8px 16px}
+  @media (prefers-reduced-motion: reduce){ .btn:active{transform:none} }
 </style>
 </head>
 <body>
 <div id="stage">
   <canvas id="cv" width="540" height="960"></canvas>
   <div id="hits" class="off"></div>
+  <div id="coach" role="status" aria-live="polite" hidden><span id="coachTxt"></span><button class="btn grey" id="coachSkip">SKIP</button></div>
 
   <div class="ov on" id="ovStart">
     <div class="logo">COOK<span>RUSH</span></div>
@@ -107,6 +121,12 @@
     <h1>SELECT DAY</h1>
     <div class="row"><span class="pill">STARS <b id="mStars">0</b></span><span class="pill">COINS <b id="mCoins">0</b></span></div>
     <button class="btn big" id="btnPlay">PLAY DAY 1</button>
+    <div class="diff" role="group" aria-label="Difficulty">
+      <button class="btn grey" data-diff="easy" aria-pressed="false">EASY</button>
+      <button class="btn grey" data-diff="normal" aria-pressed="true">NORMAL</button>
+      <button class="btn grey" data-diff="hard" aria-pressed="false">HARD</button>
+    </div>
+    <div class="tiny" id="diffNote"></div>
     <div class="days" id="mDays"></div>
     <div class="row">
       <button class="btn grey" id="btnShop">UPGRADES</button>
@@ -195,7 +215,9 @@ function loadSave(){
     if(typeof save.runs  !== "number") save.runs = 0;
   }catch(e){ /* storage blocked: play without persistence */ }
 }
+/* A session with codes on is never saved: stars, day bests and the wallet stay honest. */
 function persist(){
+  if(cheated()) return;
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){}
 }
 loadSave();
@@ -364,7 +386,7 @@ function targetsFor(day){
   _targetCache[day] = out;
   return out;
 }
-function unlocked(day){ return day === 1 || (save.stars[day-1] || 0) >= 1; }
+function unlocked(day){ return day === 1 || CH.allDays || (save.stars[day-1] || 0) >= 1; }
 function totalStars(){ var n=0; for(var k in save.stars) n += save.stars[k]||0; return n; }
 
 // ---------------------------------------------------------------- fx pools
@@ -423,7 +445,7 @@ resetStations();
 
 var cidSeq = 0;
 function makeCustomer(sc){
-  var r = RECIPES[sc.rid], pm = sc.pat * patMult();
+  var r = RECIPES[sc.rid], pm = sc.pat * patMult() * D().pat;
   return { id:++cidSeq, rid:sc.rid, steps:r.steps.slice(), si:0, p:pm, pmax:pm,
            at:"queue", seat:-1, exit:0, bubble:0, bt:0, hue:Math.floor(vr()*360),
            wob:0, enter:0, gone:false };
@@ -459,6 +481,7 @@ function collect(c, quiet){
   var py = si >= 0 ? L.cardY[si] + L.cardH - 46 : 400;
   pop("+" + amt, px, py, "#ffd23f", 40);
   if(!quiet){
+    tutEv("coins");
     AU.coin(G.combo);
     addShake(0.22); hitstop(0.045);
     emit(16, px, py, { life:0.7, col:"#ffd23f", size:7, spd:190, up:40, shape:1 });
@@ -476,7 +499,7 @@ function serve(c){
   if(perfect){ tip += r.val * 0.25; G.perfect++; }
   var mult = 1 + 0.08 * Math.min(G.combo, 12);
   var amt = Math.max(2, Math.round((r.val + tip) * mult));
-  c.at = "served"; c.bubble = amt; c.bt = 0;
+  c.at = "served"; c.bubble = amt; c.bt = 0; tutEv("serve");
   G.combo++; G.served++;
   if(G.combo > G.bestCombo) G.bestCombo = G.combo;
   var si = slotIndexOf(c), L = LO;
@@ -531,6 +554,7 @@ function pick(id){
   return best;
 }
 function startStation(s, c){
+  tutEv("station");
   s.state = "work"; s.prog = 0; s.dur = durFor(s.id); s.ticket = c;
   s.press = 0.14;
   if(s.id === "cook"){
@@ -578,14 +602,14 @@ function stepSim(dt){
   }
   for(var qi=0; qi<G.queue.length; qi++){
     var qc = G.queue[qi];
-    qc.p -= dt * 0.45;
+    if(!CH.zen) qc.p -= dt * 0.45;
     if(qc.p <= 0) expire(qc, false);
   }
   for(var si2=0; si2<4; si2++){
     var sc = G.slots[si2];
     if(!sc) continue;
     if(sc.at === "seat"){
-      sc.p -= dt;
+      if(!CH.zen) sc.p -= dt;
       if(sc.p <= 0) expire(sc, true);
     } else if(sc.at === "leaving"){
       sc.exit -= dt;
@@ -608,7 +632,7 @@ function stepSim(dt){
         else { var cc = st.ticket; clearStation(st); if(cc) advanceStep(cc); }
       }
     } else if(st.state === "done"){
-      st.burn -= dt;
+      if(!CH.noburn) st.burn -= dt;
       if(st.burn <= 0) burnItem(st);
     }
   }
@@ -784,12 +808,14 @@ function drawHud(){
   strokeRR(12,y,516,h,20,"#4a3627",3);
   fillRR(18,y+14,68,68,14, save.snd ? "#3c2c1f" : "#241a13");
   drawSpeaker(52, y+48, save.snd);
-  fillRR(454,y+14,68,68,14,"#3c2c1f");
-  ctx.fillStyle = "#f7e8d0";
-  ctx.fillRect(473,y+27,9,42); ctx.fillRect(493,y+27,9,42);
+  /* the top-right corner of the HUD is where the arcade's pause button sits on a phone */
   var bump = 1 + 0.22*Math.sin(Math.min(1,G.coinBump/0.3)*Math.PI);
   drawCoin(114, y+h/2, 19*bump);
   txt(String(save.coins + G.coins), 140, y+h/2+1, 30, "#ffd23f", "left", 900);
+  if(cheated()){   // codes on: a small gold tag in the HUD, the same gold as the coin count
+    fillRR(236, y+14, 100, 26, 13, "#ffd23f");
+    txt("CODES ON", 286, y+28, 15, "#241608", "center", 900);
+  }
   txt("DAY " + G.day, 448, y+30, 26, "#f7e8d0", "right", 900);
   txt(LEVELS[G.day-1].name.toUpperCase(), 448, y+57, 15, "#c2a888", "right", 700);
   // time bar
@@ -1129,7 +1155,6 @@ function stationTap(id){
 function tapAt(px,py,t){
   // hud buttons
   if(inRect(px,py,18,LO.hudY+14,68,68)){ toggleSnd(); return; }
-  if(inRect(px,py,454,LO.hudY+14,68,68)){ pauseGame(); return; }
   if(G.phase !== "play") return;
   if(inRect(px,py,12,LO.timeY-4,516,LO.timeH+8)) { return; }
   var ci = hitCard(px,py);
@@ -1153,7 +1178,7 @@ function evPoint(e){
 }
 /* ---- DOM control layer -------------------------------------------------
    Built once, positioned from the same LO rects the canvas hit-test uses, so the
-   platform sees ten real buttons (4 stations, 4 tickets, sound, pause) with labels
+   platform sees nine real buttons (4 stations, 4 tickets, sound) with labels
    and a tab order - and a keyboard/AT user can play without the canvas at all. */
 var HT = document.getElementById("hits");
 var HITS = [];
@@ -1182,7 +1207,6 @@ function buildHits(){
       tapAt(LO.cardX[j] + LO.cardW/2, LO.cardY[j] + LO.cardH/2, performance.now()/1000); });
   })(j); }
   mkHit("Sound on or off", 0,0,0,0, function(){ tapAt(52, LO.hudY + 48, performance.now()/1000); });
-  mkHit("Pause", 0,0,0,0, function(){ tapAt(488, LO.hudY + 48, performance.now()/1000); });
 }
 function placeHits(){
   if(!HITS.length) return;
@@ -1193,11 +1217,11 @@ function placeHits(){
   for(i=0;i<4;i++){ var c = HITS[4+i];
     c.style.left = LO.cardX[i] + "px"; c.style.top = LO.cardY[i] + "px";
     c.style.width = LO.cardW + "px"; c.style.height = LO.cardH + "px"; }
-  var snd = HITS[8], pau = HITS[9];
+  var snd = HITS[8];
   snd.style.left = "18px";  snd.style.top = (LO.hudY+14) + "px";
   snd.style.width = "68px"; snd.style.height = "68px";
-  pau.style.left = "454px"; pau.style.top = (LO.hudY+14) + "px";
-  pau.style.width = "68px"; pau.style.height = "68px";
+  var co = document.getElementById("coach");
+  if(co) co.style.top = (LO.bottomY + 8) + "px";
 }
 /* the gutter readout only exists on wide viewports, and reads the same state the
    canvas HUD does - it is a second view, not a second source of truth */
@@ -1266,7 +1290,8 @@ function openStart(){
   G.t = 0; G.coins = 0; G.slots = [null,null,null,null]; G.queue = []; G.sched = []; G.si = 0;
   resetStations(); layoutRects();
   el("startSub").textContent = "DAY 1 - " + LEVELS[0].name.toUpperCase() + "  -  3 STARS TO EARN";
-  showOv("Start");
+  showOv("Start"); tutHide();
+  sdk("state", { scene:"title" });
 }
 function openMenu(){
   G.phase = "menu";
@@ -1277,8 +1302,9 @@ function openMenu(){
   for(var d=LEVELS.length; d>=1; d--){ if(unlocked(d)){ sel = d; break; } }
   el("btnPlay").textContent = "PLAY DAY " + sel;
   el("btnPlay").dataset.day = String(sel);
-  syncSnd();
-  showOv("Menu");
+  syncSnd(); paintDiff();
+  showOv("Menu"); tutHide();
+  sdk("state", { scene:"title" });
 }
 function buildDays(){
   var box = el("mDays"); box.innerHTML = "";
@@ -1288,7 +1314,7 @@ function buildDays(){
       var un = unlocked(d), st = save.stars[d]||0;
       b.className = "day" + (un ? "" : " locked");
       b.innerHTML = "<b>DAY " + d + "</b><i>" + starsText(st) + "</i>" +
-                    "<em style='font-style:normal;font-size:14px;font-weight:700;color:#7b6247'>" +
+                    "<em style='font-style:normal;font-size:17px;font-weight:700;color:#7b6247'>" +
                     LEVELS[d-1].name + "</em>";
       b.onclick = function(){
         if(!un){ AU.wrong(0.35); return; }
@@ -1338,6 +1364,7 @@ function showResult(won){
   el("rSub").textContent = won
     ? ("Earned " + G.earned + " coins   -   best " + (save.best[G.day]||0) + "   -   served " + G.served + ", lost " + G.lost)
     : ("Earned " + G.earned + " coins, needed " + t[0] + ". Served " + G.served + ", lost " + G.lost + ".");
+  if(cheated()) el("rSub").textContent += "   -   codes on: not saved";
   el("btnNext").style.display = (won && G.day < LEVELS.length) ? "" : "none";
   el("btnNext").textContent = "NEXT DAY " + Math.min(LEVELS.length, G.day+1);
   el("btnRetry").textContent = won ? "REPLAY" : "TRY AGAIN";
@@ -1345,6 +1372,8 @@ function showResult(won){
 }
 function pauseGame(){
   if(G.phase !== "play") return;
+  /* the arcade's pause menu (Resume, Restart, How to play, Sound, Codes, Exit) freezes everything */
+  if(window.ArcadeSDK){ window.ArcadeSDK.pause(); return; }
   G.phase = "paused";
   AU.bed(false);
   showOv("Pause");
@@ -1368,6 +1397,10 @@ function startDay(day){
   G.phase = "play";
   hideOv();
   AU.bed(true);
+  /* remember the day you are on (the menu offers it back) - this is also the first write of a new save */
+  save.lastDay = day; persist();
+  if(!tutSeen()) tutStart(); else tutHide();
+  sdk("state", { scene:"play" });
 }
 function endDay(){
   collectAll(true);
@@ -1378,8 +1411,10 @@ function endDay(){
   G.phase = "result";
   AU.bed(false);
   if(st > 0){
-    save.stars[G.day] = Math.max(save.stars[G.day]||0, st);
-    save.best[G.day]  = Math.max(save.best[G.day]||0, G.coins);
+    if(!cheated()){   // a shift with codes on never sets a star or a day best
+      save.stars[G.day] = Math.max(save.stars[G.day]||0, st);
+      save.best[G.day]  = Math.max(save.best[G.day]||0, G.coins);
+    }
     save.coins += G.coins;
     save.lastDay = G.day;
     save.runs++;
@@ -1397,6 +1432,8 @@ function endDay(){
   G.coins = 0;
   persist();
   showResult(st > 0);
+  if(tut.on) document.getElementById("coach").hidden = true;
+  sdk("state", { scene:"over", score:G.earned, outcome:st > 0 ? "win" : "fail", stars:st });
 }
 el("btnCook").onclick    = function(){ startDay(1); };
 el("btnPlay").onclick    = function(){ startDay(parseInt(el("btnPlay").dataset.day||"1",10)); };
@@ -1468,6 +1505,98 @@ function saveCard(){
 }
 window.__shareCard = saveCard;
 
+// ---------------------------------------------------------------- arcade standard
+// Difficulty, the first-shift coach, hints, codes and the arcade SDK hooks.
+function sdk(fn, a){ try{ if(window.ArcadeSDK) window.ArcadeSDK[fn](a); }catch(e){} }
+function cheated(){ return !!(window.ArcadeSDK && window.ArcadeSDK.cheated); }
+
+/* difficulty = how long customers wait before they walk out */
+var DIFFS = {
+  easy:   { pat:1.35, note:"Easy: customers wait 35% longer." },
+  normal: { pat:1,    note:"Normal: the kitchen as designed." },
+  hard:   { pat:0.8,  note:"Hard: customers give up 20% sooner." }
+};
+var diff = "normal";
+try{ var dv = localStorage.getItem("cookrush_diff"); if(DIFFS[dv]) diff = dv; }catch(e){}
+function D(){ return DIFFS[diff]; }
+function paintDiff(){
+  Array.prototype.forEach.call(document.querySelectorAll("[data-diff]"), function(b){
+    b.setAttribute("aria-pressed", String(b.getAttribute("data-diff") === diff)); });
+  var n = el("diffNote"); if(n) n.textContent = D().note + (cheated() ? "  Codes on: this session is not saved." : "");
+}
+Array.prototype.forEach.call(document.querySelectorAll("[data-diff]"), function(b){
+  b.onclick = function(){ diff = b.getAttribute("data-diff"); try{ localStorage.setItem("cookrush_diff", diff); }catch(e){} paintDiff(); AU.coin(0); };
+});
+
+/* first-shift coach: each step clears when you do it */
+var TUT_KEY = "cookrush_tut";
+var TUT = [
+  "Tap the station the ticket shows next: <b>PREP</b> is key 1.",
+  "Finish every step on the ticket. When the pan dings, tap <b>COOK</b> before it burns.",
+  "Ticket done! Tap the customer (or <b>SERVE</b>, key 4) to serve.",
+  "Tap the <b>coins</b> on the ticket to bank them."
+];
+var tut = { on:false, step:0 };
+function tutSeen(){ try{ return localStorage.getItem(TUT_KEY) === "1"; }catch(e){ return true; } }
+function tutShow(){ var c = el("coach"); el("coachTxt").innerHTML = (tut.step + 1) + "/4 &nbsp;" + TUT[tut.step]; c.style.top = (LO.bottomY + 8) + "px"; c.hidden = false; }
+function tutHide(){ tut.on = false; var c = el("coach"); if(c) c.hidden = true; }
+function tutStart(){ tut.on = true; tut.step = 0; tutShow(); }
+function tutDone(){ tutHide(); try{ localStorage.setItem(TUT_KEY, "1"); }catch(e){} sdk("event", "tutorial-done"); }
+function tutNext(){ tut.step++; if(tut.step >= TUT.length) tutDone(); else tutShow(); }
+function tutEv(name){
+  if(!tut.on) return;
+  if(tut.step === 0 && name === "station") tutNext();
+  else if((tut.step === 1 || tut.step === 2) && name === "serve"){ tut.step = 2; tutNext(); }   // served: on to the coins
+  else if(tut.step === 3 && name === "coins") tutNext();
+}
+function tutTick(){
+  if(!tut.on || tut.step !== 1) return;
+  for(var i = 0; i < 4; i++) if(ready(G.slots[i])){ tutNext(); return; }
+}
+el("coachSkip").onclick = function(){ tutDone(); };
+
+/* hints: the most urgent thing in the kitchen right now */
+var KEY = { prep:1, cook:2, plate:3, serve:4 };
+function hint(){
+  if(G.phase === "boot") return "Press TAP TO COOK. Day 1 serves salad and fries.";
+  if(G.phase === "menu" || G.phase === "shop") return "Play the highest unlocked day. Hot Pans give a longer burn window; Comfy Seats buy you patience.";
+  if(G.phase === "result") return G.stars > 0 ? "Next day, or replay this one for more stars." : "Replay: you need " + G.targets[0] + " coins for the first star.";
+  if(ST.cook.state === "done") return "The pan is done: tap COOK (key 2) now, before it burns!";
+  var i, c;
+  for(i = 0; i < 4; i++){ c = G.slots[i]; if(c && c.bubble) return "Tap the coins on ticket " + (i+1) + " to bank them."; }
+  for(i = 0; i < 4; i++){ c = G.slots[i]; if(ready(c)) return "Ticket " + (i+1) + " is ready: tap it, or SERVE (key 4)."; }
+  var best = null;
+  for(i = 0; i < 4; i++){ c = G.slots[i];
+    if(!c || c.at !== "seat" || c.si >= c.steps.length || stationHolding(c)) continue;
+    var need = c.steps[c.si];
+    if(ST[need].state === "idle" && (!best || c.p < best.c.p)) best = { c:c, i:i, need:need }; }
+  if(best) return "Tap " + STATIONS[best.need].label + " (key " + KEY[best.need] + ") for the " + RECIPES[best.c.rid].name + " on ticket " + (best.i+1) + ".";
+  for(var k in ST) if(ST[k].state === "work") return "The " + STATIONS[k].label + " station is busy: line up the next ticket.";
+  if(G.queue.length) return "Customers are queuing: clear a ticket to seat them.";
+  return "All clear. The next customer is on the way.";
+}
+
+/* codes: just for fun; a session with codes on is labelled and never saved */
+var CH = { noburn:false, zen:false, allDays:false };
+var CODES = { RICHCHEF:"+500 coins to spend", ALLDAYS:"Every day unlocked", NOBURN:"Food never burns", ZENDINER:"Customers never lose patience" };
+function code(c){
+  c = String(c || "").trim().toUpperCase();
+  if(!CODES[c]) return { ok:false };
+  if(c === "RICHCHEF"){ save.coins += 500; }
+  if(c === "ALLDAYS") CH.allDays = true;
+  if(c === "NOBURN") CH.noburn = true;
+  if(c === "ZENDINER") CH.zen = true;
+  if(G.phase === "menu") openMenu();
+  else if(G.phase === "shop") buildShop();
+  return { ok:true, message:CODES[c] + ". Codes on: this session is not saved." };
+}
+
+function restartShift(){
+  if(G.phase === "boot" || G.phase === "menu" || G.phase === "shop") startDay(G.day || 1);
+  else startDay(G.day);
+}
+function exitToMenu(){ if(save.runs > 0 || cheated()) openMenu(); else openStart(); }
+
 // ---------------------------------------------------------------- main loop
 var acc = 0, last = 0;
 function frame(now){
@@ -1482,6 +1611,7 @@ function frame(now){
     if(acc > 0.5) acc = 0.5;
     var guard = 0;
     while(acc >= STEP && guard++ < 12){ stepSim(STEP); acc -= STEP; }
+    tutTick();
     if(G.phase !== "paused") updateFx(rdt);
     // ambient kitchen steam so the scene is alive even before the first tap
     if(G.phase !== "paused"){
@@ -1505,6 +1635,14 @@ buildHits();
 resize();
 syncSnd();
 if(save.runs > 0) openMenu(); else openStart();
+if(window.ArcadeSDK) window.ArcadeSDK.init({
+  pauseButton: "tr",        // the corner the HUD's own pause square used to hold
+  onRestart: restartShift,
+  onExit: exitToMenu,
+  onTutorial: function(){ if(G.phase !== "play") startDay(G.day || 1); tutStart(); },
+  onHint: hint,
+  onCheat: code
+});
 WEL = { day:el("wDay"), stars:el("wStars"), coins:el("wCoins"), combo:el("wCombo"), queue:el("wQueue"), time:el("wTime") };
 if(WEL.day) setInterval(updateWings, 200);
 requestAnimationFrame(frame);

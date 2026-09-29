@@ -1,6 +1,11 @@
 /* FIELD STATION — field-notebook art direction.
    Paper, ink, terracotta. No neon, no glass, no bloom. */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Archivo+Black&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap');
+/* Archivo, Archivo Black and Newsreader (SIL Open Font License), latin subsets served from
+   fonts/ so the station works offline and makes no third-party requests. */
+@font-face{font-family:'Archivo';font-style:normal;font-weight:500 700;font-display:swap;src:url(../fonts/archivo-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Archivo Black';font-style:normal;font-weight:400;font-display:swap;src:url(../fonts/archivo-black-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Newsreader';font-style:normal;font-weight:400 600;font-display:swap;src:url(../fonts/newsreader-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Newsreader';font-style:italic;font-weight:400;font-display:swap;src:url(../fonts/newsreader-italic-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 
 :root{
   --paper:#f2e9d8;
@@ -34,19 +39,19 @@ button{font-family:var(--text);cursor:pointer;border:none;background:none;color:
 
 /* ── printed elements ── */
 .card{background:var(--paper);border:2px solid var(--line);box-shadow:5px 5px 0 rgba(36,31,40,.22)}
-.kicker{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--rust);font-weight:700}
+.kicker{font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;color:var(--rust);font-weight:700}
 .h1{font-family:var(--display);font-size:clamp(1.8rem,5.5vw,2.9rem);line-height:.95;text-transform:uppercase}
 .h2{font-family:var(--display);font-size:1.15rem;text-transform:uppercase;letter-spacing:.01em}
 .rule{height:2px;background:var(--rust);width:56px;margin:10px 0}
 .lede{color:var(--ink2);line-height:1.6;margin-top:10px;max-width:60ch}
 .btn{display:inline-block;padding:11px 18px;border:2px solid var(--line);background:var(--ink);
      color:var(--paper);font-family:var(--display);font-size:.82rem;letter-spacing:.07em;
-     text-transform:uppercase;box-shadow:4px 4px 0 rgba(36,31,40,.22)}
+     text-transform:uppercase;box-shadow:4px 4px 0 rgba(36,31,40,.22);min-height:44px}
 .btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 rgba(36,31,40,.22)}
 .btn.go{background:var(--rust)}
 .btn.ghost{background:transparent;color:var(--ink)}
 .btn:disabled{opacity:.35;cursor:not-allowed}
-.tag{display:inline-block;padding:3px 8px;border:1.5px solid var(--line);font-size:.6rem;
+.tag{display:inline-block;padding:3px 8px;border:1.5px solid var(--line);font-size:.75rem;
      font-weight:700;letter-spacing:.12em;text-transform:uppercase}
 .tag.sci{background:var(--slate);color:var(--paper);border-color:var(--slate)}
 .tag.eng{background:var(--plum);color:var(--paper);border-color:var(--plum)}
@@ -72,11 +77,11 @@ button{font-family:var(--text);cursor:pointer;border:none;background:none;color:
 .readout{display:flex;gap:0;border:2px solid var(--line);background:var(--paper)}
 .readout .c{padding:6px 12px;border-right:2px solid var(--line)}
 .readout .c:last-child{border-right:none}
-.readout .l{font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dust);font-weight:700}
+.readout .l{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dust);font-weight:700}
 .readout .v{font-family:var(--display);font-size:1rem;line-height:1.1}
 .task{background:var(--ink);color:var(--paper);padding:13px 16px;border:2px solid var(--line);
       box-shadow:5px 5px 0 rgba(36,31,40,.22)}
-.task .k{font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ochre);font-weight:700}
+.task .k{font-size:.75rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ochre);font-weight:700}
 .task .t{font-family:var(--display);font-size:1.05rem;margin-top:5px;line-height:1.3}
 .task .d{font-size:.85rem;color:#cfc6bb;margin-top:6px;line-height:1.5}
 .stage{margin-top:18px;display:grid;gap:18px}
@@ -88,7 +93,7 @@ canvas.board{width:100%;display:block;border:2px solid var(--line);background:va
           padding-bottom:7px;border-bottom:2px solid var(--line);margin-bottom:11px}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .chip{padding:8px 12px;border:2px solid var(--line);background:var(--paper);font-weight:700;
-      font-size:.84rem;box-shadow:3px 3px 0 rgba(36,31,40,.18)}
+      font-size:.84rem;box-shadow:3px 3px 0 rgba(36,31,40,.18);min-height:44px}
 .chip:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(36,31,40,.18)}
 .chip.on{background:var(--ink);color:var(--paper)}
 .chip.used{opacity:.3;pointer-events:none}
@@ -112,5 +117,27 @@ canvas.board{width:100%;display:block;border:2px solid var(--line);background:va
 .toast.win{background:var(--sage)} .toast.err{background:var(--rust)}
 @keyframes tin{from{opacity:0;transform:translateY(12px)}}
 @keyframes tout{to{opacity:0;transform:translateY(-8px)}}
+
+/* reduced motion: no card lifts, press dips or sliding toasts */
+@media (prefers-reduced-motion: reduce){
+  .mod:hover{transform:none}
+  .btn:active,.chip:active{transform:none}
+  .toast{animation:tout .01s linear 2.2s forwards}
+  #coachSpot{transition:none}
+}
+
+/* ── arcade layer: year bands, coach marks, grown-up report ── */
+.bandrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:18px}
+.bandrow .lbl{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--dust)}
+#coach{position:fixed;inset:0;z-index:95;display:none;pointer-events:none}
+#coach.on{display:block}
+#coachSpot{position:fixed;border:3px solid var(--rust);box-shadow:0 0 0 9999px rgba(36,31,40,.45);transition:all .25s}
+#coachCard{position:fixed;left:50%;transform:translateX(-50%);width:min(420px,calc(100vw - 32px));pointer-events:auto;
+  background:var(--paper);border:2px solid var(--line);box-shadow:5px 5px 0 rgba(36,31,40,.3);padding:14px 16px}
+#coachCard p{margin:6px 0 12px;line-height:1.5}
+.report table{width:100%;border-collapse:collapse;font-size:.86rem}
+.report td,.report th{padding:6px 4px;border-bottom:1.5px solid rgba(36,31,40,.14);text-align:left}
+.report th{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dust)}
+@media print{ .gamebar,.masthead .btn,#toast,#coach,.bandrow,.grid,.noprint{display:none!important} }
 
 @media(max-width:720px){ .wrap{padding:16px 12px 50px} }

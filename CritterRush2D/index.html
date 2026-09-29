@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script src="../assets/arcade-sdk.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>CRITTER RUSH</title>
 <style>
@@ -24,7 +25,7 @@
           overflow:hidden; transition:transform .12s, border-color .12s; }
   .chip img { width:86px; height:86px; object-fit:contain; margin-top:6px; filter:drop-shadow(0 3px 3px rgba(0,0,0,.25)); }
   .chip span { color:#fff; font-size:15px; -webkit-text-stroke:.6px #24406a; }
-  .chip .blurb { color:#fff; font-size:11px; line-height:1.25; -webkit-text-stroke:.5px #24406a;
+  .chip .blurb { color:#fff; font-size:12px; line-height:1.25; -webkit-text-stroke:.5px #24406a;
                  text-align:center; padding:0 6px; opacity:.95; }
   .chip.sel { border-color:#ffd23e; background:rgba(255,210,62,.28); transform:translateY(-6px) scale(1.05); }
   .chip:focus-visible { outline:3px solid #ffd23e; outline-offset:3px; }
@@ -57,7 +58,7 @@
   #results .row.me { color:#ffd23e; }
 .chip .blurb {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.25;
   margin-top: 3px;
   color: #d7dde3;
@@ -68,6 +69,39 @@
   max-width: 180px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
+/* arcade standard additions: difficulty, best time, codes label, first-race coach (same yellow-on-blue look) */
+/* in the arcade its pause button takes the top-right corner: the timer steps left of it */
+html.arcade #timer { right:66px; } html.arcade #bar { right:190px; }
+.diff { display:flex; gap:10px; justify-content:center; margin:0 0 16px; flex-wrap:wrap; }
+.diff button { pointer-events:auto; cursor:pointer; font-family:inherit; font-size:16px; letter-spacing:1px; color:#fff;
+  -webkit-text-stroke:.5px #24406a; background:rgba(255,255,255,.18); border:3px solid rgba(255,255,255,.7); border-radius:22px;
+  padding:8px 18px; min-height:44px; }
+.diff button[aria-pressed=true] { color:#4a2c00; -webkit-text-stroke:0; background:linear-gradient(#ffe14d,#ffb400); border-color:#ffd23e; }
+.best { color:#ffd23e; font-size:clamp(14px,2vw,20px); -webkit-text-stroke:.8px #3a2a12; margin:-8px 0 14px; letter-spacing:1px; }
+#newbest { color:#ffd23e; font-size:clamp(18px,2.6vw,26px); -webkit-text-stroke:1px #3a2a12; margin:4px; }
+#codesOn { position:absolute; top:62px; left:16px; background:#ffd23e; color:#4a2c00; border:3px solid #3a2a12; border-radius:12px;
+  padding:3px 10px; font-size:13px; letter-spacing:1px; }
+#coach { position:absolute; left:50%; top:70px; transform:translateX(-50%); display:flex; gap:12px; align-items:center;
+  background:rgba(20,40,70,.82); border:3px solid #ffd23e; border-radius:18px; padding:8px 8px 8px 16px; color:#fff;
+  font-size:16px; letter-spacing:.5px; pointer-events:auto; max-width:min(92vw,560px); box-shadow:0 5px 0 rgba(0,0,0,.2); }
+#coach b { color:#ffd23e; }
+#coach button { flex:none; cursor:pointer; font-family:inherit; font-size:14px; letter-spacing:1px; color:#4a2c00; border:none;
+  border-radius:14px; padding:8px 14px; min-height:40px; background:linear-gradient(#ffe14d,#ffb400); }
+#coach[hidden], #codesOn[hidden] { display:none; }
+@media (max-width:600px) {
+  #bar, html.arcade #bar { top:70px; left:16px; right:16px; }
+  #coach { top:100px; font-size:14px; }
+  #codesOn { top:98px; }
+  .chip { width:44vw; max-width:150px; height:auto; min-height:150px; }
+  .chip img { width:64px; height:64px; }
+  #chars { gap:10px; margin-bottom:14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #slot.ready { animation:none; }
+  .pop { animation:popfade .7s linear forwards; }
+  .btn, .chip { transition:none; }
+}
+@keyframes popfade { 0%{opacity:1} 100%{opacity:0} }
 </style>
 </head>
 <body>
@@ -78,22 +112,28 @@
     <div id="bar"><span class="flag">🏁</span></div>
     <div id="timer">0.0</div>
     <div id="slot"></div>
-    <div id="mute">🔊</div>
+    <div id="mute" role="button" aria-label="Sound on or off">🔊</div>
+    <div id="codesOn" hidden>CODES ON</div>
   </div>
+  <div id="coach" role="status" aria-live="polite" hidden><span id="coachTxt"></span><button id="coachSkip">SKIP</button></div>
   <div id="countdown"></div>
   <div class="pops" id="pops"></div>
 
   <div class="screen" id="title">
     <h1 class="logo">CRITTER RUSH</h1>
     <div class="tag">CLASSIC FUN RUN RACING ACTION</div>
+    <div class="best" id="titleBest"></div>
     <div id="chars"></div>
+    <div class="diff" role="group" aria-label="Difficulty"><button data-d="easy" aria-pressed="false">EASY</button><button data-d="normal" aria-pressed="true">NORMAL</button><button data-d="hard" aria-pressed="false">HARD</button></div>
     <button class="btn" id="play">▶ RACE!</button>
-    <div class="keys">SPACE / ↑ jump (double) &nbsp;•&nbsp; ↓ slide &nbsp;•&nbsp; F use item &nbsp;•&nbsp; tap works too</div>
+    <div class="keys">SPACE / ↑ jump (double) &nbsp;•&nbsp; ↓ slide &nbsp;•&nbsp; F use item &nbsp;•&nbsp; M mute &nbsp;•&nbsp; tap works too</div>
   </div>
 
   <div class="screen" id="results" style="display:none">
     <h1 class="logo" id="resTitle" style="font-size:clamp(34px,7vw,84px)">YOU WIN!</h1>
     <div id="resRows"></div>
+    <div class="row" id="resBest"></div>
+    <div id="newbest" style="display:none">★ NEW BEST TIME ★</div>
     <button class="btn" id="restart" style="margin-top:16px">↻ RACE AGAIN</button>
     <div class="keys">SPACE / ENTER to race again</div>
     <button class="btn" id="btnShare" style="margin:8px 0 0;font-size:clamp(16px,2.2vw,22px);padding:12px 30px">SAVE THE RACE CARD</button>
@@ -163,6 +203,7 @@ let phase = 'title';   // title | countdown | racing | finished
 let raceTime = 0, countdown = 0;
 let chosen = 0;        // player character index
 let muted = false;
+try{ muted = localStorage.getItem('critterRush2dMuted') === '1'; }catch(e){}   // the game's own sound switch is remembered
 let camX = 0, camShake = 0, hitStop = 0;
 let racers = [], player = null;
 let obstacles = [], crates = [], projectiles = [], particles = [];
@@ -236,9 +277,10 @@ function makeRacers(){
     const stunMul = (typeof stats.stunMul === 'number') ? stats.stunMul : 1;
     const startShield = !!stats.startShield;
 
+    // difficulty scales the rivals' pace; the ROCKETPAW code speeds you up
     const baseSpeed = (i===chosen)
-      ? PLAYER_SPEED * speedMul
-      : BASE_SPEED * (0.95 + Math.random() * 0.1) * (0.9 + d.skill * 0.2) * speedMul;
+      ? PLAYER_SPEED * speedMul * (CH.rocket ? 1.2 : 1)
+      : BASE_SPEED * (0.95 + Math.random() * 0.1) * (0.9 + d.skill * 0.2) * speedMul * D().ai;
 
     return {
       name:d.name, img:d.img, tint:d.tint, skill:d.skill, isPlayer:i===chosen,
@@ -270,7 +312,7 @@ addEventListener('keydown', e=>{
     if (phase==='title') startRace();
     else if (phase==='finished') restart();
   }
-  if (e.code==='Escape'){ muted=!muted; document.getElementById('mute').textContent=muted?'🔇':'🔊'; }
+  if (e.code==='KeyM') toggleMute();     // M mutes; P and Esc belong to the arcade's pause
 });
 addEventListener('keyup', e=>{ keys[e.code]=false; });
 // touch
@@ -320,7 +362,8 @@ function leaderProgress(){ let m=0; racers.forEach(r=>m=Math.max(m,r.x)); return
 // ---------- items ----------
 function tryUseItem(){ if(phase!=='racing'||!heldItem||player.finished) return; useItem(player); }
 function useItem(r){
-  if(!r.item) return; const t=r.item; r.item=null; if(r.isPlayer){ heldItem=null; updateSlot(); }
+  if(!r.item) return; const t=r.item; r.item=null; if(r.isPlayer){ heldItem=null; updateSlot(); tutEv('item'); }
+  if(r.isPlayer && CH.rain){ r.item = heldItem = ITEMS[(Math.random()*ITEMS.length)|0]; updateSlot(); }   // ITEMRAIN code
   sfx.fire();
   if(t==='lightning'){
     racers.forEach(o=>{ if(o!==r && o.x>r.x && !o.finished && o.invuln<=0){ stunRacer(o,1.1); popAt(o,'ZAP!'); } });
@@ -339,6 +382,7 @@ function useItem(r){
 }
 function stunRacer(r,dur){
   if(r.invuln>0||r.finished) return;
+  if(r.isPlayer && CH.nostun) return;     // NOSTUN code
   if(r.shield){ r.shield=false; r.invuln=1.0; spawnBurst(r.x,r.y+0.8,'#7fd0ff',10); return; }
   const scaledDur = dur * (r.stunMul || 1);
   r.stun=scaledDur; r.invuln=scaledDur+0.9;   // invuln MUST outlast the stun
@@ -354,7 +398,7 @@ function update(dt){
     const n=Math.min(3,Math.ceil(countdown));
     const label = n>0? String(n) : 'GO!';
     const cel=document.getElementById('countdown');
-    if(cel.textContent!==label){ cel.textContent=label; cel.style.transform='scale(1.25)';
+    if(cel.textContent!==label){ cel.textContent=label; if(!RM) cel.style.transform='scale(1.25)';
       setTimeout(()=>cel.style.transform='scale(1)',120);
       if(n>0) tone(440,0.12,'square',0.2); else tone(880,0.22,'square',0.24); }
     racers.forEach(r=>{ r.runPhase+=dt*4; }); // idle jog in place
@@ -388,6 +432,7 @@ function update(dt){
 
   // places (1..4 by x among unfinished, finished keep their crossing order)
   computePlaces();
+  tutTick(dt);
   updateCamera(dt); updateHUD(); updateMusic(dt);
 
   if(camShake>0) camShake*=0.88;
@@ -516,7 +561,7 @@ function draw(){
   drawParticles();
   drawShakeReset();
 }
-function withShake(fn){ const s=camShake*10; ctx.save(); if(s>0.3) ctx.translate((Math.random()-0.5)*s,(Math.random()-0.5)*s); fn(); ctx.restore(); }
+function withShake(fn){ const s=RM?0:camShake*10; ctx.save(); if(s>0.3) ctx.translate((Math.random()-0.5)*s,(Math.random()-0.5)*s); fn(); ctx.restore(); }
 function drawShakeReset(){}
 
 function drawSky(){
@@ -693,7 +738,7 @@ function drawRacers(){
     else { bob = -Math.abs(Math.sin(r.runPhase))*9*spd; rot = -0.05*spd + Math.sin(r.runPhase)*0.045; }
     ctx.translate(0,bob); ctx.rotate(rot);
     // squash/stretch about the feet
-    ctx.translate(0, 0); ctx.scale(sqx,sqy);
+    ctx.translate(0, 0); ctx.scale(sqx*(CH.big?1.5:1), sqy*(CH.big?1.5:1));   // BIGHEADS code: party-size critters
     if(has(r.img)){ const im=IMG[r.img]; const h=CHAR_H, w=CHAR_H*im.width/im.height; ctx.drawImage(im, -w/2, -h+4, w, h); }
     else { // fallback blob
       ctx.fillStyle=r.tint; ctx.strokeStyle='#222'; ctx.lineWidth=5;
@@ -759,6 +804,8 @@ function startRace(){
   document.getElementById('hud').style.display='block';
   document.getElementById('countdown').style.display='flex';
   updateSlot();
+  if(tutSeen()) tutHide(); else tutStart();
+  sdk('state',{scene:'play'});
 }
 function onFinish(){
   sfx.win();
@@ -773,7 +820,13 @@ function onFinish(){
   const myPlace = order.findIndex(r=>r.isPlayer)+1;
   const win = myPlace===1;
   document.getElementById('resTitle').textContent = win? 'YOU WIN! 🏆' : ('YOU PLACED '+ordinal(myPlace));
-  if(win && (bestTime===0 || raceTime<bestTime)){ bestTime=raceTime; localStorage.setItem('critterRush2dBest', bestTime); }
+  // best time: a win with codes on never replaces it
+  let newBest = false;
+  if(win && !cheated() && (bestTime===0 || raceTime<bestTime)){ bestTime=raceTime; newBest=true; try{ localStorage.setItem('critterRush2dBest', bestTime); }catch(e){} }
+  document.getElementById('resBest').textContent = (bestTime ? 'Best time: ' + bestTime.toFixed(1) + 's' : 'Win a race to set a best time') + (cheated() ? '  (codes on: not saved)' : '');
+  document.getElementById('newbest').style.display = newBest ? 'block' : 'none';
+  tutHide();
+  sdk('state',{scene:'over', score:+raceTime.toFixed(1), place:myPlace, outcome: win ? 'win' : 'place'});
   document.getElementById('posBadge').textContent = ordinal(myPlace);
   setTimeout(()=>{ document.getElementById('results').style.display='flex'; document.getElementById('hud').style.display='none'; }, 700);
 }
@@ -795,8 +848,99 @@ function buildChips(){ const c=document.getElementById('chars'); c.innerHTML='';
 document.getElementById('play').onclick=startRace;
 document.getElementById('restart').onclick=restart;
 document.getElementById('slot').onclick=tryUseItem;
-document.getElementById('mute').onclick=()=>{ muted=!muted; document.getElementById('mute').textContent=muted?'🔇':'🔊'; };
+function toggleMute(){ muted=!muted; document.getElementById('mute').textContent=muted?'🔇':'🔊'; try{ localStorage.setItem('critterRush2dMuted', muted?'1':'0'); }catch(e){} }
+document.getElementById('mute').onclick=toggleMute;
+document.getElementById('mute').textContent=muted?'🔇':'🔊';
 buildChips();
+
+// ---------- arcade standard: difficulty, best time, first-race coach, hints, codes, SDK ----------
+function sdk(fn,a){ try{ if(window.ArcadeSDK) window.ArcadeSDK[fn](a); }catch(e){} }
+if(window.ArcadeSDK) document.documentElement.classList.add('arcade');
+function cheated(){ return !!(window.ArcadeSDK && window.ArcadeSDK.cheated); }
+const RM = (()=>{ try{ return matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } })();
+const DIFFS = { easy:{ai:0.93}, normal:{ai:1}, hard:{ai:1.05} };   // rivals' pace
+let diff = 'normal';
+try{ const v = localStorage.getItem('critterRush2dDiff'); if(DIFFS[v]) diff = v; }catch(e){}
+function D(){ return DIFFS[diff]; }
+function paintDiff(){ document.querySelectorAll('#title .diff button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.d===diff))); }
+document.querySelectorAll('#title .diff button').forEach(b=>b.addEventListener('click',()=>{ diff=b.dataset.d; try{ localStorage.setItem('critterRush2dDiff',diff); }catch(e){} paintDiff(); }));
+function paintTitleBest(){ document.getElementById('titleBest').textContent = bestTime ? 'BEST TIME ' + bestTime.toFixed(1) + 's' : ''; }
+
+// first race: three prompts, each cleared by doing it
+const TUT_KEY='critterRush2dTut';
+const TUT=['<b>JUMP</b>: Space, ↑ or tap. Tap again in the air to double jump.',
+           '<b>SLIDE</b> under hurdles: ↓ or swipe down.',
+           'Run through a <b>? crate</b> for an item, then use it: F or the item button.'];
+const tut={on:false, step:0, t:0};
+function tutSeen(){ try{ return localStorage.getItem(TUT_KEY)==='1'; }catch(e){ return true; } }
+function tutShow(){ document.getElementById('coachTxt').innerHTML=(tut.step+1)+'/3 &nbsp;'+TUT[tut.step]; document.getElementById('coach').hidden=false; }
+function tutHide(){ tut.on=false; document.getElementById('coach').hidden=true; }
+function tutStart(){ tut.on=true; tut.step=0; tut.t=0; tutShow(); }
+function tutDone(){ tutHide(); try{ localStorage.setItem(TUT_KEY,'1'); }catch(e){} sdk('event','tutorial-done'); }
+function tutNext(){ tut.step++; tut.t=0; if(tut.step>=TUT.length) tutDone(); else tutShow(); }
+function tutEv(name){ if(tut.on && tut.step===2 && name==='item') tutNext(); }
+function tutTick(dt){
+  if(!tut.on || !player) return;
+  tut.t+=dt;
+  if(tut.step===0 && !player.grounded && player.stun<=0) tutNext();
+  else if(tut.step===1 && player.sliding) tutNext();
+  else if(tut.step===2 && !heldItem && tut.t>20) tutNext();
+}
+document.getElementById('coachSkip').addEventListener('click', e=>{ e.stopPropagation(); tutDone(); });
+
+// hints: the next hazard, then what to do with your item
+const JUMP_KINDS={rock:'a rock', log:'a log', spike:'spikes', gap:'a gap', boulder:'a rolling boulder'};
+const ITEM_TIP={lightning:'Lightning zaps every racer ahead of you: use it (F) when you are behind.',
+  glove:'The glove flies forward: fire it (F) when a rival is just ahead.', saw:'The saw rolls forward: fire it (F) when a rival is just ahead.',
+  mine:'Drop the mine (F) when a rival is right behind you.', boost:'Boost (F) on a clear stretch: it also makes you briefly untouchable.',
+  shield:'Pop the shield (F) before a tricky stretch: it blocks one hit.'};
+function hint(){
+  if(phase==='title') return 'Pick a critter and press RACE! The Fox is the all-rounder; the Rabbit is fast but fragile.';
+  if(phase==='finished') return 'Race again with Space or Enter. Save your item for the last stretch.';
+  if(phase==='countdown') return 'Get ready: the first hazards are a few metres after the start line.';
+  const h=nextHazard(player.x);
+  if(h && h.x-player.x<14){
+    const m=Math.max(1,Math.round(h.x-player.x));
+    if(h.kind==='hurdle') return 'Hurdle in '+m+' m: slide under it (↓ or swipe down).';
+    if(h.kind==='spring') return 'Spring pad in '+m+' m: it launches you high.';
+    if(JUMP_KINDS[h.kind]) return 'Jump '+JUMP_KINDS[h.kind]+' in '+m+' m (Space, ↑ or tap).';
+  }
+  if(heldItem && ITEM_TIP[heldItem]) return ITEM_TIP[heldItem];
+  if(player.place>1) return 'You are '+ordinal(player.place)+': run through ? crates for items to catch up.';
+  return 'You are leading. Keep your item for when a rival catches up.';
+}
+
+// codes: just for fun; a race with codes on is labelled and never sets a best time
+const CH={rocket:false, nostun:false, rain:false, big:false};
+const CODES={ROCKETPAW:'You run 20% faster', NOSTUN:'Nothing can stun you', ITEMRAIN:'A new item the moment you use one', BIGHEADS:'Party-size critters'};
+function code(c){
+  c=String(c||'').trim().toUpperCase();
+  if(!CODES[c]) return {ok:false};
+  if(c==='ROCKETPAW'){ CH.rocket=true; if(player){ player.baseSpeed*=1.2; } }
+  if(c==='NOSTUN') CH.nostun=true;
+  if(c==='ITEMRAIN'){ CH.rain=true; if(player && !heldItem && (phase==='racing'||phase==='countdown')){ player.item=heldItem=ITEMS[(Math.random()*ITEMS.length)|0]; updateSlot(); } }
+  if(c==='BIGHEADS') CH.big=true;
+  document.getElementById('codesOn').hidden=false;
+  return {ok:true, message:CODES[c]+'. Codes on: best times are not saved.'};
+}
+
+function toTitle(){
+  phase='title'; tutHide();
+  ['results','hud','countdown'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('title').style.display='flex';
+  paintTitleBest(); paintDiff();
+  sdk('state',{scene:'title'});
+}
+if(window.ArcadeSDK) window.ArcadeSDK.init({
+  pauseButton:'tr',         // the race timer moved left to make room
+  onRestart:()=>{ if(phase==='title') startRace(); else restart(); },
+  onExit:toTitle,
+  onTutorial:()=>{ if(phase==='title'||phase==='finished') restart(); tutStart(); },
+  onHint:hint,
+  onCheat:code
+});
+paintTitleBest(); paintDiff();
+sdk('state',{scene:'title'});
 
 // ---------- main loop ----------
 let last=performance.now();

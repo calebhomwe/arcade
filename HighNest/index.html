@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<script src="../assets/arcade-sdk.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <meta name="theme-color" content="#efe3cc" />
 <title>HIGH NEST</title>
@@ -26,7 +27,7 @@
        box-shadow:4px 4px 0 rgba(43,33,23,.35)}
   .cell{padding:6px 12px;border-right:2px solid var(--ink);text-align:center;min-width:64px}
   .cell:last-child{border-right:none}
-  .cell .lab{font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dust);font-weight:700}
+  .cell .lab{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dust);font-weight:700}
   .cell .val{font-family:var(--display);font-size:1.15rem;line-height:1.1}
   #combo.hot{color:var(--rust)}
 
@@ -34,7 +35,7 @@
           background:rgba(244,234,216,.9);pointer-events:auto}
   .screen.on{display:grid}
   .panel{width:min(460px,100%);text-align:center}
-  .kicker{font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:var(--rust);font-weight:700}
+  .kicker{font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;color:var(--rust);font-weight:700}
   .title{font-family:var(--display);font-size:clamp(2.4rem,10vw,3.8rem);line-height:.92;
          letter-spacing:-.02em;text-transform:uppercase;color:var(--ink)}
   .rule{height:2px;background:var(--rust);width:64px;margin:14px auto}
@@ -50,19 +51,79 @@
   .log b{font-family:var(--display);color:var(--ink)}
   #newbest{display:none;font-family:var(--display);color:var(--rust);margin-top:8px;
            font-size:1rem;letter-spacing:.12em}
-  .hint{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);margin-top:14px}
+  .hint{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);margin-top:14px}
+
+  /* difficulty: three paper tabs under the start button */
+  .seg{display:flex;margin-top:14px;border:2px solid var(--ink);box-shadow:4px 4px 0 rgba(43,33,23,.35);background:var(--paper)}
+  .seg button{flex:1;min-height:44px;cursor:pointer;border:0;border-right:2px solid var(--ink);background:var(--paper);
+    color:var(--ink);font-family:var(--display);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+  .seg button:last-child{border-right:0}
+  .seg button[aria-pressed="true"]{background:var(--ochre);color:var(--ink)}
+  .seg button:focus-visible,.btn:focus-visible{outline:3px solid var(--rust);outline-offset:2px}
+  .seglab{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dust);font-weight:700;margin-top:16px}
+
+  /* codes-on tag: a paper tab under the scoreboard */
+  .codes-on{display:inline-block;margin-top:8px;padding:3px 10px;border:2px solid var(--ink);background:var(--ochre);
+    color:var(--ink);font-family:var(--display);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;
+    box-shadow:3px 3px 0 rgba(43,33,23,.35)}
+  .codes-on[hidden]{display:none}
+
+  /* first-run coach card: a paper note from the foreman, taps pass straight through it */
+  #coach{position:fixed;left:50%;top:max(84px,calc(env(safe-area-inset-top) + 84px));transform:translateX(-50%);z-index:6;
+    width:min(340px,calc(100vw - 32px));padding:14px 16px 12px;text-align:center;pointer-events:none;
+    background:var(--paper);border:2px solid var(--ink);box-shadow:5px 5px 0 rgba(43,33,23,.35);display:none}
+  #coach.on{display:block}
+  #coach .kicker{font-size:.75rem}
+  #coach .big{font-family:var(--display);font-size:1.6rem;text-transform:uppercase;line-height:1;margin:6px 0 8px}
+  #coach p{font-size:.9rem;line-height:1.45;color:#6b5a52}
+  #coach .skip{pointer-events:auto;margin-top:10px;min-height:40px;padding:6px 18px;width:auto;font-size:.8rem;box-shadow:3px 3px 0 rgba(43,33,23,.35)}
+  .demo{position:relative;height:62px;width:180px;margin:4px auto 6px}
+  .demo i{position:absolute;display:block;height:10px;background:#b98a54;border:1.5px solid rgba(43,33,23,.6);border-radius:3px}
+  .demo .s1{left:60px;width:60px;bottom:0}.demo .s2{left:62px;width:58px;bottom:11px}.demo .s3{left:63px;width:56px;bottom:22px}
+  .demo .sw{left:0;width:56px;bottom:46px;background:#c99a5f;animation:hnSwing 2.4s ease-in-out infinite alternate}
+  .demo .tap{position:absolute;left:84px;bottom:32px;width:12px;height:12px;border-radius:50%;border:2px solid var(--rust);
+    animation:hnTap 2.4s ease-in-out infinite alternate}
+  @keyframes hnSwing{from{left:0}to{left:124px}}
+  @keyframes hnTap{0%,42%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1.6)}58%,100%{opacity:0;transform:scale(2.2)}}
+
+  .cell .lab{margin-right:.4em}
+  /* the arcade's pause button, dressed as one more paper tab */
+  html body #arcade-sdk-btn{position:fixed;width:44px;height:44px;border-radius:0;background:var(--paper);
+    border:2px solid var(--ink);box-shadow:3px 3px 0 rgba(43,33,23,.35);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+  html body #arcade-sdk-btn rect{fill:var(--ink)}
+
+  @media (max-width:560px){   /* phones: labels sit above the numbers so the rack clears the pause tab */
+    .cell{padding:5px 8px;min-width:54px}
+    .cell .lab{display:block;margin-right:0;letter-spacing:.06em}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .btn:active{transform:none}
+    .demo .sw{animation:none;left:63px}
+    .demo .tap{animation:none;opacity:1}
+  }
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
 
 <div id="hud">
+  <div>
   <div class="rack">
     <div class="cell"><span class="lab">Planks</span><span class="val" id="score">0</span></div>
     <div class="cell"><span class="lab">Height</span><span class="val" id="height">0m</span></div>
     <div class="cell"><span class="lab">Combo</span><span class="val" id="combo">—</span></div>
     <div class="cell"><span class="lab">Best</span><span class="val" id="best">0</span></div>
   </div>
+  <div class="codes-on" id="codesOn" hidden>Codes on</div>
+  </div>
+</div>
+
+<div id="coach" role="status" aria-live="polite">
+  <div class="kicker" id="coachKick">Foreman's first lesson</div>
+  <div class="big" id="coachBig">Tap to drop</div>
+  <div class="demo" id="coachDemo" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="sw"></i><span class="tap"></span></div>
+  <p id="coachText">Tap anywhere when the swinging plank is over the stack. Whatever hangs over the edge is sawn off.</p>
+  <button class="btn quiet skip" id="coachSkip">Skip</button>
 </div>
 
 <div class="screen on" id="s-menu"><div class="panel">
@@ -73,6 +134,12 @@
      Drop each plank as it swings — whatever hangs over the edge is sawn off and falls.
      Land them perfectly and the tree rewards you with wider planks.</p>
   <button class="btn" id="play">Start building</button>
+  <div class="seglab" id="diffLab">Saw speed</div>
+  <div class="seg" role="group" aria-labelledby="diffLab">
+    <button type="button" data-diff="easy" aria-pressed="false">Easy</button>
+    <button type="button" data-diff="normal" aria-pressed="true">Normal</button>
+    <button type="button" data-diff="hard" aria-pressed="false">Hard</button>
+  </div>
   <p class="hint">Tap · click · space — anywhere drops the plank</p>
 </div></div>
 
@@ -109,6 +176,21 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
              set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let REC=store.get('hn_rec',{games:0,best:0,planks:0,perfects:0});
 
+/* ═══ arcade wiring, difficulty, codes, reduced motion ═══ */
+const SDK=window.ArcadeSDK||null;
+const sdk=(fn,a)=>{try{if(SDK)SDK[fn](a)}catch(e){}};
+const cheated=()=>!!(SDK&&SDK.cheated);
+const RM=window.matchMedia?matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
+/* saw speed: the swing starts at v0, adds dv per plank and never passes cap.
+   Each setting keeps its own best (Normal keeps the old 'best' key). */
+const DIFF={easy:{v0:1.5,dv:.03,cap:4.5,eps:10,key:'bestEasy',name:'Easy'},
+            normal:{v0:2.0,dv:.045,cap:7.2,eps:7,key:'best',name:'Normal'},
+            hard:{v0:2.8,dv:.06,cap:9.5,eps:5,key:'bestHard',name:'Hard'}};
+let diff=store.get('hn_diff','normal'); if(!DIFF[diff])diff='normal';
+const bestOf=()=>REC[DIFF[diff].key]||0;
+const CHEAT={wide:false,slow:false,glue:false,bigowl:false};
+let tut=0;   /* first-run coach: 0 off, 1 waiting for the first drop, 2 praising it */
+
 const P={ink:'#2b2117',paper:'#f4ead8',bone:'#cbb99b',rust:'#c1543a',ochre:'#d99a3c',
          sage:'#7d9470',dust:'#a8846b',wood:['#c99a5f','#b98a54','#a1743f'],
          bark:'#7a5733',barkD:'#5e4226'};
@@ -134,7 +216,10 @@ const AU={ctx:null,on:store.get('hn_snd',true),
 const cv=$('#cv'),ctx=cv.getContext('2d');
 let W=0,H=0,DPR=1;
 function resize(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
-  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+  /* a canvas is a replaced element: without an explicit CSS size it shows at its backing-store
+     size, so on a 2x phone the world rendered twice as big and cropped. Pin it to the viewport. */
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
 addEventListener('resize',resize);resize();
 
 /* ═══ world: x=0 is the tree axis, alt grows upward in px ═══ */
@@ -144,22 +229,25 @@ const state={phase:'menu',paused:false,
   planks:[],debris:[],parts:[],floats:[],leaves:[],
   slider:null,speed:0,dirn:1,count:0,combo:0,bestCombo:0,perfects:0,
   camAlt:0,camTarget:0,shake:0,owl:{hop:0,blink:0},
-  best:REC.best,time:0};
+  best:bestOf(),time:0};
 
 function topPlank(){return state.planks[state.planks.length-1];}
 function altOf(i){return (i+1)*PLANK_H;}          /* top surface of plank i */
 
+const startW=()=>CHEAT.wide?START_W*2:START_W, maxW=()=>CHEAT.wide?MAX_W*2:MAX_W;
+function speedNow(){const D=DIFF[diff];
+  return Math.min(D.v0+state.count*D.dv,D.cap)*(CHEAT.slow?.5:1)*(tut===1?.65:1);}
 function reset(){
-  state.planks=[{x:0,w:START_W,tone:0}];state.debris=[];state.parts=[];state.floats=[];
+  state.planks=[{x:0,w:startW(),tone:0}];state.debris=[];state.parts=[];state.floats=[];
   state.count=0;state.combo=0;state.bestCombo=0;state.perfects=0;
   state.camAlt=0;state.camTarget=0;state.shake=0;state.owl.hop=0;
   newSlider();hud();
 }
 function newSlider(){
   const t=topPlank();
-  state.speed=Math.min(2.0+state.count*0.045,7.2);
+  state.speed=speedNow();
   state.dirn=state.count%2?-1:1;
-  state.slider={x:-state.dirn*SWING,w:t?Math.min(t.w,MAX_W):START_W,alt:altOf(state.planks.length)};
+  state.slider={x:-state.dirn*SWING,w:t?Math.min(t.w,maxW()):startW(),alt:altOf(state.planks.length)};
 }
 /* world→screen: ground sits at 72% of screen height, camera rises with the tower */
 function wy(alt){return H*.78-(alt-state.camAlt);}
@@ -173,9 +261,10 @@ function drop(){
   state.slider=null;
   if(ov<=2){ /* missed the tower entirely */
     state.debris.push({x:s.x,alt:s.alt,w:s.w,vx:rnd(-40,40),vy:60,vr:rnd(-6,6),rot:0,tone:1});
+    if(tut)coachHide();
     gameOver();return false;
   }
-  if(Math.abs(dx)<=PERFECT_EPS){ /* perfect: keep full width, snap to centre */
+  if(Math.abs(dx)<=DIFF[diff].eps||CHEAT.glue){ /* perfect (or GLUEGUN): keep full width, snap to centre */
     state.planks.push({x:t.x,w:s.w,tone:state.planks.length%3});
     state.combo++;state.perfects++;
     state.bestCombo=Math.max(state.bestCombo,state.combo);
@@ -183,7 +272,9 @@ function drop(){
     float(s.x,s.alt+46,'PERFECT'+(state.combo>1?' ×'+state.combo:''),P.rust);
     AU.perfect(state.combo);
     state.owl.hop=1;
-    if(state.combo%4===0&&t.w<MAX_W){ t.w=Math.min(t.w+18,MAX_W);
+    /* every 4th perfect in a row widens the plank just placed, so the next one swings in wider */
+    const np=topPlank();
+    if(state.combo%4===0&&np.w<maxW()){ np.w=Math.min(np.w+18,maxW());
       float(t.x,s.alt+70,'WIDER PLANKS',P.sage);AU.grow(); }
     puff(s.x,s.alt,10);
   } else { /* saw off the overhang: keep the overlap, drop the rest as debris */
@@ -198,28 +289,35 @@ function drop(){
   }
   state.count++;
   state.camTarget=Math.max(0,altOf(state.planks.length-1)-H*.30);
+  if(tut===1)coachPraise();
   hud();
   setTimeout(()=>{if(state.phase==='play')newSlider();},state.combo>0?60:110);
   return true;
 }
 
 function gameOver(){
-  state.phase='over';state.best=Math.max(state.best,state.count);
-  const nb=state.count>=REC.best&&state.count>0;
-  REC.games++;REC.best=Math.max(REC.best,state.count);
-  REC.planks+=state.count;REC.perfects+=state.perfects;store.set('hn_rec',REC);
+  state.phase='over';
+  /* a run with codes on is just for fun: it never touches the saved records */
+  const codes=cheated(), key=DIFF[diff].key, prev=REC[key]||0;
+  const nb=!codes&&state.count>=prev&&state.count>0;
+  if(!codes){REC.games++;REC[key]=Math.max(prev,state.count);
+    REC.planks+=state.count;REC.perfects+=state.perfects;store.set('hn_rec',REC);}
+  state.best=bestOf();
   AU.over();
-  $('#overKick').textContent=state.count>=REC.best*0.9?'Solid frame work':'The foreman whistles';
+  $('#overKick').textContent=state.count>=bestOf()*0.9?'Solid frame work':'The foreman whistles';
   $('#overTitle').textContent=state.count<8?'Kindling':state.count<25?'Timber!':state.count<60?'A Proper Nest':'Sky Roost';
   $('#newbest').style.display=nb?'block':'none';
   $('#overStats').innerHTML=[['Planks',state.count],['Height',(state.count*0.5).toFixed(1)+' m'],
-    ['Perfects',state.perfects],['Best combo','×'+state.bestCombo],['All-time best',REC.best]]
+    ['Perfects',state.perfects],['Best combo','×'+state.bestCombo],['Best · '+DIFF[diff].name,bestOf()]]
+    .concat(codes?[['Codes on','best not saved']]:[])
     .map(([a,b])=>`<div class="log"><span>${a}</span><b>${b}</b></div>`).join('');
   show('#s-over');$('#hud').style.display='none';
+  sdk('state',{scene:'over',score:state.count});
 }
 function hud(){
   $('#score').textContent=state.count;$('#height').textContent=(state.count*.5).toFixed(1)+'m';
-  $('#best').textContent=Math.max(REC.best,state.count);
+  $('#best').textContent=cheated()?bestOf():Math.max(bestOf(),state.count);
+  $('#codesOn').hidden=!cheated();
   const c=$('#combo');c.textContent=state.combo>0?'×'+state.combo:'—';
   c.classList.toggle('hot',state.combo>1);
 }
@@ -292,7 +390,8 @@ function hex(h){if(!hexCache[h])hexCache[h]=[parseInt(h.slice(1,3),16),parseInt(
 
 function render(){
   const sky=skyPhase();
-  const shx=(Math.random()-.5)*state.shake*10, shy=(Math.random()-.5)*state.shake*10;
+  const sk=RM.matches?0:state.shake;   /* reduced motion: no screen shake */
+  const shx=(Math.random()-.5)*sk*10, shy=(Math.random()-.5)*sk*10;
   ctx.save();ctx.translate(shx,shy);
 
   /* sky */
@@ -364,12 +463,13 @@ function render(){
     ctx.rotate(l.rot);ctx.beginPath();ctx.ellipse(0,0,l.s,l.s*.45,0,0,7);ctx.fill();ctx.restore();}
 
   /* best-height marker: a dotted line at your all-time best altitude */
-  if(REC.best>3){const by=wy(REC.best*PLANK_H);
+  const bst=bestOf();
+  if(bst>3){const by=wy(bst*PLANK_H);
     if(by>-20&&by<H+20){ctx.save();ctx.strokeStyle=P.rust;ctx.globalAlpha=.5;
       ctx.setLineDash([8,8]);ctx.lineWidth=2;ctx.beginPath();
       ctx.moveTo(0,by);ctx.lineTo(W,by);ctx.stroke();
-      ctx.globalAlpha=.8;ctx.fillStyle=P.rust;ctx.font='700 11px Arial';
-      ctx.textAlign='left';ctx.fillText('BEST '+REC.best,10,by-6);ctx.restore();}}
+      ctx.globalAlpha=.8;ctx.fillStyle=P.rust;ctx.font='700 12px Arial';
+      ctx.textAlign='left';ctx.fillText('BEST '+bst,10,by-6);ctx.restore();}}
 
   ctx.restore();
 }
@@ -418,6 +518,7 @@ function plankRaw(x,y,w,h,tone){
   ctx.beginPath();ctx.arc(x+7,y+h/2,1.8,0,7);ctx.arc(x+w-7,y+h/2,1.8,0,7);ctx.fill();
 }
 function owl(x,y){ctx.save();ctx.translate(x,y);
+  if(CHEAT.bigowl){ctx.translate(0,15);ctx.scale(2.2,2.2);ctx.translate(0,-15);}
   ctx.fillStyle=P.rust;ctx.beginPath();ctx.ellipse(0,0,13,15,0,0,7);ctx.fill();
   ctx.fillStyle=P.rust; /* ear tufts */
   ctx.beginPath();ctx.moveTo(-9,-11);ctx.lineTo(-4,-16);ctx.lineTo(-2,-9);ctx.closePath();ctx.fill();
@@ -437,28 +538,86 @@ function primary(){AU.init();
   if(state.phase==='menu')return startGame();
   if(state.phase==='over')return;
   drop();}
-function startGame(){reset();state.phase='play';state.paused=false;
-  show(null);$('#hud').style.display='flex';AU.click();}
+function startGame(withTutorial){
+  coachHide();
+  if(withTutorial===true||!store.get('hn_tut',0))coachShow();
+  reset();state.phase='play';state.paused=false;
+  AU.init();   /* Start is a button, which primary() skips: open the audio here so the first sounds play */
+  show(null);$('#hud').style.display='flex';AU.click();
+  sdk('state',{scene:'play'});}
+function toMenu(){state.phase='menu';state.paused=false;state.slider=null;coachHide();
+  $('#hud').style.display='none';show('#s-menu');sdk('state',{scene:'title'});}
 addEventListener('pointerdown',e=>{
   if(e.target.closest('button')||e.target.closest('.screen'))return;primary();});
 addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT')return;
+  if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;   /* focused buttons click themselves */
   if(e.key===' '||e.key==='Enter'){e.preventDefault();
     if(state.phase==='menu')startGame();
     else if(state.phase==='play')drop();
     else if(state.phase==='over')restart();}
-  if(e.key==='Escape'&&state.phase==='play')togglePause();
+  /* with the arcade SDK, P and Esc open its pause menu instead (it catches them first) */
+  if(e.key==='Escape'&&state.phase==='play'&&!SDK)togglePause();
   if(e.key==='m'||e.key==='M'){AU.on=!AU.on;store.set('hn_snd',AU.on);}});
 function togglePause(){state.paused=!state.paused;
   show(state.paused?'#s-pause':null);}
 function restart(){startGame();}
-document.addEventListener('visibilitychange',()=>{
-  if(document.hidden&&state.phase==='play'&&!state.paused)togglePause();});
-$('#play').onclick=startGame;
+document.addEventListener('visibilitychange',()=>{   /* the SDK freezes everything itself */
+  if(!SDK&&document.hidden&&state.phase==='play'&&!state.paused)togglePause();});
+$('#play').onclick=()=>startGame();
 $('#resume').onclick=togglePause;
 $('#abandon').onclick=()=>{state.paused=false;gameOver();};
 $('#again').onclick=restart;
-$('#menu2').onclick=()=>{state.phase='menu';show('#s-menu');};
+$('#menu2').onclick=toMenu;
+
+/* ═══ difficulty tabs on the title card ═══ */
+function paintDiff(){document.querySelectorAll('[data-diff]').forEach(b=>
+  b.setAttribute('aria-pressed',String(b.dataset.diff===diff)));state.best=bestOf();}
+document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{
+  diff=b.dataset.diff;store.set('hn_diff',diff);paintDiff();AU.init();AU.click();});
+paintDiff();
+
+/* ═══ first-run coach card: teaches the drop by doing it ═══ */
+let coachT=0;
+function coachShow(){tut=1;clearTimeout(coachT);
+  $('#coachKick').textContent="Foreman's first lesson";$('#coachBig').textContent='Tap to drop';
+  $('#coachText').textContent='Tap anywhere when the swinging plank is over the stack. Whatever hangs over the edge is sawn off.';
+  $('#coachDemo').style.display='';$('#coachSkip').style.display='';$('#coach').classList.add('on');}
+function coachHide(){tut=0;clearTimeout(coachT);$('#coach').classList.remove('on');}
+function coachPraise(){tut=2;store.set('hn_tut',1);sdk('event','tutorial-done');
+  $('#coachKick').textContent='Nice drop';$('#coachBig').textContent='Now line it up';
+  $('#coachText').textContent='Stop a plank right on top of the last one for a PERFECT. Four PERFECTs in a row widen your plank.';
+  $('#coachDemo').style.display='none';$('#coachSkip').style.display='none';
+  coachT=setTimeout(coachHide,3600);}
+$('#coachSkip').onclick=()=>{coachHide();store.set('hn_tut',1);if(state.slider)state.speed=speedNow();};
+
+/* ═══ hint: reads the stack you have right now ═══ */
+function hint(){
+  if(state.phase!=='play')return 'Press Start building, then tap the moment the swinging plank sits over the stack.';
+  const t=topPlank(),n=4-(state.combo%4);
+  if(t.w<80)return 'Your plank is down to '+Math.round(t.w)+' px. Take it slow: four PERFECT drops in a row grow it back by 18 px.';
+  if(state.combo>0)return n+' more PERFECT'+(n>1?'s':'')+' in a row and your plank grows wider. Keep tapping right on centre.';
+  const s=state.slider;
+  if(s){const dx=s.x-t.x;
+    return 'The plank is '+Math.round(Math.abs(dx))+' px '+(dx>0?'right':'left')+' of the stack and moving '+(state.dirn>0?'right':'left')+
+      '. Tap as its edges line up with the plank below.';}
+  return 'Watch the plank edges, not the owl: tap when they line up with the plank below.';
+}
+
+/* ═══ codes (the arcade's Codes box): a run with codes on never saves a best ═══ */
+const CODES={WIDEPLANK:'Planks swing in twice as wide',SLOWMO:'Half-speed swing',
+  GLUEGUN:'Wood glue: every drop that touches the stack lands PERFECT',BIGOWL:'Big owl mode'};
+function code(c){
+  c=String(c||'').toUpperCase(); if(!CODES[c])return {ok:false};
+  if(c==='WIDEPLANK'){CHEAT.wide=true;
+    if(state.phase==='play'){const t=topPlank();t.w=Math.min(t.w*2,maxW());
+      if(state.slider)state.slider.w=Math.min(state.slider.w*2,maxW());}}
+  if(c==='SLOWMO'){CHEAT.slow=true;if(state.slider)state.speed=speedNow();}
+  if(c==='GLUEGUN')CHEAT.glue=true;
+  if(c==='BIGOWL')CHEAT.bigowl=true;
+  setTimeout(hud,0);   /* the SDK marks the session as cheated once this returns */
+  return {ok:true,message:CODES[c]};
+}
 
 /* ═══ test hook (read-mostly; used by tools/playtest.py) ═══ */
 window.__nest_debug={
@@ -476,6 +635,11 @@ window.__nest_debug={
   wipe(){try{localStorage.removeItem('hn_rec')}catch(e){}
     REC={games:0,best:0,planks:0,perfects:0};state.best=0;}
 };
+
+/* ═══ Caleb's Arcade: restart, exit, tutorial, hints and codes go through the SDK ═══ */
+if(SDK)ArcadeSDK.init({pauseKeys:'p+esc',onRestart:()=>startGame(),onExit:toMenu,
+  onTutorial:()=>startGame(true),onHint:hint,onCheat:code});
+sdk('state',{scene:'title'});
 })();
 </script>
 </body>

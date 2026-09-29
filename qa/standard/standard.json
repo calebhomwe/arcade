@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "about": "Machine-readable copy of qa/standard/STANDARD.md. qa/harness/standard.mjs checks every game against this list. how: 'observe' = the harness drives the game and watches; 'meta' = content in assets/game-meta.json; 'scan' = read from the game's code; 'review' = a person must look.",
+  "statuses": ["PASS", "FAIL", "REVIEW", "N/A"],
+  "checks": [
+    {"id": "U01", "name": "Title screen", "how": "observe", "pass": "The game reports a title scene (ArcadeSDK.state({scene:'title'})) or the first frame is not blank."},
+    {"id": "U02", "name": "How to play", "how": "observe+meta", "pass": "At least 2 steps in meta, and the arcade's Help button opens them inside the game."},
+    {"id": "U03", "name": "Controls", "how": "meta", "pass": "Keyboard and touch controls written in meta."},
+    {"id": "U04", "name": "Pause", "how": "observe", "pass": "On-screen pause button; the arcade's Pause freezes the canvas, the clock and audio; P or Esc pauses where free; a hidden tab pauses."},
+    {"id": "U05", "name": "Resume", "how": "observe", "pass": "After a 2 s pause the game clock has not jumped and the game moves again."},
+    {"id": "U06", "name": "Restart", "how": "observe", "pass": "The game restarts the run itself (ArcadeSDK onRestart), without reloading the page."},
+    {"id": "U07", "name": "Exit to title", "how": "observe", "pass": "The game returns to its title itself (ArcadeSDK onExit)."},
+    {"id": "U08", "name": "Sound", "how": "observe", "pass": "The arcade's Mute silences every audio context and media element, and the choice is remembered."},
+    {"id": "U09", "name": "Settings", "how": "meta+scan", "pass": "Sound always; 3D tiers also list a graphics-quality setting in meta.settings."},
+    {"id": "U10", "name": "Tips", "how": "observe+meta", "pass": "At least 3 tips in meta, shown on the pause menu."},
+    {"id": "U11", "name": "Results screen", "how": "observe", "pass": "The game reports scene 'over' with a score or outcome during the scripted session, or meta.features.results says where it is (REVIEW)."},
+    {"id": "U12", "name": "Saving", "how": "observe+scan", "pass": "A key named in meta.saves (the best score or progress, not a first-run flag or setting) is in localStorage or IndexedDB after the session."},
+    {"id": "U13", "name": "Phone", "how": "observe", "pass": "At 390x844 with touch: no sideways scroll, DOM text at least 12 px, DOM tap targets at least 40 px."},
+    {"id": "U14", "name": "Stability", "how": "observe", "pass": "0 page errors, 0 console errors and 0 failed requests from the game."},
+    {"id": "U15", "name": "Loading", "how": "observe", "pass": "Something visible within 1 s of the game frame loading, and the SDK ready within 20 s."},
+    {"id": "U16", "name": "Accessibility", "how": "scan", "pass": "The game respects prefers-reduced-motion."},
+    {"id": "U17", "name": "Arcade SDK", "how": "observe", "pass": "The SDK loads and says ready; the game calls ArcadeSDK.init to declare what it supports."},
+    {"id": "U18", "name": "Catalogue", "how": "meta", "pass": "Category, genre, 2+ tags, blurb, howto, tips, controls, a 480x300 tile and a 960x600 tile."},
+    {"id": "H01", "name": "Tutorial", "how": "observe", "pass": "The game can replay its tutorial (ArcadeSDK onTutorial)."},
+    {"id": "H02", "name": "Hints", "how": "observe", "pass": "Required for puzzle and learning games: the arcade's hint request returns a hint."},
+    {"id": "H03", "name": "Difficulty", "how": "meta", "pass": "meta.difficulty says how difficulty works (modes, adaptive curve or age bands)."},
+    {"id": "C01", "name": "Cheat codes", "how": "observe+meta", "pass": "Eligible games list 3+ codes in meta and the game accepts each one through the SDK."},
+    {"id": "G01", "name": "Genre module", "how": "meta+review", "pass": "Every feature of the genre module is described in meta.features (REVIEW until a person confirms it)."},
+    {"id": "T01", "name": "Tricks", "how": "observe+meta", "pass": "Board-sports games: 6+ named tricks with inputs, shown in the pause menu's Trick list."},
+    {"id": "X01", "name": "Graphics tier", "how": "observe+scan", "pass": "3D tiers render in 3D (WebGL context plus a 3D engine); 2D-HD canvases are crisp at the device pixel ratio."}
+  ]
+}

@@ -135,6 +135,8 @@ export function start(root, api) {
 
   function finish() {
     api.complete(Math.round(right / seq.length * 100)); api.Sound.win();
+    api.done && api.done(Math.round(right / seq.length * 100));
+    api.setHint && api.setHint(() => 'Press New briefs for another set.');
     host.replaceChildren(
       taskCard('Drafting room', 'Drafts filed.', `${right} of ${seq.length} briefs met.`),
       el('div', { class:'panel', style:'margin-top:16px' },
@@ -173,7 +175,7 @@ export function start(root, api) {
         api.Sound.click(); paint();
       }
     },
-      el('span', { style:`display:block;font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;
+      el('span', { style:`display:block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;
                           font-weight:700;opacity:.75;margin-bottom:2px` }, TYPE[p.k].label),
       p.t);
 
@@ -213,6 +215,14 @@ export function start(root, api) {
       out.scrollIntoView({ behavior:'smooth', block:'nearest' });
     }
 
+    /* hint: which clause type the next (or first wrong) block should be */
+    api.setHint && api.setHint(() => {
+      const pat = b.patterns[0], shape = chosen.map(p => p.k);
+      const bad = shape.findIndex((k, i) => k !== pat[i]);
+      if (bad >= 0) return `Block ${bad + 1} should be a ${TYPE[pat[bad]].label.toLowerCase()}, not a ${TYPE[shape[bad]].label.toLowerCase()}. Tap it to take it out.`;
+      if (shape.length >= pat.length) return 'That is the whole shape the brief asks for. Submit the draft.';
+      return `Next, add a ${TYPE[pat[shape.length]].label.toLowerCase()} block (${pat.length} blocks in all).`;
+    });
     host.replaceChildren(
       taskCard(`Brief ${ix + 1} of ${seq.length}`, b.title, b.detail),
       el('div', { class:'readout', style:'margin-top:12px' },

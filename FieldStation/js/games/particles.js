@@ -156,6 +156,15 @@ export function start(root, api) {
   stage.append(taskHost, cv, controls, notes);
   root.append(stage);
 
+  /* hint: reads the live chamber against the procedure's target state */
+  const ORDER = { solid:0, liquid:1, gas:2 };
+  api.setHint && api.setHint(() => {
+    const task = TASKS[ix], now = phase(sim);
+    if (done.has(task.id)) return ix < TASKS.length - 1 ? 'Logged. Press Next procedure.' : 'All five procedures are logged.';
+    if (now !== task.want) return `The chamber is a ${now} and this procedure wants a ${task.want}: drag Thermal energy in ${ORDER[task.want] > ORDER[now] ? 'up' : 'down'}, a little at a time.`;
+    if (task.extra && !task.extra(sim)) return 'It is a gas. Now drag Container volume down below 380 until the pressure reads over 9.';
+    return `That is a ${now}. Hold it steady for a moment and it will be logged.`;
+  });
   function renderTask() {
     const task = TASKS[ix];
     taskHost.replaceChildren(
@@ -182,6 +191,7 @@ export function start(root, api) {
     api.Sound.win();
     api.toast('Procedure ' + (ix + 1) + ' logged', 'win');
     api.complete(Math.round(done.size / TASKS.length * 100));
+    if (done.size === TASKS.length) api.done && api.done(100);
     notes.replaceChildren(el('h3', {}, 'Laboratory notes'), why('What just happened', task.teach(sim)));
     if (ix < TASKS.length - 1)
       notes.append(el('div', { style:'margin-top:12px' },

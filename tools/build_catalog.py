@@ -178,8 +178,16 @@ S = {
  'stack-tower':('Stack Tower','Build the tallest tower.'),'swim-dodge':('Swim Dodge','Dodge underwater hazards.'),'traffic-run':('Traffic Run','Cross the road safely.'),
  'turret-defense':('Turret Defense','Hold the line.'),
 }
+SKY_TAGS = {  # what each quick play is, so search and "More like this" can find it
+ 'balance-tile':('balance','physics'),'breakout':('breakout','classic'),'color-match':('colour','reflex'),'cut-rope':('physics','puzzle'),
+ 'flappy-bird':('flappy','tap'),'grow-shrink':('reflex','size'),'hole-eater':('hole','io'),'key-unlock':('pull the pin','puzzle'),
+ 'lane-switcher':('runner','lanes'),'match-swipe':('match','swipe'),'maze-runner':('maze','puzzle'),'parking-puzzle':('traffic','puzzle'),
+ 'rope-swing':('swing','timing'),'slide-runner':('runner','slide'),'slingshot':('aim','physics'),'snake':('snake','classic'),
+ 'sniper-shot':('aim','shooter'),'spike-jump':('jump','timing'),'stack-tower':('stack','timing'),'swim-dodge':('dodge','underwater'),
+ 'traffic-run':('crossy','dodge'),'turret-defense':('tower defense','shooter'),
+}
 for f,(t,b) in S.items():
-    add('sky-'+f,t,'hyper',b,NEON+'skywalker-playables/'+f+'.html','sky-'+f+'.webp',ext=True,tags=('quick play',),frm='Skywalker')
+    add('sky-'+f,t,'hyper',b,NEON+'skywalker-playables/'+f+'.html','sky-'+f+'.webp',ext=True,tags=('quick play',)+SKY_TAGS.get(f,()),frm='Skywalker')
 
 # ---------- derived fields ----------
 for g in G:
@@ -192,6 +200,11 @@ for g in G:
     if not g['ext']:
         d = os.path.dirname(os.path.join(ROOT, g['src']))
         g['mb'] = round(sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(d) for f in fs) / 1048576, 1)
+# iPhone verdicts from qa/harness/iphone.mjs (iPhone 13 emulation): 'ready', 'check' or 'no'; '' = not tested.
+IPH = os.path.join(ROOT, 'qa/iphone-results/iphone.json')
+iph = {r['id']: r.get('verdict', '').lower() for r in json.load(open(IPH))['results']} if os.path.exists(IPH) else {}
+for g in G:
+    g['iphone'] = iph.get(g['id'], '')
 unknown=[i for i in POPULAR if i not in {g['id'] for g in G}]; assert not unknown, 'POPULAR has unknown ids: %s' % unknown
 
 # ---------- verify thumbs exist ----------
@@ -204,7 +217,7 @@ open(os.path.join(ROOT,'catalog.js'),'w',encoding='utf-8').write(out)
 import portal_shell
 portal_shell.write(ROOT, G, CATS)
 print('catalog.js: %d games (%d local, %d external), %d categories' % (len(G), sum(not g['ext'] for g in G), sum(g['ext'] for g in G), len(CATS)))
-for fn in ('index.html','manifest.webmanifest','README.txt'):
+for fn in ('index.html','play.html','404.html','manifest.webmanifest','README.txt'):
     fp=os.path.join(ROOT,fn); t=open(fp,encoding='utf-8').read()
     t2=re.sub(r'\b\d+ (free browser games|free games|games,|games"|games<)', lambda m: '%d %s' % (len(G), m.group(1)), t)
     if t2!=t: open(fp,'w',encoding='utf-8').write(t2); print('  count updated in', fn)

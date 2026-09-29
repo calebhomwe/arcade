@@ -52,6 +52,8 @@ const OPTS = {
 const S = Object.assign({}, DEF, store.get('ca_settings', {}));
 for (const k of ['theme', 'accent', 'size', 'motion', 'stage']) if (!OPTS[k].some(([v]) => v === S[k])) S[k] = DEF[k];
 const touch = matchMedia('(hover: none)');
+// iPhone, iPod and iPad (iPadOS reports itself as a Mac with touch). Games carry g.iphone from qa/harness/iphone.mjs.
+const isApple = /iPhone|iPod|iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const darkMq = matchMedia('(prefers-color-scheme: dark)');
 const isDark = () => S.theme === 'dark' || (S.theme === 'system' && darkMq.matches);
 function saveSettings() { store.set('ca_settings', S); applySettings(); document.dispatchEvent(new CustomEvent('settings')); }
@@ -77,6 +79,7 @@ function popular() {
 const newest = () => CATALOG.filter(g => g.new).reverse().concat(CATALOG.filter(g => !g.new).reverse());
 const recentList = () => Object.entries(plays()).sort((a, b) => b[1].ts - a[1].ts).map(([id]) => byId[id]).filter(Boolean);
 const favList = () => [...favs()].map(id => byId[id]).filter(Boolean);
+const iphoneList = () => sortList(CATALOG.filter(g => g.iphone === 'ready'), 'featured');
 function related(g, n) {
   return CATALOG.filter(x => x.id !== g.id).map(x => [x, (x.cat === g.cat ? 3 : 0) + 2 * x.tags.filter(t => g.tags.includes(t)).length + (x.from === g.from ? .5 : 0) + (x.pop ? (30 - Math.min(29, x.pop)) / 30 : 0)])
     .sort((a, b) => b[1] - a[1] || order[a[0].id] - order[b[0].id]).slice(0, n).map(([x]) => x);
@@ -116,7 +119,7 @@ function tile(g, o = {}) {
   d.className = 'tile' + (o.size ? ' ' + o.size : '') + (o.caption ? ' captioned' : '') + (o.labeled ? ' labeled' : '');
   d.dataset.id = g.id;
   const best = bestOf(g), f = isFav(g.id);
-  const flag = o.rank ? '<span class="flag hot">' + ico('flame') + '#' + o.rank + '</span>' : g.new ? '<span class="flag">New</span>' : (o.hot && g.pop && g.pop <= 8) ? '<span class="flag hot">' + ico('flame') + 'Hot</span>' : '';
+  const flag = o.rank ? '<span class="flag hot">' + ico('flame') + '#' + o.rank + '</span>' : g.new ? '<span class="flag">New</span>' : (o.hot && g.pop && g.pop <= 8) ? '<span class="flag hot">' + ico('flame') + 'Hot</span>' : (isApple && g.iphone === 'no') ? '<span class="flag desk">Best on a computer</span>' : '';
   d.innerHTML = '<a href="' + playHref(g) + '"><div class="art"><img alt="' + esc(g.title) + '" src="' + ((o.size && g.thumb2x) ? g.thumb2x : g.thumb) + '"' + (!o.size && g.thumb2x ? ' srcset="' + g.thumb + ' 480w, ' + g.thumb2x + ' 960w" sizes="(min-width:761px) 240px, 50vw"' : '') + ' width="480" height="300" decoding="async"' + (o.hi ? ' fetchpriority="high"' : o.eager ? '' : ' loading="lazy"') + '>' +
     '<div class="cap" aria-hidden="true">' + esc(g.title) + '<small>' + esc(catName(g.cat)) + '</small></div></div>' +
     '<div class="under" aria-hidden="true">' + esc(g.title) + '<small>' + esc(catName(g.cat)) + (best != null ? ' · ' + esc(g.label || 'best') + ' ' + best : '') + '</small></div></a>' + flag +
@@ -351,6 +354,7 @@ function home() {
     const moods = document.createElement('nav'); moods.className = 'mood-nav'; moods.setAttribute('aria-label','Choose a category');
     moods.innerHTML = CATS.map(c => '<a href="./?cat=' + c.id + '">' + ico(c.icon) + '<span>' + esc(c.name.replace('Hyper-Casual','Quick play')) + '</span></a>').join('');
     frag.appendChild(moods);
+    if (isApple) { const ip = rowSection('Plays great on iPhone', iphoneList().slice(0, 16), { icon: 'phone', more: './?view=iphone', id: 'iphone' }); if (ip) frag.appendChild(ip); }
     const recent = recentList();
     const rs = rowSection('Continue playing', recent.slice(0, 16), { icon: 'clock', more: './?view=recent', id: 'recent' }); if (rs) frag.appendChild(rs);
     if (recent.length) {
@@ -385,6 +389,10 @@ function home() {
     const v = st.view;
     if (v === 'new') { const l = newest(); frag.appendChild(phead({ icon: 'spark', cc: 'var(--c-learning)', title: 'New games', desc: 'The latest additions to the arcade, newest first.', count: l.length })); frag.appendChild(gridOf(l)); }
     else if (v === 'popular') { const l = popular(); frag.appendChild(phead({ icon: 'flame', cc: 'var(--c-hyper)', title: 'Popular games', desc: "Caleb's most-loved picks, nudged by what you play most.", count: l.length })); frag.appendChild(gridOf(l, { ranked: true })); }
+    else if (v === 'iphone') {
+      const l = iphoneList(); frag.appendChild(phead({ icon: 'phone', title: 'Plays on iPhone', desc: 'Checked on an iPhone-sized touch screen: loads cleanly, fits the screen, starts with a tap and has touch controls. Tip: Share, then Add to Home Screen, to keep the arcade one tap away.', count: l.length }));
+      frag.appendChild(gridOf(l));
+    }
     else if (v === 'recent') {
       const l = recentList(); frag.appendChild(phead({ icon: 'clock', title: 'Recently played', desc: 'Pick up where you left off. This list lives on this device only.', count: l.length }));
       frag.appendChild(l.length ? gridOf(l) : emptyBox('clock', 'Nothing played yet', 'Games you open appear here, most recent first.', '<a class="chip on" href="./?view=popular">' + ico('flame') + 'Try a popular game</a>'));
@@ -410,7 +418,7 @@ function home() {
     const c = st.cat && catOf(st.cat);
     if (st.q) renderSearch(frag); else if (c) renderCat(frag, c); else if (st.view && st.view !== 'home') renderList(frag); else renderHome(frag);
     view.innerHTML = ''; view.appendChild(frag);
-    document.title = st.q ? 'Search: ' + st.q + " — Caleb's Arcade" : c ? c.name + " games — Caleb's Arcade" : st.view && st.view !== 'home' ? ({ new: 'New games', popular: 'Popular games', recent: 'Recently played', favourites: 'Your favourites', all: 'All games' }[st.view] || 'Games') + " — Caleb's Arcade" : TITLE;
+    document.title = st.q ? 'Search: ' + st.q + " — Caleb's Arcade" : c ? c.name + " games — Caleb's Arcade" : st.view && st.view !== 'home' ? ({ new: 'New games', popular: 'Popular games', iphone: 'Plays on iPhone', recent: 'Recently played', favourites: 'Your favourites', all: 'All games' }[st.view] || 'Games') + " — Caleb's Arcade" : TITLE;
     markNav(st.q ? null : st);
     if (q.value !== st.q && document.activeElement !== q) q.value = st.q;
     $('#qclear').hidden = !q.value;
@@ -492,7 +500,8 @@ function play() {
   let started = false;
   function start() {
     if (started) return; started = true;
-    splash.classList.add('gone'); load.classList.remove('off'); $('#loadtxt').textContent = 'Loading ' + g.title + '…';
+    splash.classList.add('gone'); setTimeout(() => { splash.style.display = 'none'; }, 400);   // its pulse stops painting over the frame
+    load.classList.remove('off'); $('#loadtxt').textContent = 'Loading ' + g.title + '…';
     // A game tagged 'mic' also gets microphone access; the browser still asks the player.
     if (mic) frame.allow = frame.allow + '; microphone';
     frame.hidden = false; frame.title = g.title; frame.src = g.src;
@@ -511,6 +520,7 @@ function play() {
   const snote = $('#snote');
   if (/Godot web build/.test(g.note)) { snote.hidden = false; snote.textContent = 'Godot game: ' + (g.mb >= 1 ? Math.round(g.mb) + ' MB to download, plus ' : '') + 'the shared 38 MB engine the first time. Desktop browsers are happiest.'; }
   else if (/Unity WebGL/.test(g.note)) { snote.hidden = false; snote.textContent = 'About 16 MB to load the first time. Happiest in a desktop browser.'; }
+  else if (isApple && g.iphone === 'no') { snote.hidden = false; snote.textContent = 'This one is built for a computer: it may not load or fit well on an iPhone. Plays on iPhone lists the ones that do.'; }
   else if (mic) { snote.hidden = false; snote.textContent = 'Some rounds use your microphone. The browser asks first; everything else works without it.'; }
   $('#open').href = g.src;
 
@@ -563,6 +573,64 @@ function play() {
   document.addEventListener('favchange', paintFav);
   const restart = () => { if (!started) { start(); return; } load.classList.remove('off'); frame.src = 'about:blank'; setTimeout(() => { frame.src = g.src; frame.addEventListener('load', () => load.classList.add('off'), { once: true }); }, 40); };
   $('#reload').addEventListener('click', restart);
+
+  /* Arcade SDK host (assets/arcade-sdk.js runs inside the game; see qa/standard/STANDARD.md).
+     Buttons stay disabled until the game answers, so a game without the SDK never pretends to pause. */
+  const sdk = { ready: false, caps: null, paused: false, muted: store.get('ca_muted', false), meta: null, acks: [], events: [] };
+  window.ArcadeHost = sdk;   // read by qa/harness/standard.mjs
+  const gp = $('#gpause'), gm = $('#gmute'), gh = $('#ghelp');
+  const toGame = (type, extra) => { try { frame.contentWindow.postMessage(Object.assign({ arcade: 1, type }, extra || {}), '*'); } catch (e) {} };
+  const paintSdk = () => {
+    [gp, gm, gh].forEach(b => { b.disabled = !sdk.ready; b.title = sdk.ready ? b.title.replace(/ — .*/, '') : b.getAttribute('aria-label') + ' — this game has not joined the arcade controls yet'; });
+    gp.setAttribute('aria-pressed', sdk.paused); gp.querySelector('use').setAttribute('href', sdk.paused ? '#i-play' : '#i-pause'); gp.setAttribute('aria-label', sdk.paused ? 'Resume the game' : 'Pause the game');
+    gm.setAttribute('aria-pressed', sdk.muted); gm.querySelector('use').setAttribute('href', sdk.muted ? '#i-mute' : '#i-sound'); gm.setAttribute('aria-label', sdk.muted ? 'Unmute the game' : 'Mute the game');
+  };
+  const metaP = fetch('assets/game-meta.json').then(r => r.ok ? r.json() : {}).then(all => (all.games || {})[g.id] || {}).catch(() => ({}));
+  metaP.then(m => { sdk.meta = m; paintMeta(m); });
+  window.addEventListener('message', e => {
+    const m = e.data; if (!m || m.arcade !== 1 || e.source !== frame.contentWindow) return;
+    if (m.type === 'ready') {
+      sdk.ready = true; sdk.caps = m.caps; paintSdk();
+      metaP.then(meta => toGame('config', { meta: Object.assign({ title: g.title }, meta) }));
+      if (sdk.muted) toGame('mute');
+    } else if (m.type === 'state') {
+      if ('paused' in m) sdk.paused = !!m.paused; if ('muted' in m) { sdk.muted = !!m.muted; store.set('ca_muted', sdk.muted); }
+      paintSdk();
+    } else if (m.type === 'request-restart') {
+      // A game without its own restart or exit handler asks the arcade to load it again. A fresh load
+      // opens on the game's own title screen, so this is also "Exit to title" (m.toTitle) for such games.
+      // The standard harness still marks that fallback FAIL: games should restart and exit in place.
+      restart();
+    }
+    else if (m.type === 'request-leave') location.href = './';
+    else if (m.type === 'event') { sdk.lastEvent = m; sdk.events.push(m); if (sdk.events.length > 100) sdk.events.shift(); }
+    else if (m.type === 'ack') { sdk.acks.push(m); if (sdk.acks.length > 100) sdk.acks.shift(); }
+  });
+  // A new game document is starting whenever the frame's src changes; the SDK in it says ready again.
+  new MutationObserver(() => { sdk.ready = false; sdk.paused = false; sdk.caps = null; paintSdk(); }).observe(frame, { attributes: true, attributeFilter: ['src'] });
+  gp.addEventListener('click', () => toGame(sdk.paused ? 'resume' : 'pause', { reason: 'user' }));
+  gm.addEventListener('click', () => toGame(sdk.muted ? 'unmute' : 'mute'));
+  gh.addEventListener('click', () => toGame('howto'));
+  document.addEventListener('visibilitychange', () => { if (sdk.ready) toGame(document.hidden ? 'pause' : 'resume', { reason: document.hidden ? 'hidden' : 'visible' }); });
+  document.addEventListener('keydown', e => {
+    if (!sdk.ready || e.ctrlKey || e.metaKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName || '')) return;
+    const k = e.key.toLowerCase();
+    if (k === 'p') { e.preventDefault(); gp.click(); } else if (k === 'm') { e.preventDefault(); gm.click(); } else if (k === 'h') { e.preventDefault(); gh.click(); }
+  });
+  function paintMeta(m) {
+    // Content from qa/standard/meta: steps, controls, tips, tricks, and codes behind a spoiler.
+    const box = $('#stdwrap'); if (!box) return;
+    let h = '';
+    if ((m.howto || []).length) h += '<ol class="steps">' + m.howto.map(t => '<li>' + esc(t) + '</li>').join('') + '</ol>';
+    const ctl = m.controls || {}, rows = [['keyboard', 'Keyboard'], ['touch', 'Touch'], ['gamepad', 'Gamepad']].filter(([k]) => ctl[k]);
+    if (rows.length) h += '<h3>Controls</h3><table class="ctl">' + rows.map(([k, l]) => '<tr><th scope="row">' + l + '</th><td>' + esc(ctl[k]) + '</td></tr>').join('') + '</table>';
+    if ((m.tips || []).length) h += '<h3>Tips</h3><ul class="tips">' + m.tips.map(t => '<li>' + esc(t) + '</li>').join('') + '</ul>';
+    if ((m.tricks || []).length) h += '<h3>Tricks</h3><table class="ctl">' + m.tricks.map(t => '<tr><th scope="row">' + esc(t.name) + '</th><td>' + esc(t.input || '') + '</td></tr>').join('') + '</table>';
+    if ((m.cheats || []).length) h += '<details class="codes"><summary>Cheat codes (spoilers)</summary><p>Pause the game, choose Codes and type one in. A run with codes on never replaces your best score.</p><ul>' + m.cheats.map(c => '<li><code>' + esc(c.code) + '</code> ' + esc(c.effect || '') + '</li>').join('') + '</ul></details>';
+    box.innerHTML = h; box.hidden = !h;
+    if ((m.howto || []).length) { $('#howwrap').hidden = false; $('#how').hidden = !$('#how').textContent.trim(); }
+  }
+  paintSdk();
   // tester feedback
   const rate = $('#rate'), note = $('#note'), saved = $('#notesaved');
   const paintRate = () => { const r = (notes()[g.id] || {}).r; $$('button', rate).forEach(b => b.setAttribute('aria-checked', b.dataset.v === r)); };

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="../assets/arcade-sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Clean House</title>
 <style>
@@ -21,7 +22,7 @@
   /* ---------- HUD ---------- */
   #hud{left:12px;top:12px;padding:10px 14px;display:flex;gap:18px;align-items:center;z-index:6}
   #hud b{font-size:20px;font-variant-numeric:tabular-nums}
-  #hud .lbl{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:block}
+  #hud .lbl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:block}
   #cleanWrap{width:190px;height:10px;background:#e4dccd;border-radius:6px;overflow:hidden;margin-top:4px}
   #cleanBar{height:100%;width:0%;background:linear-gradient(90deg,var(--wood),var(--sage));transition:width .18s}
   /* streak readout: the combo used to be toast-only every 22 scrubs */
@@ -33,13 +34,13 @@
   #comboBar i{display:block;height:100%;width:0%;background:var(--coral)}
   /* ---------- tools ---------- */
   #tools{left:50%;bottom:14px;transform:translateX(-50%);padding:8px;display:flex;gap:8px;z-index:6}
-  .tool{width:60px;min-height:56px;height:60px;border-radius:12px;border:1px solid rgba(43,33,23,.16);background:var(--paper);
+  .tool{min-width:60px;padding:0 6px;min-height:56px;height:60px;border-radius:12px;border:1px solid rgba(43,33,23,.16);background:var(--paper);
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;
-    font-size:9px;letter-spacing:.06em;color:var(--slate);font-weight:700}
+    font-size:12px;letter-spacing:.02em;color:var(--slate);font-weight:700}
   .tool .ic{font-size:22px;line-height:1}
   .tool.sel{background:var(--ink);color:var(--cream);border-color:var(--ink)}
   .tool.locked{opacity:.6}
-  .tool .cost{font-size:9px;color:var(--coral);font-weight:800}
+  .tool .cost{font-size:12px;color:var(--coral);font-weight:800}
   .tool.sel .cost{color:var(--gold)}
   .tool:active{transform:scale(.96)}
   /* ---------- right rail ---------- */
@@ -55,9 +56,10 @@
     border:1px solid rgba(43,33,23,.12);margin-bottom:6px;background:var(--paper);cursor:pointer;font-size:12px}
   .item.sel{outline:2px solid var(--coral)}
   .item.locked{opacity:.62;cursor:not-allowed;background:#f1ece1}
-  .item.locked .short{display:block;font-size:10px;color:var(--coral);font-weight:800}
-  .job.start{border-color:var(--coral);box-shadow:0 0 0 2px rgba(226,114,91,.22)}
-  .item small{color:var(--muted);display:block;font-size:10px}
+  .item.locked .short{display:block;font-size:12px;color:var(--coral);font-weight:800}
+  .job.start{border-color:var(--coral);box-shadow:0 0 0 2px rgba(226,114,91,.22);animation:startPulse 1.8s ease-in-out infinite}
+  @keyframes startPulse{0%,100%{box-shadow:0 0 0 2px rgba(226,114,91,.22)}50%{box-shadow:0 0 0 7px rgba(226,114,91,.30)}}
+  .item small{color:var(--muted);display:block;font-size:12px}
   /* ---------- overlays ---------- */
   /* NOTE: a flex item taller than its scroll container overflows BOTH ways when centred,
      and the top overflow is unreachable (scrollTop cannot go negative). Using
@@ -73,7 +75,7 @@
     border:1px solid rgba(226,114,91,.35);font-size:13px;font-weight:700;color:var(--ink)}
   .card h1{margin:0 0 4px;font-size:38px;letter-spacing:.02em}
   .card h2{margin:18px 0 8px;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-  .kicker{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--coral);font-weight:800}
+  .kicker{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--coral);font-weight:800}
   .jobs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
   .job{background:var(--paper);border:1px solid rgba(43,33,23,.14);border-radius:14px;padding:14px;cursor:pointer}
   .job:hover{border-color:var(--coral)}
@@ -83,17 +85,35 @@
   .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
   .stat{flex:1 1 110px;background:var(--paper);border:1px solid rgba(43,33,23,.12);border-radius:10px;padding:10px}
   .stat b{display:block;font-size:22px}
-  .stat span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .stat span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .stars{font-size:30px;letter-spacing:6px;color:var(--gold)}
   #toast{position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:30;pointer-events:none;
     font-weight:900;font-size:20px;color:#fff;text-shadow:0 3px 14px rgba(0,0,0,.6);opacity:0;transition:opacity .2s}
   #toast.on{opacity:1}
+  #codesOn{align-self:center;background:var(--coral);color:#fff;font-weight:900;font-size:12px;letter-spacing:.12em;
+    padding:6px 9px;border-radius:8px}
+  .opt{width:auto;flex:1 1 90px}
+  .opt.on{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  #coach{position:fixed;inset:0;z-index:40;display:none}
+  #coach.on{display:block}
+  #coach .spot{position:fixed;border:3px solid var(--gold);border-radius:14px;box-shadow:0 0 0 9999px rgba(12,17,22,.62);
+    pointer-events:none;transition:all .25s}
+  #coach .cc{position:fixed;left:50%;transform:translateX(-50%);width:min(420px,calc(100vw - 32px));background:var(--cream);
+    border-radius:16px;padding:16px 18px 14px;box-shadow:0 18px 50px rgba(0,0,0,.45);color:var(--ink)}
+  #coach .cc p{margin:6px 0 12px;font-size:15px;line-height:1.5;font-weight:600}
+  #coach .cc .row{margin-top:0;flex-wrap:nowrap}
+  #coach .cc .row .btn{flex:1;width:auto}
+  @media (prefers-reduced-motion: reduce){
+    #cleanBar,#comboChip,#toast,#coach .spot{transition:none}
+    .job.start{animation:none}
+    .tool:active,.btn:active{transform:none}
+  }
   #hint{left:50%;bottom:92px;transform:translateX(-50%);padding:8px 14px;font-size:12px;color:var(--slate);z-index:6}
   @media (max-width:760px){
     #rail{width:160px;padding:9px}
     #hud{gap:10px;padding:8px 10px}
     #cleanWrap{width:120px}
-    .tool{width:50px;height:50px}
+    .tool{min-width:50px;height:50px}
     .card h1{font-size:26px}
   }
   /* Phone: #rail is a DESKTOP SIDE PANEL. At phone width a 160px rail still covered ~41% of a 390px
@@ -111,12 +131,12 @@
     .card{padding:16px}
     .card h1{font-size:30px}
     .card h2{margin:12px 0 6px}
-    .kicker{font-size:10px}
+    .kicker{font-size:12px}
     .card p{font-size:13px;line-height:1.45}
     .jobs{gap:9px}
     .job{padding:11px}
     .job h4{font-size:15px}
-    .job p{font-size:11px;line-height:1.35}
+    .job p{font-size:12px;line-height:1.35}
     .job .pay{margin-top:6px;font-size:13px}
     .row{margin-top:11px}
     .stat{padding:8px}
@@ -134,6 +154,7 @@
   <div><span class="lbl">Job</span><b id="jobName" style="font-size:14px">-</b></div>
   <div><span class="lbl">Rubbish</span><b id="bagCount" style="font-size:14px">0/0</b></div>
   <div id="comboChip"><span class="lbl">Streak</span><b id="comboVal">x1</b><span id="comboBar"><i></i></span></div>
+  <div id="codesOn" hidden>CODES ON</div>
 </div>
 
 <div class="panel" id="hint">Drag to look &nbsp;·&nbsp; click or drag surfaces to clean &nbsp;·&nbsp; wheel to zoom</div>
@@ -141,6 +162,8 @@
 <div class="panel" id="tools"></div>
 
 <div class="panel" id="rail">
+  <h3>Goal</h3>
+  <div id="goalBox" style="font-size:12px;line-height:1.5;margin-bottom:12px;color:var(--slate)"></div>
   <h3>Toolbox</h3>
   <div id="shop"></div>
   <h3 style="margin-top:14px">Furnish</h3>
@@ -151,6 +174,9 @@
   <div class="row" style="margin-top:8px">
     <button class="btn ghost" id="btnMap">CITY MAP</button>
   </div>
+  <div class="row" style="margin-top:8px">
+    <button class="btn ghost" id="btnGfx2" data-gfx-toggle>GRAPHICS: HIGH</button>
+  </div>
 </div>
 
 <div class="layer on" id="map"><div class="card">
@@ -159,11 +185,18 @@
   <p style="margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.6">
     Travel the city, clean up messy houses, decorate them with style and sell them on for a profit.
     Better tools clean faster. Better taste sells higher.</p>
-  <div id="mapCta"><span>Tap a job card to load the house and start cleaning.</span><span style="color:var(--coral)">Start here &darr;</span></div>
+  <div id="mapCta"><span>Tap a job card to load the house and start cleaning, or press Play for the one marked START HERE.</span><button class="btn go" id="btnPlay" style="width:auto;padding:11px 28px">Play</button></div>
   <h2>Available jobs &mdash; click one to start</h2>
   <div class="jobs" id="jobList"></div>
   <h2>Your kit</h2>
   <div class="row" id="kitRow"></div>
+  <h2>Difficulty</h2>
+  <div class="row" id="diffRow" role="group" aria-label="Difficulty">
+    <button class="btn opt" data-diff="easy">EASY</button><button class="btn opt" data-diff="normal">NORMAL</button><button class="btn opt" data-diff="hard">HARD</button>
+  </div>
+  <p id="diffNote" style="margin:8px 0 0;color:var(--muted);font-size:13px"></p>
+  <h2>Settings</h2>
+  <div class="row"><button class="btn opt" id="btnGfx" data-gfx-toggle>GRAPHICS: HIGH</button><button class="btn opt" id="btnHow">HOW TO PLAY</button></div>
 </div></div>
 
 <div class="layer" id="result"><div class="card">
@@ -172,11 +205,16 @@
   <div class="stars" id="resStars"></div>
   <div class="row" id="resStats"></div>
   <p id="resNote" style="margin-top:14px;color:var(--muted);font-size:13px;line-height:1.6"></p>
+  <p id="resBest" style="margin-top:4px;color:var(--ink);font-size:13px;font-weight:700"></p>
   <div class="row"><button class="btn go" id="btnAgain">BACK TO THE CITY</button>
+  <button class="btn ghost" id="btnRetry">FLIP IT AGAIN</button>
   <button class="btn ghost" id="btnShare">SAVE A SCORE CARD</button></div>
 </div></div>
 
 <div id="toast"></div>
+<div id="coach" role="dialog" aria-modal="true" aria-label="How to play"><div class="spot"></div><div class="cc">
+  <div class="kicker" id="coachK"></div><p id="coachT"></p>
+  <div class="row"><button class="btn ghost" id="coachSkip">SKIP</button><button class="btn go" id="coachGo">NEXT</button></div></div></div>
 
 <script src="vendor/three.classic.js"></script>
 <script>
@@ -200,6 +238,16 @@ function loadSave(){
   try{ var r = localStorage.getItem(SAVE_KEY); if(r){ var o = JSON.parse(r); if(o && o.cash!=null) save = o; } }catch(e){}
 }
 function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} }
+/* difficulty: how much grime and rubbish each house starts with */
+var DIFFS = { easy:{ n:'Easy', mess:0.75, trash:-2, note:'Lighter grime and less rubbish in every house.' },
+              normal:{ n:'Normal', mess:1, trash:0, note:'Houses as the listing describes them.' },
+              hard:{ n:'Hard', mess:1.25, trash:3, note:'Heavier grime and extra rubbish in every house.' } };
+var RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+var CH = { mega:false };                        // arcade codes (on until reload)
+function cheated(){ try{ return !!(window.ArcadeSDK && ArcadeSDK.cheated); }catch(e){ return false; } }
+function sdk(fn,a){ try{ if(window.ArcadeSDK) ArcadeSDK[fn](a); }catch(e){} }
+var GFX_KEY = 'cleanhouse_gfx';
+var gfx = 'high', gfxChosen = false; try{ var g0=localStorage.getItem(GFX_KEY); if(g0){ gfxChosen=true; if(g0==='low') gfx='low'; } }catch(e){}
 
 /* ---------------------------------------------------------------- audio */
 var AU = (function(){
@@ -229,9 +277,9 @@ var AU = (function(){
 /* ---------------------------------------------------------------- scene */
 var canvas = document.getElementById('gl');
 var renderer = new T.WebGLRenderer({ canvas: canvas, antialias:true });
-renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
+renderer.setPixelRatio(gfx==='low' ? 1 : Math.min(2, window.devicePixelRatio||1));
 renderer.setSize(innerWidth, innerHeight);
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled = gfx!=='low';
 renderer.shadowMap.type = T.PCFSoftShadowMap;
 
 var scene = new T.Scene();
@@ -240,7 +288,9 @@ scene.fog = new T.Fog(0x101820, 26, 46);
 
 var camera = new T.PerspectiveCamera(48, innerWidth/innerHeight, 0.1, 200);
 var cam = { az: Math.PI*0.25, el: 0.72, dist: 15.5, target: new T.Vector3(0, ROOM.h*0.4, 0) };
+var dirty = true;           // the 3D view only needs redrawing when something in it changed
 function applyCam(){
+  dirty = true;
   camera.position.set(
     cam.target.x + cam.dist*Math.sin(cam.el)*Math.sin(cam.az),
     cam.target.y + cam.dist*Math.cos(cam.el),
@@ -252,7 +302,7 @@ applyCam();
 scene.add(new T.AmbientLight(0xffffff, 0.55));
 var hemi = new T.HemisphereLight(0xfff4e0, 0x39424d, 0.55); scene.add(hemi);
 var sun = new T.DirectionalLight(0xfff2dc, 1.15);
-sun.position.set(6, 12, 7); sun.castShadow = true;
+sun.position.set(6, 12, 7); sun.castShadow = gfx!=='low';
 sun.shadow.mapSize.set(1024,1024);
 sun.shadow.camera.left=-12; sun.shadow.camera.right=12; sun.shadow.camera.top=12; sun.shadow.camera.bottom=-12;
 scene.add(sun);
@@ -481,6 +531,7 @@ function buildRoom(job){
   }
 
   buildSlots();   // furnishings drop into this room's own floor plan
+  dirty = true;
   // paint dirt after meshes exist, using this property's grime profile
   surfaces.forEach(function(s){ paintDirt(s, job.mess, job.dirt); });
   computeClean();
@@ -550,7 +601,7 @@ function pickAt(clientX, clientY){
 var parts = [];
 var partGeo = new T.SphereGeometry(0.05, 6, 5);
 function spawnDust(p, color){
-  for(var i=0;i<5;i++){
+  for(var i=0;i<(RM?1:5);i++){
     var m = new T.Mesh(partGeo, new T.MeshBasicMaterial({ color: color||0xcdbba0, transparent:true, opacity:.85 }));
     m.position.copy(p);
     m.position.x += (Math.random()-.5)*.25;
@@ -686,14 +737,20 @@ var CATALOG = [
 var state = { clean:0, running:false, scrubbing:false, lastUV:null, comboT:0, combo:0, spent:0, started:0 };
 var last = performance.now();
 
+var slowFrames = 0, sampled = 0;
 function frame(now){
   requestAnimationFrame(frame);
-  var dt = Math.min(0.05, (now-last)/1000); last = now;
+  var raw = now-last, dt = Math.min(0.05, raw/1000); last = now;
   stepParts(dt);
   if(state.comboT>0){ state.comboT -= dt; if(state.comboT<=0) state.combo=0; }
   paintCombo();
-  if(mode==='play'){ renderer.render(scene, camera); }
-  else { renderer.render(scene, camera); }
+  // While cleaning the room is live; behind the city map or the SOLD card it is a still backdrop,
+  // so it is drawn only when it changed (software GL on low-end machines was spending every frame here).
+  if(mode==='play' || dirty || parts.length){ renderer.render(scene, camera); dirty = false; }
+  // Auto quality: if cleaning runs slower than ~16 fps on High and the player never picked a
+  // setting, drop to Low (1x pixels, no shadow maps) once, and say so.
+  if(mode==='play' && gfx==='high' && !gfxChosen){ sampled++; if(raw>60) slowFrames++;
+    if(sampled>=90){ if(slowFrames>60){ gfx='low'; applyGfx(); toast('Graphics set to Low for speed (change it in Settings)', '#cfe6ff'); gfxChosen=true; } sampled=0; slowFrames=0; } }
 }
 requestAnimationFrame(frame);
 
@@ -745,14 +802,14 @@ function doScrub(h){
   if(!h.uv) return;
   var s = h.surface, tool = TOOLS[current];
   // wall tools shouldn't mop the ceiling etc - everything here is a wall or floor
-  var radiusPx = (tool.r / s.world.w) * s.cw;   // world radius -> px
+  var radiusPx = (tool.r * (CH.mega?3:1) / s.world.w) * s.cw;   // world radius -> px
   var n = scrub(s, h.uv.x, 1-h.uv.y, radiusPx, tool.pow);
   if(n>0){
     spawnDust(h.point, s.kind==='floor' ? 0xb99a6a : 0xd6cbb4);
     AU.play('scrub', 0.20 + Math.random()*0.08, 0.92 + Math.random()*0.16);
     state.combo++; state.comboT = 1.6;
     if(state.combo>0 && state.combo%22===0){ spawnSparkle(h.point); AU.play('sparkle',0.5); toast('CLEAN STREAK x' + Math.floor(state.combo/22), '#ffe9a8'); }
-    computeClean();
+    computeClean(); paintGoal();
   }
 }
 
@@ -763,7 +820,7 @@ function removeTrash(obj, point){
   spawnDust(point, 0x8f9aa6); spawnSparkle(point);
   AU.play('pickup', 0.6);
   bagged++; updateBag();
-  computeClean();
+  computeClean(); paintGoal();
 }
 
 /* --------------------------------------------------------- UI wiring */
@@ -798,7 +855,7 @@ function renderShop(){
       box.appendChild(d);
     }
   });
-  if(!box.children.length) box.innerHTML='<div style="font-size:11px;color:var(--muted)">All tools owned.</div>';
+  if(!box.children.length) box.innerHTML='<div style="font-size:12px;color:var(--muted)">All tools owned.</div>';
 }
 function renderCatalog(){
   var box=el('catalog'); box.innerHTML='';
@@ -818,6 +875,17 @@ function renderCatalog(){
 function renderHUD(){
   el('cash').textContent = fmt(save.cash);
   if(job) el('jobName').textContent = job.name;
+  el('codesOn').hidden = !cheated();
+}
+/* the star goals, live: the same thresholds listHouse() scores against */
+function decorNow(){ return placed.reduce(function(a,p){ return a + (p.item.decor||p.item.cost); }, 0); }
+function paintGoal(){
+  var b = el('goalBox'); if(!b || !job) return;
+  var c = state.clean, d = decorNow();
+  function line(st, cl, dv){ var ok = c>cl && d>dv;
+    return '<div style="font-weight:'+(ok?'800':'600')+';color:'+(ok?'var(--sage)':'var(--slate)')+'">'+(ok?'&#10003; ':'')+st+' '+Math.round(cl*100)+'% clean + '+fmt(dv)+' furnished</div>'; }
+  b.innerHTML = line('&#9733;&#9733;', 0.75, 200) + line('&#9733;&#9733;&#9733;', 0.93, 420) +
+    '<div>Now: '+Math.round(c*100)+'% clean, '+fmt(d)+' furnished</div>';
 }
 var bagged=0, bagTotal=0;
 function updateBag(){
@@ -847,7 +915,7 @@ function placeItem(c){
   roomGroup.add(g);
   placed.push({ obj:g, item:c });
   save.cash -= c.cost; state.spent += c.cost;
-  persist(); renderHUD(); renderCatalog();
+  persist(); renderHUD(); renderCatalog(); paintGoal();
   AU.play('place',0.55);
   toast('Placed '+c.name+' (value '+fmt(c.decor||c.cost)+')', '#cfe6ff');
 }
@@ -866,10 +934,10 @@ function renderJobs(){
     var d=document.createElement('div'); d.className='job'+(j.id===suggest?' start':'');
     var stars = save.best[j.id] || 0;
     var area = j.room ? (j.room.w + '&times;' + j.room.d + ' m') : '9&times;9 m';
-    d.innerHTML='<h4>'+j.name+(j.tag?' <span style="font-size:11px;color:var(--muted);font-weight:600">'+j.tag+'</span>':'')+'</h4>' +
+    d.innerHTML='<h4>'+j.name+(j.tag?' <span style="font-size:12px;color:var(--muted);font-weight:600">'+j.tag+'</span>':'')+'</h4>' +
       '<p>'+area+' &middot; mess ' + Math.round(j.mess*100) + '% &middot; ' + j.trash + ' rubbish</p>' +
       '<div class="pay">' + fmt(j.pay) + ' asking price</div>' +
-      '<div style="font-size:11px;color:var(--muted);margin-top:6px">' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:6px">' +
         (done ? ('best ' + '★'.repeat(stars) + '&#9734;'.repeat(3-stars)) : (j.id===suggest ? 'START HERE &middot; not flipped yet' : 'not flipped yet')) + '</div>';
     d.onclick=function(){ startJob(j); };
     box.appendChild(d);
@@ -882,10 +950,12 @@ function renderJobs(){
 }
 
 function startJob(j){
-  job = Object.assign({}, j);
+  coachEnd();
+  job = Object.assign({}, j); job.baseId = j.id;
+  var D = DIFFS[save.diff] || DIFFS.normal;
   // per-run variance: the same address is never exactly the same mess twice
-  job.mess  = Math.max(0.45, job.mess * (0.90 + Math.random()*0.20));
-  job.trash = Math.max(3, job.trash + ((Math.random()*5)|0) - 2);
+  job.mess  = Math.max(0.45, job.mess * D.mess * (0.90 + Math.random()*0.20));
+  job.trash = Math.max(3, job.trash + D.trash + ((Math.random()*5)|0) - 2);
   placed.forEach(function(p){ roomGroup.remove(p.obj); });
   placed = []; bagged=0; bagTotal=job.trash; state.spent=0; state.combo=0;
   buildRoom(job);
@@ -903,6 +973,9 @@ function startJob(j){
   applyCam();
   state.started = performance.now();
   AU.play('click',0.4);
+  paintGoal();
+  sdk('state',{scene:'play'});
+  if(!save.tut) setTimeout(function(){ if(mode==='play' && !save.tut) coachStart(); }, 600);
 }
 
 function listHouse(){
@@ -918,7 +991,8 @@ function listHouse(){
 
   save.cash += total;
   if(save.done.indexOf(job.id)<0) save.done.push(job.id);
-  save.best[job.id] = Math.max(save.best[job.id]||0, stars);
+  var codes = cheated(), prevBest = save.best[job.id]||0;
+  if(!codes) save.best[job.id] = Math.max(prevBest, stars);   // a run with codes on never sets a best
   persist();
 
   el('resTitle').textContent = stars===3 ? 'Dream home!' : (stars===2 ? 'Sold well' : 'Flipped');
@@ -932,9 +1006,13 @@ function listHouse(){
     ? 'Left some grime behind - the buyer knocked the price down. Try a wider tool or a full sweep of every surface.'
     : (decorValue<420 ? 'Spotless, but a bit bare. Furniture lifts the sale price far more than it costs.'
                       : 'Clean and furnished. That is how you build a reputation in this city.');
+  el('resBest').textContent = codes ? 'CODES ON: this flip does not count toward your best stars.'
+    : (stars>prevBest && prevBest>0 ? 'New best for '+job.name+'!' : 'Best for '+job.name+': '+'★'.repeat(save.best[job.id]||stars)+'☆'.repeat(3-(save.best[job.id]||stars)));
+  coachEnd();
   mode='result';
   showLayer('result', true);
   AU.play('sale',0.85);
+  sdk('state',{scene:'over', score:total});
 }
 
 /* ------------------------------------------------------- share card
@@ -979,19 +1057,118 @@ function shareCard(){
 
 /* ------------------------------------------------------------- resize */
 addEventListener('resize', function(){
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(innerWidth, innerHeight); dirty = true;
   camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
 });
 
+
+/* ------------------------------------------------ difficulty + graphics */
+function paintSettings(){
+  var d = save.diff && DIFFS[save.diff] ? save.diff : 'normal';
+  document.querySelectorAll('#diffRow [data-diff]').forEach(function(b){ var on=b.getAttribute('data-diff')===d; b.classList.toggle('on',on); b.setAttribute('aria-pressed',String(on)); });
+  el('diffNote').textContent = DIFFS[d].note;
+  document.querySelectorAll('[data-gfx-toggle]').forEach(function(b){ b.textContent = 'GRAPHICS: ' + (gfx==='low'?'LOW':'HIGH'); });
+}
+document.querySelectorAll('#diffRow [data-diff]').forEach(function(b){ b.onclick=function(){ save.diff=b.getAttribute('data-diff'); persist(); paintSettings(); AU.play('click',0.4); }; });
+/* Low: 1x pixel ratio and no shadow maps. High: up to 2x pixel ratio with soft shadows. */
+function applyGfx(){
+  renderer.setPixelRatio(gfx==='low' ? 1 : Math.min(2, window.devicePixelRatio||1));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = gfx!=='low'; sun.castShadow = gfx!=='low';
+  scene.traverse(function(o){ if(o.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(function(m){ m.needsUpdate=true; }); } });
+  dirty = true;
+  paintSettings();
+}
+document.querySelectorAll('[data-gfx-toggle]').forEach(function(b){ b.onclick=function(){
+  gfx = gfx==='low' ? 'high' : 'low'; gfxChosen = true; try{ localStorage.setItem(GFX_KEY, gfx); }catch(e){} applyGfx(); AU.play('click',0.4); }; });
+
+/* --------------------------------------------------------- coach marks */
+var COACH = null;
+var COACH_STEPS = [
+  { sel:'#tools', k:'1 / 5 · Pick a tool', t:'Each tool cleans a different width. The sponge is on; the Scrubber in the toolbox is the fastest.' },
+  { sel:'#gl', k:'2 / 5 · Scrub', t:'Press and drag across a wall or the floor to wipe the grime away. Drag empty space (or right-drag) to look around; the wheel zooms.', box:[0.2,0.25,0.6,0.45] },
+  { sel:'#hud', k:'3 / 5 · Clean and rubbish', t:'Clean % climbs as you scrub. Tap each piece of rubbish to bag it: Rubbish counts them down.' },
+  { sel:'#catalog', k:'4 / 5 · Furnish', t:'Buy one of each piece. The buyer pays 85% of its value back, so good pieces lift your profit.' },
+  { sel:'#btnList', k:'5 / 5 · Sell', t:'LIST THE HOUSE when you are happy. Hit the Goal box targets for two or three stars.' }
+];
+function coachStart(){
+  if(mode!=='play'){ var s0=null; JOBS.forEach(function(x){ if(s0===null && save.done.indexOf(x.id)<0) s0=x; }); startJob(s0||JOBS[0]); }
+  COACH = { i:0 }; el('coach').classList.add('on'); coachPaint(); sdk('event','tutorial-start');
+}
+function coachPaint(){
+  if(!COACH) return;
+  var st = COACH_STEPS[COACH.i], box = el('coach').querySelector('.spot'), cc = el('coach').querySelector('.cc');
+  var r;
+  if(st.box) r = { left:innerWidth*st.box[0], top:innerHeight*st.box[1], width:innerWidth*st.box[2], height:innerHeight*st.box[3] };
+  else { var e = document.querySelector(st.sel); r = e ? e.getBoundingClientRect() : { left:0, top:0, width:0, height:0 }; }
+  box.style.left=(r.left-6)+'px'; box.style.top=(r.top-6)+'px'; box.style.width=(r.width+12)+'px'; box.style.height=(r.height+12)+'px';
+  el('coachK').textContent = st.k; el('coachT').textContent = st.t;
+  el('coachGo').textContent = COACH.i===COACH_STEPS.length-1 ? 'START CLEANING' : 'NEXT';
+  var mid = r.top + r.height/2;
+  if(mid > innerHeight*0.5){ cc.style.top='16px'; cc.style.bottom='auto'; } else { cc.style.top='auto'; cc.style.bottom='16px'; }
+}
+function coachEnd(done){ if(!COACH) return; COACH=null; el('coach').classList.remove('on'); save.tut=1; persist(); if(done) sdk('event','tutorial-done'); }
+el('coachGo').onclick = function(){ if(!COACH) return; COACH.i++; if(COACH.i>=COACH_STEPS.length) coachEnd(true); else coachPaint(); };
+el('coachSkip').onclick = function(){ coachEnd(); };
+addEventListener('resize', function(){ if(COACH) coachPaint(); });
+
+/* ------------------------------------------------------------ codes */
+var CODES = { CASHFLOW:'+$1,000 cash', MEGASPONGE:'Every tool cleans a circle three times wider',
+              ALLTOOLS:'Every tool in the toolbox is yours, free', TIDYUP:'All the rubbish in this house bags itself' };
+function enterCode(c){
+  if(!CODES[c]) return { ok:false };
+  if(c==='CASHFLOW'){ save.cash += 1000; persist(); }
+  else if(c==='MEGASPONGE'){ CH.mega = true; }
+  else if(c==='ALLTOOLS'){ Object.keys(TOOLS).forEach(function(k){ save.tools[k]=1; }); persist(); }
+  else if(c==='TIDYUP'){
+    if(mode!=='play') return { ok:true, message:'Start a job, then enter TIDYUP to bag its rubbish' };
+    trash.slice().forEach(function(o){ removeTrash(o, o.position.clone()); });
+  }
+  setTimeout(function(){ renderHUD(); renderShop(); renderTools(); renderJobs(); }, 0);
+  toast('Code on: '+CODES[c], '#ffe9a8');
+  return { ok:true, message:CODES[c] };
+}
+
+/* ------------------------------------------------------------- hints */
+var WALL_NAMES = ['the floor','the back wall','the front wall','the left wall','the right wall'];
+function hintText(){
+  if(mode==='map') return 'Start with the job marked START HERE: it is the smallest mess for its price.';
+  if(mode==='result') return 'Three stars needs 93% clean and more than $420 of furniture.';
+  if(!job) return '';
+  if(trash.length) return trash.length+' piece'+(trash.length>1?'s':'')+' of rubbish left: tap each one to bag it.';
+  var worst=-1, wp=2;
+  surfaces.forEach(function(sf,i){ var p = sf.total>0 ? sf.cleared/sf.total : 1; if(p<wp){ wp=p; worst=i; } });
+  var d = decorNow();
+  if(state.clean < 0.93 && worst>=0) return 'Scrub '+(WALL_NAMES[worst]||'the walls')+': it is only '+Math.round(wp*100)+'% clean. '+(save.tools.scrubber?'The Scrubber is fastest.':'A wider tool covers it quicker.');
+  if(d <= 420){ var best=null; CATALOG.forEach(function(c){ var owned=placed.some(function(p){return p.item.id===c.id;});
+      if(!owned && save.cash>=c.cost && (!best || (c.decor-c.cost*0.85) > (best.decor-best.cost*0.85))) best=c; });
+    return best ? 'Clean enough. Place a '+best.name+' ('+fmt(best.cost)+'): furniture worth more than $420 earns the third star.' : 'Clean enough. List the house now.'; }
+  return 'Spotless and furnished: LIST THE HOUSE for three stars.';
+}
+
+function goMap(){ coachEnd(); mode='map'; showLayer('result',false); showLayer('map',true); renderJobs(); paintSettings(); sdk('state',{scene:'title'}); }
+function retryJob(){ var base=null; if(job) JOBS.forEach(function(x){ if(x.id===job.baseId) base=x; }); startJob(base||JOBS[0]); }
+
 /* --------------------------------------------------------------- boot */
 el('btnList').onclick = function(){ if(mode==='play') listHouse(); };
-el('btnMap').onclick  = function(){ mode='map'; showLayer('result',false); showLayer('map',true); renderJobs(); };
+el('btnMap').onclick  = goMap;
 el('btnShare').onclick= shareCard;
-el('btnAgain').onclick= function(){ mode='map'; showLayer('result',false); showLayer('map',true); renderJobs(); };
+el('btnAgain').onclick= goMap;
+el('btnRetry').onclick= retryJob;
+el('btnHow').onclick  = function(){ coachStart(); };
+el('btnPlay').onclick = function(){ var s0=null; JOBS.forEach(function(x){ if(s0===null && save.done.indexOf(x.id)<0) s0=x; }); startJob(s0||JOBS[0]); };
 
-loadSave(); renderHUD(); renderJobs(); renderTools(); renderShop(); renderCatalog();
+loadSave(); renderHUD(); renderJobs(); renderTools(); renderShop(); renderCatalog(); paintSettings();
 buildRoom(JOBS[0]);   // a room behind the map so it is not empty
 mode='map';
+if(window.ArcadeSDK) ArcadeSDK.init({
+  onRestart: function(){ if(mode==='map') { var s0=null; JOBS.forEach(function(x){ if(s0===null && save.done.indexOf(x.id)<0) s0=x; }); startJob(s0||JOBS[0]); } else retryJob(); },
+  onExit: goMap,
+  onTutorial: coachStart,
+  onHint: hintText,
+  onCheat: enterCode
+});
+sdk('state',{scene:'title'});
 
 // debug hook (same convention as the rest of the shelf)
 window.__clean_debug = {

@@ -216,6 +216,17 @@ export function start(root, api) {
       onclick:() => commit(m, o, opts)
     }, o.t)));
     panel.append(opts);
+    /* hint: trace the actual links in the model out from the removed species */
+    api.setHint && api.setHint(() => {
+      const r = m.choose ? 'otter' : m.remove[0];
+      const eats = id => LINKS.filter(l => l.p === id).map(l => nameOf(l.q));
+      const eatenBy = id => LINKS.filter(l => l.q === id).map(l => nameOf(l.p));
+      const prey = LINKS.filter(l => l.p === r).map(l => l.q);
+      const chain = prey.map(q => `${nameOf(q)} eats ${eats(q).join(' and ') || 'nothing here: it is a producer'}`).join('; ');
+      if (m.choose) return `Compare how far each option reaches. The ${nameOf(r)} eats ${eats(r).join(' and ')}; ${chain}. Which loss would travel furthest?`;
+      return prey.length ? `Follow the arrows: the ${nameOf(r)} eats ${eats(r).join(' and ')}. ${chain}. With no ${nameOf(r).toLowerCase()}, what happens to those, and then to what they eat?`
+        : `The ${nameOf(r)} is eaten by ${eatenBy(r).join(' and ')}. Follow who eats those, one level at a time, up to the species in the question.`;
+    });
     panel.append(el('p', { class:'note', style:'margin-top:12px' },
       'Commit to a prediction before you run the model. Guessing after the fact is not science, and the model will not let you.'));
 
@@ -267,6 +278,8 @@ export function start(root, api) {
           ? el('button', { class:'btn go', onclick:() => { ix++; render(); } }, 'Next mission →')
           : el('button', { class:'btn go', onclick: freeMode }, 'Open free mode →')));
     api.complete(Math.round((ix + 1) / MISSIONS.length * 100));
+    api.setHint && api.setHint(() => ix < MISSIONS.length - 1 ? 'Read what the model shows, then press Next mission.' : 'Open free mode and remove species yourself.');
+    if (ix === MISSIONS.length - 1) api.done && api.done(Math.round(right / MISSIONS.length * 100));
   }
 
   /* ── free mode: remove anything, see the whole web respond ── */

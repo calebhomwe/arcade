@@ -1,13 +1,16 @@
 /* ============================================================
-   Chili Firm 2 — WebAudio sound: synthesized SFX + a lo-fi
-   boom-bap loop. No audio files. The context is only created
-   after the first user gesture (no autoplay warnings).
+   Chili Firm 2 — sound. Synthesized WebAudio SFX and a lo-fi
+   boom-bap loop, plus the recorded pack in audio/ (music, Tito's
+   voice lines and a few effects), which is used when its files
+   load and falls back to the synth when they don't. Nothing plays
+   or loads before the first user gesture.
    ============================================================ */
 (function (global) {
   'use strict';
 
   let ctx = null, master = null, sfxBus = null, musicBus = null, noiseBuf = null;
   let gestured = false;
+  const vol = { music: 1, sfx: 1 };   // the player's Music and Effects sliders (Settings), 0..1
 
   function ensure() {
     if (!gestured) return null;
@@ -16,7 +19,7 @@
       if (!AC) return null;
       ctx = new AC();
       master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);
-      sfxBus = ctx.createGain(); sfxBus.gain.value = 0.26; sfxBus.connect(master);
+      sfxBus = ctx.createGain(); sfxBus.gain.value = 0.26 * vol.sfx; sfxBus.connect(master);
       musicBus = ctx.createGain(); musicBus.gain.value = 0.0; musicBus.connect(master);
       noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 0.5, ctx.sampleRate);
       const d = noiseBuf.getChannelData(0);
@@ -26,7 +29,7 @@
     return ctx;
   }
   if (typeof document !== 'undefined') {
-    const g = () => { gestured = true; ensure(); if (wantMusic) startMusic(); };
+    const g = () => { const first = !gestured; gestured = true; ensure(); if (wantMusic && first) music(true); };
     ['pointerdown', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, g, { capture: true }));
   }
 
@@ -126,7 +129,7 @@
     if (!c || musicTimer) return;
     nextStep = c.currentTime + 0.1; step = 0;
     musicBus.gain.cancelScheduledValues(c.currentTime);
-    musicBus.gain.setTargetAtTime(0.16, c.currentTime, 0.6);
+    musicBus.gain.setTargetAtTime(0.16 * vol.music, c.currentTime, 0.6);
     musicTimer = setInterval(schedule, 90);
   }
   function stopMusic() {
@@ -135,12 +138,248 @@
     const t = musicTimer; musicTimer = null;
     setTimeout(() => clearInterval(t), 600);
   }
-  function music(onOff) {
-    wantMusic = !!onOff;
-    if (wantMusic) startMusic(); else stopMusic();
+  /* ============================================================
+     Recorded pack (audio/, see audio/AUDIO.md). HTMLAudio, so it also
+     plays when the game is opened straight from disk. Level = the
+     file's loudness gain (audio/audio.json) x a base level x the
+     player's Music or Effects slider, never over 1. Files load only
+     when first needed; a file that fails is marked bad and the synth
+     (or silence, for voice) takes over.
+     ============================================================ */
+  const HAS_DOM = typeof document !== 'undefined' && typeof global.Audio !== 'undefined';
+  const GAIN = { 'music/theme': 0.324, 'music/rush': 0.263, 'sfx/bell': 0.785, 'sfx/flame': 0.692, 'sfx/grow_hum': 2.042,
+    'sfx/pluck': 2.884, 'sfx/register': 1.549, 'sfx/sizzle': 0.891, 'sfx/water': 0.871 };
+  const BASE = { sfx: 0.34, voice: 0.45, music: 0.4, hum: 0.1 };
+  // Tito Scorch's lines: [text, loudness gain]
+  const LINES = {
+    1: ['Yo! Welcome to Scorch Farms!', 1.622], 2: ['Plant it, water it, watch it grow. Let\u2019s get spicy!', 1.549],
+    3: ['Those peppers are looking hot!', 1.622], 4: ['Harvest time, let\u2019s go!', 1.479], 5: ['Fresh batch, fresh cash!', 1.096],
+    6: ['Ooh, a customer! Show them the heat!', 1.514], 7: ['Sold! Scorch Farms, baby!', 1.549],
+    8: ['New grow light? Now we\u2019re cooking!', 1.445], 9: ['Level up! The empire grows!', 1.585],
+    10: ['Don\u2019t let them dry out. Water those pots!', 1.396], 11: ['Grandma Rosa would be proud.', 1.445],
+    12: ['That\u2019s a Carolina Reaper. Handle with care!', 1.718], 13: ['Hire a crew. Work smarter, not harder!', 1.479],
+    14: ['We\u2019re on fire today! Not literally. Okay, a little.', 2.018] };
+  const VOL_KEY = 'chili_firm2_audio';
+  const bad = {};
+  const clamp01 = v => Math.max(0, Math.min(1, +v || 0));
+  const nowS = () => Date.now() / 1000;
+  try { const v = JSON.parse(global.localStorage.getItem(VOL_KEY)); if (v) { if (v.music != null) vol.music = clamp01(v.music); if (v.sfx != null) vol.sfx = clamp01(v.sfx); } } catch (e) { /* no storage */ }
+
+  function setVolume(kind, v) {
+    if (kind !== 'music' && kind !== 'sfx') return;
+    vol[kind] = clamp01(v);
+    try { global.localStorage.setItem(VOL_KEY, JSON.stringify(vol)); } catch (e) { /* no storage */ }
+    if (ctx) { sfxBus.gain.value = 0.26 * vol.sfx; if (musicTimer) musicBus.gain.setTargetAtTime(0.16 * vol.music, ctx.currentTime, 0.1); }
+    for (const n in tracks) if (tracks[n]) tracks[n].el.volume = tracks[n].fade * musicLevel(n);
+    if (hum) hum.volume = humLevel();
   }
 
-  const audioMod = { sfx, ensure, music };
+  /* ---------- effects: a small pool per file so a swipe of harvests can overlap ---------- */
+  const pools = {};
+  function playFile(name, level) {
+    if (!HAS_DOM || !gestured || bad[name]) return false;
+    const pool = pools[name] || (pools[name] = []);
+    let el = pool.find(a => a.paused || a.ended);
+    if (!el && pool.length < 3) {
+      el = new global.Audio(); el.preload = 'auto';
+      el.addEventListener('error', () => { bad[name] = true; });
+      el.src = 'audio/' + name + '.mp3';
+      pool.push(el);
+    }
+    if (!el) el = pool[0];
+    try { el.currentTime = 0; } catch (e) { /* not loaded yet */ }
+    el.volume = Math.min(1, level * GAIN[name]);
+    const p = el.play(); if (p && p.catch) p.catch(() => {});
+    return true;
+  }
+  const fxLevel = () => BASE.sfx * vol.sfx;
+  const synth = Object.assign({}, sfx);
+  const FILE_FX = { water: 'sfx/water', harvest: 'sfx/pluck', cash: 'sfx/register', knock: 'sfx/bell' };
+  Object.keys(FILE_FX).forEach(k => {
+    sfx[k] = function () {
+      if (enabled() && !playFile(FILE_FX[k], fxLevel())) synth[k]();
+      moment(k);
+    };
+  });
+  ['levelup', 'ach'].forEach(k => { sfx[k] = function () { synth[k](); moment(k); }; });
+  sfx.sizzle = () => { if (enabled()) playFile('sfx/sizzle', fxLevel()); };
+  sfx.flame = () => { if (enabled()) playFile('sfx/flame', fxLevel()); };
+
+  /* ---------- music: theme in normal play, rush when the shop is busy, 1 s crossfades ---------- */
+  const tracks = { theme: null, rush: null };
+  let current = 'theme', fadeTimer = null;
+  const musicLevel = n => Math.min(1, BASE.music * GAIN['music/' + n] * vol.music);
+  const filesMusic = () => HAS_DOM && !bad['music/theme'];
+  function track(n) {
+    if (!tracks[n]) {
+      const el = new global.Audio(); el.loop = true; el.preload = 'auto'; el.volume = 0;
+      el.addEventListener('error', () => {
+        bad['music/' + n] = true;
+        if (n === 'theme') { for (const k in tracks) if (tracks[k]) tracks[k].el.pause(); if (wantMusic) startMusic(); }
+        else { current = 'theme'; kick(); }
+      });
+      el.src = 'audio/music/' + n + '.mp3';
+      tracks[n] = { el, fade: 0 };
+    }
+    return tracks[n];
+  }
+  function fadeStep() {
+    let moving = false;
+    for (const n in tracks) {
+      const tr = tracks[n];
+      if (!tr) continue;
+      const goal = wantMusic && gestured && n === current && !bad['music/' + n] ? 1 : 0;
+      if (tr.fade !== goal) { tr.fade = goal > tr.fade ? Math.min(goal, tr.fade + 0.05) : Math.max(goal, tr.fade - 0.05); moving = true; }
+      tr.el.volume = tr.fade * musicLevel(n);
+      if (tr.fade === 0 && !tr.el.paused) tr.el.pause();
+      else if (tr.fade > 0 && tr.el.paused && !tr.starting) {
+        tr.starting = true;
+        const p = tr.el.play(); const done = () => { tr.starting = false; };
+        if (p && p.then) p.then(done, done); else done();
+      }
+    }
+    if (!moving) { clearInterval(fadeTimer); fadeTimer = null; }
+  }
+  function kick() { if (!fadeTimer) fadeTimer = setInterval(fadeStep, 50); }
+  function music(onOff) {
+    wantMusic = !!onOff;
+    if (!filesMusic()) { if (wantMusic) startMusic(); else stopMusic(); return; }
+    stopMusic();
+    if (wantMusic && gestured) track(current);
+    kick();
+  }
+  function setTrack(n) {
+    if (bad['music/' + n]) n = 'theme';
+    if (n === current) return;
+    current = n;
+    if (filesMusic() && wantMusic && gestured) { track(n); kick(); }
+  }
+
+  /* ---------- Tito's voice: one line every 25 s at most, never the same twice running.
+     The line also shows in his speech bubble, so it reads with the sound off. A line that
+     comes up while a panel or story box is open waits for it to close (important ones only). ---------- */
+  const VO = { last: -1e9, lastId: 0, pending: null };
+  function uiFree() {
+    const ui = global.CF && global.CF.ui;
+    return !!(ui && ui.started && !ui.panel && !ui.dialog);
+  }
+  function voice(ids, important) {
+    ids = ids.filter(i => i !== VO.lastId);
+    if (!ids.length) return;
+    const id = ids[Math.floor(Math.random() * ids.length)];
+    if (uiFree() && nowS() - VO.last >= 25) speak(id);
+    else if (important) VO.pending = { id, at: nowS() };
+  }
+  function speak(id) {
+    const line = LINES[id];
+    VO.last = nowS(); VO.lastId = id; VO.pending = null;
+    try { global.CF.ui.say(line[0], { pose: 'cheer', ms: 4200 }); } catch (e) { /* no bubble yet */ }
+    const name = 'vo/tito_' + (id < 10 ? '0' : '') + id;
+    if (!enabled() || !gestured || !HAS_DOM || bad[name]) return;
+    const el = new global.Audio();
+    el.addEventListener('error', () => { bad[name] = true; });
+    el.src = 'audio/' + name + '.mp3';
+    el.volume = Math.min(1, BASE.voice * vol.sfx * line[1]);
+    const p = el.play(); if (p && p.catch) p.catch(() => {});
+  }
+  const sales = [];
+  function moment(k) {
+    if (k === 'harvest') voice([4, 5]);
+    else if (k === 'cash') { sales.push(nowS()); voice([7, 5]); }
+    else if (k === 'knock') voice([6]);
+    else if (k === 'levelup') voice([9], true);
+    else if (k === 'ach') voice([11]);
+  }
+
+  /* ---------- the grow-light hum: quiet, only with grow lights on screen or the Upgrades panel open ---------- */
+  let hum = null;
+  const humLevel = () => Math.min(1, BASE.hum * GAIN['sfx/grow_hum'] * vol.sfx);
+  function humOn(on) {
+    if (on && (!HAS_DOM || bad['sfx/grow_hum'])) return;
+    if (on && !hum) {
+      hum = new global.Audio(); hum.loop = true; hum.preload = 'auto';
+      hum.addEventListener('error', () => { bad['sfx/grow_hum'] = true; });
+      hum.src = 'audio/sfx/grow_hum.mp3';
+    }
+    if (!hum) return;
+    hum.volume = humLevel();
+    if (on && hum.paused) { const p = hum.play(); if (p && p.catch) p.catch(() => {}); }
+    else if (!on && !hum.paused) hum.pause();
+  }
+
+  /* ---------- watcher: moments the effects don't mark (welcome, ripe, dry pots, the Reaper, rush) ---------- */
+  const W = { welcomed: false, planted: null, ready: null, thirsty: 0, unlocked: null, reaper: null, busyUntil: 0, rush: false };
+  function watch() {
+    const CF = global.CF;
+    if (!CF || !CF.state || !CF.ui) return;
+    const s = CF.state, ui = CF.ui, t = nowS();
+    if (ui.started && !W.welcomed) { W.welcomed = true; voice([1], true); }
+    if (W.planted === 0 && s.stats.planted > 0) voice([2], true);
+    W.planted = s.stats.planted;
+    let ready = 0, thirsty = 0;
+    for (let i = 0; i < s.plotCount; i++) {
+      const p = s.plots[i];
+      if (p.status === 'ready' || p.status === 'wilted') ready++;
+      else if (p.status === 'growing' && p.boostUntil < t) thirsty++;
+    }
+    if (W.ready === 0 && ready > 0 && ui.started) voice([3]);
+    W.ready = ready;
+    W.thirsty = thirsty >= 3 ? W.thirsty + 0.5 : 0;
+    if (W.thirsty >= 20) { W.thirsty = 0; voice([10]); }
+    const un = s.unlocked.length, reaper = s.unlocked.indexOf('reaper') !== -1;
+    if (W.unlocked != null && un > W.unlocked) sfx.flame();
+    if (W.reaper === false && reaper) voice([12], true);
+    W.unlocked = un; W.reaper = reaper;
+    // a busy shop: a rush event (heatwave, festival, critic), or a buyer at the door after 3+ sales in 90 s
+    while (sales.length && t - sales[0] > 90) sales.shift();
+    const ev = s.event && s.event.id;
+    if (ev === 'heatwave' || ev === 'festival' || ev === 'critic' || (sales.length >= 3 && ui.visitor && ui.visitor.kind === 'buyer')) W.busyUntil = t + 25;
+    const rush = t < W.busyUntil;
+    if (rush !== W.rush) { W.rush = rush; setTrack(rush ? 'rush' : 'theme'); if (rush) voice([14]); }
+    if (VO.pending && uiFree() && t - VO.last >= 25) { if (t - VO.pending.at < 30) speak(VO.pending.id); else VO.pending = null; }
+    humOn(enabled() && gestured && ui.started && (ui.panel === 'lab' || (!ui.panel && s.upgrades.greenhouse >= 1)));
+  }
+
+  /* ---------- a few more moments, marked where the rules report success ---------- */
+  function hookLogic() {
+    const L = global.CF && global.CF.logic;
+    if (!L || L.__audio) return !!L;
+    L.__audio = true;
+    const after = (name, fn) => { const orig = L[name]; if (typeof orig !== 'function') return;
+      L[name] = function () { const r = orig.apply(this, arguments); try { if (r && r.ok) fn.apply(null, arguments); } catch (e) { /* sound only */ } return r; }; };
+    after('hireWorker', () => voice([13], true));
+    after('buyUpgrade', (st, id) => { if (id === 'greenhouse') { sfx.flame(); voice([8], true); } });
+    after('recipeUp', () => sfx.sizzle());
+    after('buyBusiness', (st, id) => { if (id === 'jerky') sfx.sizzle(); });
+    after('bizLevelUp', (st, id) => { if (id === 'jerky') sfx.sizzle(); });
+    return true;
+  }
+
+  /* ---------- Music and Effects sliders in Settings (the panel renders them without a value) ---------- */
+  function paintSliders() {
+    if (!HAS_DOM) return;
+    document.querySelectorAll('input[data-vol]').forEach(i => {
+      const v = Math.round(vol[i.dataset.vol] * 100);
+      if (document.activeElement !== i && +i.value !== v) i.value = v;
+      // write only on a change: the label is watched by the MutationObserver that calls this
+      const out = i.parentNode && i.parentNode.querySelector('b'); if (out && out.textContent !== v + '%') out.textContent = v + '%';
+    });
+  }
+  if (HAS_DOM) {
+    document.addEventListener('input', e => {
+      const k = e.target && e.target.dataset && e.target.dataset.vol;
+      if (k) { setVolume(k, e.target.value / 100); paintSliders(); }
+    });
+    const start = () => {
+      const pr = document.getElementById('panel-root');
+      if (pr && global.MutationObserver) new MutationObserver(paintSliders).observe(pr, { childList: true, subtree: true });
+      const hook = setInterval(() => { if (hookLogic()) clearInterval(hook); }, 200);
+      setInterval(watch, 500);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  }
+
+  const audioMod = { sfx, ensure, music, setVolume, volume: () => Object.assign({}, vol), say: voice };
   if (typeof module !== 'undefined' && module.exports) module.exports = audioMod;
   global.CF = global.CF || {};
   global.CF.audio = audioMod;

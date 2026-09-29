@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="../assets/arcade-sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>DEEPCUT</title>
 <style>
@@ -14,7 +15,7 @@
   .panel{position:fixed;background:rgba(18,13,10,.82);border:1px solid rgba(243,231,211,.16);
     border-radius:12px;backdrop-filter:blur(5px)}
   #hud{left:10px;top:10px;padding:9px 12px;z-index:6;min-width:210px}
-  #hud .row{display:flex;justify-content:space-between;gap:12px;font-size:11px;margin:3px 0;align-items:center}
+  #hud .row{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin:3px 0;align-items:center}
   .bar{height:8px;border-radius:5px;background:#2a2018;overflow:hidden;width:110px}
   .bar i{display:block;height:100%;width:100%;transition:width .12s}
   #fuelBar i{background:var(--gold)} #hullBar i{background:var(--good)} #cargoBar i{background:#8fb0d8}
@@ -23,7 +24,7 @@
   #shop{right:10px;top:10px;width:216px;padding:11px;z-index:6;max-height:calc(100vh - 20px);overflow:auto;
     transition:transform .18s ease,opacity .18s ease}
   #shop.away{transform:translateX(240px);opacity:0;pointer-events:none}
-  #shop h3{margin:0 0 8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  #shop h3{margin:0 0 8px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
   .up{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#231a13;
     border:1px solid rgba(243,231,211,.12);border-radius:9px;padding:8px;margin-bottom:6px;cursor:pointer;
     font-size:11px;min-height:44px}
@@ -49,23 +50,57 @@
   .btn{padding:14px 34px;border-radius:12px;border:0;background:var(--gold);color:#2a1c0c;font-weight:900;
     font-size:16px;letter-spacing:.08em;cursor:pointer;font-family:inherit}
   .btn:active{transform:scale(.97)}
-  #stats{display:flex;gap:14px;margin-top:20px;flex-wrap:wrap;justify-content:center}
-  #stats div{background:rgba(243,231,211,.06);border:1px solid rgba(243,231,211,.14);border-radius:10px;padding:8px 14px;text-align:center}
-  #stats b{display:block;font-size:19px;color:var(--gold)} #stats span{font-size:9px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+  #stats,#overStats{display:flex;gap:14px;margin-top:20px;flex-wrap:wrap;justify-content:center}
+  #overStats{margin-top:12px}
+  #stats div,#overStats div{background:rgba(243,231,211,.06);border:1px solid rgba(243,231,211,.14);border-radius:10px;padding:8px 14px;text-align:center}
+  #stats b,#overStats b{display:block;font-size:19px;color:var(--gold)} #stats span,#overStats span{font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+  /* the title is a menu: scroll it on a short phone instead of clipping the top */
+  #title{overflow-y:auto;justify-content:safe center;padding:16px 0}
+  /* the dig HUD only exists during a dive; the title covers it anyway */
+  body.on-title #hud, body.on-title #shop, body.on-title #pad, body.on-title #coach{display:none}
+  #diff{display:flex;gap:8px;margin:16px 0 0;flex-wrap:wrap;justify-content:center}
+  #diff button,.ghost{min-height:40px;padding:8px 14px;border-radius:10px;border:1px solid rgba(243,231,211,.18);
+    background:rgba(243,231,211,.06);color:var(--muted);font:800 12px/1 inherit;letter-spacing:.12em;cursor:pointer;font-family:inherit}
+  #diff button[aria-pressed=true]{border-color:var(--gold);color:var(--gold);background:rgba(230,180,85,.14)}
+  #diffNote{font-size:12px;color:var(--muted);margin:8px 0 0;text-align:center;padding:0 18px}
+  #hauls{margin-top:16px;min-width:240px;font-size:13px}
+  #hauls h4{margin:0 0 6px;font-size:12px;letter-spacing:.16em;color:var(--muted);text-align:center;font-weight:700}
+  #hauls ol{margin:0;padding:0;list-style:none;counter-reset:h}
+  #hauls li{display:flex;justify-content:space-between;gap:16px;padding:5px 12px;border-bottom:1px solid rgba(243,231,211,.08);counter-increment:h}
+  #hauls li::before{content:counter(h) '.';color:var(--muted);width:18px}
+  #hauls li b{color:var(--gold);flex:1} #hauls li span{color:var(--muted)}
+  #codesOn{display:inline-block;margin-top:6px;background:var(--gold);color:#2a1c0c;font-weight:900;font-size:12px;
+    letter-spacing:.14em;border-radius:7px;padding:3px 8px}
+  #codesOn[hidden],#coach[hidden],#over[hidden]{display:none}
+  #over{position:fixed;inset:0;z-index:25;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(13,9,6,.86);text-align:center;padding:16px}
+  #over h2{font-size:clamp(28px,7vw,52px);margin:0;letter-spacing:.08em;color:var(--ember);text-shadow:0 4px 0 #5a2a1a,0 10px 26px #000}
+  #over p{color:var(--muted);font-size:13px;margin:10px 0 4px;max-width:460px;line-height:1.6}
+  #over .btn{margin-top:14px}
+  #coach{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);z-index:30;display:flex;gap:12px;align-items:center;
+    padding:9px 10px 9px 14px;background:rgba(18,13,10,.92);border:1px solid var(--gold);border-radius:12px;
+    font-size:14px;font-weight:700;color:var(--paper);max-width:min(92vw,520px);box-shadow:0 6px 24px #000}
+  #coach b{color:var(--gold)}
+  #coach button{flex:none}
   @media (max-width:560px){
     /* 390px cannot afford a 150px shop rail AND readable gameplay: shrink it and let it scroll. */
-    #shop{width:126px;padding:7px;max-height:56vh;overflow:auto}
-    #shop h3{font-size:9px;letter-spacing:.1em}
+    #shop{width:140px;padding:7px;max-height:56vh;overflow:auto}
+    #shop h3{font-size:12px;letter-spacing:.08em}
     /* every buyable row is a tap target: 44px minimum, same as the d-pad */
-    .up{padding:6px 7px;font-size:10px;min-height:44px}
-    .up b{font-size:11px}
+    .up{padding:6px 7px;font-size:12px;min-height:44px}
+    .up b{font-size:12px}
     .up small{display:none}
-    #hud{min-width:132px;padding:7px 9px}
-    #hud .row{font-size:10px}
+    #shop .tip{display:none}
+    #hud{min-width:132px;max-width:170px;padding:7px 9px}
+    #hud .row{font-size:12px}
     .bar{width:62px}
     #cash{font-size:17px}
     #toast{font-size:16px;top:13%}
     #pad{grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,46px)}
+    #coach{bottom:132px;font-size:13px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    #shop{transition:none} .bar i{transition:none} #toast{transition:none} .btn:active{transform:none}
   }
 </style>
 </head>
@@ -79,15 +114,16 @@
   <div class="row"><span>HULL</span><div class="bar" id="hullBar"><i></i></div></div>
   <div class="row"><span>CARGO</span><div class="bar" id="cargoBar"><i></i></div></div>
   <div class="row"><span id="comboTxt" style="color:var(--gold)"></span></div>
+  <div id="codesOn" hidden>CODES ON</div>
 </div>
 
 <div class="panel" id="shop">
   <h3>Surface shop</h3>
   <div id="upgrades"></div>
-  <div style="font-size:10px;color:var(--muted);margin-top:8px;line-height:1.6">
+  <div class="tip" style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6">
     Dig with ARROWS / WASD / the pad.<br>Climb to the surface to sell and refuel.
   </div>
-  <button class="btn" id="btnShareShop" style="width:100%;margin-top:8px;padding:10px;font-size:11px;background:transparent;border:1px solid var(--gold);color:var(--gold)">SAVE SCORE CARD</button>
+  <button class="btn" id="btnShareShop" style="width:100%;margin-top:8px;padding:10px;font-size:12px;min-height:44px;background:transparent;border:1px solid var(--gold);color:var(--gold)">SAVE SCORE CARD</button>
 </div>
 
 <div class="panel" id="pad">
@@ -97,13 +133,28 @@
 
 <div id="toast"></div>
 
+<div id="coach" class="panel" role="status" aria-live="polite" hidden><span id="coachTxt"></span><button class="ghost" id="coachSkip">SKIP</button></div>
+
+<div id="over" role="dialog" aria-modal="true" aria-labelledby="overH" hidden>
+  <h2 id="overH">DRILL WRECKED</h2>
+  <p id="overWhy"></p>
+  <div id="overStats" class="statsRow"></div>
+  <button class="btn" id="btnAgain">DIG AGAIN</button>
+  <button class="ghost" id="btnOverTitle" style="margin-top:10px">TITLE</button>
+</div>
+
 <div id="title">
   <h1>DEEPCUT</h1>
   <p>One drill. Two thousand metres of rock. Dig, sell, upgrade, go deeper - and do not run the tank dry down there.</p>
-  <p style="font-size:11px;color:var(--muted)" id="seedLine"></p>
+  <p style="font-size:12px;color:var(--muted)" id="seedLine"></p>
   <button class="btn" id="btnPlay">START DIGGING</button>
   <button class="btn" id="btnShare" style="margin-top:10px;background:transparent;border:1px solid var(--gold);color:var(--gold)">SAVE A SCORE CARD</button>
+  <div id="diff" role="group" aria-label="Difficulty">
+    <button data-d="easy" aria-pressed="false">EASY</button><button data-d="normal" aria-pressed="true">NORMAL</button><button data-d="hard" aria-pressed="false">HARD</button>
+  </div>
+  <div id="diffNote"></div>
   <div id="stats"></div>
+  <div id="hauls"></div>
 </div>
 
 <script>
@@ -223,7 +274,8 @@ function hubCredit(n){
     localStorage.setItem('hub_save_v1', JSON.stringify(h));
   }catch(e){}
 }
-function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+/* A session with codes on is never saved: the best haul, deepest depth and purse stay honest. */
+function persist(){ if(cheated()) return; try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 
 /* ---------------------------------------------------------------- tuning */
 var UP = {
@@ -240,14 +292,15 @@ function cargoMax(){ return 8 + S.up.cargo * 4; }
 function fuelMax(){ return 100 + S.up.fuel * 55; }
 function hullMax(){ return 100 + S.up.hull * 30; }
 function lavaRes(){ return Math.min(0.8, S.up.radiator * 0.16); }
-function lampR(){ return 3.4 + S.up.lamp * 0.9; }
+function lampR(){ return CH.xray ? 30 : 3.4 + S.up.lamp * 0.9; }
 function cargoValue(){ var v=0; for(var i=0;i<S.cargo.length;i++) v += S.cargo[i].val; return v; }
 
 /* --------------------------------------------------------------- juice */
 var shake = 0, hitstop = 0, parts = [], floats = [];
 var pool = [];   // pre-allocated particle refs (no per-frame allocation)
-function shakeAdd(a){ shake = Math.min(1.4, shake + a); }
-function hit(a){ hitstop = Math.max(hitstop, a); }
+/* prefers-reduced-motion: no screen shake and no hit-stop jolts */
+function shakeAdd(a){ if(RM) return; shake = Math.min(1.4, shake + a); }
+function hit(a){ if(RM) return; hitstop = Math.max(hitstop, a); }
 function burst(px, py, col, n, spread){
   for(var i=0;i<(n||8);i++){
     parts.push({ x:px, y:py, vx:(Math.random()-.5)*(spread||160), vy:(Math.random()-.9)*(spread||160),
@@ -282,6 +335,8 @@ addEventListener('resize', fit); fit();
 var keys = {};
 addEventListener('keydown', function(e){
   keys[e.key.toLowerCase()] = true;
+  /* keyboard route off the title (a focused button keeps Enter/Space for itself) */
+  if(mode === 'title' && (e.key === 'Enter' || e.key === ' ') && !(e.target && e.target.closest && e.target.closest('button'))){ e.preventDefault(); startGame(); }
   if(['arrowup','arrowdown','arrowleft','arrowright',' '].indexOf(e.key.toLowerCase())>=0) e.preventDefault();
 });
 addEventListener('keyup', function(e){ keys[e.key.toLowerCase()] = false; });
@@ -319,9 +374,10 @@ function tryDig(dir, dt){
      rather than a hard stop, so a player can always crawl back to the surface. */
   var dry = S.fuel <= 0;
   dig.t += dt * (dry ? 0.34 : 1);
-  if(dry){ S.hull = Math.max(0, S.hull - dt * 2.4);
+  if(dry){ if(!CH.iron) S.hull = Math.max(0, S.hull - dt * 2.4 * D().dmg);
     if(!S._dryWarn || performance.now() - S._dryWarn > 2500){ S._dryWarn = performance.now();
-      toast('OUT OF FUEL - the drill is straining', '#e2725b'); } }
+      toast('OUT OF FUEL - the drill is straining', '#e2725b'); }
+    if(S.hull <= 0){ toast('DRILL WRECKED - OUT OF FUEL', '#e2725b'); wreck('OUT OF FUEL'); return; } }
   // chip feedback while digging
   if(Math.random() < dt*9){ burst((nc+0.5)*TS, (nr+0.5)*TS, t.t==='ore'? t.ore.col : '#7a5c40', 2, 90);
     AU.play('dig', 0.16, 0.9 + Math.random()*0.25); }
@@ -357,10 +413,12 @@ function tryDig(dir, dt){
   }
 }
 function hurt(n, why){
+  if(CH.iron || mode !== 'play') return;          // IRONHULL code
+  n *= D().dmg;
   S.hull = Math.max(0, S.hull - n);
   popText((S.p.x+0.5)*TS, (S.p.y+0.5)*TS, '-' + Math.round(n), '#e2725b');
   shakeAdd(0.5); hit(0.09);
-  if(S.hull <= 0){ toast('DRILL WRECKED - ' + (why||''), '#e2725b'); respawn(); }
+  if(S.hull <= 0){ toast('DRILL WRECKED - ' + (why||''), '#e2725b'); wreck(why); }
 }
 function respawn(){
   // lose half the cargo, return to the surface with a repaired but damaged hull
@@ -378,8 +436,9 @@ function surfaceTick(){
   if(S.cargo.length){ var v = cargoValue(); S.cash += v; lastSell = v;
     popText(innerWidth/2, 120, '+$' + v.toLocaleString(), '#8fbf6a');
     toast('Sold $' + v.toLocaleString(), '#8fbf6a'); AU.play('sell', 0.8);
-    hubCredit(Math.round(v * 0.1));   // 10% of every haul feeds the shared hub purse
-    if(v > S.best) S.best = v;
+    if(!cheated()) hubCredit(Math.round(v * 0.1));   // 10% of every haul feeds the shared hub purse
+    if(v > S.best && !cheated()) S.best = v;
+    recordHaul(v); tut.sold = true;
     S.cargo = []; persist(); }
   if(S.fuel < fuelMax()){ S.fuel = Math.min(fuelMax(), S.fuel + 34*0.016*60*0.016*60);
     S.fuel = Math.min(fuelMax(), S.fuel + 0.9); }
@@ -420,7 +479,8 @@ function streakPct(){ return Math.round(5 * Math.min(S.combo, 12)); }
 function setTxt(el, key, v){ if(hudLast[key] !== v){ hudLast[key] = v; el.textContent = v; } }
 function renderHUD(){
   setTxt(elCash, 'cash', '$' + Math.round(S.cash).toLocaleString());
-  setTxt(elDepth, 'depth', S.p.y + ' m  (deepest ' + S.deepest + ')');
+  /* the level counter: depth plus the rock layer you are in */
+  setTxt(elDepth, 'depth', S.p.y + ' m \u00b7 ' + (S.p.y <= 1 ? 'SURFACE' : layerAt(S.p.y).name.toUpperCase()) + '  (deepest ' + S.deepest + ')');
   elFuel.style.width = (100*S.fuel/fuelMax()) + '%';
   elHull.style.width = (100*S.hull/hullMax()) + '%';
   elCargo.style.width = (100*S.cargo.length/cargoMax()) + '%';
@@ -433,15 +493,25 @@ function toast(msg, col){ toastEl.textContent = msg; toastEl.style.color = col||
 
 /* ------------------------------------------------------------------- ui */
 var mode = 'title';
+var bedOn = false, _rng0 = null;
 function startGame(){
   if(!S) S = fresh(); else { S.p.x = Math.floor(COLS/2); S.p.y = 0; }
+  /* a daily-seed mine is the same mine on every dive; a free dig rolls a new one */
+  if(_rng0 === null) _rng0 = _rng; else if(URLSEED !== null) _rng = _rng0;
   world = {};
   mode = 'play';
+  dive.on = false; dive.max = 0;
+  S.runs = (S.runs||0) + 1; persist();
   document.getElementById('title').style.display = 'none';
+  document.body.classList.remove('on-title');
+  hideOver();
   renderShop(); renderHUD();
   AU.play('buy', 0.5);
-  if(!S.bedOn){ S.bedOn = 1; try{ var b = new Audio('audio/bed.mp3'); b.loop = true; b.volume = 0.18;
+  /* the bed loop is per page, not per save (a saved flag used to silence it forever after the first session) */
+  if(!bedOn){ bedOn = true; try{ var b = new Audio('audio/bed.mp3'); b.loop = true; b.volume = 0.18;
     var pr = b.play(); if(pr&&pr.catch) pr.catch(function(){}); }catch(e){} }
+  sdk('state', { scene:'play' });
+  if(!tutSeen()) tutStart();
 }
 document.getElementById('btnPlay').onclick = startGame;
 
@@ -623,25 +693,193 @@ function frame(now){
     var dir = inputDir();
     if(dir) tryDig(dir, dt);
     else dig.t = 0;
-    // fuel burn
-    S.fuel = Math.max(0, S.fuel - dt*(dir?1.55:0.55));
+    // fuel burn (difficulty scales it; FULLTANK keeps it topped up)
+    S.fuel = Math.max(0, S.fuel - dt*(dir?1.55:0.55)*D().fuel);
+    if(CH.tank) S.fuel = fuelMax();
     if(S.fuel <= 0 && dir){ popText((S.p.x+.5)*TS,(S.p.y+.5)*TS,'NO FUEL','#e2725b'); }
-    if(S.p.y > S.deepest){ S.deepest = S.p.y; }
+    if(S.p.y > S.deepest && !cheated()){ S.deepest = S.p.y; }
+    if(S.p.y > 1){ dive.on = true; if(S.p.y > dive.max) dive.max = S.p.y; }
+    tutTick(dt);
     S.depth = S.p.y;
     // hazards near lava
     if(S.p.y > 1){ var near = tileAt(S.p.x, S.p.y);
       if(near && near.t === 'lava') hurt(30*(1-lavaRes())*dt, 'LAVA'); }
     // oxygen deep
-    if(S.p.y > 850){ S.fuel = Math.max(0, S.fuel - dt*0.35); }
+    if(S.p.y > 850 && !CH.tank){ S.fuel = Math.max(0, S.fuel - dt*0.35*D().fuel); }
     if(S.comboT > 0){ S.comboT -= dt; if(S.comboT <= 0) S.combo = 0; }
     surfaceTick();
     syncShopVisibility();
     hudAcc += raw; if(hudAcc >= 0.1){ hudAcc = 0; renderHUD(); }
   }
   stepJuice(dt);
-  draw();
+  if(mode !== 'title') draw();   // the opaque title covers the mine: nothing to paint behind it
 }
 requestAnimationFrame(frame);
+
+/* ------------------------------------------------------ arcade standard
+   Difficulty, dives and the results card, the best-hauls table, the first-run coach,
+   hints, codes, and the Caleb's Arcade SDK hooks (pause, restart, exit, tutorial). */
+function sdk(fn, a){ try{ if(window.ArcadeSDK) window.ArcadeSDK[fn](a); }catch(e){} }
+function cheated(){ return !!(window.ArcadeSDK && window.ArcadeSDK.cheated); }
+function el(id){ return document.getElementById(id); }
+
+/* difficulty: fuel burn and hazard damage, never the mine itself (a daily seed stays fair) */
+var DIFFS = {
+  easy:   { fuel:0.70, dmg:0.60, note:'Easy: the tank lasts longer and lava and gas hit softer.' },
+  normal: { fuel:1.00, dmg:1.00, note:'Normal: the mine as it was dug.' },
+  hard:   { fuel:1.35, dmg:1.45, note:'Hard: a thirsty drill and hazards that bite.' }
+};
+var diff = 'normal';
+try{ var dv = localStorage.getItem('deepcut_diff'); if(DIFFS[dv]) diff = dv; }catch(e){}
+function D(){ return DIFFS[diff]; }
+function paintDiff(){
+  Array.prototype.forEach.call(document.querySelectorAll('#diff button'), function(b){
+    b.setAttribute('aria-pressed', String(b.getAttribute('data-d') === diff)); });
+  el('diffNote').textContent = D().note + (cheated() ? '  CODES ON: this session is not saved.' : '');
+}
+Array.prototype.forEach.call(document.querySelectorAll('#diff button'), function(b){
+  b.onclick = function(){ diff = b.getAttribute('data-d'); try{ localStorage.setItem('deepcut_diff', diff); }catch(e){} paintDiff(); };
+});
+
+/* a dive runs from leaving the surface to selling (or wrecking) */
+var dive = { on:false, max:0 };
+function recordHaul(v){
+  if(cheated()) return;
+  var h = S.hauls || (S.hauls = []);
+  h.push({ v:v, d:dive.max, t:Date.now() });
+  h.sort(function(a, b){ return b.v - a.v; });
+  if(h.length > 5) h.length = 5;
+  dive.on = false; dive.max = 0;
+}
+function buildTitle(){
+  el('stats').innerHTML =
+    '<div><b>$' + Math.round(S.cash).toLocaleString() + '</b><span>Cash</span></div>' +
+    '<div><b>' + S.deepest + 'm</b><span>Deepest</span></div>' +
+    '<div><b>$' + S.best.toLocaleString() + '</b><span>Best haul</span></div>';
+  var h = S.hauls || [], rows = '';
+  for(var i = 0; i < h.length; i++){
+    var d = new Date(h[i].t);
+    rows += '<li><b>$' + h[i].v.toLocaleString() + '</b><span>' + h[i].d + ' m &middot; ' + (d.getMonth()+1) + '/' + d.getDate() + '</span></li>';
+  }
+  el('hauls').innerHTML = '<h4>BEST HAULS</h4>' + (rows ? '<ol>' + rows + '</ol>' : '<p style="margin:0;color:var(--muted);font-size:12px;text-align:center">Sell a load at the surface to set one.</p>');
+  paintDiff();
+}
+
+/* results card: a wreck ends the dive */
+var WHY = { BURNED:'a lava burst', LAVA:'lava', 'OUT OF FUEL':'running the tank dry' };
+function wreck(why){
+  var keep = Math.floor(S.cargo.length/2), lost = 0;
+  for(var i = keep; i < S.cargo.length; i++) lost += S.cargo[i].val;
+  var at = S.p.y, deepestDive = Math.max(dive.max, at);
+  respawn();                     // the dive stays open: the half-cargo you kept sells as part of it
+  persist();
+  mode = 'over'; tdir = null; keys = {}; dig.t = 0;
+  el('overWhy').textContent = 'Wrecked by ' + (WHY[why] || 'the mine') + ' at ' + at + ' m. Half the cargo fell out; your cash and upgrades are safe.';
+  el('overStats').innerHTML =
+    '<div><b>' + deepestDive + 'm</b><span>This dive</span></div>' +
+    '<div><b>$' + lost.toLocaleString() + '</b><span>Cargo lost</span></div>' +
+    '<div><b>$' + Math.round(S.cash).toLocaleString() + '</b><span>Cash</span></div>' +
+    '<div><b>' + S.deepest + 'm</b><span>Deepest</span></div>';
+  el('over').hidden = false; el('coach').hidden = true;
+  try{ el('btnAgain').focus({ preventScroll:true }); }catch(e){}
+  sdk('state', { scene:'over', score:deepestDive });
+}
+function hideOver(){ el('over').hidden = true; }
+function digAgain(){ hideOver(); mode = 'play'; if(tut.on) tutShow(); renderShop(); renderHUD(); sdk('state', { scene:'play' }); }
+el('btnAgain').onclick = digAgain;
+el('btnOverTitle').onclick = function(){ toTitle(); };
+
+/* restart = a fresh dive: back at the surface, full tank and hull, empty cargo, same purse */
+function restartDive(){
+  if(mode === 'title'){ startGame(); return; }
+  if(URLSEED !== null && _rng0 !== null) _rng = _rng0;
+  world = {};
+  S.p.x = Math.floor(COLS/2); S.p.y = 0;
+  S.fuel = fuelMax(); S.hull = hullMax(); S.cargo = []; S.combo = 0; S.comboT = 0;
+  dig.dir = null; dig.t = 0; dig.c = dig.r = -1; tdir = null;
+  parts.length = 0; floats.length = 0; shake = 0; hitstop = 0;
+  dive.on = false; dive.max = 0;
+  digAgain();
+}
+function toTitle(){
+  mode = 'title'; hideOver(); tutHide();
+  el('title').style.display = 'flex';
+  document.body.classList.add('on-title');
+  buildTitle();
+  sdk('state', { scene:'title' });
+}
+
+/* first-run coach: four prompts, each cleared by doing it; skippable, replayable from the menu */
+var TUT_KEY = 'deepcut_tut';
+var TUT = [
+  'Hold <b>&#9660;</b> (S, the arrow or the pad) to drill down.',
+  'Drill into a <b>coloured ore</b> to load it into your cargo.',
+  'Climb <b>&#9650;</b> back to the surface to sell the load.',
+  'Spend cash in the <b>shop</b>: a better drill digs faster.'
+];
+var tut = { on:false, step:0, t:0, sold:false, up0:0 };
+function tutSeen(){ try{ return localStorage.getItem(TUT_KEY) === '1'; }catch(e){ return true; } }
+function upLevels(){ var n = 0; for(var k in S.up) n += S.up[k] || 0; return n; }
+function tutShow(){ el('coachTxt').innerHTML = (tut.step + 1) + '/4 &nbsp;' + TUT[tut.step]; el('coach').hidden = false; }
+function tutHide(){ tut.on = false; el('coach').hidden = true; }
+function tutStart(){ tut.on = true; tut.step = 0; tut.t = 0; tut.sold = false; tutShow(); }
+function tutNext(){
+  tut.step++; tut.t = 0;
+  if(tut.step === 2) tut.sold = false;
+  if(tut.step === 3) tut.up0 = upLevels();
+  if(tut.step >= TUT.length){ tutDone(); return; }
+  tutShow();
+}
+function tutDone(){ tutHide(); try{ localStorage.setItem(TUT_KEY, '1'); }catch(e){} sdk('event', 'tutorial-done'); }
+function tutTick(dt){
+  if(!tut.on) return;
+  tut.t += dt;
+  if(tut.step === 0 && S.p.y >= 3) tutNext();
+  else if(tut.step === 1 && S.cargo.length > 0) tutNext();
+  else if(tut.step === 2 && tut.sold) tutNext();
+  else if(tut.step === 3 && (upLevels() > tut.up0 || tut.t > 10)) tutNext();
+}
+el('coachSkip').onclick = function(){ tutDone(); };
+
+/* hints: the most useful next move for where the drill is right now */
+function hint(){
+  if(mode === 'title') return 'Press START DIGGING, then hold down to drill.';
+  if(mode === 'over') return 'Press DIG AGAIN: your cash and upgrades are safe.';
+  if(tut.on) return el('coachTxt').textContent.replace(/^\d\/4\s*/, '');
+  var surf = atSurface();
+  if(S.cargo.length >= cargoMax()) return 'Your cargo is full. Climb back to the surface to sell it.';
+  if(!surf && S.fuel / fuelMax() < 0.3) return 'Fuel is at ' + Math.round(100*S.fuel/fuelMax()) + '%. Head up now: the surface refuels you for free.';
+  if(!surf && S.hull / hullMax() < 0.35) return 'Your hull is badly damaged. Get to the surface to repair it.';
+  if(surf){
+    var best = null;
+    Object.keys(UP).forEach(function(k){ var c = upCost(k); if(c <= S.cash && (!best || c < best.c)) best = { k:k, c:c }; });
+    if(best) return 'You can afford the ' + UP[best.k].name + ' ($' + best.c.toLocaleString() + '): tap it in the shop.';
+  }
+  if(S.p.y >= 250 && !S.up.radiator) return 'Lava gets common down here. A Radiator from the shop cuts its damage.';
+  for(var i = 0; i < ORES.length; i++) if(ORES[i].from > S.p.y)
+    return 'Keep digging: ' + ORES[i].name + ' ($' + ORES[i].val.toLocaleString() + ' each) starts at ' + ORES[i].from + ' m.';
+  return 'Voidstone is the rarest ore. Watch for a purple glow.';
+}
+
+/* codes: just for fun; a session with codes on is labelled and never saved */
+var CH = { tank:false, iron:false, xray:false };
+var CODES = { FULLTANK:'Fuel never runs out', IRONHULL:'The hull takes no damage', GOLDRUSH:'+$25,000 cash', XRAYLAMP:'The lamp lights the whole mine' };
+function code(c){
+  c = String(c || '').trim().toUpperCase();
+  if(!CODES[c]) return { ok:false };
+  if(c === 'FULLTANK') CH.tank = true;
+  if(c === 'IRONHULL') CH.iron = true;
+  if(c === 'XRAYLAMP') CH.xray = true;
+  if(c === 'GOLDRUSH'){ S.cash += 25000; renderShop(); renderHUD(); }
+  el('codesOn').hidden = false;
+  if(mode === 'title') buildTitle();
+  toast('CODE ON: ' + CODES[c].toUpperCase(), '#e6b455');
+  return { ok:true, message:CODES[c] + '. Codes on: this session is not saved.' };
+}
+
+/* reduced motion */
+var RM = false;
+try{ RM = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
 
 /* ---------------------------------------------------------------- boot */
 S = load() || fresh();
@@ -649,10 +887,17 @@ renderShop(); renderHUD();
 (function(){ var sl=document.getElementById('seedLine');
   if(sl) sl.textContent = URLSEED===null ? 'free dig - random mine' : ('DAILY SEED ' + URLSEED + ' - same mine for everyone today'); })();
 world = {}; tileAt(1,3);
-document.getElementById('stats').innerHTML =
-  '<div><b>$' + Math.round(S.cash).toLocaleString() + '</b><span>Cash</span></div>' +
-  '<div><b>' + S.deepest + 'm</b><span>Deepest</span></div>' +
-  '<div><b>$' + S.best.toLocaleString() + '</b><span>Best haul</span></div>';
+document.body.classList.add('on-title');
+buildTitle();
+if(window.ArcadeSDK) window.ArcadeSDK.init({
+  pauseButton: 'bl',          // top corners hold the HUD and the shop; the pad sits bottom centre
+  onRestart: restartDive,
+  onExit: toTitle,
+  onTutorial: function(){ if(mode !== 'play') startGame(); tutStart(); },
+  onHint: hint,
+  onCheat: code
+});
+sdk('state', { scene:'title' });
 
 window.__DEBUG = {
   state: function(){ return { mode:mode, cash:Math.round(S.cash), depth:S.p.y, deepest:S.deepest,

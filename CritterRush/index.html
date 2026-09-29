@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script src="../assets/arcade-sdk.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>CRITTER RUSH</title>
         <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
@@ -26,7 +27,7 @@
         #progressBar .marker { position: absolute; width: 14px; height: 14px; border-radius: 50%; top: 3px; transform: translateX(-7px); border: 2px solid white; }
         #itemSlot { position: absolute; bottom: 30px; right: 30px; width: 80px; height: 80px; background: rgba(0,0,0,0.6); border-radius: 20px; border: 4px solid white; display: none; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; pointer-events: auto; }
         #itemSlot:hover { background: rgba(0,0,0,0.8); }
-        #timer { position: absolute; top: 10px; right: 10px; font-size: 2rem; color: white; text-shadow: 2px 2px 0 #333; display: none; }
+        #timer { position: absolute; top: 10px; right: 64px; font-size: 2rem; color: white; text-shadow: 2px 2px 0 #333; display: none; }
         #muteBtn { position: absolute; bottom: 30px; left: 30px; width: 50px; height: 50px; background: rgba(0,0,0,0.6); border-radius: 50%; border: 3px solid white; color: white; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; }
         #resultScreen { background: rgba(0,0,0,0.7); display: none; }
         #resultScreen h2 { font-size: 4rem; color: #FFD700; text-shadow: 4px 4px 0 #FF4500; }
@@ -51,12 +52,38 @@
         #countdownDisplay { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); font-size: 8rem; color: #FFD700; text-shadow: 6px 6px 0 #FF4500, 10px 10px 0 rgba(0,0,0,0.5); display: none; z-index: 10; }
         .impactPop { position: absolute; font-size: 3.5rem; font-weight: 900; color: #FF4500; text-shadow: 3px 3px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF; transform: translate(-50%, -50%); pointer-events: none; z-index: 20; animation: popAnim 0.6s ease-out forwards; }
         @keyframes popAnim { 0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; } 20% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1) translateY(-60px); opacity: 0; } }
+        /* arcade standard: options, best time, codes label and the first-race coach, in the title's white-and-gold look */
+        .optRow { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 4px 10px; }
+        .opt { font-family: inherit; font-size: 1rem; padding: 10px 18px; min-height: 44px; border-radius: 30px; border: 3px solid white;
+               background: rgba(255,255,255,0.3); color: white; text-shadow: 2px 2px 0 #333; cursor: pointer; pointer-events: auto; }
+        .opt[aria-pressed="true"] { background: #FFD700; color: #333; text-shadow: none; border-color: #FFD700; }
+        .opt:focus-visible, .charBtn:focus-visible { outline: 3px solid #FF4500; outline-offset: 3px; }
+        #bestLine { color: #FFD700; font-size: 1.2rem; text-shadow: 2px 2px 0 #333; margin: 0 0 6px; min-height: 1em; }
+        #resultBest { color: white; font-size: 1.4rem; text-shadow: 2px 2px 0 #333; margin: 6px; }
+        #newBest { color: #FFD700; font-size: 1.8rem; text-shadow: 3px 3px 0 #FF4500; display: none; }
+        #codesOn { display: inline-block; margin-top: 8px; background: #FFD700; color: #333; text-shadow: none; font-size: 0.8rem;
+                   letter-spacing: 1px; border-radius: 10px; padding: 3px 10px; }
+        #coach { position: absolute; left: 50%; top: 90px; transform: translateX(-50%); display: flex; gap: 12px; align-items: center;
+                 background: rgba(0,0,0,0.6); border: 3px solid white; border-radius: 20px; padding: 8px 8px 8px 16px; color: white;
+                 font-size: 1rem; text-shadow: 2px 2px 0 #333; pointer-events: auto; max-width: min(92vw, 560px); z-index: 12; }
+        #coach b { color: #FFD700; }
+        #coach button { flex: none; font-family: inherit; font-size: 0.9rem; min-height: 40px; padding: 6px 14px; border: none;
+                        border-radius: 20px; background: #FFD700; color: #333; cursor: pointer; box-shadow: 0 4px 0 #B8860B; }
+        #coach[hidden], #codesOn[hidden] { display: none; }
+        @media (max-width: 560px) { #coach { top: 110px; font-size: 0.9rem; } #progressBar { width: 200px; } }
+        @media (prefers-reduced-motion: reduce) {
+            .impactPop { animation: popFade 0.6s linear forwards; }
+            .btn, .charBtn { transition: none; }
+            .btn:hover, .charBtn:hover { transform: none; }
+        }
+        @keyframes popFade { 0% { opacity: 1; } 100% { opacity: 0; } }
     </style>
 </head>
 <body>
     <div id="ui">
         <div id="titleScreen" class="screen">
             <h1>CRITTER RUSH</h1>
+            <div id="bestLine"></div>
             <p>Race to the finish! Use weapons to slow rivals!</p>
             <div id="charSelect">
                 <button class="charBtn selected" data-char="fox" aria-label="Fox" title="Fox"><svg viewBox="0 0 64 64" width="62" height="62" aria-hidden="true"><polygon points="13,24 19,4 31,18" fill="#f4762a"/><polygon points="51,24 45,4 33,18" fill="#f4762a"/><polygon points="18,21 21,10 27,18" fill="#2a2a2a"/><polygon points="46,21 43,10 37,18" fill="#2a2a2a"/><ellipse cx="32" cy="37" rx="20" ry="18" fill="#f4762a"/><ellipse cx="32" cy="43" rx="12" ry="9" fill="#fff0dc"/><circle cx="25" cy="34" r="3.2" fill="#2a2a2a"/><circle cx="39" cy="34" r="3.2" fill="#2a2a2a"/><ellipse cx="32" cy="42" rx="3.6" ry="2.6" fill="#2a2a2a"/></svg></button>
@@ -64,19 +91,27 @@
                 <button class="charBtn" data-char="cat" aria-label="Cat" title="Cat"><svg viewBox="0 0 64 64" width="62" height="62" aria-hidden="true"><polygon points="13,24 19,4 31,18" fill="#9aa4ad"/><polygon points="51,24 45,4 33,18" fill="#9aa4ad"/><polygon points="18,21 21,10 27,18" fill="#ffb3c6"/><polygon points="46,21 43,10 37,18" fill="#ffb3c6"/><ellipse cx="32" cy="37" rx="20" ry="18" fill="#9aa4ad"/><ellipse cx="32" cy="43" rx="12" ry="9" fill="#e8edf1"/><circle cx="25" cy="34" r="3.2" fill="#2a2a2a"/><circle cx="39" cy="34" r="3.2" fill="#2a2a2a"/><ellipse cx="32" cy="42" rx="3.6" ry="2.6" fill="#2a2a2a"/></svg></button>
                 <button class="charBtn" data-char="bear" aria-label="Bear" title="Bear"><svg viewBox="0 0 64 64" width="62" height="62" aria-hidden="true"><circle cx="17" cy="17" r="9" fill="#8b5a2b"/><circle cx="47" cy="17" r="9" fill="#8b5a2b"/><circle cx="17" cy="17" r="4.5" fill="#6b4420"/><circle cx="47" cy="17" r="4.5" fill="#6b4420"/><ellipse cx="32" cy="37" rx="20" ry="18" fill="#8b5a2b"/><ellipse cx="32" cy="43" rx="12" ry="9" fill="#c89b6a"/><circle cx="25" cy="34" r="3.2" fill="#2a2a2a"/><circle cx="39" cy="34" r="3.2" fill="#2a2a2a"/><ellipse cx="32" cy="42" rx="3.6" ry="2.6" fill="#2a2a2a"/></svg></button>
             </div>
+            <div class="optRow" role="group" aria-label="Difficulty">
+                <button class="opt" data-d="easy" aria-pressed="false">EASY</button><button class="opt" data-d="normal" aria-pressed="true">NORMAL</button><button class="opt" data-d="hard" aria-pressed="false">HARD</button>
+            </div>
+            <div class="optRow"><button class="opt" id="qualityBtn" aria-pressed="true">GRAPHICS: HIGH</button></div>
             <button id="playBtn" class="btn">PLAY</button>
-            <p>Space/W/↑: Jump (double) | S/↓: Slide | F/Shift: Use Item</p>
+            <p>Space/W/↑: Jump (double) | S/↓: Slide | F/Shift: Use Item | M: Mute</p>
         </div>
         <div id="hud">
             <div id="position">1st</div>
             <div id="progressBar"></div>
+            <div id="codesOn" hidden>CODES ON</div>
         </div>
+        <div id="coach" role="status" aria-live="polite" hidden><span id="coachTxt"></span><button id="coachSkip">SKIP</button></div>
         <div id="timer">0:00</div>
         <div id="itemSlot" title="Use item"></div>
         <div id="muteBtn">🔊</div>
         <div id="resultScreen" class="screen">
             <h2 id="resultTitle">YOU WIN!</h2>
             <div id="resultPlaces"></div>
+            <div id="resultBest"></div>
+            <div id="newBest">★ NEW BEST TIME ★</div>
             <button id="restartBtn" class="btn">RESTART</button>
             <button id="btnShare" class="btn" style="font-size:1.3rem;padding:12px 34px;margin:6px">SAVE THE RACE CARD</button>
         </div>
@@ -229,7 +264,8 @@
         let hitStop = 0;
         let countdown = 3;
         let countdownTimer = 0;
-        let bestTime = localStorage.getItem('critterBest') || null;
+        let bestTime = null;
+        try { const b = parseFloat(localStorage.getItem('critterBest')); if (b > 0) bestTime = b; } catch (e) {}
 
         // --- Track constants ---
         const TRACK_LENGTH = 900;
@@ -940,6 +976,7 @@
             racer.item = null;
             if (racer.isPlayer) item = null;
             playUse();
+            if (racer.isPlayer) { tutEv('item'); if (CH.rain) { item = racer.item = randomItem(); } }   // ITEMRAIN code
             if (racer.isPlayer) updateItemSlot();
 
             if (itemType === 'lightning') {
@@ -1220,6 +1257,7 @@
             camera.position.z = 26;
             camera.lookAt(camera.position.x, camera.position.y, 0);
 
+            if (screenShake > 0 && RM) screenShake = 0;   // reduced motion: no camera shake
             if (screenShake > 0) {
                 camera.position.x += (Math.random() - 0.5) * screenShake * 2;
                 camera.position.y += (Math.random() - 0.5) * screenShake * 2;
@@ -1308,15 +1346,21 @@
             // readout kept showing the last in-race value behind the results card.
             const suffix = ['th', 'st', 'nd', 'rd'][playerPlace] || 'th';
             document.getElementById('position').textContent = playerPlace + suffix;
+            let newBest = false;
             if (playerPlace === 1) {
                 document.getElementById('resultTitle').textContent = 'YOU WIN! 🏆';
-                if (!bestTime || raceTime < bestTime) {
-                    localStorage.setItem('critterBest', raceTime);
-                    bestTime = raceTime;
+                // a win with codes on never replaces the best time
+                if (!cheated() && (!bestTime || raceTime < bestTime)) {
+                    try { localStorage.setItem('critterBest', raceTime); } catch (e) {}
+                    bestTime = raceTime; newBest = true;
                 }
             } else {
                 document.getElementById('resultTitle').textContent = `PLACE ${playerPlace}`;
             }
+            document.getElementById('resultBest').textContent = (bestTime ? 'Best time: ' + bestTime.toFixed(1) + 's' : 'Win a race to set a best time') + (cheated() ? '  (codes on: not saved)' : '');
+            document.getElementById('newBest').style.display = newBest ? 'block' : 'none';
+            tutHide();
+            sdk('state', { scene: 'over', score: +raceTime.toFixed(1), place: playerPlace, outcome: playerPlace === 1 ? 'win' : 'place' });
         }
 
         // --- Main loop ---
@@ -1410,7 +1454,9 @@
 
             if (phase === 'racing') {
                 raceTime += dt;
+                if (CH.nostun) player.stunTimer = 0;   // NOSTUN code
                 handlePlayerInput(dt);
+                tutTick(dt);
                 racers.forEach(r => {
                     if (!r.isPlayer) updateAI(r, dt);
                     updateRacerPhysics(r, dt);
@@ -1546,14 +1592,14 @@
                 r.stunTimer = 0;
                 r.invulnTimer = 0;
                 r.item = null;
-                r.baseSpeed = BASE_SPEED * (0.94 + Math.random() * 0.12) * (0.92 + r.skill * 0.18);
+                r.baseSpeed = BASE_SPEED * (0.94 + Math.random() * 0.12) * (0.92 + r.skill * 0.18) * D().ai;   // difficulty: rivals' pace
                 r.rubber = 0;
                 r.speed = r.baseSpeed;
                 r.mudTimer = 0;
                 r.mesh.position.set(r.x, r.y, r.zOffset);
             });
-            player.speed = PLAYER_SPEED;
-            player.baseSpeed = PLAYER_SPEED;
+            player.speed = PLAYER_SPEED * (CH.rocket ? 1.2 : 1);
+            player.baseSpeed = PLAYER_SPEED * (CH.rocket ? 1.2 : 1);   // ROCKETPAW code
             player.mudTimer = 0;
             player.item = null;
             item = null;
@@ -1564,6 +1610,8 @@
             playerPlace = 1;
             updateItemSlot();
             startCountdown();
+            if (tutSeen()) tutHide(); else tutStart();
+            sdk('state', { scene: 'play' });
         });
 
         document.querySelectorAll('.charBtn').forEach(btn => {
@@ -1585,10 +1633,14 @@
             document.getElementById('playBtn').click();
         });
 
-        document.getElementById('muteBtn').addEventListener('click', () => {
+        function toggleMute() {
             muted = !muted;
             document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
-        });
+            try { localStorage.setItem('critterMuted', muted ? '1' : '0'); } catch (e) {}
+        }
+        document.getElementById('muteBtn').addEventListener('click', toggleMute);
+        try { muted = localStorage.getItem('critterMuted') === '1'; } catch (e) {}
+        document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
 
         document.getElementById('itemSlot').addEventListener('click', () => {
             if (item) useItem(player);
@@ -1609,10 +1661,12 @@
             if (phase === 'finished' && (e.code === 'Space' || e.code === 'Enter')) {
                 document.getElementById('restartBtn').click();
             }
-            if (e.code === 'Escape') {
-                muted = !muted;
-                document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
+            // keyboard route off the title (a focused button keeps Enter/Space for itself)
+            if (phase === 'title' && (e.code === 'Space' || e.code === 'Enter') && !(e.target && e.target.closest && e.target.closest('button'))
+                && document.getElementById('titleScreen').style.display !== 'none') {
+                e.preventDefault(); document.getElementById('playBtn').click();
             }
+            if (e.code === 'KeyM') toggleMute();   // M mutes; P and Esc belong to the arcade's pause
         });
         window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
@@ -1621,6 +1675,116 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
+
+        // --- Arcade standard: difficulty, graphics quality, first-race coach, hints, codes, SDK ---
+        function sdk(fn, a) { try { if (window.ArcadeSDK) window.ArcadeSDK[fn](a); } catch (e) {} }
+        function cheated() { return !!(window.ArcadeSDK && window.ArcadeSDK.cheated); }
+        const RM = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+        const DIFFS = { easy: { ai: 0.93 }, normal: { ai: 1 }, hard: { ai: 1.05 } };   // rivals' pace
+        let diff = 'normal';
+        try { const v = localStorage.getItem('critterDiff'); if (DIFFS[v]) diff = v; } catch (e) {}
+        function D() { return DIFFS[diff]; }
+        function paintDiff() { document.querySelectorAll('#titleScreen [data-d]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.d === diff))); }
+        document.querySelectorAll('#titleScreen [data-d]').forEach(b => b.addEventListener('click', () => {
+            diff = b.dataset.d; try { localStorage.setItem('critterDiff', diff); } catch (e) {} paintDiff();
+        }));
+        function paintBest() { document.getElementById('bestLine').textContent = bestTime ? 'BEST TIME ' + bestTime.toFixed(1) + 's' : ''; }
+
+        // Graphics quality: High = device pixel ratio (max 2) + soft shadows; Low = 1x pixels, no shadows.
+        let quality = 'high';
+        try { if (localStorage.getItem('critterQuality') === 'low') quality = 'low'; } catch (e) {}
+        function applyQuality() {
+            const hi = quality === 'high';
+            renderer.setPixelRatio(hi ? Math.min(window.devicePixelRatio || 1, 2) : 1);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = hi;
+            sunLight.castShadow = hi;
+            scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { m.needsUpdate = true; }); });
+            const b = document.getElementById('qualityBtn');
+            b.textContent = 'GRAPHICS: ' + (hi ? 'HIGH' : 'LOW'); b.setAttribute('aria-pressed', String(hi));
+        }
+        document.getElementById('qualityBtn').addEventListener('click', () => {
+            quality = quality === 'high' ? 'low' : 'high';
+            try { localStorage.setItem('critterQuality', quality); } catch (e) {}
+            applyQuality();
+        });
+        applyQuality();
+
+        // First race: three prompts, each cleared by doing it.
+        const TUT_KEY = 'critterTut';
+        const TUT = ['<b>JUMP</b>: Space, W, ↑ or the ⬆ button. Jump again in the air to double jump.',
+                     '<b>SLIDE</b> under branches and pipes: S, ↓ or the ⬇ button.',
+                     'Run into a <b>crate</b> for an item, then use it: F, Shift, the ⚡ button or the item slot.'];
+        const tut = { on: false, step: 0, t: 0 };
+        function tutSeen() { try { return localStorage.getItem(TUT_KEY) === '1'; } catch (e) { return true; } }
+        function tutShow() { document.getElementById('coachTxt').innerHTML = (tut.step + 1) + '/3 &nbsp;' + TUT[tut.step]; document.getElementById('coach').hidden = false; }
+        function tutHide() { tut.on = false; document.getElementById('coach').hidden = true; }
+        function tutStart() { tut.on = true; tut.step = 0; tut.t = 0; tutShow(); }
+        function tutDone() { tutHide(); try { localStorage.setItem(TUT_KEY, '1'); } catch (e) {} sdk('event', 'tutorial-done'); }
+        function tutNext() { tut.step++; tut.t = 0; if (tut.step >= TUT.length) tutDone(); else tutShow(); }
+        function tutEv(name) { if (tut.on && tut.step === 2 && name === 'item') tutNext(); }
+        function tutTick(dt) {
+            if (!tut.on) return;
+            tut.t += dt;
+            if (tut.step === 0 && !player.isGrounded && player.vy > 0) tutNext();
+            else if (tut.step === 1 && player.isSliding) tutNext();
+            else if (tut.step === 2 && !item && tut.t > 20) tutNext();
+        }
+        document.getElementById('coachSkip').addEventListener('click', e => { e.stopPropagation(); tutDone(); });
+
+        // Hints: the next obstacle and what to do about it, then what to do with your item.
+        const JUMP = { rock: 'a rock', log: 'a log', spike: 'spikes', gap: 'a gap' }, SLIDE = { branch: 'a branch', pipe: 'a pipe' };
+        const ITEM_TIP = { lightning: 'Lightning stuns every racer ahead of you: use it (F) when you are behind.',
+            glove: 'The glove flies forward: fire it (F) when a rival is just ahead.', saw: 'The saw rolls forward: fire it (F) when a rival is just ahead.',
+            mine: 'Drop the mine (F) when a rival is right behind you.', boost: 'Boost (F) on a clear stretch.', shield: 'Pop the shield (F) before a tricky stretch.' };
+        function hint() {
+            if (phase === 'title' || phase === 'menu' || !phase) return 'Pick a critter and press PLAY.';
+            if (phase === 'finished') return 'Press RESTART (Space or Enter) to race again. Save your item for the last stretch.';
+            if (phase === 'countdown') return 'Get ready: hold nothing until GO.';
+            let next = null, nd = 1e9;
+            obstacleGroup.children.forEach(o => { const d = o.position.x - player.x; if (d > 0 && d < nd && (JUMP[o.userData.type] || SLIDE[o.userData.type] || o.userData.type === 'mud')) { nd = d; next = o; } });
+            if (next && nd < 25) {
+                const t = next.userData.type, m = Math.max(1, Math.round(nd));
+                if (SLIDE[t]) return 'Slide under ' + SLIDE[t] + ' in ' + m + ' m (S, ↓ or ⬇).';
+                if (JUMP[t]) return 'Jump ' + JUMP[t] + ' in ' + m + ' m (Space, W or ⬆).';
+                if (t === 'mud') return 'Mud in ' + m + ' m slows you down for a moment.';
+            }
+            if (item && ITEM_TIP[item]) return ITEM_TIP[item];
+            if (playerPlace > 1) return 'You are ' + playerPlace + ['th', 'st', 'nd', 'rd'][playerPlace] + ': run into crates for items to catch up.';
+            return 'You are leading. Keep your item for when a rival catches up.';
+        }
+
+        // Codes: just for fun; a race with codes on is labelled and never sets a best time.
+        const CH = { rocket: false, nostun: false, rain: false, big: false };
+        const CODES = { ROCKETPAW: 'You run 20% faster', NOSTUN: 'Nothing can stun you', ITEMRAIN: 'A new item the moment you use one', BIGHEADS: 'Party-size critters' };
+        function code(c) {
+            c = String(c || '').trim().toUpperCase();
+            if (!CODES[c]) return { ok: false };
+            if (c === 'ROCKETPAW' && !CH.rocket) { CH.rocket = true; player.baseSpeed *= 1.2; }
+            if (c === 'NOSTUN') CH.nostun = true;
+            if (c === 'ITEMRAIN') { CH.rain = true; if (!item && (phase === 'racing' || phase === 'countdown')) { item = player.item = randomItem(); updateItemSlot(); } }
+            if (c === 'BIGHEADS' && !CH.big) { CH.big = true; racers.forEach(r => r.mesh.scale.multiplyScalar(1.5)); }
+            document.getElementById('codesOn').hidden = false;
+            return { ok: true, message: CODES[c] + '. Codes on: best times are not saved.' };
+        }
+
+        function toTitle() {
+            phase = 'title'; tutHide();
+            ['resultScreen', 'hud', 'timer', 'itemSlot', 'countdownDisplay'].forEach(id => { document.getElementById(id).style.display = 'none'; });
+            document.getElementById('titleScreen').style.display = 'flex';
+            paintBest(); paintDiff();
+            sdk('state', { scene: 'title' });
+        }
+        if (window.ArcadeSDK) window.ArcadeSDK.init({
+            pauseButton: 'tr',          // the race timer moved left to make room
+            onRestart: () => document.getElementById('playBtn').click(),
+            onExit: toTitle,
+            onTutorial: () => { if (phase !== 'racing' && phase !== 'countdown') document.getElementById('playBtn').click(); tutStart(); },
+            onHint: hint,
+            onCheat: code
+        });
+        paintBest(); paintDiff();
+        sdk('state', { scene: 'title' });
 
         animate();
 

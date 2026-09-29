@@ -83,6 +83,8 @@ export function start(root, api) {
 
   function finish() {
     api.complete(Math.round(right / seq.length * 100)); api.Sound.win();
+    api.done && api.done(Math.round(right / seq.length * 100));
+    api.setHint && api.setHint(() => 'Press Another set for new equations.');
     host.replaceChildren(
       taskCard('Reaction bench', 'Bench closed.', `${right} of ${seq.length} equations balanced.`),
       el('div', { class:'panel', style:'margin-top:16px' },
@@ -148,9 +150,9 @@ export function start(root, api) {
       const put = (f, i) => {
         eqLine.append(el('div', { style:'display:flex;flex-direction:column;align-items:center;gap:3px' },
           el('div', { style:'display:flex;gap:3px' },
-            el('button', { class:'chip', style:'padding:2px 8px;font-size:.9rem',
+            el('button', { class:'chip', style:'padding:2px 8px;font-size:.9rem;min-width:40px',
               onclick:() => { coef[i] = Math.max(1, coef[i] - 1); api.Sound.click(); paintEq(); paintBars(); } }, '−'),
-            el('button', { class:'chip', style:'padding:2px 8px;font-size:.9rem',
+            el('button', { class:'chip', style:'padding:2px 8px;font-size:.9rem;min-width:40px',
               onclick:() => { coef[i] = Math.min(12, coef[i] + 1); api.Sound.click(); paintEq(); paintBars(); } }, '+')),
           el('div', {},
             el('span', { style:`color:${coef[i] > 1 ? INK.rust : INK.dust};font-size:1.15em` },
@@ -206,6 +208,16 @@ export function start(root, api) {
         `never the small ones inside a formula — altering H₂O to H₃O would make it a different substance entirely.`;
     }
 
+    /* hint: the first uneven element, then the next coefficient that differs from a solution */
+    api.setHint && api.setHint(() => {
+      const L = counts('l'), R = counts('r'), all = [...eq.left, ...eq.right];
+      const bad = elems.find(e => (L[e] || 0) !== (R[e] || 0));
+      if (!bad) { const g = coef.reduce((a, b) => { while (b) { [a, b] = [b, a % b]; } return a; });
+        return g > 1 ? `Balanced, but every coefficient divides by ${g}. Use the smallest whole numbers.` : 'Balanced. Press Check the balance.'; }
+      const i = eq.sol.findIndex((c, j) => c !== coef[j]);
+      return `${bad} is uneven: ${L[bad] || 0} on the left, ${R[bad] || 0} on the right.` +
+        (i >= 0 ? ` Try ${eq.sol[i]} in front of ${sub(all[i])}.` : '');
+    });
     host.replaceChildren(
       taskCard(`Equation ${ix + 1} of ${seq.length}`, eq.name,
         'Adjust the big coefficients until every element bar matches on both sides. You may not change the subscripts.'),

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="../assets/arcade-sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>SneakerDrop - Hype Market Tycoon</title>
 <style>
@@ -23,6 +24,22 @@
   #ui .mini{background:#121a2c;color:#9fb0d0;border:1px solid #26334d;border-radius:10px;
     padding:10px 16px;font-size:13px;font-weight:700;min-height:44px;cursor:pointer;}
   .hide{display:none !important;}
+  /* difficulty picker on the title (same chip look as the sound button) */
+  #diffRow{position:absolute;left:0;right:0;top:72%;display:flex;gap:8px;justify-content:center;}
+  #ui .mini.on{background:#ffd23f;color:#2a1700;border-color:#ffd23f;}
+  /* first-run coach marks: a spotlight on the part of the market being explained */
+  #coach{position:absolute;inset:0;pointer-events:auto;z-index:5;}
+  #coach .spot{position:absolute;border:3px solid #ffd23f;border-radius:14px;
+    box-shadow:0 0 0 9999px rgba(4,6,12,.66);transition:all .25s;}
+  #coach .card{position:absolute;left:5%;right:5%;background:#0e1526;border:1.5px solid #ffd23f;
+    border-radius:16px;padding:14px 16px 12px;color:#eaf0ff;box-shadow:0 14px 40px rgba(0,0,0,.6);}
+  #coach .k{font-size:12px;font-weight:800;letter-spacing:1.5px;color:#7af0ff;}
+  #coach .t{font-size:clamp(14px,2.1vh,17px);font-weight:700;line-height:1.4;margin:6px 0 10px;}
+  #coach .row{display:flex;gap:10px;}
+  #coach button{flex:1;min-height:44px;border-radius:12px;font-weight:800;font-size:14px;letter-spacing:1px;cursor:pointer;}
+  #coach .go{border:0;background:linear-gradient(180deg,#ffe066,#ffa31a);color:#2a1700;box-shadow:0 4px 0 #a35f00;}
+  #coach .skip{background:#121a2c;color:#9fb0d0;border:1px solid #26334d;}
+  @media (prefers-reduced-motion: reduce){#coach .spot{transition:none;}}
 </style>
 </head>
 <body>
@@ -31,8 +48,10 @@
   <div id="ui">
     <div id="titleUI">
       <button id="startBtn">TAP TO START</button>
-      <div id="sndRow"><button class="mini" id="sndBtn">SOUND: ON</button></div>
+      <div id="diffRow" role="group" aria-label="Difficulty"><button class="mini" data-diff="easy">EASY</button><button class="mini" data-diff="normal">NORMAL</button><button class="mini" data-diff="hard">HARD</button></div>
+      <div id="sndRow"><button class="mini" id="sndBtn">SOUND: ON</button><button class="mini" id="howBtn">HOW TO PLAY</button></div>
     </div>
+    <div id="coach" class="hide" role="dialog" aria-modal="true" aria-label="How to play"><div class="spot"></div><div class="card"><div class="k"></div><div class="t"></div><div class="row"><button class="skip" type="button">SKIP</button><button class="go" type="button">NEXT</button></div></div></div>
   </div>
 </div></div>
 <script>
@@ -56,6 +75,14 @@ function mulberry32(a){var t=a>>>0;return function(){t=(t+0x6D2B79F5)>>>0;var x=
 
 /* ---------------- constants ---------------------------------------- */
 var LW=540,LH=960,FIXED=1/60,WEEKS=10,START_CASH=800;
+/* difficulty: starting bank and how wide the snipe timing window is */
+var DIFFS={easy:{n:'EASY',cash:1200,widen:1.35},normal:{n:'NORMAL',cash:START_CASH,widen:1},hard:{n:'HARD',cash:550,widen:0.8}};
+var DIFF=(SAVE.diff&&DIFFS[SAVE.diff])?SAVE.diff:'normal';
+/* arcade codes: on until the page reloads; a run with codes on never replaces a best */
+var CH={bank:false,fire:false,slow:false,grail:0};
+function cheated(){try{return !!(window.ArcadeSDK&&ArcadeSDK.cheated);}catch(e){return false;}}
+function sdk(fn,a){try{if(window.ArcadeSDK)ArcadeSDK[fn](a);}catch(e){}}
+function bestKey(){var d=(S&&S.diff)||DIFF;return d==='normal'?'best':'best_'+d;}
 var TIER={
   CORE:{c:'#93a0b8',hype:0.30,speed:0.85,tc:10,mul:1.0},
   RARE:{c:'#3fa9ff',hype:0.55,speed:1.00,tc:25,mul:1.0},
@@ -227,7 +254,7 @@ function newRun(seed){
   seed=seed>>>0;
   S={
     phase:'market',seed:seed,over:false,
-    day:1,week:1,cash:START_CASH,
+    day:1,week:1,cash:DIFFS[DIFF].cash,diff:DIFF,startCash:DIFFS[DIFF].cash,
     up:{storage:0,grade:0,rep:0},
     storage:3,rep:0,
     inv:[],
@@ -257,6 +284,8 @@ function newRun(seed){
   applyDayEvents(0,0);
   marketTick();
   buildTicker();
+  applyCodes();
+  S.wk0=weekSnap();
   titleUI.classList.add('hide');
 }
 function sModel(mid){return S.models[MIDX[mid]];}
@@ -269,7 +298,7 @@ function marketValue(m,grade){
 function heldValue(it){return marketValue(sModel(it.mid),it.grade)*0.92;}
 function netWorth(){var v=S.cash,i;for(i=0;i<S.inv.length;i++)v+=heldValue(S.inv[i]);return v;}
 function elapsedWeeks(){return Math.max(1,(S.week-1)+(S.day-1)/7);}
-function scorePerWeek(){return (netWorth()-START_CASH)/elapsedWeeks();}
+function scorePerWeek(){return (netWorth()-S.startCash)/elapsedWeeks();}
 
 /* ---------------- calendar ----------------------------------------- */
 function pickModel(rng){
@@ -360,9 +389,10 @@ function advanceDay(){
   // defensive: never let a stale modal block the day loop (headless/debug drivers)
   if(S.phase==='snipe'&&S.snipe)finishSnipe();
   if(S.phase==='auction'&&S.auction){if(!S.auction.done)hammer();closeAuction();}
-  if(S.phase==='pair'||S.phase==='shop'||S.phase==='confirm')S.phase='market';
+  if(S.phase==='pair'||S.phase==='shop'||S.phase==='confirm'||S.phase==='week')S.phase='market';
   S.day++;
-  if(S.day>7){S.day=1;S.week++;weekRoll();}
+  var rolled=false;
+  if(S.day>7){S.day=1;S.week++;weekRoll();rolled=true;}
   if(S.week>WEEKS){endRun(false);return;}
   applyDayEvents(S.week-1,S.day-1);
   marketTick();
@@ -371,13 +401,52 @@ function advanceDay(){
   S.scrollTarget=0;
   // anti-softlock: broke and empty-handed earns a pawn-shop shift, never a dead end
   if(S.cash<60&&S.inv.length===0){S.cash+=45;pop(270,520,'PAWN SHOP SHIFT  +$45','#ffd23f',22);}
+  if(rolled)openRecap();
+}
+/* ---------------- end-of-week recap --------------------------------- */
+function weekSnap(){return {cash:S.cash,worth:netWorth(),flips:S.flips,hits:S.hits,attempts:S.attempts,earned:S.earned};}
+function nextRank(v){
+  var L=[[0,'PART-TIME RESELLER'],[40,'SOLE BROKER'],[90,'HYPE ARCHITECT'],[170,'MARKET MAKER'],[300,'DROP GOD']];
+  for(var i=0;i<L.length;i++)if(v<L[i][0])return {at:L[i][0],n:L[i][1]};
+  return null;
+}
+function openRecap(){
+  var a=S.wk0||weekSnap(),b=weekSnap();
+  S.recap={wk:S.week-1,cash0:a.cash,cash1:b.cash,worth:b.worth-a.worth,flips:b.flips-a.flips,
+    won:b.hits-a.hits,tried:b.attempts-a.attempts,earned:b.earned-a.earned,rate:scorePerWeek()};
+  S.wk0=b;
+  S.phase='week';
+  AU.cash();
+}
+function renderWeek(){
+  var g=ctx,R=S.recap||{};
+  drawOverBg(sModel('novacage'));
+  var x=44,y=200,w=452,h=560;
+  rr(g,x,y,w,h,16);g.fillStyle='#0e1526';g.fill();
+  rr(g,x,y,w,h,16);g.strokeStyle='#7af0ff';g.lineWidth=1.6;g.stroke();
+  tx(g,'WEEK '+R.wk+' CLOSED',x+w/2,y+42,26,'#ffffff','center',900);
+  tx(g,(WEEKS-R.wk)+' week'+(WEEKS-R.wk===1?'':'s')+' left in the run',x+w/2,y+72,13,'#8b9ab8','center',700);
+  var rows=[['CASH',money(R.cash0)+'  \u2192  '+money(R.cash1)],['WORTH THIS WEEK',(R.worth>=0?'+':'')+money(R.worth)],
+            ['FLIP PROFIT',(R.earned>=0?'+':'')+money(R.earned)],['FLIPS',String(R.flips)],['DROPS WON',R.won+' of '+R.tried]];
+  for(var i=0;i<rows.length;i++){
+    var ry=y+100+i*42;
+    rr(g,x+20,ry,w-40,36,8);g.fillStyle='rgba(255,255,255,.045)';g.fill();
+    tx(g,rows[i][0],x+36,ry+18,12,'#8b9ab8','left',800);
+    var neg=(i===1&&R.worth<0)||(i===2&&R.earned<0);
+    tx(g,rows[i][1],x+w-36,ry+18,15,neg?'#ff8a98':'#eaf0ff','right',800);
+  }
+  tx(g,'RUN SO FAR',x+w/2,y+334,12,'#6f7f9e','center',800);
+  tx(g,money(R.rate)+' / week',x+w/2,y+366,30,'#7dffa8','center',900);
+  var nr=nextRank(R.rate);
+  tx(g,nr?('GOAL: '+nr.n+' at '+money(nr.at)+'/wk'):'TOP RANK: DROP GOD',x+w/2,y+400,13,'#ffd23f','center',800);
+  drawBtn('wkgo',x+24,y+h-88,w-48,64,'START WEEK '+(R.wk+1),{col:'#ffb020',size:20,fn:function(){S.phase='market';}});
 }
 function activeSnipes(){return S.attempts;}
 
 /* ---------------- feel helpers -------------------------------------- */
 function trauma(t){S.trauma=Math.min(1,S.trauma+t);}
 function hitstop(t){S.timeScale=0.12;S.stopT=t;}
-function flash(col){S.flash=1;S.flashCol=col||'#ff3355';}
+function flash(col){S.flash=RM?0:1;S.flashCol=col||'#ff3355';}   /* no full-screen flashes with reduced motion */
 /* a blocked action has to say why: the red pulse alone told the player nothing */
 function blocked(msg){pop(270,632,msg,'#ffc2cd',19);S.flashCol='#ff3355';}
 
@@ -389,8 +458,8 @@ function openSnipe(mid){
   if(S.inv.length>=S.storage){flash('#ff3355');blocked('STORAGE FULL - FLIP OR UPGRADE');return;}
   if(S.cash<m.retail){flash('#ff3355');blocked('NOT ENOUGH CASH - ' + money(m.retail) + ' NEEDED');return;}
   var rng=S.rngS;
-  S.snipe={mid:mid,pos:0,dir:1,t:0,count:1.6,go:false,zone:0.30+rng()*0.40,widen:1+(S.streak>=3?0.25:0),
-    speed:TIER[m.t].speed*(0.92+rng()*0.16),result:null,resT:0,locked:false};
+  S.snipe={mid:mid,pos:0,dir:1,t:0,count:1.6,go:false,zone:0.30+rng()*0.40,widen:(1+(S.streak>=3?0.25:0))*DIFFS[S.diff].widen,
+    speed:TIER[m.t].speed*(0.92+rng()*0.16)*(CH.slow?0.5:1),result:null,resT:0,locked:false};
   S.phase='snipe';
   AU.riser();
   trauma(0.18);
@@ -522,16 +591,19 @@ function gradePair(idx){
   burst(270,380,20,'#ffd23f',240,0.8,3.4);
 }
 function endRun(cashed){
+  coachEnd();
   S.over=true;S.phase='over';
-  S.summary={score:scorePerWeek(),weeks:elapsedWeeks(),net:netWorth()-START_CASH,
+  S.summary={score:scorePerWeek(),weeks:elapsedWeeks(),net:netWorth()-S.startCash,
     worth:netWorth(),best:S.bestFlip,worst:S.worstFlip,flips:S.flips,
-    acc:S.attempts?Math.round(S.hits/S.attempts*100):0,streak:S.bestStreak};
-  if(SAVE.best===undefined||S.summary.score>SAVE.best){SAVE.best=S.summary.score;SAVE.bestSeed=S.seed;}
+    acc:S.attempts?Math.round(S.hits/S.attempts*100):0,streak:S.bestStreak,codes:cheated()};
+  var bk=bestKey();
+  if(!S.summary.codes&&(SAVE[bk]===undefined||S.summary.score>SAVE[bk])){SAVE[bk]=S.summary.score;SAVE[bk+'Seed']=S.seed;}
   SAVE.runs=(SAVE.runs||0)+1;
   SAVE.lastSeed=S.seed;
   putSave(SAVE);
   AU.bed(false);
   AU.cash();trauma(0.5);
+  sdk('state',{scene:'over',score:Math.round(S.summary.score)});
 }
 function rankOf(v){
   if(v<0)return 'BAG HOLDER';
@@ -684,7 +756,10 @@ function renderTitle(){
   tx(g,'Score = profit per week.  Same seed, same market.',270,424,13,'#6f7f9e','center',600);
   var seedTxt=(S.seed?('SEED '+S.seed):('SEED '+dailySeed()));
   tx(g,seedTxt,270,462,14,'#ffd23f','center',800);
-  if(SAVE.best!==undefined)tx(g,'BEST $/WK  '+money(SAVE.best)+(SAVE.bestSeed?('   SEED '+SAVE.bestSeed):''),270,488,13,'#7dffa8','center',700);
+  var bk=bestKey();
+  if(SAVE[bk]!==undefined)tx(g,'BEST $/WK ('+DIFFS[DIFF].n+')  '+money(SAVE[bk])+(SAVE[bk+'Seed']?('   SEED '+SAVE[bk+'Seed']):''),270,488,13,'#7dffa8','center',700);
+  else tx(g,DIFFS[DIFF].n+': start with '+money(DIFFS[DIFF].cash)+(DIFF==='easy'?', wide snipe window':DIFF==='hard'?', tight snipe window':''),270,488,13,'#6f7f9e','center',600);
+  if(cheated())tx(g,'CODES ON  -  this run will not set a best',270,512,13,'#ffd23f','center',800);
   tx(g,'tap / space to start',270,652,13,'#5b6a86','center',600);
   titleUI.classList.remove('hide');
 }
@@ -694,11 +769,12 @@ function renderHeader(){
   g.fillStyle='rgba(10,14,24,.85)';g.fillRect(0,0,LW,64);
   g.strokeStyle='rgba(255,255,255,.07)';g.lineWidth=1;
   g.beginPath();g.moveTo(0,64.5);g.lineTo(LW,64.5);g.stroke();
-  tx(g,'SNEAKERDROP',14,18,11,'#5b6a86','left',800);
+  if(cheated())tx(g,'CODES ON',14,18,11,'#ffd23f','left',900);
+  else tx(g,'SNEAKERDROP  ·  '+DIFFS[S.diff].n,14,18,11,'#5b6a86','left',800);
   tx(g,'WEEK '+S.week+'  ·  DAY '+S.day,14,44,21,'#eaf0ff','left',800);
   tx(g,'CASH',526,18,11,'#7f8fb0','right',800);
   tx(g,money(S.cash),526,42,24,'#ffd23f','right',900);
-  var nw=netWorth()-START_CASH;
+  var nw=netWorth()-S.startCash;
   tx(g,(nw>=0?'NET +':'NET ')+money(nw),380,18,12,nw>=0?'#7dffa8':'#ff7a8a','right',800);
   tx(g,'$/WK '+money(scorePerWeek()),380,42,15,'#9fd0ff','right',800);
   // streak
@@ -731,7 +807,8 @@ function renderHeat(){
 function renderCal(){
   var g=ctx;
   tx(g,'HYPE CALENDAR',14,168,13,'#9fb0d0','left',800);
-  tx(g,'week '+S.week+' of '+WEEKS+'  ·  plan the hold',526,168,11,'#5b6a86','right',600);
+  var nr=nextRank(scorePerWeek());
+  tx(g,'wk '+S.week+'/'+WEEKS+'  ·  '+(nr?('goal '+nr.n+' '+money(nr.at)+'/wk'):'top rank held'),526,168,11,nr?'#8b9ab8':'#ffd23f','right',700);
   for(var d=0;d<7;d++){
     var x=20+d*72,y=178,w=68,h=62,today=(d===S.day-1);
     var evs=evDay(S.week-1,d);
@@ -975,7 +1052,7 @@ function drawCard(g){
   g.fillText(new Date().toLocaleDateString(),40,500);
   g.textAlign='right';
   g.fillStyle='#7dffa8';
-  g.fillText(SAVE.best!==undefined?('BEST EVER  '+money(SAVE.best)+' /wk'):'',840,500);
+  g.fillText(SAVE[bestKey()]!==undefined?('BEST EVER  '+money(SAVE[bestKey()])+' /wk'):'',840,500);
   g.textAlign='left';
 }
 function saveCard(){
@@ -1012,7 +1089,9 @@ function renderOver(){
     tx(g,rows[i][0],x+16,ry+16,12,'#8b9ab8','left',700);
     tx(g,String(rows[i][1]),x+w-16,ry+16,14,(i===4&&S2.worst<0)?'#ff8a98':'#eaf0ff','right',800);
   }
-  if(SAVE.best!==undefined)tx(g,'BEST EVER  '+money(SAVE.best)+' /wk',270,y+270,13,'#7dffa8','center',700);
+  var bk=bestKey();
+  if(S2.codes)tx(g,'CODES ON  -  best not saved',270,y+270,13,'#ffd23f','center',800);
+  else if(SAVE[bk]!==undefined)tx(g,'BEST EVER ('+DIFFS[S.diff].n+')  '+money(SAVE[bk])+' /wk',270,y+270,13,'#7dffa8','center',700);
   drawBtn('again',44,y+296,316,62,'SAME SEED AGAIN',{col:'#ffb020',size:17,fn:function(){restartRun(S.seed);}});
   drawBtn('newseed',370,y+296,126,62,'NEW SEED',{col:'#3fa9ff',tc:'#04121f',size:15,fn:function(){restartRun((Math.random()*1e9)>>>0);}});
   drawBtn('sharecard',44,y+372,452,64,'SAVE THE SCORE CARD',{col:'#7af0ff',tc:'#04121f',size:18,fn:saveCard});
@@ -1277,6 +1356,7 @@ function render(){
     else if(S.phase==='shop')renderShop();
     else if(S.phase==='confirm')renderConfirm();
     else if(S.phase==='over')renderOver();
+    else if(S.phase==='week')renderWeek();
   }
   drawPops();drawParts();
   ctx.restore();
@@ -1339,6 +1419,12 @@ window.addEventListener('wheel',function(e){
 },{passive:true});
 window.addEventListener('keydown',function(e){
   var k=e.key;
+  if(COACH){
+    if(k===' '||k==='Enter'||k==='ArrowRight'){e.preventDefault();coachNext();}
+    else if(k==='Escape'){e.preventDefault();coachEnd();}
+    return;
+  }
+  if(S.phase==='week'){if(k===' '||k==='Enter'||k==='ArrowRight'||k==='Escape'){e.preventDefault();S.phase='market';}return;}
   if(S.phase==='title'){if(k===' '||k==='Enter'||k==='ArrowRight'){e.preventDefault();startGame();}return;}
   if(k===' '||k==='Enter'){
     e.preventDefault();
@@ -1371,7 +1457,7 @@ function setSound(on){
 }
 sndBtn.addEventListener('click',function(e){e.stopPropagation();setSound(!AU.on);});
 startBtn.addEventListener('click',function(e){e.stopPropagation();startGame();});
-function restartRun(seed){newRun(seed);AU.bed(true);}
+function restartRun(seed){coachEnd();newRun(seed);AU.bed(true);sdk('state',{scene:'play'});}
 function startGame(){
   if(S.phase!=='title')return;
   var seed=dailySeed();
@@ -1382,6 +1468,101 @@ function startGame(){
   newRun(seed);
   AU.bed(true);
   setTimeout(function(){titleUI.classList.add('hide');},30);
+  sdk('state',{scene:'play'});
+  if(!SAVE.tut)setTimeout(function(){if(S.phase==='market'&&!SAVE.tut)coachStart();},450);
+}
+
+/* ---------------- difficulty, how-to, coach marks ------------------ */
+var diffBtns=document.querySelectorAll('#diffRow [data-diff]');
+function paintDiff(){for(var i=0;i<diffBtns.length;i++){var on=diffBtns[i].getAttribute('data-diff')===DIFF;diffBtns[i].classList.toggle('on',on);diffBtns[i].setAttribute('aria-pressed',String(on));}}
+for(var di=0;di<diffBtns.length;di++)diffBtns[di].addEventListener('click',function(e){
+  e.stopPropagation();DIFF=this.getAttribute('data-diff');SAVE.diff=DIFF;putSave(SAVE);paintDiff();
+  if(S.phase==='title'){S.diff=DIFF;}
+});
+document.getElementById('howBtn').addEventListener('click',function(e){e.stopPropagation();startGame();coachStart();});
+/* The coach points at the real market screen: each step is a world-space rect (540x960). */
+var COACH=null,coachEl=document.getElementById('coach');
+var COACH_STEPS=[
+  {r:[14,154,512,90],k:'1 / 5  ·  THE CALENDAR',t:'Each day has its own events. A coloured dot is a sneaker DROP; green and red triangles push a model’s hype up or down.'},
+  {r:[26,470,488,76],k:'2 / 5  ·  SNIPE THE DROP',t:'Tap SNIPE, then tap again when the moving needle is in the gold zone. PERFECT, GREAT or GOOD buys the pair at retail. One snipe per day.',done:function(){return S.phase==='snipe';}},
+  {r:[10,560,520,210],k:'3 / 5  ·  FLIP FOR PROFIT',t:'Pairs you win wait in STORAGE. Tap one, choose FLIP INTO AUCTION, and press SELL NOW when the top bid beats what you paid.'},
+  {r:[10,814,520,76],k:'4 / 5  ·  NEXT DAY AND SHOP',t:'NEXT DAY moves time on (→ or Space). SHOP buys more storage, a grading bench and seller reputation.'},
+  {r:[0,0,540,66],k:'5 / 5  ·  THE GOAL',t:'Ten weeks per run, with a recap after each week. Your score is profit per week: CASH OUT RUN locks it in early.'}];
+function coachStart(){
+  if(COACH||S.phase==='title'||S.phase==='over')return;
+  if(S.phase!=='market'){S.phase='market';S.snipe=null;}
+  COACH={i:0};coachEl.classList.remove('hide');coachPaint();sdk('event','tutorial-start');
+}
+function coachPaint(){
+  if(!COACH)return;
+  var st=COACH_STEPS[COACH.i],r=st.r,spot=coachEl.querySelector('.spot'),card=coachEl.querySelector('.card');
+  spot.style.left=(r[0]/LW*100)+'%';spot.style.top=(r[1]/LH*100)+'%';spot.style.width=(r[2]/LW*100)+'%';spot.style.height=(r[3]/LH*100)+'%';
+  coachEl.querySelector('.k').textContent=st.k;coachEl.querySelector('.t').textContent=st.t;
+  var below=(r[1]+r[3]/2)<LH*0.5;
+  card.style.top=below?((r[1]+r[3])/LH*100+2)+'%':'auto';card.style.bottom=below?'auto':((LH-r[1])/LH*100+2)+'%';
+  coachEl.querySelector('.go').textContent=COACH.i===COACH_STEPS.length-1?'PLAY':'NEXT';
+}
+function coachNext(){if(!COACH)return;COACH.i++;if(COACH.i>=COACH_STEPS.length){coachEnd(true);return;}coachPaint();}
+function coachEnd(done){
+  if(!COACH)return;COACH=null;coachEl.classList.add('hide');
+  SAVE.tut=1;putSave(SAVE);if(done)sdk('event','tutorial-done');
+}
+coachEl.querySelector('.go').addEventListener('click',function(e){e.stopPropagation();coachNext();});
+coachEl.querySelector('.skip').addEventListener('click',function(e){e.stopPropagation();coachEnd();});
+coachEl.addEventListener('pointerdown',function(e){e.stopPropagation();});
+
+/* ---------------- arcade codes -------------------------------------- */
+var CODES={
+  BIGBANK:'+$2,500 cash (and on every new run while codes are on)',
+  HYPEBEAST:'Every brand is ON FIRE: hot resale prices',
+  SLOWHANDS:'The snipe needle moves at half speed',
+  GRAILDROP:'A free grade-S AUREUM 24K lands in storage'};
+function applyCodes(){                 // runs at the start of every run while a code is on
+  if(CH.bank)S.cash+=2500;
+  if(CH.fire)for(var i=0;i<BK.length;i++)BRANDS[BK[i]].heat=1.6;
+  if(CH.grail>0&&S.inv.length<S.storage){giveGrail();CH.grail=0;}
+}
+function giveGrail(){var m=sModel('aureum');S.inv.push({mid:'aureum',buy:0,grade:'S',graded:true,basis:0,day:S.day+((S.week-1)*7),id:'code_'+S.inv.length});}
+function enterCode(c){
+  if(!CODES[c])return {ok:false};
+  var live=S.phase!=='title'&&S.phase!=='over';
+  if(c==='BIGBANK'){CH.bank=true;if(live)S.cash+=2500;}
+  else if(c==='HYPEBEAST'){CH.fire=true;for(var i=0;i<BK.length;i++)BRANDS[BK[i]].heat=1.6;if(live)buildTicker();}
+  else if(c==='SLOWHANDS'){CH.slow=true;if(S.snipe)S.snipe.speed*=0.5;}
+  else if(c==='GRAILDROP'){
+    if(live&&S.inv.length<S.storage)giveGrail();
+    else{CH.grail=1;return {ok:true,message:live?'Storage is full: the grail lands when you have room at the next run':'A free grail waits in storage when the run starts'};}
+  }
+  if(live){burst(270,300,24,'#ffd23f',260,0.8,3);pop(270,300,'CODE ON','#ffd23f',26);}
+  return {ok:true,message:CODES[c]};
+}
+
+/* ---------------- hint: reads the live market ----------------------- */
+function hintText(){
+  if(S.phase==='title')return 'Pick a difficulty, then TAP TO START. Easy starts with more cash and a wider snipe window.';
+  if(S.phase==='over')return 'Try SAME SEED AGAIN: the market repeats, so you can snipe the drops you missed.';
+  if(S.phase==='week')return 'Tap START WEEK to keep going.';
+  if(S.phase==='snipe'&&S.snipe){return S.snipe.locked?'Send it to storage, or flip it now if the price is already above retail.':'Tap when the needle is inside the gold zone. Dead centre is PERFECT.';}
+  if(S.phase==='auction'&&S.auction){var A=S.auction;if(A.done)return 'Back to the market.';
+    var net=A.top*(1-auctionFee());return net>A.it.basis?('Selling now nets '+money(net-A.it.basis)+' profit. Late bids can dip, so do not wait for the last second.'):('The top bid is still under your '+money(A.it.basis)+' cost. Wait for more bids.');}
+  if(S.phase==='shop'){var best=null;['storage','rep','grade'].forEach(function(k){if(!best&&S.up[k]<UPG[k].max&&S.cash>=upCost(k))best=k;});
+    return best?('You can afford '+UPG[best].n+' ('+money(upCost(best))+'). '+UPG[best].d+'.'):'Nothing affordable yet. Flip a pair first.';}
+  var ev=todayDrop();
+  if(S.inv.length){var bi=-1,bp=-1e9;for(var i=0;i<S.inv.length;i++){var it=S.inv[i],pl=marketValue(sModel(it.mid),it.grade)*(1-auctionFee())-it.basis;if(pl>bp){bp=pl;bi=i;}}
+    if(bp>40||S.inv.length>=S.storage)return (S.inv.length>=S.storage?'Storage is full. ':'')+'Flip '+sModel(S.inv[bi].mid).n+': it would clear about '+money(bp)+' after fees.';}
+  if(ev&&!S.attempted){var m=sModel(ev.mid),pct=Math.round((m.price/m.retail-1)*100);
+    if(S.cash<m.retail)return 'Today’s '+m.n+' costs '+money(m.retail)+'. Flip something to raise cash first.';
+    return pct>0?('Snipe today’s '+m.n+': it trades at '+money(m.price)+', '+pct+'% over retail.'):('Today’s '+m.n+' trades under retail. Skip it, or hold it for a hype event.');}
+  return 'Nothing more to do today: hit NEXT DAY.';
+}
+
+function goTitle(){
+  coachEnd();
+  newRun(dailySeed());
+  S.phase='title';S.over=false;
+  titleUI.classList.remove('hide');
+  AU.bed(false);
+  sdk('state',{scene:'title'});
 }
 
 /* ---------------- boot ---------------------------------------------- */
@@ -1390,13 +1571,22 @@ newRun(dailySeed());
 S.phase='title';S.over=false;
 titleUI.classList.remove('hide');
 sndBtn.textContent='SOUND: '+(AU.on?'ON':'OFF');
+paintDiff();
 requestAnimationFrame(frame);
+if(window.ArcadeSDK)ArcadeSDK.init({
+  onRestart:function(){if(S.phase==='title')startGame();else restartRun(S.seed);},
+  onExit:goTitle,
+  onTutorial:function(){if(S.phase==='title')startGame();else if(S.phase==='over')restartRun(S.seed);coachStart();},
+  onHint:hintText,
+  onCheat:enterCode
+});
+sdk('state',{scene:'title'});
 
 /* ---------------- debug hook ---------------------------------------- */
 window.__DEBUG={
   seed:function(){return S.seed;},
   state:function(){return {phase:S.phase,week:S.week,day:S.day,cash:Math.round(S.cash),
-    net:Math.round(netWorth()-START_CASH),worth:Math.round(netWorth()),
+    net:Math.round(netWorth()-S.startCash),worth:Math.round(netWorth()),
     inv:S.inv.length,storage:S.storage,rep:S.rep,streak:S.streak,
     score:+(scorePerWeek().toFixed(2)),over:S.over,seed:S.seed,
     models:S.models.length,weeks:WEEKS,audio:SFX.stats()};},

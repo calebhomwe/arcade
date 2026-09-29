@@ -112,6 +112,8 @@ export function start(root, api) {
   function finish() {
     const pct = Math.round(right / seq.length * 100);
     api.complete(pct); api.Sound.win();
+    api.done && api.done(pct);
+    api.setHint && api.setHint(() => 'File another shift for a new set of log entries.');
     host.replaceChildren(
       taskCard('Log office', 'Logbook filed.', `${right} of ${seq.length} entries punctuated correctly.`),
       el('div', { class:'panel', style:'margin-top:16px' },
@@ -143,7 +145,7 @@ export function start(root, api) {
         if (i < item.tokens.length - 1 || placed[i]) {
           const has = placed[i];
           line.append(el('button', {
-            style:`font-family:var(--serif);font-size:1em;min-width:22px;padding:0 3px;
+            style:`font-family:var(--serif);font-size:1em;min-width:40px;min-height:40px;padding:0 3px;
                    border:none;border-bottom:2px solid ${has ? 'var(--rust)' : 'rgba(36,31,40,.28)'};
                    color:${has ? 'var(--rust)' : 'rgba(36,31,40,.3)'};font-weight:700;cursor:pointer`,
             onclick:() => {
@@ -195,6 +197,16 @@ export function start(root, api) {
           tools.querySelectorAll('[data-m]').forEach(b => b.classList.toggle('on', b.dataset.m === tool)); }
       }, (mk.m || '—') + '  ' + mk.name)));
 
+    /* hint: the next gap that is wrong, found from the answer key */
+    api.setHint && api.setHint(() => {
+      const want = item.answer, keys = Object.keys(want);
+      const extra = Object.keys(placed).find(k => placed[k] && !want[k]);
+      if (extra !== undefined) return `The mark after “${item.tokens[extra]}” does not belong there. Tap it with — to remove it.`;
+      const miss = keys.find(k => !placed[k] || !want[k].includes(placed[k]));
+      if (miss === undefined) return 'Every mark is in place. Press Check punctuation.';
+      const mk = MARKS.find(m => m.m === want[miss][0]);
+      return `A ${mk ? mk.name.toLowerCase() : 'mark'} belongs straight after “${item.tokens[miss]}”.`;
+    });
     host.replaceChildren(
       taskCard(`Entry ${ix + 1} of ${seq.length}${item.meaning ? ' · ambiguity' : ''}`, item.brief,
         'Pick a mark, then tap the gap where it belongs. Tap a placed mark again to remove it.'),
@@ -231,6 +243,7 @@ export function start(root, api) {
       }
     }, o)));
 
+    api.setHint && api.setHint(() => 'Ask two questions. Is there more than one? Does it own something? And remember: its = belonging to it, it’s = it is.');
     host.replaceChildren(
       taskCard(`Entry ${ix + 1} of ${seq.length} · apostrophes`, item.brief,
         'Choose the form that fits the meaning described above.'),

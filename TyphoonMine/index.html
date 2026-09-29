@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="../assets/arcade-sdk.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#080d14">
 <title>TYPHOON MINE</title>
@@ -22,16 +23,16 @@
   /* ---- left HUD ---- */
   #hud{left:10px;top:10px;z-index:6;padding:8px 10px;min-width:118px;max-width:min(46vw,190px)}
   #cash{font-size:20px;color:var(--gold);font-weight:800;line-height:1.1}
-  #depth{font-size:11px;color:var(--muted);margin:2px 0 6px}
+  #depth{font-size:12px;color:var(--muted);margin:2px 0 6px}
   .bar{height:9px;border-radius:5px;background:#161d28;overflow:hidden;width:100%;border:1px solid rgba(0,0,0,.5)}
   .bar i{display:block;height:100%;width:0%;transition:width .1s linear}
   #windBar i{background:linear-gradient(90deg,#5fa8e0,var(--wind))}
   #waterBar i{background:linear-gradient(90deg,#1b6fa8,var(--water))}
   #cargoBar i{background:linear-gradient(90deg,#7a6a4a,var(--gold))}
-  .lbl{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.1em;color:var(--muted);
+  .lbl{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.1em;color:var(--muted);
     margin:5px 0 2px;text-transform:uppercase}
   .lbl b{color:var(--paper);font-weight:700}
-  #stormName{font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-top:6px;color:var(--sky);
+  #stormName{font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-top:6px;color:var(--sky);
     font-weight:700;text-align:center}
   /* ---- storm ring ---- */
   /* position:fixed is REQUIRED - without it left:50% + translateX(-50%) is
@@ -39,10 +40,10 @@
   #ringWrap{position:fixed;left:50%;top:6px;transform:translateX(-50%);z-index:7;display:flex;flex-direction:column;
     align-items:center;gap:2px;pointer-events:none}
   #ring{width:78px;height:78px;display:block}
-  #ovr{font-size:9px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+  #ovr{font-size:12px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
   /* ---- cargo slots ---- */
   #cargo{left:10px;bottom:10px;z-index:6;padding:6px 8px;max-width:56vw}
-  #cargoLbl{font-size:9px;letter-spacing:.14em;color:var(--muted);margin-bottom:4px;text-transform:uppercase}
+  #cargoLbl{font-size:12px;letter-spacing:.12em;color:var(--muted);margin-bottom:4px;text-transform:uppercase}
   #slots{display:flex;flex-wrap:wrap;gap:3px;max-width:210px}
   .slot{width:16px;height:16px;border-radius:3px;background:#141b26;border:1px solid rgba(232,240,248,.16)}
   .slot.on{border-color:transparent;box-shadow:0 0 6px rgba(0,0,0,.6) inset}
@@ -50,15 +51,15 @@
   #shop{right:10px;top:10px;z-index:6;width:206px;padding:9px;display:none;
     max-height:calc(100vh - 20px);overflow-y:auto;-webkit-overflow-scrolling:touch}
   #shop.on{display:block}
-  #shop h3{margin:0 0 7px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  #shop h3{margin:0 0 7px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
   /* buyable rows are tap targets: 44px floor at every viewport */
   .up{display:flex;justify-content:space-between;gap:6px;align-items:center;background:#131a24;
     border:1px solid rgba(232,240,248,.12);border-radius:8px;padding:7px 8px;margin-bottom:5px;
-    cursor:pointer;font-size:11px;min-height:44px;transition:border-color .12s,transform .06s}
+    cursor:pointer;font-size:12px;min-height:44px;transition:border-color .12s,transform .06s}
   .up:active{transform:scale(.98)}
   .up:hover{border-color:var(--gold)}
-  .up b{display:block;font-size:12px} .up small{color:var(--muted);font-size:9px}
-  .up .cost{color:var(--gold);font-weight:800;white-space:nowrap;font-size:11px}
+  .up b{display:block;font-size:12px} .up small{color:var(--muted);font-size:11px}
+  .up .cost{color:var(--gold);font-weight:800;white-space:nowrap;font-size:12px}
   .up.poor{opacity:.42}
   /* ---- touch pad ---- */
   #pad{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:8;display:grid;gap:6px;
@@ -94,27 +95,59 @@
     line-height:1.55;padding:0 10px}
   #rules{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px;max-width:600px}
   #rules span{background:rgba(232,240,248,.06);border:1px solid rgba(232,240,248,.14);border-radius:8px;
-    padding:4px 9px;font-size:10px;color:var(--paper);letter-spacing:.04em}
+    padding:4px 9px;font-size:12px;color:var(--paper);letter-spacing:.03em}
   .btn{padding:12px 30px;border-radius:12px;border:0;background:var(--gold);color:#3a2a06;font-weight:900;
     font-size:15px;letter-spacing:.1em;cursor:pointer;font-family:inherit;min-height:48px}
   .btn:active{transform:scale(.97)}
   .btn.ghost{background:transparent;border:1px solid rgba(232,240,248,.3);color:var(--paper);
-    font-size:11px;padding:9px 16px;min-height:40px}
+    font-size:12px;padding:9px 16px;min-height:40px}
   #stats{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;justify-content:center}
   #stats div{background:rgba(232,240,248,.06);border:1px solid rgba(232,240,248,.14);border-radius:9px;
     padding:6px 12px;text-align:center}
-  #stats b{display:block;font-size:16px;color:var(--gold)} #stats span{font-size:9px;letter-spacing:.12em;
+  #stats b,#overStats b{display:block;font-size:16px;color:var(--gold)} #stats span,#overStats span{font-size:12px;letter-spacing:.1em;
     color:var(--muted);text-transform:uppercase}
-  #snd{position:fixed;right:8px;bottom:8px;z-index:9;font-size:10px;letter-spacing:.1em;color:var(--muted);
+  #overStats{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+  #overStats div{background:rgba(232,240,248,.06);border:1px solid rgba(232,240,248,.14);border-radius:9px;padding:6px 12px;text-align:center}
+  /* the title is a menu: scroll it on a short phone instead of clipping the top */
+  #title{overflow-y:auto;justify-content:safe center}
+  /* the mine HUD only exists during a dive; the title covers it anyway */
+  body.on-title #hud, body.on-title #ringWrap, body.on-title #cargo, body.on-title #shop,
+  body.on-title #pad, body.on-title #coach{display:none}
+  #diff{display:flex;gap:8px;margin:14px 0 0;flex-wrap:wrap;justify-content:center}
+  #diff button[aria-pressed=true]{border-color:var(--gold);color:var(--gold);background:rgba(242,193,78,.14)}
+  #diffNote{font-size:12px;color:var(--muted);margin:8px 0 0;text-align:center;padding:0 12px;max-width:560px}
+  #hauls{margin-top:14px;min-width:240px;font-size:12px}
+  #hauls h4{margin:0 0 6px;font-size:12px;letter-spacing:.16em;color:var(--muted);text-align:center;font-weight:700}
+  #hauls ol{margin:0;padding:0;list-style:none;counter-reset:h}
+  #hauls li{display:flex;justify-content:space-between;gap:16px;padding:5px 12px;border-bottom:1px solid rgba(232,240,248,.08);counter-increment:h}
+  #hauls li::before{content:counter(h) '.';color:var(--muted);width:18px}
+  #hauls li b{color:var(--gold);flex:1} #hauls li span{color:var(--muted)}
+  #codesOn{margin-top:6px;background:var(--gold);color:#3a2a06;font-weight:900;font-size:12px;letter-spacing:.14em;
+    border-radius:7px;padding:3px 8px;text-align:center}
+  #codesOn[hidden],#coach[hidden],#over[hidden]{display:none}
+  #over{position:fixed;inset:0;z-index:25;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 32%,rgba(28,48,73,.92),rgba(5,8,13,.95) 72%);text-align:center;padding:16px}
+  #over h2{font-size:clamp(26px,7vw,54px);margin:0;letter-spacing:.06em;color:var(--bad);text-shadow:0 4px 0 #4a1a22,0 12px 32px #000}
+  #over p{color:var(--muted);font-size:13px;margin:10px 0 4px;max-width:480px;line-height:1.55}
+  #over .btn{margin-top:14px}
+  #coach{position:fixed;left:50%;bottom:136px;transform:translateX(-50%);z-index:12;display:flex;gap:12px;align-items:center;
+    padding:9px 10px 9px 14px;background:rgba(6,10,16,.94);border:1px solid var(--gold);border-radius:12px;
+    font-size:13px;font-weight:700;color:var(--paper);max-width:min(92vw,520px);box-shadow:0 6px 24px #000}
+  #coach b{color:var(--gold)} #coach .btn{flex:none}
+  #snd{position:fixed;right:8px;bottom:58px;z-index:9;font-size:12px;letter-spacing:.1em;color:var(--muted);
     background:rgba(8,13,20,.8);border:1px solid rgba(232,240,248,.16);border-radius:8px;padding:7px 10px;
     cursor:pointer;font-family:inherit;min-height:44px}
   @media (max-width:560px){
-    #hud{min-width:112px;padding:6px 8px} #cash{font-size:16px} #depth{font-size:10px}
-    #shop{width:150px;padding:7px;top:6px;right:6px}
-    .up{padding:6px;font-size:10px} .up b{font-size:11px} .up small{display:none}
-    #ring{width:62px;height:62px} #banner{top:80px} #toast{top:150px;font-size:11px}
+    #hud{min-width:112px;padding:6px 8px} #cash{font-size:16px} #depth{font-size:12px}
+    #shop{width:156px;padding:7px;top:6px;right:6px}
+    .up{padding:6px;font-size:12px} .up b{font-size:12px} .up small{display:none}
+    #ring{width:62px;height:62px} #banner{top:80px} #toast{top:150px;font-size:12px}
+    #coach{bottom:128px}
     #slots{max-width:150px} .slot{width:13px;height:13px}
     #cargo{bottom:6px;padding:5px 6px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bar i,#banner,#toast,#flash,.up{transition:none} .btn:active,.up:active{transform:none}
   }
   @media (max-height:520px){ #pad{grid-template-columns:46px 46px 46px;grid-template-rows:46px 46px}
     .pk{width:46px;height:46px;font-size:18px} #ring{width:56px;height:56px} }
@@ -134,6 +167,7 @@
   <div class="lbl"><span>Cargo</span><b id="cargoTxt">0/8</b></div>
   <div class="bar" id="cargoBar"><i></i></div>
   <div id="stormName">CALM</div>
+  <div id="codesOn" hidden>CODES ON</div>
 </div>
 
 <div class="panel" id="ringWrap">
@@ -149,7 +183,7 @@
 <div class="panel" id="shop">
   <h3>Surface rig &middot; <span id="shopHint">spend ore</span></h3>
   <div id="upgrades"></div>
-  <button class="btn" id="btnShareShop" style="width:100%;margin-top:7px;padding:9px;font-size:10px;background:transparent;border:1px solid var(--gold);color:var(--gold)">SAVE SCORE CARD</button>
+  <button class="btn" id="btnShareShop" style="width:100%;margin-top:7px;padding:9px;font-size:12px;min-height:44px;background:transparent;border:1px solid var(--gold);color:var(--gold)">SAVE SCORE CARD</button>
 </div>
 
 <div id="pad">
@@ -163,6 +197,16 @@
 <div id="toast"></div>
 <button id="snd" data-snd>Sound: On</button>
 
+<div id="coach" role="status" aria-live="polite" hidden><span id="coachTxt"></span><button class="btn ghost" id="coachSkip">SKIP</button></div>
+
+<div id="over" role="dialog" aria-modal="true" aria-labelledby="overH" hidden>
+  <h2 id="overH">CARRIED OUT</h2>
+  <p id="overWhy"></p>
+  <div id="overStats"></div>
+  <button class="btn" id="btnAgain">DIG AGAIN</button>
+  <button class="btn ghost" id="btnOverTitle" style="margin-top:10px">TITLE</button>
+</div>
+
 <div id="title">
   <h1>TYPHOON MINE<em>STORM BELOW</em></h1>
   <p>Dig ore before the typhoon lands. The storm IS the hazard: shear tears debris off the roof,
@@ -174,7 +218,12 @@
   </div>
   <button class="btn" id="btnPlay">START DIGGING</button>
   <button class="btn" id="btnShare" style="margin-top:12px;background:transparent;border:1px solid var(--gold);color:var(--gold)">SAVE A SCORE CARD</button>
+  <div id="diff" role="group" aria-label="Difficulty">
+    <button class="btn ghost" data-d="easy" aria-pressed="false">EASY</button><button class="btn ghost" data-d="normal" aria-pressed="true">NORMAL</button><button class="btn ghost" data-d="hard" aria-pressed="false">HARD</button>
+  </div>
+  <div id="diffNote"></div>
   <div id="stats"></div>
+  <div id="hauls"></div>
 </div>
 
 <script>
@@ -403,7 +452,7 @@ function pumpDepth(){ return 3+S.up.pumps*5; }        // how deep the flood can 
 function shearRes(){ return Math.min(0.8,S.up.supports*0.15); }
 function warnTime(){ return 1.25+S.up.supports*0.13; }
 function rodPct(){ return Math.min(0.72,S.up.rod*0.2); }
-function lampR(){ return 4.4+S.up.lamp*1.0; }
+function lampR(){ return CH.xray ? 30 : 4.4+S.up.lamp*1.0; }
 
 /* ------------------------------------------------------------------ run */
 var S=null;
@@ -415,16 +464,22 @@ function freshRun(seed){
     storm:0, streak:0, streakT:0, mining:0, mined:0,
     hp:100, hpMax:100, air:1, hurtT:0 };
 }
+/* best = deepest metres reached; hauls = the five best loads sold. Saves from before v2 stored the
+   best HAUL (in $) under 'best', which the title then printed as metres: carry it over as a haul. */
 function carry(){
-  var o={ cash:0, up:null, best:0, storm:0, snd:true, played:false };
+  var o={ cash:0, up:null, best:0, storm:0, snd:true, played:false, hauls:[] };
   try{ var s=storageGet(SAVE_KEY); if(s){ var p=JSON.parse(s);
     if(p&&p.up){ o.cash=+p.cash||0; o.up=p.up; o.best=+p.best||0;
-                 o.storm=+p.storm||0; o.snd=p.snd!==false; o.played=!!p.played; } } }catch(e){}
+                 o.storm=+p.storm||0; o.snd=p.snd!==false; o.played=!!p.played;
+                 if(p.v===2) o.hauls=Array.isArray(p.hauls)?p.hauls.slice(0,5):[];
+                 else { o.hauls=o.best>0?[{ v:o.best, d:null, t:0 }]:[]; o.best=0; } } } }catch(e){}
   return o;
 }
+/* A session with codes on is never saved: bank, deepest and hauls stay honest. */
 function persist(){
-  try{ storageSet(SAVE_KEY,JSON.stringify({ cash:S.cash, up:S.up, best:S.best,
-    storm:S.storm, snd:AU.on, played:true })); }catch(e){}
+  if(cheated()) return;
+  try{ storageSet(SAVE_KEY,JSON.stringify({ v:2, cash:S.cash, up:S.up, best:S.best,
+    storm:S.storm, snd:AU.on, played:true, hauls:S.hauls||[] })); }catch(e){}
 }
 function cargoValue(){ var v=0,i; for(i=0;i<S.cargo.length;i++) v+=S.cargo[i].val; return v; }
 
@@ -456,9 +511,13 @@ function stormInit(){
   debris.length=0; bolts.length=0; waves.length=0;
 }
 function setPhase(i){
-  P.idx=i; P.phase=PHASES[i]; stormT=0;
+  /* P.t is the phase clock: it must restart with every phase, or once it passed the shortest
+     phase the storm spun through every phase on every tick. */
+  P.idx=i; P.phase=PHASES[i]; stormT=0; P.t=0;
   stormLen=P.phase.dur(P.cycle);
-  if(P.phase.n==='calm'){ P.cycle++; S.storm=Math.max(S.storm,P.cycle); persist(); }
+  /* the storm also turns behind the title; only a dive counts toward 'storms weathered' (and saving
+     the boot placeholder state from the title used to wipe the real save) */
+  if(P.phase.n==='calm'){ P.cycle++; if(state.mode==='play'){ S.storm=Math.max(S.storm,P.cycle); persist(); } }
   if(P.phase.n==='building'){
     say('WIND SHEAR - WATCH THE ROOF', P.phase.col);
     toast('Shear is tearing debris off the roof');
@@ -476,6 +535,7 @@ function setPhase(i){
 }
 function phaseTick(dt){
   P.t+=dt; stormT+=dt;
+  if(CH.calm){ P.t=0; stormT=0; }                  // CALMSKIES code: the clock holds at CALM
   P.wind  = lerp(P.wind,  P.phase.wind,   1-Math.pow(0.0025,dt));
   P.rain  = lerp(P.rain,  P.phase.rain,   1-Math.pow(0.0025,dt));
   if(P.t>=stormLen) setPhase((P.idx+1)%PHASES.length);
@@ -674,7 +734,7 @@ function toast(msg,col){ if(!toastEl) return;
   toastEl.classList.add('on'); clearTimeout(toast._h);
   toast._h=setTimeout(function(){ toastEl.classList.remove('on'); },1300); }
 var flashEl=document.getElementById('flash');
-function screenFlash(a){ if(!flashEl) return; flashEl.style.opacity=Math.min(0.72,a); flashEl.style.transition='none';
+function screenFlash(a){ if(!flashEl || reduce) return;   /* reduced motion: no full-screen flashes */ flashEl.style.opacity=Math.min(0.72,a); flashEl.style.transition='none';
   setTimeout(function(){ flashEl.style.transition='opacity .22s'; flashEl.style.opacity=0; },16); }
 
 /* ------------------------------------------------------------ movement */
@@ -751,8 +811,8 @@ var PENT=[0,2,4,7,9,12,14,16,19];
 
 /* ---------------------------------------------------------------- health */
 function hurt(n,why){
-  if(state.mode!=='play') return;
-  n=Math.max(0,n);
+  if(state.mode!=='play' || CH.iron) return;       // IRONROOF code
+  n=Math.max(0,n)*D().dmg;
   S.hp=Math.max(0,S.hp-n);
   S.hurtT=0.55;
   popText(S.p.x*TS+TS/2, S.p.y*TS, '-'+Math.round(n), '#ff5d6c');
@@ -772,8 +832,9 @@ function wipeout(why){
   var v=0; for(i=0;i<lost.length-keep;i++) v+=lost[keep+i]?lost[keep+i].val:0;
   say('CARRIED OUT - '+(why||'THE STORM'),'#ff5d6c');
   toast('Lost $'+v.toLocaleString()+' of ore. Hull patched at the surface.');
-  shakeAdd(1.2); hit(0.16); screenFlash(0.7); AU.collapse();
+  shakeAdd(1.2); hit(0.16); screenFlash(reduce?0:0.7); AU.collapse();
   persist();
+  showOver(why, v);
 }
 
 /* ---------------------------------------------------------------- surface */
@@ -785,7 +846,7 @@ function surfaceTick(dt){
     var v=cargoValue(); S.cash+=v; lastSell=v; S.cargo=[];
     popText(COLS*TS/2, SURFACE*TS, '+$'+v.toLocaleString(), '#7ee0a0');
     toast('Sold for $'+v.toLocaleString(),'#7ee0a0');
-    if(v>S.best) S.best=v;
+    recordHaul(v); tut.sold=true;
     if(AU.on) SFX.play('pickup',{vol:.65,rate:0.95,jitter:.03});
     persist(); renderShop();
   }
@@ -1056,7 +1117,7 @@ function drawScene(){
   }
 
   // ---- lightning flash wash ---------------------------------------
-  if(P.bang>0.01){ ctx.fillStyle='rgba(225,240,255,'+(0.55*P.bang)+')'; ctx.fillRect(x0,y0,view.w,view.h); }
+  if(P.bang>0.01){ ctx.fillStyle='rgba(225,240,255,'+(0.55*P.bang*(reduce?0.2:1))+')'; ctx.fillRect(x0,y0,view.w,view.h); }
   // ---- the eye: warm golden wash ----------------------------------
   if(eyeGlow>0.01){ ctx.fillStyle='rgba(242,193,78,'+(0.16*eyeGlow)+')'; ctx.fillRect(x0,y0,view.w,view.h); }
   // ---- damage vignette --------------------------------------------
@@ -1131,7 +1192,7 @@ function updateHud(){
   el.cargoTxt.textContent=S.cargo.length+'/'+cm;
   el.cargoBar.style.width=(100*S.cargo.length/cm)+'%';
   el.cargoBar.style.background=(S.cargo.length/cm>=0.8)?'#ff5d6c':'';
-  el.storm.textContent=P.phase.label;
+  el.storm.textContent='STORM '+(P.cycle+1)+' \u00b7 '+P.phase.label;   // the wave counter
   el.storm.style.color=P.phase.col;
   el.ovr.textContent=P.phase.label;
   el.ovr.style.color=P.phase.col;
@@ -1270,6 +1331,7 @@ var G={};   /* wired once startGame/toTitle below are in scope */
 function buildStats(){
   var st=document.getElementById('stats'); if(!st) return;
   var c=carry();
+  buildHauls(c.hauls); paintDiff();
   st.innerHTML='<div><b>$'+Math.round(c.cash).toLocaleString()+'</b><span>banked</span></div>'+
                '<div><b>'+c.best+' m</b><span>deepest</span></div>'+
                '<div><b>'+c.storm+'</b><span>storms weathered</span></div>';
@@ -1287,6 +1349,8 @@ function startGame(newRun){
                supports:+c.up.supports||0,rod:+c.up.rod||0,lamp:+c.up.lamp||0}:freshRun().up;
     S.cash=c.cash; S.best=Math.max(0,c.best|0);
   }
+  S.storm=c.storm; S.hauls=c.hauls;         // keep 'storms weathered' and the hauls table across dives
+  var first=!c.played;
   S.hpMax=100+S.up.supports*20; S.hp=S.hpMax; S.air=1; S.hurtT=0;
   waterLvl=0; waterDeep=0; reachDirty=true; reach=null;
   S.airRow=SURFACE; S.wet=false; S.hpMax=100+S.up.supports*20; S.hp=S.hpMax;
@@ -1300,15 +1364,22 @@ function startGame(newRun){
   fit();
   renderShop(); renderSlots(); updateHud();
   say('DIG - THE STORM IS COMING','#7ee0a0');
-  if(!carry().played) setTimeout(function(){ if(state.mode==='play') toast('Climb back up any time to sell ore and upgrade the rig'); }, 3200);
+  hideOver(); document.body.classList.remove('on-title'); dive.on=false; dive.max=0;
+  persist();                                 // the first dive marks the save as played
+  if(!tutSeen()) tutStart();
+  else if(first) setTimeout(function(){ if(state.mode==='play') toast('Climb back up any time to sell ore and upgrade the rig'); }, 3200);
   AU.bed(true);
-  screenFlash(0.25);
+  if(!reduce) screenFlash(0.25);
+  sdk('state',{ scene:'play' });
 }
 function toTitle(){
   state.mode='title';
+  hideOver(); tutHide();
+  document.body.classList.add('on-title');
   var t=document.getElementById('title'); if(t) t.style.display='flex';
   AU.bed(false); AU.wind(0); AU.rain(0);
   buildStats();
+  sdk('state',{ scene:'title' });
 }
 /* ----------------------------------------------------------- share card
    A plain-PNG storm record: canvas 2D only, no library, no network, no external
@@ -1430,16 +1501,175 @@ window.__DEBUG={
 };
 
 /* ==================================================================== *
+ * ARCADE STANDARD - difficulty, dives and the results card, the hauls
+ * table, the first-run coach, hints, codes and the arcade SDK hooks.
+ * ==================================================================== */
+function sdk(fn,a){ try{ if(window.ArcadeSDK) window.ArcadeSDK[fn](a); }catch(e){} }
+function cheated(){ return !!(window.ArcadeSDK && window.ArcadeSDK.cheated); }
+function $id(id){ return document.getElementById(id); }
+
+/* difficulty scales storm damage and how often the storm throws things; the mine is untouched */
+var DIFFS={
+  easy:  { dmg:0.6,  rate:0.7, note:'Easy: the storm throws less at you and hits softer.' },
+  normal:{ dmg:1,    rate:1,   note:'Normal: the typhoon as it was built.' },
+  hard:  { dmg:1.4,  rate:1.3, note:'Hard: more debris, more bolts, harder hits.' }
+};
+var diff='normal';
+try{ var dv=storageGet('typhoonmine_diff'); if(DIFFS[dv]) diff=dv; }catch(e){}
+function D(){ return DIFFS[diff]; }
+function paintDiff(){
+  Array.prototype.forEach.call(document.querySelectorAll('#diff button'),function(b){
+    b.setAttribute('aria-pressed',String(b.getAttribute('data-d')===diff)); });
+  $id('diffNote').textContent=D().note+(cheated()?'  CODES ON: this session is not saved.':'');
+}
+Array.prototype.forEach.call(document.querySelectorAll('#diff button'),function(b){
+  b.addEventListener('click',function(ev){ ev.preventDefault(); diff=b.getAttribute('data-d'); storageSet('typhoonmine_diff',diff); paintDiff(); });
+});
+
+/* dives + hauls table */
+var dive={ on:false, max:0 };
+function recordHaul(v){
+  if(!cheated()){
+    var h=S.hauls||(S.hauls=[]);
+    h.push({ v:v, d:dive.max, t:Date.now() });
+    h.sort(function(a,b){ return b.v-a.v; });
+    if(h.length>5) h.length=5;
+  }
+  dive.on=false; dive.max=0;
+}
+function buildHauls(h){
+  var rows='',i;
+  for(i=0;i<h.length;i++){
+    var dt=h[i].t?new Date(h[i].t):null;
+    rows+='<li><b>$'+Math.round(h[i].v).toLocaleString()+'</b><span>'+(h[i].d==null?'-':h[i].d+' m')+
+          (dt?' &middot; '+(dt.getMonth()+1)+'/'+dt.getDate():'')+'</span></li>';
+  }
+  $id('hauls').innerHTML='<h4>BEST HAULS</h4>'+(rows?'<ol>'+rows+'</ol>':
+    '<p style="margin:0;color:var(--muted);font-size:12px;text-align:center">Sell a load at the surface to set one.</p>');
+}
+
+/* results card: the storm carried you out */
+var WHY={ 'LIGHTNING':'lightning', 'SIDE FLASH':'a side flash', 'ROOF SHEAR':'falling debris', 'THE FLOOD':'the flood' };
+function showOver(why,lost){
+  var at=dive.max;               // the dive stays open: the half-hold you kept sells as part of it
+  state.mode='over'; pad=null; hold=null; keys={};
+  AU.bed(false);
+  $id('overWhy').textContent='Taken by '+(WHY[why]||'the storm')+' in storm '+(P.cycle+1)+'. Half the hold washed away; your bank and upgrades are safe.';
+  $id('overStats').innerHTML=
+    '<div><b>'+at+' m</b><span>This dive</span></div>'+
+    '<div><b>$'+Math.round(lost).toLocaleString()+'</b><span>Ore lost</span></div>'+
+    '<div><b>$'+Math.round(S.cash).toLocaleString()+'</b><span>Banked</span></div>'+
+    '<div><b>'+S.best+' m</b><span>Deepest</span></div>';
+  $id('over').hidden=false; $id('coach').hidden=true;
+  try{ $id('btnAgain').focus({ preventScroll:true }); }catch(e){}
+  sdk('state',{ scene:'over', score:at });
+}
+function hideOver(){ $id('over').hidden=true; }
+function digAgain(){ hideOver(); state.mode='play'; if(tut.on) tutShow(); AU.bed(!eyeOn); renderShop(); updateHud(); sdk('state',{ scene:'play' }); }
+$id('btnAgain').addEventListener('click',function(ev){ ev.preventDefault(); digAgain(); });
+$id('btnOverTitle').addEventListener('click',function(ev){ ev.preventDefault(); toTitle(); });
+
+/* restart = a fresh dive from the surface with the purse and rig you have now */
+function restartDive(){
+  if(state.mode==='title'){ startGame(); return; }
+  var keep={ cash:S.cash, up:S.up, best:S.best, hauls:S.hauls, storm:S.storm };
+  startGame();
+  S.cash=keep.cash; S.up=keep.up; S.best=keep.best; S.hauls=keep.hauls; S.storm=keep.storm;
+  S.hpMax=100+S.up.supports*20; S.hp=S.hpMax;
+  renderShop(); renderSlots(); updateHud();
+}
+
+/* first-run coach: each prompt clears when you do it; skippable; replay from How to play */
+var TUT_KEY='typhoonmine_tut';
+var TUT=[
+  'Hold <b>&#9660;</b> (S, the arrow, the pad or a drag) to tunnel down.',
+  'Break into <b>coloured ore</b> to fill your hold.',
+  'Climb <b>&#9650;</b> to the surface: the hold sells itself.',
+  'Upgrade the rig in the <b>shop</b>. Pumps and roof supports beat the storm.'
+];
+var tut={ on:false, step:0, t:0, sold:false, up0:0 };
+function tutSeen(){ try{ return localStorage.getItem(TUT_KEY)==='1'; }catch(e){ return true; } }
+function upLevels(){ var n=0,k; for(k in S.up) n+=S.up[k]||0; return n; }
+function tutShow(){ $id('coachTxt').innerHTML=(tut.step+1)+'/4 &nbsp;'+TUT[tut.step]; $id('coach').hidden=false; }
+function tutHide(){ tut.on=false; $id('coach').hidden=true; }
+function tutStart(){ tut.on=true; tut.step=0; tut.t=0; tut.sold=false; tutShow(); }
+function tutDone(){ tutHide(); storageSet(TUT_KEY,'1'); sdk('event','tutorial-done'); }
+function tutNext(){
+  tut.step++; tut.t=0;
+  if(tut.step===2) tut.sold=false;
+  if(tut.step===3) tut.up0=upLevels();
+  if(tut.step>=TUT.length){ tutDone(); return; }
+  tutShow();
+}
+function tutTick(dt){
+  if(!tut.on) return;
+  tut.t+=dt;
+  if(tut.step===0 && S.p.y-SURFACE>=3) tutNext();
+  else if(tut.step===1 && S.cargo.length>0) tutNext();
+  else if(tut.step===2 && tut.sold) tutNext();
+  else if(tut.step===3 && (upLevels()>tut.up0 || tut.t>10)) tutNext();
+}
+$id('coachSkip').addEventListener('click',function(ev){ ev.preventDefault(); tutDone(); });
+
+/* hints read the storm, the flood and the hold */
+function hint(){
+  if(state.mode==='title') return 'Press START DIGGING. Dig in the calm and be near the top when the typhoon lands.';
+  if(state.mode==='over') return 'Press DIG AGAIN: your bank and upgrades are safe.';
+  if(tut.on) return $id('coachTxt').textContent.replace(/^\d\/4\s*/,'');
+  var surf=atSurface(), ph=P.phase.n;
+  if(S.cargo.length>=cargoMax()) return 'Your hold is full. Climb to the surface to sell it.';
+  if(S.wet) return 'You are under water and using up air. Climb above the flood line now.';
+  if(!surf && S.hp<S.hpMax*0.35) return 'The rig is badly hurt. Get to the surface to patch it.';
+  if(ph==='eye') return 'The Eye: no hazards and every ore is worth double. Dig fast!';
+  if(ph==='typhoon' && !surf) return 'Typhoon: the flood climbs your tunnels. Stay high, or buy Flood pumps.';
+  if(ph==='building') return 'Wind shear drops debris down open shafts. Tunnel sideways so solid rock is above you.';
+  if(surf){
+    var best=null;
+    Object.keys(UP).forEach(function(k){ var c=upCost(k); if(c<=S.cash && (!best||c<best.c)) best={ k:k, c:c }; });
+    if(best) return 'You can afford '+UP[best.k].name+' ($'+best.c.toLocaleString()+'): tap it in the shop.';
+  }
+  var d=S.p.y-SURFACE, i;
+  for(i=0;i<ORES.length;i++) if(ORES[i].from>d) return 'Keep tunnelling: '+ORES[i].name+' ($'+ORES[i].val.toLocaleString()+') shows up from '+ORES[i].from+' m.';
+  return 'Voidstone is the richest ore down here. Save it for the Eye to double it.';
+}
+
+/* codes: just for fun; a session with codes on is labelled and never saved */
+var CH={ iron:false, calm:false, xray:false };
+var CODES={ IRONROOF:'Debris, lightning and drowning cannot hurt you', GOLDRUSH:'+$10,000 banked', CALMSKIES:'The storm clock holds at CALM', XRAYLAMP:'The lamp lights the whole mine' };
+function code(c){
+  c=String(c||'').trim().toUpperCase();
+  if(!CODES[c]) return { ok:false };
+  if(c==='IRONROOF') CH.iron=true;
+  if(c==='XRAYLAMP') CH.xray=true;
+  if(c==='CALMSKIES'){ CH.calm=true; if(P.phase.n!=='calm') setPhase(0); debris.length=0; bolts.length=0; waves.length=0; }
+  if(c==='GOLDRUSH'){ S.cash+=10000; renderShop(); updateHud(); }
+  $id('codesOn').hidden=false;
+  if(state.mode==='title') paintDiff();
+  toast('CODE ON: '+CODES[c].toUpperCase(),'#f2c14e');
+  return { ok:true, message:CODES[c]+'. Codes on: this session is not saved.' };
+}
+
+/* ==================================================================== *
  * MAIN LOOP - fixed timestep so juice can never break the simulation
  * ==================================================================== */
 var last=0, acc=0, TICK=1/60, hudT=0, ringT=0;
 var uiS=document.getElementById('title');
 uiS.style.display='flex';
+if(S===null) S=freshRun();
+document.body.classList.add('on-title');
 buildStats();
 fit();
-if(S===null) S=freshRun();
 stormInit();
 updateHud(); renderShop(); renderSlots();
+if(window.ArcadeSDK) window.ArcadeSDK.init({
+  pauseButton:'br',          // HUD top-left, storm ring top centre, shop top-right, hold bottom-left
+  onRestart:restartDive,
+  onExit:toTitle,
+  onTutorial:function(){ if(state.mode!=='play') startGame(); tutStart(); },
+  onHint:hint,
+  onCheat:code
+});
+sdk('state',{ scene:'title' });
 
 function tick(dt){
   state.t+=dt; state.elapsed+=dt; now+=dt;
@@ -1461,16 +1691,19 @@ function tick(dt){
   S.wet = inWater();
   surfaceTick(dt);
   tryMove(dt*wmul);
+  var dd=S.p.y-SURFACE;
+  if(dd>0){ dive.on=true; if(dd>dive.max) dive.max=dd; if(dd>S.best && !cheated()) S.best=dd; }
+  tutTick(dt);
   // ---- storm hazards ----------------------------------------------
   if(P.phase.n==='building'){
-    var rate=(0.4+1.6*P.wind)*(1+P.cycle*0.12);
+    var rate=(0.4+1.6*P.wind)*(1+P.cycle*0.12)*D().rate;
     if(rnd()<rate*dt) spawnWave();
     if(rnd()<rate*0.85*dt) spawnDebris((rnd()*COLS)|0);
   } else if(P.phase.n==='typhoon'){
-    var rr2=(1.1+0.9*P.wind)*(1+P.cycle*0.1);
+    var rr2=(1.1+0.9*P.wind)*(1+P.cycle*0.1)*D().rate;
     if(rnd()<rr2*dt) spawnWave();
     if(rnd()<rr2*0.9*dt) spawnDebris((rnd()*COLS)|0);
-    if(rnd()<(0.45+P.cycle*0.08)*dt) spawnBolt();
+    if(rnd()<(0.45+P.cycle*0.08)*D().rate*dt) spawnBolt();
   }
   updateDebris(dt);
   updateBolts(dt);
@@ -1490,6 +1723,8 @@ function frame(ts){
   var guard=0;
   while(acc>=TICK && guard<6){ acc-=TICK; tick(TICK*(hitstop>0?0.35:1)); guard++; }
   if(acc>TICK*6) acc=0;
+  // the title covers the whole mine: skip painting it (and the ring) until a dive starts
+  if(state.mode==='title') return;
   // camera follows the digger in world units
   var pp=renderPos();
   var targetX=clamp((pp[0]+0.5)*TS, view.w/2, COLS*TS-view.w/2);

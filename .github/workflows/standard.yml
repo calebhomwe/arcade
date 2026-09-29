@@ -1,0 +1,106 @@
+name: Game standard
+# Checks every game against qa/standard/STANDARD.md with qa/harness/standard.mjs, in 8 shards,
+# and publishes one games x checks matrix (artifact "standard-matrix", and the job summary).
+# External games are read from their own public repos, checked out next to this one.
+on:
+  pull_request:
+    paths:
+      - 'assets/arcade-sdk.js'
+      - 'assets/site.js'
+      - 'play.html'
+      - 'catalog.js'
+      - 'qa/standard/**'
+      - 'qa/harness/standard.mjs'
+      - 'qa/harness/sdk-test.mjs'
+      - 'tools/game_meta.py'
+      - '**/index.html'
+      - '.github/workflows/standard.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ext_ref:
+        description: 'Branch to use in arcade-hub, neon-game-arcade, playables and bloxburg-town (blank = their default branch)'
+        required: false
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: standard-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  SHARDS: 8
+jobs:
+  sdk:
+    # Unit tests for assets/arcade-sdk.js: timers, clocks and pause keys. Fails the check on any failure.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm ci --prefix qa/harness
+      - run: cd qa/harness && npx playwright install --with-deps chromium
+      - run: node qa/harness/sdk-test.mjs
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: arcade }
+      - uses: actions/checkout@v4
+        with: { repository: calebhomwe/arcade-hub, path: arcade-hub, ref: '${{ inputs.ext_ref }}' }
+      - uses: actions/checkout@v4
+        with: { repository: calebhomwe/neon-game-arcade, path: neon-game-arcade, ref: '${{ inputs.ext_ref }}' }
+      - uses: actions/checkout@v4
+        with: { repository: calebhomwe/playables, path: playables, ref: '${{ inputs.ext_ref }}' }
+      - uses: actions/checkout@v4
+        with: { repository: calebhomwe/bloxburg-town, path: bloxburg-town, ref: '${{ inputs.ext_ref }}' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm ci --prefix arcade/qa/harness
+      - run: cd arcade/qa/harness && npx playwright install --with-deps chromium
+      - name: Build game metadata
+        run: python3 arcade/tools/game_meta.py
+      - name: Check this shard's games
+        working-directory: arcade
+        env:
+          SHARD_INDEX: ${{ matrix.shard }}
+          SHARD_TOTAL: ${{ env.SHARDS }}
+          WORKERS: 2
+          REPORT_DIR: part
+        run: node qa/harness/standard.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: standard-part-${{ matrix.shard }}
+          path: arcade/part
+          retention-days: 7
+  report:
+    needs: check
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm ci --prefix qa/harness
+      - uses: actions/download-artifact@v4
+        with: { pattern: standard-part-*, path: parts }
+      - name: Merge shards and compare with the committed baseline
+        env:
+          REPORT_DIR: standard-matrix
+        run: |
+          base=""; [ -f qa/standard-results/matrix.json ] && base="--baseline qa/standard-results/matrix.json"
+          node qa/harness/standard.mjs --merge parts/* $base
+          mkdir -p standard-matrix/shots && for d in parts/*/shots; do cp -r "$d"/. standard-matrix/shots/ 2>/dev/null || true; done
+          cat standard-matrix/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: standard-matrix
+          path: standard-matrix
+          retention-days: 30

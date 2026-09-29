@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script src="../assets/arcade-sdk.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#080d2b" />
   <title>Tic Tac Toe — Beat the Bot</title>
   <style>
@@ -15,22 +16,60 @@
     .board { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:8px; border:2px solid var(--line); border-radius:22px; background:#09113dbe; box-shadow:0 0 44px #1c46b77a; aspect-ratio:1; }
     .cell { appearance:none; border:0; border-radius:14px; background:linear-gradient(145deg,#122269,#07103c); color:var(--text); font-size:clamp(3.8rem,20vw,7rem); font-weight:900; line-height:1; cursor:pointer; min-width:0; touch-action:manipulation; transition:transform .12s,background .2s; } .cell:active { transform:scale(.94); } .cell.x { color:var(--cyan); text-shadow:0 0 18px #30e1ff; } .cell.o { color:var(--coral); text-shadow:0 0 18px #ff755e; } .cell.win { background:#1c3b8b; box-shadow:inset 0 0 0 3px #ffd257,0 0 16px #ffd25799; animation:pulse .75s infinite alternate; }
     .status { text-align:center; min-height:32px; color:var(--cyan); font-weight:950; letter-spacing:.13em; font-size:1rem; text-transform:uppercase; } .status.bot { color:var(--coral); }
-    .controls { display:grid; gap:12px; } button { font:inherit; } #new { border:2px solid #54e5ff; border-radius:16px; padding:17px; color:#04122b; background:linear-gradient(135deg,#4beaff,#1c9ee8); font-size:1.2rem; font-weight:900; box-shadow:0 8px 26px #24cdff5a; cursor:pointer; touch-action:manipulation; } #new:active { transform:scale(.98); }
+    .controls { display:grid; gap:12px; } button { font:inherit; } #new { border:2px solid #54e5ff; border-radius:16px; padding:17px; color:#04122b; background:linear-gradient(135deg,#4beaff,#1c9ee8); font-size:1.2rem; font-weight:900; box-shadow:0 8px 26px #24cdff5a; cursor:pointer; touch-action:manipulation; } #new:active { transform:scale(.98); } #introPlay { width:100%; border:2px solid #54e5ff; border-radius:16px; min-height:52px; color:#04122b; background:linear-gradient(135deg,#4beaff,#1c9ee8); font-size:1.15rem; font-weight:900; cursor:pointer; }
     .difficulty { display:flex; justify-content:center; gap:4px; background:#070d32b8; border:1px solid #2d418d; border-radius:99px; padding:4px; align-self:center; } .difficulty button { border:0; background:transparent; color:#9fb3e6; padding:8px 17px; border-radius:99px; font-weight:850; font-size:.78rem; letter-spacing:.07em; cursor:pointer; } .difficulty button.active { color:#09102f; background:var(--coral); box-shadow:0 0 13px #ff795d; }
     @keyframes pulse { to { box-shadow:inset 0 0 0 3px #ffe98a,0 0 30px #ffd257; } }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; } .ghost { border:2px solid #2d418d; border-radius:14px; min-height:44px; color:#cfe0ff; background:#070d32b8; font-weight:850; letter-spacing:.06em; cursor:pointer; touch-action:manipulation; } .ghost:disabled { opacity:.45; cursor:default; }
+    .difficulty button { min-height:40px; }
+    .cell.hint { box-shadow:inset 0 0 0 3px var(--cyan),0 0 18px #30e1ff99; } .cell.peek { box-shadow:inset 0 0 0 3px var(--coral); }
+    .codes-on { position:absolute; top:max(12px,env(safe-area-inset-top)); left:14px; z-index:3; font-size:.75rem; font-weight:900; letter-spacing:.1em; color:#09102f; background:#ffd257; border-radius:99px; padding:5px 10px; }
+    .intro { position:fixed; inset:0; z-index:5; display:grid; place-items:center; padding:22px; background:#060a24e6; }
+    .intro .card { width:min(100%,420px); border:2px solid var(--line); border-radius:24px; padding:26px 22px 20px; background:linear-gradient(160deg,#122269,#080f38); box-shadow:0 0 50px #1c46b799; text-align:center; }
+    .intro h2 { margin:0 0 6px; font-size:2rem; font-weight:950; letter-spacing:-.04em; } .intro h2 span { color:var(--cyan); } .intro ol { text-align:left; margin:14px 0 18px; padding-left:22px; color:#dce5ff; font-weight:650; line-height:1.6; }
+    .mini { display:grid; grid-template-columns:repeat(3,34px); gap:4px; justify-content:center; margin:6px 0 2px; } .mini i { height:34px; border-radius:8px; background:#1a2a7a; font:900 22px/34px system-ui; font-style:normal; color:var(--cyan); } .mini i.w { background:#1c3b8b; box-shadow:inset 0 0 0 2px #ffd257; }
+    @media (prefers-reduced-motion: reduce) { .cell, #new, .cell.win { transition:none; animation:none; } }
     @media (max-height:680px) { .game { gap:13px; padding-top:18px; padding-bottom:18px; } h1 { font-size:2.4rem; } .board { width:min(78vw,390px); justify-self:center; align-self:center; } .cell { font-size:4rem; } }
   </style>
 </head>
 <body>
-  <main class="game"><div class="stars"></div><header><h1><span>TIC</span> <span>TAC TOE</span></h1><p>Beat the bot. You are X.</p></header><div class="score"><span>You <b id="you">0</b></span><span>Draws <b id="draws">0</b></span><span>Bot <b id="bot">0</b></span></div><section class="board" aria-label="Tic tac toe board" id="board"></section><div id="status" class="status" aria-live="polite">YOUR TURN</div><div class="controls"><button id="new">New game</button><div class="difficulty"><button class="active" data-mode="easy">EASY</button><button data-mode="hard">HARD</button></div></div></main>
+  <main class="game"><div class="stars"></div><div class="codes-on" id="codesOn" hidden>CODES ON</div><header><h1><span>TIC</span> <span>TAC TOE</span></h1><p>Beat the bot. You are X.</p></header><div class="score"><span>You <b id="you">0</b></span><span>Draws <b id="draws">0</b></span><span>Bot <b id="bot">0</b></span></div><section class="board" aria-label="Tic tac toe board" id="board"></section><div id="status" class="status" aria-live="polite">YOUR TURN</div><div class="controls"><button id="new">New game</button><div class="row2"><button class="ghost" id="undo" disabled>Undo</button><button class="ghost" id="hintbtn">Hint</button></div><div class="difficulty"><button class="active" data-mode="easy">EASY</button><button data-mode="hard">HARD</button></div></div></main>
+  <div class="intro" id="intro" hidden role="dialog" aria-modal="true" aria-labelledby="introH"><div class="card"><h2 id="introH"><span>TIC</span> TAC TOE</h2>
+    <div class="mini" aria-hidden="true"><i class="w">X</i><i></i><i></i><i></i><i class="w">X</i><i></i><i>O</i><i>O</i><i class="w">X</i></div>
+    <ol><li>You are <b>X</b>. Tap an empty square.</li><li>The bot answers with <b>O</b>.</li><li>Three in a row across, down or corner to corner wins.</li></ol>
+    <button id="introPlay">Play</button></div></div>
   <script>
-    const boardEl=document.querySelector('#board'), status=document.querySelector('#status'); let board=Array(9).fill(''), turn='X', over=false, mode='easy'; const scores={X:0,O:0,D:0}; const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    const boardEl=document.querySelector('#board'), status=document.querySelector('#status'); let board=Array(9).fill(''), turn='X', over=false, mode='easy', hist=[], botNaps=0, xray=false, botTimer=0; const saved=(()=>{try{return JSON.parse(localStorage.getItem('ttt_scores'))||null}catch(e){return null}})(); const scores=saved||{X:0,O:0,D:0};
+    const sdk=(fn,a)=>{try{window.ArcadeSDK&&ArcadeSDK[fn](a)}catch(e){}}; const cheated=()=>!!(window.ArcadeSDK&&ArcadeSDK.cheated);
+    const cellName=i=>['top left','top middle','top right','middle left','centre','middle right','bottom left','bottom middle','bottom right'][i]; const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
     function render(){ boardEl.innerHTML=''; board.forEach((v,i)=>{const b=document.createElement('button'); b.className='cell '+(v?v.toLowerCase():''); b.textContent=v; b.setAttribute('aria-label',v||`Cell ${i+1}`); b.onclick=()=>move(i); boardEl.appendChild(b)}); ['X','O','D'].forEach(k=>document.querySelector('#'+({X:'you',O:'bot',D:'draws'}[k])).textContent=scores[k]); }
     function winner(b=board){ for(const line of lines) if(b[line[0]]&&b[line[0]]===b[line[1]]&&b[line[1]]===b[line[2]]) return {who:b[line[0]],line}; return b.every(Boolean)?{who:'D',line:[]}:null; }
-    function end(r){over=true; if(r.who==='D'){scores.D++;status.textContent='DRAW — GOOD GAME';} else {scores[r.who]++;status.textContent=r.who==='X'?'YOU WIN!':'BOT WINS'; status.className='status '+(r.who==='O'?'bot':'');} render(); if(r.line?.length) r.line.forEach(i=>boardEl.children[i].classList.add('win'));}
-    function move(i){ if(over||turn!=='X'||board[i]) return; board[i]='X'; render(); const r=winner(); if(r) return end(r); turn='O';status.textContent='BOT IS THINKING';status.className='status bot'; setTimeout(botMove,350); }
+    function end(r){over=true; setTimeout(()=>{ if(!cheated()) try{localStorage.setItem('ttt_scores',JSON.stringify(scores))}catch(e){} sdk('state',{scene:'over',score:scores.X,outcome:r.who}); },0); if(r.who==='D'){scores.D++;status.textContent='DRAW — GOOD GAME';} else {scores[r.who]++;status.textContent=r.who==='X'?'YOU WIN!':'BOT WINS'; status.className='status '+(r.who==='O'?'bot':'');} render(); if(r.line?.length) r.line.forEach(i=>boardEl.children[i].classList.add('win'));}
+    function move(i){ if(over||turn!=='X'||board[i]) return; hist.push(board.slice()); board[i]='X'; render(); undoBtn.disabled=false; const r=winner(); if(r) return end(r); if(botNaps>0){botNaps--;status.textContent='THE BOT IS NAPPING: GO AGAIN';return;} turn='O';status.textContent='BOT IS THINKING';status.className='status bot'; botTimer=setTimeout(botMove,350); }
     function bestMove(b,player){ const r=winner(b); if(r) return r.who==='O'?10:r.who==='X'?-10:0; let best=player==='O'?-Infinity:Infinity; for(let i=0;i<9;i++)if(!b[i]){b[i]=player;let s=bestMove(b,player==='O'?'X':'O');b[i]='';best=player==='O'?Math.max(best,s):Math.min(best,s)} return best; }
-    function botMove(){ if(over)return; const open=board.map((v,i)=>v?'':i).filter(v=>v!==''); let pick; if(mode==='easy'&&Math.random()<.63) pick=open[Math.floor(Math.random()*open.length)]; else {let top=-Infinity;for(const i of open){board[i]='O';const s=bestMove(board,'X');board[i]='';if(s>top){top=s;pick=i}}} board[pick]='O';render(); const r=winner();if(r)return end(r);turn='X';status.textContent='YOUR TURN';status.className='status'; }
-    function reset(){board=Array(9).fill('');turn='X';over=false;status.textContent='YOUR TURN';status.className='status';render();} document.querySelector('#new').onclick=reset; document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));reset()}); render();
+    function botMove(){ if(over)return; const open=board.map((v,i)=>v?'':i).filter(v=>v!==''); let pick; if(mode==='easy'&&Math.random()<.63) pick=open[Math.floor(Math.random()*open.length)]; else {let top=-Infinity;for(const i of open){board[i]='O';const s=bestMove(board,'X');board[i]='';if(s>top){top=s;pick=i}}} board[pick]='O';render(); const r=winner();if(r)return end(r);turn='X';status.textContent='YOUR TURN';status.className='status'; if(xray) peek(); }
+    function reset(){clearTimeout(botTimer);board=Array(9).fill('');turn='X';over=false;hist=[];undoBtn.disabled=true;status.textContent='YOUR TURN';status.className='status';render();if(xray)peek();sdk('state',{scene:'play'});} document.querySelector('#new').onclick=reset; document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));reset()});
+    const undoBtn=document.querySelector('#undo'), intro=document.querySelector('#intro');
+    function undo(){ if(!hist.length||turn!=='X') return; board=hist.pop(); over=false; status.textContent='YOUR TURN'; status.className='status'; render(); undoBtn.disabled=!hist.length; }
+    undoBtn.onclick=undo;
+    // Best square for X (minimax with the bot to move next), used by Hint and by the XRAY code.
+    function bestFor(p){ let pick=-1, top=p==='X'?Infinity:-Infinity; for(let i=0;i<9;i++) if(!board[i]){ board[i]=p; const s=bestMove(board,p==='X'?'O':'X'); board[i]=''; if(p==='X'?s<top:s>top){top=s;pick=i} } return pick; }
+    function hint(){ if(over) return 'Press New game for another round.'; if(turn!=='X') return 'Wait for the bot to move.'; const i=bestFor('X'); if(i<0) return ''; const b=boardEl.children[i]; b.classList.add('hint'); setTimeout(()=>b.classList.remove('hint'),1600);
+      board[i]='X'; const wins=winner(); board[i]=''; return wins&&wins.who==='X' ? 'You can win right now: take the '+cellName(i)+'.' : (()=>{ board[i]='O'; const block=winner(); board[i]=''; return block&&block.who==='O' ? 'Block the bot: take the '+cellName(i)+'.' : 'Take the '+cellName(i)+'. It keeps the most lines open.'; })(); }
+    document.querySelector('#hintbtn').onclick=()=>{ const t=hint(); if(t){ status.textContent=t.toUpperCase(); status.className='status'; } };
+    function peek(){ if(over||turn!=='X') return; board.forEach((_,i)=>boardEl.children[i]&&boardEl.children[i].classList.remove('peek')); const i=bestFor('O'); if(i>=0) boardEl.children[i].classList.add('peek'); }
+    const CODES={BOTNAP:'The bot naps: you move twice, three times',XRAY:'See the square the bot wants next (orange)',CLEANSLATE:'Wipe the score board to 0-0-0'};
+    function code(c){ if(!CODES[c]) return {ok:false}; document.querySelector('#codesOn').hidden=false;
+      if(c==='BOTNAP') botNaps+=3; if(c==='XRAY'){xray=true;peek();} if(c==='CLEANSLATE'){scores.X=scores.O=scores.D=0;render();}
+      return {ok:true,message:CODES[c]}; }
+    function showIntro(){ intro.hidden=false; document.querySelector('#introPlay').focus(); sdk('state',{scene:'title'}); }
+    document.querySelector('#introPlay').onclick=()=>{ intro.hidden=true; try{localStorage.setItem('ttt_seen','1')}catch(e){} reset(); };
+    if(window.ArcadeSDK) ArcadeSDK.init({
+      onRestart:reset,
+      onExit:()=>{ reset(); showIntro(); },
+      onTutorial:showIntro,
+      onHint:hint,
+      onCheat:code,
+    });
+    render(); let seen=false; try{seen=localStorage.getItem('ttt_seen')==='1'}catch(e){} if(seen) sdk('state',{scene:'play'}); else showIntro();
   </script>
 </body></html>
