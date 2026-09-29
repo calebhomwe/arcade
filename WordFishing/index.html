@@ -566,13 +566,15 @@ function refreshSchool(){
     labels = shuf(labels.concat(extra)).slice(0,10);
   }
   for (const L of labels){
-    school.push({ x:R(300, VW-80), y:R(WL()+60, VH-50), vx:R(18,42)*(Math.random()<0.5?-1:1),
+    school.push({ x:R(fishMinX()+20, VW-80), y:R(WL()+60, VH-50), vx:R(18,42)*(Math.random()<0.5?-1:1),
                   label:String(L), ph:R(0,6), size:R(16,26),
                   rarity:rollRarity(), species:pick(SPECIES) });
   }
 }
 
 function WL(){ return Math.round(VH*0.42); }   // waterline y
+// fish swim right of the pier on a wide screen; on a narrow phone that left a 50 px strip, so there they use the whole pond
+function fishMinX(){ return VW < 700 ? Math.round(VW*0.1) : 280; }
 
 /* ═══════════ day / mode lifecycle ═══════════ */
 function newWord(){
@@ -930,7 +932,7 @@ function frame(now){
     for (const f of school){
       f.x += f.vx*dt;
       f.ph += dt*2;
-      if (f.x<280){ f.x=280; f.vx=Math.abs(f.vx); }
+      if (f.x<fishMinX()){ f.x=fishMinX(); f.vx=Math.abs(f.vx); }
       if (f.x>VW-60){ f.x=VW-60; f.vx=-Math.abs(f.vx); }
       f.y = clamp(f.y, wl+50, VH-40);
     }
@@ -1168,21 +1170,33 @@ function drawHUD(wl){
   ctx.fillStyle = "#bcd8cf"; ctx.font = "14px system-ui";
   ctx.fillText(mode==="spell" ? "SPELLING" : "MATHS", VW-20, 52);
   // clue banner (the keeper's net)
-  const clue = clueText();
-  ctx.font = "bold 21px system-ui"; ctx.textAlign = "center";
-  const cw = ctx.measureText(clue).width;
+  // one line if it fits; on a narrow phone, a slightly smaller font and up to two lines, never cut off
+  const clue = clueText(), maxW = VW - 44;
+  let cfs = 21, clines = [clue];
+  ctx.textAlign = "center"; ctx.font = "bold 21px system-ui";
+  if (ctx.measureText(clue).width > maxW) {
+    for (cfs = 19; cfs >= 14; cfs--) {
+      ctx.font = "bold "+cfs+"px system-ui"; clines = []; let line = "";
+      for (const w of clue.split(" ")) { const t = line ? line+" "+w : w; if (ctx.measureText(t).width > maxW && line) { clines.push(line); line = w; } else line = t; }
+      if (line) clines.push(line);
+      if (clines.length <= 2 && clines.every(l => ctx.measureText(l).width <= maxW)) break;
+    }
+  }
+  const cw = Math.max(...clines.map(l => ctx.measureText(l).width)), lh = cfs + 7, bh = 16 + lh*clines.length;
   ctx.fillStyle = "rgba(8,20,32,.62)";
-  ctx.fillRect(VW/2-cw/2-18, 88, cw+36, 40);
+  ctx.fillRect(VW/2-cw/2-18, 88, cw+36, bh);
   ctx.strokeStyle = "#8fd3a8"; ctx.lineWidth = 2;
-  ctx.strokeRect(VW/2-cw/2-18, 88, cw+36, 40);
-  ctx.fillStyle = "#d8f5e0"; ctx.fillText(clue, VW/2, 115);
+  ctx.strokeRect(VW/2-cw/2-18, 88, cw+36, bh);
+  ctx.fillStyle = "#d8f5e0"; clines.forEach((l, i) => ctx.fillText(l, VW/2, 88 + 8 + lh*(i+1) - 7));
+  const clueExtra = bh - 40;
+  { const c = document.getElementById('coach'); if (c) c.style.top = Math.max(136, 88 + bh + 8 + (mode==="spell" && word ? 30 : 0)) + 'px'; }
   // spelling progress letters
   if (mode==="spell" && word){
     ctx.font = "bold 26px system-ui"; ctx.fillStyle = "#ffd257";
     let lx = VW/2 - (word.t.length*26)/2;
     for (let i=0;i<word.t.length;i++){
       ctx.fillStyle = i<wordIdx ? "#a8e6a0" : "rgba(255,255,255,.25)";
-      ctx.fillText(i<wordIdx ? word.t[i].toUpperCase() : "·", lx+13+i*26, 160);
+      ctx.fillText(i<wordIdx ? word.t[i].toUpperCase() : "·", lx+13+i*26, 160 + clueExtra);
     }
   }
   // bucket slots bottom-left

@@ -415,6 +415,19 @@ function drawBalloon(b){
   cx.restore();
 }
 function drawBlimp(x,y,w,h,prompt,note){
+  /* the question: one line if it fits, else wrapped onto up to three lines (a phone is narrow), and the blimp grows to hold them */
+  const q=String(prompt), FONT=px=>`bold ${px}px "Comic Sans MS","Segoe UI",system-ui,sans-serif`, maxW=w*.84;
+  let fs=clamp(w/Math.max(7,q.length)*1.35,17,34), lines=[q];
+  cx.font=FONT(fs);
+  if(cx.measureText(q).width>maxW){
+    for(fs=Math.min(fs,26);fs>=15;fs--){
+      cx.font=FONT(fs); lines=[]; let line='';
+      for(const word of q.split(' ')){const t=line?line+' '+word:word; if(cx.measureText(t).width>maxW&&line){lines.push(line);line=word;}else line=t;}
+      if(line)lines.push(line);
+      if(lines.length<=3&&lines.every(l=>cx.measureText(l).width<=maxW))break;
+    }
+  }
+  h=Math.max(h,lines.length*fs*1.14+(note?40:26));
   const bob=RM.matches?0:Math.sin(state.t*1.1)*6;
   cx.save();
   cx.translate(x,y+bob);
@@ -438,11 +451,10 @@ function drawBlimp(x,y,w,h,prompt,note){
   cx.fillStyle='#8a5a2b';
   rr(cx,-w*.1,h*.34,w*.2,h*.2,6);cx.fill();
   /* question text */
-  const q=String(prompt);
-  const fs=clamp(w/Math.max(7,q.length)*1.35,17,34);
-  cx.font=`bold ${fs}px "Comic Sans MS","Segoe UI",system-ui,sans-serif`;
+  cx.font=FONT(fs);
   cx.fillStyle='#5a3410';cx.textAlign='center';cx.textBaseline='middle';
-  cx.fillText(q,0,-2);
+  const top=-2-(lines.length-1)*fs*1.14/2-(note&&lines.length>1?8:0);
+  lines.forEach((l,i)=>cx.fillText(l,0,top+i*fs*1.14));
   if(note){cx.font=`13px "Comic Sans MS","Segoe UI",system-ui,sans-serif`;
     cx.fillStyle='rgba(90,52,16,.75)';cx.fillText(note,0,h*.18);}
   cx.restore();
