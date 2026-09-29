@@ -1,0 +1,214 @@
+{
+ "id": "fishing-for-words",
+ "title": "Fishing for Words",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "WordFishing/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "4 touch inputs not acknowledged within 4 s while the main thread was blocked",
+  "JANK": "p95 JS frame cost 22.98 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.3; raw p95 30.1, median 2.67, p99 33.59, max 48.2; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/fishing-for-words-1-title.jpg",
+  "2-mid": "shots/fishing-for-words-2-mid.jpg",
+  "3-end": "shots/fishing-for-words-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 18.39,
+  "cores": 4,
+  "load1End": 16.98,
+  "contention": 1.31,
+  "contentionSamples": [
+   1.31,
+   2.5,
+   2.76,
+   1.19,
+   1.18,
+   1.28,
+   2.6
+  ]
+ },
+ "loadMs": 240,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:46659/WordFishing/index.html",
+ "startPath": "http://127.0.0.1:46659/WordFishing/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 149.4,
+  "bench1Ms": 37.1,
+  "effectiveSlowdown": 4
+ },
+ "start": {
+  "how": "#btn-spell",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.31,
+  "loadMs": 503,
+  "playMs": 577,
+  "loadRawMs": 658,
+  "playRawMs": 755,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 5,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 55,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 3,
+  "slowestPollMs": 82,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 2017.2,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     11
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 1346.4,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     10
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     33
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 1338.8,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     15
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 130,
+  "jsMedian": 2.67,
+  "jsP95": 22.98,
+  "jsP99": 33.59,
+  "jsMax": 48.2,
+  "jsP95Raw": 30.1,
+  "rawWithGlP95": 30.1,
+  "glP95": 0,
+  "gapP95": 800,
+  "gapMedian": 350,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2.2,
+  "heapGrowthPct": 14,
+  "heapMeasured": true,
+  "nodesStart": 79,
+  "nodesEnd": 81,
+  "nodesMax": 81,
+  "listeners0": 56,
+  "listeners1": 55,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 5,
+  "scriptPct": 2,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 13,
+  "swipes": 4,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 4,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 930,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 4
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 89,
+  "maxChangeFromStartPct": 34.1,
+  "samples": 9
+ },
+ "severity": 104.6,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [],
+  "evidence": null,
+  "blockPlayMs": 281,
+  "blockLoadMs": 383,
+  "load1": 16.5
+ }
+}

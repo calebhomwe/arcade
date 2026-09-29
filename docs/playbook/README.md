@@ -12,6 +12,6 @@ Research-backed recipes for the arcade's games. Read the "Do this first" list at
 
 Use a kit in a single-file HTML game with one line: `<script src="../docs/playbook/feel-kit.js"></script>` (paths relative to your game), then `Feel.Shake`, `IPhone.audioGate()`, `Progression.xpFor(...)`. Each kit is dependency-free, ES2020, no build step. Copy the file into the game folder if the game must stand alone (external repos).
 
-Tests: `tests/*.html` are unit pages, `tests/run.mjs <url>` runs a page in Chromium and Playwright WebKit (iPhone 13 profile) and prints `window.__results`. `tests/run-all.sh` regenerates `tests/results/*.json`; `tests/check-snippets.py` proves every code block in these files is verbatim from a tested file. Browser jobs on the shared box go through `scratchpad/slot.sh`.
+Tests: `tests/*.html` are unit pages, `tests/run.mjs <url>` runs a page in Chromium and Playwright WebKit (iPhone 13 profile) and prints `window.__results`. `tests/run-all.sh` regenerates `tests/results/*.json` (`run-rest.sh` and `run-logs.sh` are slot-lock subsets of it); `tests/check-snippets.py` proves every code block in these files is verbatim from a tested file. Browser jobs on the shared box go through `scratchpad/slot.sh`.
 
 **Honest limit.** All "pass" claims are Chromium 141 (SwiftShader) and Playwright WebKit 26.0 on Linux. Neither is an iPhone: no Apple GPU, no jetsam memory kills, no Safari toolbar, no notch, no sound card, no haptics. `IPHONE.md` lists what each test can and cannot show. One real-iPhone session is still owed.

@@ -47,19 +47,16 @@ export class Particles {
 // rain: streaks that wrap around the camera target on the GPU
 export class Rain {
   constructor(scene) {
-    const N = 420, r = rng(31), pos = [], seed = [];
-    for (let i = 0; i < N; i++) { const x = (r() - 0.5) * 60, z = (r() - 0.5) * 60, y = r() * 30; pos.push(x, y, z, x, y - 1.0, z); seed.push(r(), 0, r(), 1); }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('aSeed', new THREE.Float32BufferAttribute(seed.map((v, i) => v), 2 - 1 + 1 ? 2 : 2).setUsage(THREE.StaticDrawUsage));
-    const seeds = new Float32Array(N * 2 * 2); for (let i = 0; i < N * 2; i++) { seeds[i * 2] = r(); seeds[i * 2 + 1] = r(); }
-    g.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 2));
+    const N = 460, r = rng(31), pos = [], seed = [];
+    for (let i = 0; i < N; i++) { const x = r() * 60, z = r() * 60, y = r() * 30, sd = r(); for (let k = 0; k < 2; k++) { pos.push(x, y, z); seed.push(sd, k); } }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('aSeed', new THREE.Float32BufferAttribute(seed, 2));
     this.mat = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false,
       uniforms: { uTime: SU.uTime, uCenter: { value: new THREE.Vector3() }, uAmt: { value: 0 }, uFogCol: SU.uFogCol },
       vertexShader: `attribute vec2 aSeed; uniform float uTime; uniform vec3 uCenter; varying float vA;
-        void main(){ vec3 p = position; float sp = 22.0 + aSeed.y * 6.0; p.y = mod(position.y - uTime * sp, 30.0);
-          p.x = mod(position.x + uCenter.x + 30.0, 60.0) - 30.0 + (uCenter.x - mod(uCenter.x + 30.0, 60.0) + 30.0) * 0.0; p.z = position.z;
-          vec3 w = vec3(position.x + floor((uCenter.x - position.x + 30.0) / 60.0) * 60.0, p.y, position.z + floor((uCenter.z - position.z + 30.0) / 60.0) * 60.0);
-          if (position.y < 0.0) w.y = p.y; vA = 0.5; gl_Position = projectionMatrix * viewMatrix * vec4(w, 1.0); }`,
+        void main(){ vec3 p = position; float sp = 20.0 + aSeed.x * 8.0; p.y = mod(position.y - uTime * sp, 30.0);
+          p.x = uCenter.x + mod(position.x - uCenter.x + 30.0, 60.0) - 30.0; p.z = uCenter.z + mod(position.z - uCenter.z + 30.0, 60.0) - 30.0;
+          p.y -= aSeed.y * 0.9; p.x += aSeed.y * 0.06; vA = 0.55 - aSeed.y * 0.35; gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0); }`,
       fragmentShader: `uniform float uAmt; uniform vec3 uFogCol; varying float vA; void main(){ gl_FragColor = vec4(mix(vec3(0.72, 0.84, 1.0), uFogCol, 0.3), vA * uAmt);\n #include <colorspace_fragment>\n }`,
     });
     this.lines = new THREE.LineSegments(g, this.mat); this.lines.frustumCulled = false; this.lines.renderOrder = 7; this.lines.visible = false; scene.add(this.lines);
