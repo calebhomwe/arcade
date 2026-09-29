@@ -1,0 +1,100 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>iphone-kit tests</title>
+<style>html{touch-action:manipulation}body{font:14px system-ui;padding:12px}#tapme{padding:18px;font-size:18px}canvas{width:80px;height:80px}</style>
+<body><h3>iphone-kit.js tests</h3><button id="tapme">tap me</button> <span id="audiostate"></span><pre id="out"></pre>
+<canvas id="c1"></canvas>
+<script src="../iphone-kit.js"></script>
+<script>
+const { crashBreadcrumb, pickDpr, AdaptiveDpr, texMB, astcMB, canvasMB, audioGate, guardContext, lifecycle, orientationGate, keepAwake, touchGuards, fitViewport, store } = IPhone;
+const R = {}, sleep = ms => new Promise(r => setTimeout(r, ms));
+async function test(name, fn) { try { R[name] = { ok: true, note: (await fn()) || '' }; } catch (e) { R[name] = { ok: false, note: String(e && e.message || e) }; } }
+const eq = (a, b, eps, m) => { if (!(Math.abs(a - b) <= eps)) throw new Error(`${m || 'eq'}: ${a} vs ${b}`); };
+const yes = (c, m) => { if (!c) throw new Error(m); };
+
+// event log for the interactive tap test (driven from tests/iphone-interact.mjs)
+window.__events = [];
+['pointerdown', 'touchstart', 'pointerup', 'touchend', 'mousedown', 'mouseup', 'click'].forEach(t => document.getElementById('tapme').addEventListener(t, e => window.__events.push(t), { passive: true }));
+
+(async () => {
+  await test('pickDpr: cap by DPR and by pixel budget', () => {
+    eq(pickDpr(390, 844, { dpr: 3 }), 2, 0, 'iPhone 13 portrait'); eq(pickDpr(390, 844, { dpr: 3, maxPixels: 1e6 }), 1.5, 0, 'tight budget');
+    eq(pickDpr(1440, 900, { dpr: 2 }), 1.25, 0, '1440x900 hidpi'); eq(pickDpr(390, 844, { dpr: 1 }), 1, 0, 'dpr 1');
+    return 'phone 390x844 at 3x -> 2 (1.32 MP); same with a 1 MP budget -> 1.5; 1440x900 at 2x -> 1.25';
+  });
+  await test('AdaptiveDpr: steps down when slow, up only after a calm spell, stays within min/max', () => {
+    const a = new AdaptiveDpr({ min: 1, max: 2, frames: 10 }), seq = [];
+    const feed = (ms, n) => { for (let i = 0; i < n; i++) { const r = a.push(ms); if (r !== null) seq.push(r); } };
+    feed(30, 10); feed(30, 10); feed(30, 10); feed(30, 10); feed(30, 30);
+    yes(seq.join() === '1.75,1.5,1.25,1', 'down ' + seq); yes(a.dpr === 1, 'floor');
+    feed(10, 30); yes(seq.length === 4, 'no step up yet: ' + seq); feed(10, 10); yes(seq[4] === 1.25, 'first step up after 4 calm windows: ' + seq);
+    feed(20, 60); yes(a.dpr === 1.25, 'no change in the middle band');
+    return 'down 1.75, 1.5, 1.25, 1 on 30 ms frames; up one step after 4 calm windows of 10 ms';
+  });
+  await test('memory arithmetic (texture, ASTC, canvas)', () => {
+    eq(texMB(2048, 2048), 21.333, 0.01, '2048^2 RGBA + mips'); eq(texMB(2048, 2048, { mips: false }), 16, 1e-9); eq(texMB(4096, 4096), 85.333, 0.01, '4096^2 + mips');
+    eq(astcMB(2048, 2048, 4), 5.333, 0.01, 'ASTC 4x4'); eq(astcMB(2048, 2048, 6), 2.38, 0.02, 'ASTC 6x6');
+    eq(canvasMB(390, 844, 3), 33.9, 0.1, 'canvas at 3x'); eq(canvasMB(390, 844, 2), 15.07, 0.1, 'canvas at 2x'); eq(canvasMB(390, 844, 2, { samples: 4 }), 60.3, 0.3, 'canvas at 2x, MSAA x4');
+    return '2048^2 RGBA+mips 21.3 MiB (4096^2: 85.3); ASTC 4x4 5.3, 6x6 2.4 (2.38); canvas 390x844: 3x 33.9, 2x 15.1, 2x+MSAA4 60.3 MiB';
+  });
+  await test('audioGate (fake context): resumes suspended and interrupted, not closed, and reports state', () => {
+    function fake(state) { const c = { state, resumed: 0, listeners: [], resume() { this.resumed++; this.state = 'running'; this.listeners.forEach(f => f()); }, addEventListener(t, f) { this.listeners.push(f); }, createBuffer: () => ({}), createBufferSource: () => ({ connect() {}, start() {} }), destination: {} }; return c; }
+    const out = {};
+    for (const s of ['suspended', 'interrupted', 'closed', 'running']) { const c = fake(s), changes = []; const g = audioGate({ create: () => c }); g.onChange = r => changes.push(r); g.poke(); out[s] = { resumed: c.resumed, changes: changes.join() }; g.destroy(); }
+    yes(out.suspended.resumed === 1 && out.interrupted.resumed === 1 && out.closed.resumed === 0 && out.running.resumed === 0, JSON.stringify(out));
+    yes(out.suspended.changes === 'true' && out.interrupted.changes === 'true', 'onChange ' + JSON.stringify(out)); return JSON.stringify(out);
+  });
+  await test('audioGate (real AudioContext, synthetic click): does not throw, reports the state', async () => {
+    const g = audioGate(); document.body.dispatchEvent(new Event('click', { bubbles: true })); await sleep(300);
+    const st = g.ctx && g.ctx.state; window.__audioGate = g; g.destroy(); yes(['running', 'suspended', 'interrupted'].includes(st), 'state ' + st); return 'state after a synthetic click: ' + st;
+  });
+  await test('guardContext: real WebGL context lost and restored on a plain canvas', async () => {
+    const c = document.getElementById('c1'), gl = c.getContext('webgl2'); yes(!!gl, 'no webgl2'); const ev = []; guardContext(c, { onLost: () => ev.push('lost'), onRestored: () => ev.push('restored') });
+    const x = gl.getExtension('WEBGL_lose_context'); yes(!!x, 'no WEBGL_lose_context'); x.loseContext(); await sleep(150); yes(gl.isContextLost(), 'lost flag'); x.restoreContext(); await sleep(300);
+    yes(ev.join() === 'lost,restored' && !gl.isContextLost(), 'events ' + ev + ' lost=' + gl.isContextLost()); return 'events: ' + ev.join(' then ');
+  });
+  await test('lifecycle: hide once, show once, bfcache restore counts as show', () => {
+    const calls = []; const lc = lifecycle({ onHide: w => calls.push('hide:' + w), onShow: w => calls.push('show:' + w) });
+    const setHidden = h => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => h }); document.dispatchEvent(new Event('visibilitychange')); };
+    setHidden(true); setHidden(true); yes(lc.hidden, 'hidden'); setHidden(false); dispatchEvent(new Event('pagehide')); const pe = new Event('pageshow'); pe.persisted = true; dispatchEvent(pe);
+    yes(calls.join() === 'hide:visibilitychange,show:visibilitychange,hide:pagehide,show:bfcache', calls.join()); return calls.join(', ');
+  });
+  await test('orientationGate: flags the wrong way round', () => {
+    const got = []; orientationGate('portrait', w => got.push(['portrait', w])); orientationGate('landscape', w => got.push(['landscape', w]));
+    const port = matchMedia('(orientation: portrait)').matches; yes(got[0][1] === !port && got[1][1] === port, JSON.stringify(got)); return `device is ${port ? 'portrait' : 'landscape'}: ` + JSON.stringify(got);
+  });
+  await test('keepAwake: safe on every engine (denied or unsupported is not an error)', async () => {
+    const get = keepAwake(); const ok = await get(); return `'wakeLock' in navigator: ${'wakeLock' in navigator}; acquired without a gesture: ${ok}`;
+  });
+  await test('touchGuards: a second touchend inside 350 ms is cancelled and the button still fires once', () => {
+    const b = document.createElement('button'); document.body.appendChild(b); let clicks = 0; b.addEventListener('click', () => clicks++);
+    const stops = touchGuards(document); const e1 = new Event('touchend', { bubbles: true, cancelable: true }), e2 = new Event('touchend', { bubbles: true, cancelable: true });
+    b.dispatchEvent(e1); b.dispatchEvent(e2); const g1 = new Event('gesturestart', { bubbles: true, cancelable: true }); document.dispatchEvent(g1);
+    yes(!e1.defaultPrevented && e2.defaultPrevented && clicks === 1 && stops.length === 1, `e1 ${e1.defaultPrevented} e2 ${e2.defaultPrevented} clicks ${clicks}`); yes(g1.defaultPrevented, 'gesturestart blocked');
+    return 'second touchend cancelled, 1 synthetic click, pinch gesture blocked';
+  });
+  await test('fitViewport: --app-h follows the visual viewport', async () => {
+    fitViewport(); await sleep(50); const v = parseFloat(document.documentElement.style.getPropertyValue('--app-h')); const want = (window.visualViewport ? visualViewport.height : innerHeight); eq(v, want, 0.5, '--app-h');
+    return `--app-h ${v}px, visualViewport ${window.visualViewport ? 'present' : 'missing'}`;
+  });
+  await test('store: works, and never throws when storage does', () => {
+    yes(store.set('t', { a: 1 }) && store.get('t').a === 1 && store.get('missing', 7) === 7, 'basic');
+    const orig = Storage.prototype.setItem, og = Storage.prototype.getItem; Storage.prototype.setItem = () => { throw new DOMException('full', 'QuotaExceededError'); }; Storage.prototype.getItem = () => { throw new Error('blocked'); };
+    const w = store.set('x', 1), r = store.get('x', 'fallback'); Storage.prototype.setItem = orig; Storage.prototype.getItem = og; yes(w === false && r === 'fallback', 'throwing storage'); return 'set false and get fallback when storage throws';
+  });
+  await test('crashBreadcrumb: false on first load, true after a load that never said pagehide, false after a clean pagehide', () => {
+    sessionStorage.removeItem('t_alive'); const a = crashBreadcrumb('t_alive'), b = crashBreadcrumb('t_alive'); dispatchEvent(new Event('pagehide')); const c = crashBreadcrumb('t_alive');
+    yes(a === false && b === true && c === false, [a, b, c].join()); const pe = new Event('pageshow'); pe.persisted = true; dispatchEvent(pe); yes(sessionStorage.getItem('t_alive') === '1', 'pageshow re-arms'); dispatchEvent(new Event('pagehide')); return 'first load false, unclean reload true, clean pagehide false, bfcache pageshow re-arms';
+  });
+  await test('capability report (what this engine supports)', () => {
+    const gl = document.createElement('canvas').getContext('webgl2'), ext = n => !!gl.getExtension(n);
+    const rep = {
+      css: ['height:100dvh', 'height:100svh', 'height:100lvh', 'padding:env(safe-area-inset-top)', 'touch-action:manipulation', 'overscroll-behavior:none', 'width:100cqw', 'color:color-mix(in srgb,red,blue)', 'aspect-ratio:1/1', 'inset:0'].map(s => s + '=' + CSS.supports(s)).join(' '),
+      api: { vibrate: typeof navigator.vibrate, orientationLock: screen.orientation && typeof screen.orientation.lock, wakeLock: 'wakeLock' in navigator, audioSession: 'audioSession' in navigator, visualViewport: !!window.visualViewport, ongesturestart: 'ongesturestart' in window, PointerEvent: 'PointerEvent' in window, ontouchstart: 'ontouchstart' in window, maxTouchPoints: navigator.maxTouchPoints, webgl2: !!gl, offscreen: typeof OffscreenCanvas, resizeObserver: typeof ResizeObserver },
+      gl: { renderer: gl.getParameter(gl.RENDERER), maxTex: gl.getParameter(gl.MAX_TEXTURE_SIZE), maxSamples: gl.getParameter(gl.MAX_SAMPLES), pointSize: Array.from(gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)), colorBufferFloat: ext('EXT_color_buffer_float'), colorBufferHalfFloat: ext('EXT_color_buffer_half_float'), floatLinear: ext('OES_texture_float_linear'), astc: ext('WEBGL_compressed_texture_astc'), etc2: ext('WEBGL_compressed_texture_etc'), s3tc: ext('WEBGL_compressed_texture_s3tc'), loseContext: ext('WEBGL_lose_context') },
+    };
+    return JSON.stringify(rep);
+  });
+  window.__results = R; document.getElementById('out').textContent = JSON.stringify(R, null, 1); window.__done = true;
+})();
+</script>

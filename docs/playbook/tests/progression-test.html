@@ -1,0 +1,47 @@
+<!doctype html>
+<meta charset="utf-8"><title>progression-kit tests</title><body><pre id="out"></pre>
+<script src="../progression-kit.js"></script>
+<script>
+const P = Progression, R = {};
+function test(name, fn) { try { R[name] = { ok: true, note: fn() || '' }; } catch (e) { R[name] = { ok: false, note: String(e && e.message || e) }; } }
+const eq = (a, b, eps, m) => { if (!(Math.abs(a - b) <= eps)) throw new Error(`${m || 'eq'}: ${a} vs ${b}`); };
+const yes = (c, m) => { if (!c) throw new Error(m); };
+
+test('xp curves: shape, monotone, inverse', () => {
+  const poly = { type: 'poly', base: 60, p: 1.6 }, exp = { type: 'exp', base: 50, g: 1.18 }, step = { type: 'step', base: 500, step: 250 };
+  for (const c of [poly, exp, step]) { let prev = 0; for (let n = 1; n <= 60; n++) { const x = P.xpFor(n, c); yes(x > prev, `${c.type} not increasing at ${n}`); prev = x; } }
+  eq(P.xpFor(1, poly), 60, 0); eq(P.xpFor(10, poly), Math.round(60 * Math.pow(10, 1.6)), 0); eq(P.xpFor(50, step) - P.xpFor(49, step), 250, 0, 'step curve adds a constant');
+  for (const c of [poly, exp, step]) for (const lv of [1, 2, 7, 25, 40]) { const t = P.totalXpTo(lv, c); const r = P.levelFromXp(t, c); yes(r.level === lv && r.into === 0, `inverse ${c.type} L${lv}: ${JSON.stringify(r)}`); const r2 = P.levelFromXp(t + P.xpFor(lv, c) - 1, c); yes(r2.level === lv, 'one short'); }
+  return `poly L1 ${P.xpFor(1, poly)}, L5 ${P.xpFor(5, poly)}, L10 ${P.xpFor(10, poly)}, L20 ${P.xpFor(20, poly)}; exp L10 ${P.xpFor(10, exp)}, L30 ${P.xpFor(30, exp)}`;
+});
+test('shop costs: 1.15 growth doubles about every 5, bulk buy matches a loop', () => {
+  eq(P.costOf(15, 0), 15, 0); eq(P.costOf(15, 50) / 15, Math.pow(1.15, 50), 0.01 * Math.pow(1.15, 50), 'x50'); yes(P.costOf(100, 5) / P.costOf(100, 0) > 1.95 && P.costOf(100, 5) / P.costOf(100, 0) < 2.1, 'doubles per 5');
+  for (const [base, owned, k] of [[15, 0, 10], [100, 7, 25], [1100, 30, 5], [15, 100, 3]]) { let s = 0; for (let i = 0; i < k; i++) s += base * Math.pow(1.15, owned + i); eq(P.costOfMany(base, owned, k), Math.ceil(s), 2, `bulk ${base},${owned},${k}`); }
+  for (const [base, owned, coins] of [[15, 0, 1000], [100, 7, 50000], [1100, 30, 1e7], [15, 0, 14], [15, 0, 15]]) { const k = P.maxAffordable(base, owned, coins); yes(P.costOfMany(base, owned, k) <= coins && P.costOfMany(base, owned, k + 1) > coins, `maxAffordable ${base},${owned},${coins} -> ${k}`); }
+  return `50th purchase costs ${(P.costOf(15, 50) / 15).toFixed(0)}x the first; 1000 coins buys ${P.maxAffordable(15, 0, 1000)} of a 15-coin item`;
+});
+test('offline earnings: capped and discounted', () => {
+  eq(P.offlineEarnings(10, 3600), 18000, 0); eq(P.offlineEarnings(10, 3600 * 30), 10 * 8 * 3600 * 0.5, 0, 'cap at 8 h'); eq(P.offlineEarnings(10, 0), 0, 0); return '1 h away at 10/s = 18,000; 30 h away = the same as 8 h';
+});
+test('stars: thresholds both ways', () => {
+  yes(P.stars(50, [10, 40, 90]) === 2 && P.stars(9, [10, 40, 90]) === 0 && P.stars(90, [10, 40, 90]) === 3, 'higher');
+  yes(P.stars(14, [30, 22, 15], { lowerIsBetter: true }) === 3 && P.stars(22, [30, 22, 15], { lowerIsBetter: true }) === 2 && P.stars(31, [30, 22, 15], { lowerIsBetter: true }) === 0, 'lower'); return 'ok';
+});
+test('week stamps: Monday-first, chest at 5, lifetime never resets', () => {
+  const played = ['2026-09-21', '2026-09-22', '2026-09-24', '2026-09-25', '2026-09-27', '2026-09-14', '2026-09-15'];     // 21..27 Sep 2026 is Mon..Sun
+  const w = P.weekStamps(played, '2026-09-27'); yes(w.stamps.join() === 'true,true,false,true,true,false,true' && w.count === 5 && w.chestReady && w.lifetime === 7, JSON.stringify(w));
+  const next = P.weekStamps(played, '2026-09-28'); yes(next.count === 0 && !next.chestReady && next.lifetime === 7, 'new week starts empty but lifetime stays: ' + JSON.stringify(next)); return 'Sun 27 Sep: 5 stamps, chest ready; Mon 28 Sep: 0 stamps, lifetime 7';
+});
+test('daily challenge: same for everyone on a date, changes by date and game, uses all goals over time', () => {
+  const goals = ['collect 30 coins', 'no misses', 'finish under 60 s', 'get a 5 combo']; const a = P.dailyChallenge('2026-09-29', 'runner', goals), b = P.dailyChallenge('2026-09-29', 'runner', goals);
+  yes(JSON.stringify(a) === JSON.stringify(b), 'deterministic'); const seen = new Set(); for (let d = 1; d <= 30; d++) seen.add(P.dailyChallenge('2026-09-' + String(d).padStart(2, '0'), 'runner', goals).goal); yes(seen.size === 4, 'variety ' + seen.size);
+  yes(P.dailySeed('2026-09-29', 'runner') !== P.dailySeed('2026-09-29', 'puzzle'), 'per game'); yes(a.bonus >= 1 && a.bonus <= 3, 'bonus'); return JSON.stringify(a);
+});
+test('unlock cadence: strictly increasing, dense early', () => {
+  const u = P.unlockLevels(10, 30); for (let i = 1; i < u.length; i++) yes(u[i] > u[i - 1], 'increasing ' + u); yes(u[0] === 1 && u[9] === 30 && u[3] <= 7, u.join()); return 'levels ' + u.join(', ');
+});
+test('season bonus: only ever adds, slow growth', () => {
+  eq(P.seasonBonus(0), 1, 1e-9); eq(P.seasonBonus(1e6), 1.05, 1e-9); eq(P.seasonBonus(8e6), 1.10, 1e-9); yes(P.seasonBonus(-5) === 1, 'no negatives'); return '1M lifetime = +5%, 8M = +10%, 1B = +50%';
+});
+document.getElementById('out').textContent = JSON.stringify(R, null, 1); window.__results = R; window.__done = true;
+</script>

@@ -1,0 +1,116 @@
+{
+ "chromium": {
+  "ms": 1941,
+  "engine": "chromium 141.0.7390.37",
+  "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
+  "results": {
+   "easing endpoints and overshoot": {
+    "ok": true,
+    "note": "outBack peak 1.100, outElastic peak 1.371"
+   },
+   "shake: trauma squared and cubed, decay, frame-rate independence, reduced motion": {
+    "ok": true,
+    "note": "squared 0.09,0.36,0.81, cubed 0.027,0.216,0.729, max offset 11.7px"
+   },
+   "hit-stop freezes the sim for the asked time, then resumes": {
+    "ok": true,
+    "note": "80 ms hit froze 5 of 12 frames at 60 fps; 200 ms slow-mo ran 13 frames"
+   },
+   "spring + squash and stretch: overshoots, settles, keeps volume": {
+    "ok": true,
+    "note": "min -0.287, max 0.064, rest 1.4e-7"
+   },
+   "anticipation and follow-through track hits its keyframes": {
+    "ok": true,
+    "note": "dip 0.85 at 90 ms, peak 1.25 at 200 ms, rest 1.0 by 460 ms"
+   },
+   "coin path: starts at the coin, ends on the counter, accelerates in": {
+    "ok": true,
+    "note": "at t=0.5 covered 24% of the way"
+   },
+   "flyCoins (real rAF): all land, all removed, counter told per coin": {
+    "ok": true,
+    "note": "8 coins, 724 ms (expected about 710 ms)"
+   },
+   "popNumber: animates and removes itself": {
+    "ok": true,
+    "note": "WAAPI keyframes, removed on finish"
+   },
+   "combo: pitch ladder is musical, window expires, intensity is 0..1": {
+    "ok": true,
+    "note": "combo 4 = fifth (1.498x), combo 7 = octave (2x)"
+   },
+   "varied(): stays within +-6 percent, never repeats back to back": {
+    "ok": true,
+    "note": "range 827..933 Hz over 3000 draws"
+   },
+   "sound layering renders audible, unclipped audio (OfflineAudioContext)": {
+    "ok": true,
+    "note": "coin peak 0.31, rms 0.029; 880 to 1760 Hz zero-crossing ratio 1.99"
+   },
+   "haptics: picks a path per engine and does not throw": {
+    "ok": true,
+    "note": "{\"mode\":\"vibrate\",\"tapResult\":\"vibrate\",\"hasVibrate\":\"function\",\"switchAppearance\":null,\"switchToggledByClick\":null,\"ua\":true}"
+   }
+  },
+  "logs": [
+   "error: Failed to load resource: the server responded with a status of 404 (File not found)"
+  ]
+ },
+ "webkit": {
+  "ms": 1964,
+  "engine": "webkit 26.0",
+  "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
+  "results": {
+   "easing endpoints and overshoot": {
+    "ok": true,
+    "note": "outBack peak 1.100, outElastic peak 1.371"
+   },
+   "shake: trauma squared and cubed, decay, frame-rate independence, reduced motion": {
+    "ok": true,
+    "note": "squared 0.09,0.36,0.81, cubed 0.027,0.216,0.729, max offset 11.7px"
+   },
+   "hit-stop freezes the sim for the asked time, then resumes": {
+    "ok": true,
+    "note": "80 ms hit froze 5 of 12 frames at 60 fps; 200 ms slow-mo ran 13 frames"
+   },
+   "spring + squash and stretch: overshoots, settles, keeps volume": {
+    "ok": true,
+    "note": "min -0.287, max 0.064, rest 1.4e-7"
+   },
+   "anticipation and follow-through track hits its keyframes": {
+    "ok": true,
+    "note": "dip 0.85 at 90 ms, peak 1.25 at 200 ms, rest 1.0 by 460 ms"
+   },
+   "coin path: starts at the coin, ends on the counter, accelerates in": {
+    "ok": true,
+    "note": "at t=0.5 covered 24% of the way"
+   },
+   "flyCoins (real rAF): all land, all removed, counter told per coin": {
+    "ok": true,
+    "note": "8 coins, 732 ms (expected about 710 ms)"
+   },
+   "popNumber: animates and removes itself": {
+    "ok": true,
+    "note": "WAAPI keyframes, removed on finish"
+   },
+   "combo: pitch ladder is musical, window expires, intensity is 0..1": {
+    "ok": true,
+    "note": "combo 4 = fifth (1.498x), combo 7 = octave (2x)"
+   },
+   "varied(): stays within +-6 percent, never repeats back to back": {
+    "ok": true,
+    "note": "range 827..933 Hz over 3000 draws"
+   },
+   "sound layering renders audible, unclipped audio (OfflineAudioContext)": {
+    "ok": true,
+    "note": "coin peak 0.30, rms 0.029; 880 to 1760 Hz zero-crossing ratio 1.99"
+   },
+   "haptics: picks a path per engine and does not throw": {
+    "ok": true,
+    "note": "{\"mode\":\"switch\",\"tapResult\":\"switch\",\"hasVibrate\":\"undefined\",\"switchAppearance\":\"auto\",\"switchToggledByClick\":true,\"ua\":true}"
+   }
+  },
+  "logs": []
+ }
+}

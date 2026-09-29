@@ -1,0 +1,126 @@
+{
+ "chromium": {
+  "ms": 1555,
+  "engine": "chromium 141.0.7390.37",
+  "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
+  "results": {
+   "pickDpr: cap by DPR and by pixel budget": {
+    "ok": true,
+    "note": "phone 390x844 at 3x -> 2 (1.32 MP); same with a 1 MP budget -> 1.5; 1440x900 at 2x -> 1.25"
+   },
+   "AdaptiveDpr: steps down when slow, up only after a calm spell, stays within min/max": {
+    "ok": true,
+    "note": "down 1.75, 1.5, 1.25, 1 on 30 ms frames; up one step after 4 calm windows of 10 ms"
+   },
+   "memory arithmetic (texture, ASTC, canvas)": {
+    "ok": true,
+    "note": "2048^2 RGBA+mips 21.3 MiB (4096^2: 85.3); ASTC 4x4 5.3, 6x6 2.4 (2.38); canvas 390x844: 3x 33.9, 2x 15.1, 2x+MSAA4 60.3 MiB"
+   },
+   "audioGate (fake context): resumes suspended and interrupted, not closed, and reports state": {
+    "ok": true,
+    "note": "{\"suspended\":{\"resumed\":1,\"changes\":\"true\"},\"interrupted\":{\"resumed\":1,\"changes\":\"true\"},\"closed\":{\"resumed\":0,\"changes\":\"\"},\"running\":{\"resumed\":0,\"changes\":\"true\"}}"
+   },
+   "audioGate (real AudioContext, synthetic click): does not throw, reports the state": {
+    "ok": true,
+    "note": "state after a synthetic click: suspended"
+   },
+   "guardContext: real WebGL context lost and restored on a plain canvas": {
+    "ok": true,
+    "note": "events: lost then restored"
+   },
+   "lifecycle: hide once, show once, bfcache restore counts as show": {
+    "ok": true,
+    "note": "hide:visibilitychange, show:visibilitychange, hide:pagehide, show:bfcache"
+   },
+   "orientationGate: flags the wrong way round": {
+    "ok": true,
+    "note": "device is portrait: [[\"portrait\",false],[\"landscape\",true]]"
+   },
+   "keepAwake: safe on every engine (denied or unsupported is not an error)": {
+    "ok": true,
+    "note": "'wakeLock' in navigator: true; acquired without a gesture: true"
+   },
+   "touchGuards: a second touchend inside 350 ms is cancelled and the button still fires once": {
+    "ok": true,
+    "note": "second touchend cancelled, 1 synthetic click, pinch gesture blocked"
+   },
+   "fitViewport: --app-h follows the visual viewport": {
+    "ok": true,
+    "note": "--app-h 664px, visualViewport present"
+   },
+   "store: works, and never throws when storage does": {
+    "ok": true,
+    "note": "set false and get fallback when storage throws"
+   },
+   "capability report (what this engine supports)": {
+    "ok": true,
+    "note": "{\"css\":\"height:100dvh=true height:100svh=true height:100lvh=true padding:env(safe-area-inset-top)=true touch-action:manipulation=true overscroll-behavior:none=true width:100cqw=true color:color-mix(in srgb,red,blue)=true aspect-ratio:1/1=true inset:0=true\",\"api\":{\"vibrate\":\"function\",\"orientationLock\":\"function\",\"wakeLock\":true,\"audioSession\":false,\"visualViewport\":true,\"ongesturestart\":false,\"PointerEvent\":true,\"ontouchstart\":true,\"maxTouchPoints\":1,\"webgl2\":true,\"offscreen\":\"function\",\"resizeObserver\":\"function\"},\"gl\":{\"renderer\":\"WebKit WebGL\",\"maxTex\":8192,\"maxSamples\":4,\"pointSize\":[1,1023],\"colorBufferFloat\":true,\"colorBufferHalfFloat\":true,\"floatLinear\":true,\"astc\":true,\"etc2\":true,\"s3tc\":true,\"loseContext\":true}}"
+   }
+  },
+  "logs": [
+   "warning: The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+   "warning: The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio",
+   "error: Failed to load resource: the server responded with a status of 404 (File not found)"
+  ]
+ },
+ "webkit": {
+  "ms": 1894,
+  "engine": "webkit 26.0",
+  "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
+  "results": {
+   "pickDpr: cap by DPR and by pixel budget": {
+    "ok": true,
+    "note": "phone 390x844 at 3x -> 2 (1.32 MP); same with a 1 MP budget -> 1.5; 1440x900 at 2x -> 1.25"
+   },
+   "AdaptiveDpr: steps down when slow, up only after a calm spell, stays within min/max": {
+    "ok": true,
+    "note": "down 1.75, 1.5, 1.25, 1 on 30 ms frames; up one step after 4 calm windows of 10 ms"
+   },
+   "memory arithmetic (texture, ASTC, canvas)": {
+    "ok": true,
+    "note": "2048^2 RGBA+mips 21.3 MiB (4096^2: 85.3); ASTC 4x4 5.3, 6x6 2.4 (2.38); canvas 390x844: 3x 33.9, 2x 15.1, 2x+MSAA4 60.3 MiB"
+   },
+   "audioGate (fake context): resumes suspended and interrupted, not closed, and reports state": {
+    "ok": true,
+    "note": "{\"suspended\":{\"resumed\":1,\"changes\":\"true\"},\"interrupted\":{\"resumed\":1,\"changes\":\"true\"},\"closed\":{\"resumed\":0,\"changes\":\"\"},\"running\":{\"resumed\":0,\"changes\":\"true\"}}"
+   },
+   "audioGate (real AudioContext, synthetic click): does not throw, reports the state": {
+    "ok": true,
+    "note": "state after a synthetic click: interrupted"
+   },
+   "guardContext: real WebGL context lost and restored on a plain canvas": {
+    "ok": true,
+    "note": "events: lost then restored"
+   },
+   "lifecycle: hide once, show once, bfcache restore counts as show": {
+    "ok": true,
+    "note": "hide:visibilitychange, show:visibilitychange, hide:pagehide, show:bfcache"
+   },
+   "orientationGate: flags the wrong way round": {
+    "ok": true,
+    "note": "device is portrait: [[\"portrait\",false],[\"landscape\",true]]"
+   },
+   "keepAwake: safe on every engine (denied or unsupported is not an error)": {
+    "ok": true,
+    "note": "'wakeLock' in navigator: true; acquired without a gesture: true"
+   },
+   "touchGuards: a second touchend inside 350 ms is cancelled and the button still fires once": {
+    "ok": true,
+    "note": "second touchend cancelled, 1 synthetic click, pinch gesture blocked"
+   },
+   "fitViewport: --app-h follows the visual viewport": {
+    "ok": true,
+    "note": "--app-h 664px, visualViewport present"
+   },
+   "store: works, and never throws when storage does": {
+    "ok": true,
+    "note": "set false and get fallback when storage throws"
+   },
+   "capability report (what this engine supports)": {
+    "ok": true,
+    "note": "{\"css\":\"height:100dvh=true height:100svh=true height:100lvh=true padding:env(safe-area-inset-top)=true touch-action:manipulation=true overscroll-behavior:none=true width:100cqw=true color:color-mix(in srgb,red,blue)=true aspect-ratio:1/1=true inset:0=true\",\"api\":{\"vibrate\":\"undefined\",\"orientationLock\":\"undefined\",\"wakeLock\":true,\"audioSession\":false,\"visualViewport\":true,\"ongesturestart\":false,\"PointerEvent\":true,\"ontouchstart\":true,\"maxTouchPoints\":0,\"webgl2\":true,\"offscreen\":\"function\",\"resizeObserver\":\"function\"},\"gl\":{\"renderer\":\"WebKit WebGL\",\"maxTex\":16384,\"maxSamples\":4,\"pointSize\":[1,256],\"colorBufferFloat\":true,\"colorBufferHalfFloat\":true,\"floatLinear\":true,\"astc\":true,\"etc2\":true,\"s3tc\":true,\"loseContext\":true}}"
+   }
+  },
+  "logs": []
+ }
+}
