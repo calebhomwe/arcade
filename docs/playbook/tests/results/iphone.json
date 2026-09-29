@@ -1,6 +1,6 @@
 {
  "chromium": {
-  "ms": 1555,
+  "ms": 1761,
   "engine": "chromium 141.0.7390.37",
   "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
   "results": {
@@ -52,6 +52,10 @@
     "ok": true,
     "note": "set false and get fallback when storage throws"
    },
+   "crashBreadcrumb: false on first load, true after a load that never said pagehide, false after a clean pagehide": {
+    "ok": true,
+    "note": "first load false, unclean reload true, clean pagehide false, bfcache pageshow re-arms"
+   },
    "capability report (what this engine supports)": {
     "ok": true,
     "note": "{\"css\":\"height:100dvh=true height:100svh=true height:100lvh=true padding:env(safe-area-inset-top)=true touch-action:manipulation=true overscroll-behavior:none=true width:100cqw=true color:color-mix(in srgb,red,blue)=true aspect-ratio:1/1=true inset:0=true\",\"api\":{\"vibrate\":\"function\",\"orientationLock\":\"function\",\"wakeLock\":true,\"audioSession\":false,\"visualViewport\":true,\"ongesturestart\":false,\"PointerEvent\":true,\"ontouchstart\":true,\"maxTouchPoints\":1,\"webgl2\":true,\"offscreen\":\"function\",\"resizeObserver\":\"function\"},\"gl\":{\"renderer\":\"WebKit WebGL\",\"maxTex\":8192,\"maxSamples\":4,\"pointSize\":[1,1023],\"colorBufferFloat\":true,\"colorBufferHalfFloat\":true,\"floatLinear\":true,\"astc\":true,\"etc2\":true,\"s3tc\":true,\"loseContext\":true}}"
@@ -64,7 +68,7 @@
   ]
  },
  "webkit": {
-  "ms": 1894,
+  "ms": 1673,
   "engine": "webkit 26.0",
   "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
   "results": {
@@ -115,6 +119,10 @@
    "store: works, and never throws when storage does": {
     "ok": true,
     "note": "set false and get fallback when storage throws"
+   },
+   "crashBreadcrumb: false on first load, true after a load that never said pagehide, false after a clean pagehide": {
+    "ok": true,
+    "note": "first load false, unclean reload true, clean pagehide false, bfcache pageshow re-arms"
    },
    "capability report (what this engine supports)": {
     "ok": true,

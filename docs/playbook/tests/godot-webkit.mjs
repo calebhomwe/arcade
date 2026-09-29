@@ -12,9 +12,9 @@ for (const g of games) for (const eng of (process.argv[4] || 'webkit,chromium').
   let key = `${g}/${eng}`; res[key] = {};
   try {
     await page.goto(`http://localhost:8765/arcade/Godot/${g}/index.html`, { waitUntil: 'load', timeout: 60000 });
-    const marks = []; for (let i = 0; i < 12; i++) { await page.waitForTimeout(2500); const p = await page.evaluate(() => { const c = document.querySelector('canvas'); if (!c) return null; const gl = c.getContext('webgl2'); return { w: c.width, h: c.height, hidden: getComputedStyle(c).display }; }).catch(() => null); marks.push([Date.now() - t0, p && p.w]); }
+    const marks = []; let first = 0; for (let i = 0; i < 30; i++) { await page.waitForTimeout(1000); const p = await page.evaluate(() => { const c = document.querySelector('canvas'); return c ? { w: c.width, h: c.height } : null; }).catch(() => null); if (!first && p && p.w > 300) first = Date.now() - t0; marks.push([Date.now() - t0, p && p.w]); if (first && Date.now() - t0 > first + 4000) break; }
     await page.screenshot({ path: `${out}/${g}-${eng}.png` });
-    res[key] = { version: b.version(), marks: marks.slice(-3), logs: logs.slice(0, 8), totalLogs: logs.length };
+    res[key] = { version: b.version(), firstCanvasMs: first, marks: marks.slice(-2), logs: logs.slice(0, 8), totalLogs: logs.length };
   } catch (e) { res[key] = { error: String(e).slice(0, 200), logs: logs.slice(0, 6) }; }
   await b.close();
 }
