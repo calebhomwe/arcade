@@ -67,6 +67,22 @@ const TOUCH = ([type, x, y]) => {   // WebKit only: synthetic touch + pointer ev
   return ok;
 };
 
+// A finger taps where the button is; Playwright's tap() also waits for the element to hold still, which a pulsing Play button
+// never does. So: try the normal tap, and if that times out, tap the centre of the button, but only when that spot really hits it.
+// (Same approach as fingerTap in iphone.mjs; without it a pulsing Play button reads as "cannot start".)
+export async function fingerTap(page, loc, timeout = 3000) {
+  if (await loc.tap({ timeout }).then(() => true).catch(() => false)) return true;
+  const box = await loc.boundingBox().catch(() => null);
+  if (!box || box.width < 4 || box.height < 4) return false;
+  const x = box.x + box.width / 2, y = box.y + box.height / 2;
+  const el = await loc.elementHandle().catch(() => null);
+  if (!el) return false;
+  const hits = await el.evaluate((n, [px, py]) => { const t = document.elementFromPoint(px, py); return !!t && (n === t || n.contains(t) || t.contains(n)); }, [x, y]).catch(() => false);
+  if (!hits) return false;
+  await page.touchscreen.tap(x, y).catch(() => {});
+  return true;
+}
+
 export function makeBot(page, ctx, { rand, hasPlay, keyboard = false, startKey = null, seedText = '' }) {
   const stats = { taps: 0, swipes: 0, holds: 0, keys: 0, buttons: 0, resumes: 0, timeouts: 0, navAway: 0, lat: [], touchApi: null };
   let cdp = null;
@@ -156,11 +172,11 @@ export function makeBot(page, ctx, { rand, hasPlay, keyboard = false, startKey =
       const waitPlay = async (n) => { for (let i = 0; i < n; i++) { await wait(1000); if (sceneReached('play')) return true; } return sceneReached('play'); };
       if (ts) { await api.tap(vp.width * ts[1] / 100, vp.height * ts[2] / 100); out.how = meta.touchStart; }
       else if (start && !/^key:/.test(start) && start !== 'auto') {
-        const ok = await page.locator(start).first().tap({ timeout: 5000 }).then(() => true).catch(() => false);
+        const ok = await fingerTap(page, page.locator(start).first(), 5000);
         out.how = ok ? start : 'centre (start button not tappable)'; if (!ok) await api.tap(vp.width / 2, vp.height / 2);
       } else {
         const btn = page.locator('button, [role=button], a, .btn').filter({ hasText: /^\s*(▶\s*)?(play|start|tap to (play|start)|let'?s go|begin|go)\b/i }).first();
-        const ok = await btn.isVisible().catch(() => false) && await btn.tap({ timeout: 5000 }).then(() => true).catch(() => false);
+        const ok = await btn.isVisible().catch(() => false) && await fingerTap(page, btn, 5000);
         if (ok) out.how = 'Play/Start button'; else { await api.tap(vp.width / 2, vp.height / 2); out.how = 'tap centre'; }
       }
       if (await waitPlay(5)) return out;
