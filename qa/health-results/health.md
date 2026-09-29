@@ -1,10 +1,10 @@
 # Health check: chromium, CPU throttled x4
 
-Generated 2026-09-29T12:59:36.267Z. 35 games, 45 s of monkey input each, iPhone 13 profile (390x844 touch, mobile user agent).
+Generated 2026-09-29T13:01:27.947Z. 37 games, 45 s of monkey input each, iPhone 13 profile (390x844 touch, mobile user agent).
 
-**FREEZE 11, STALL 1, JANK 7, LEAK 0, ERRORS 1, clean 20.**
+**FREEZE 11, STALL 1, JANK 7, LEAK 0, ERRORS 1, clean 22.**
 
-Machine: 4 cores, 1-minute load average at the end of each game ranged 13.2 to 23.45 (median 17.32). Measured CPU contention while running (wall/CPU of a spin): median x1.73, range x1.08 to x5.42. Measured slowdown of the throttled page against an unthrottled page (a fixed JS benchmark): median x3.6, range x0.7 to x5.1. The machine is shared and loaded, so every duration is divided by the machine slowdown measured at the time (wall time over CPU time of a spin in the harness, contention in games/<id>.json, capped at 4) and time inside GPU-blocking WebGL calls is taken out; raw numbers are kept in games/<id>.json. A FREEZE is re-run once and marked reproduced or not.
+Machine: 4 cores, 1-minute load average at the end of each game ranged 13.2 to 23.45 (median 17.32). Measured CPU contention while running (wall/CPU of a spin): median x1.74, range x1.08 to x5.42. Measured slowdown of the throttled page against an unthrottled page (a fixed JS benchmark): median x3.6, range x0.7 to x8.6. The machine is shared and loaded, so every duration is divided by the machine slowdown measured at the time (wall time over CPU time of a spin in the harness, contention in games/<id>.json, capped at 4) and time inside GPU-blocking WebGL calls is taken out; raw numbers are kept in games/<id>.json. A FREEZE is re-run once and marked reproduced or not.
 
 Legend: FREEZE = main thread blocked over 1.5 s, or no animation frame for 3 s while visible, or crash / reload / WebGL context lost. STALL = never leaves the title (SDK never reports `play`), starts only by keyboard, screen static 20 s under input, or dead end after game over. JANK = p95 JS frame cost over 16 ms (throttled) or 33 ms (unthrottled), GL-call time excluded. LEAK = JS heap over +60% after forced GC, or DOM nodes / listeners exploding. ERRORS = uncaught page errors. Judged on JS cost, long tasks and stalls, not fps: software WebGL makes the GPU part meaningless.
 
@@ -27,24 +27,26 @@ Legend: FREEZE = main thread blocked over 1.5 s, or no animation frame for 3 s w
 | 15 | Whack-a-Mole (`hub-whack-a-mole`) | ERRORS | ERRORS: 1 uncaught page error(s): KKs.banner is not a function | #playBtn | play, over 0, restarts 0 | `shots/hub-whack-a-mole-1-title.jpg` `shots/hub-whack-a-mole-2-mid.jpg` `shots/hub-whack-a-mole-3-end.jpg` |
 | 16 | Snake Clash (`snake-clash`) | OK | none | #play | play, over 0, restarts 0 | `shots/snake-clash-1-title.jpg` `shots/snake-clash-2-mid.jpg` `shots/snake-clash-3-end.jpg` |
 | 17 | Field Station (`field-station`) | OK | none | #playNext | play, over 0, restarts 0 | `shots/field-station-1-title.jpg` `shots/field-station-2-mid.jpg` `shots/field-station-3-end.jpg` |
-| 18 | Block Blast (`hub-block-blast`) | OK | none | centre (start button not tappable) + tap on game | play, over 0, restarts 0 | `shots/hub-block-blast-1-title.jpg` `shots/hub-block-blast-2-mid.jpg` `shots/hub-block-blast-3-end.jpg` |
-| 19 | Flappy Flight (`hub-flappy-flight`) | OK | none | #playBtn + tap on game | play, over 3, restarts 2 | `shots/hub-flappy-flight-1-title.jpg` `shots/hub-flappy-flight-2-mid.jpg` `shots/hub-flappy-flight-3-end.jpg` |
-| 20 | Sudoku (`hub-sudoku`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-sudoku-1-title.jpg` `shots/hub-sudoku-2-mid.jpg` `shots/hub-sudoku-3-end.jpg` |
-| 21 | Balloon Bust (`balloon-bust`) | OK | none | #c | play, over 0, restarts 0 | `shots/balloon-bust-1-title.jpg` `shots/balloon-bust-2-mid.jpg` `shots/balloon-bust-3-end.jpg` |
-| 22 | Bubble Pop (`hub-bubble-pop`) | OK | none | #playBtn | play, over 1, restarts 0 | `shots/hub-bubble-pop-1-title.jpg` `shots/hub-bubble-pop-2-mid.jpg` `shots/hub-bubble-pop-3-end.jpg` |
-| 23 | Connect Four (`hub-connect-four`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-connect-four-1-title.jpg` `shots/hub-connect-four-2-mid.jpg` `shots/hub-connect-four-3-end.jpg` |
-| 24 | Dino Dash (`hub-dino-dash`) | OK | none | #playBtn + tap on game | play, over 5, restarts 4 | `shots/hub-dino-dash-1-title.jpg` `shots/hub-dino-dash-2-mid.jpg` `shots/hub-dino-dash-3-end.jpg` |
-| 25 | Memory Match (`hub-memory-match`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-memory-match-1-title.jpg` `shots/hub-memory-match-2-mid.jpg` `shots/hub-memory-match-3-end.jpg` |
-| 26 | Tic Tac Toe (`hub-tic-tac-toe`) | OK | none | #playBtn | play, over 3, restarts 3 | `shots/hub-tic-tac-toe-1-title.jpg` `shots/hub-tic-tac-toe-2-mid.jpg` `shots/hub-tic-tac-toe-3-end.jpg` |
-| 27 | Market Merge (`market-merge`) | OK | none | #play | play, over 0, restarts 0 | `shots/market-merge-1-title.jpg` `shots/market-merge-2-mid.jpg` `shots/market-merge-3-end.jpg` |
-| 28 | Quiz Tower Defense (`quiz-tower`) | OK | none | tap:50%,76% | play, over 0, restarts 0 | `shots/quiz-tower-1-title.jpg` |
-| 29 | Volt Dash (`volt-dash`) | OK | none | #play | play, over 0, restarts 0 | `shots/volt-dash-1-title.jpg` `shots/volt-dash-2-mid.jpg` `shots/volt-dash-3-end.jpg` |
-| 30 | Word Dungeon (`word-dungeon`) | OK | none | tap:36%,56% | play, over 0, restarts 0 | `shots/word-dungeon-1-title.jpg` `shots/word-dungeon-2-mid.jpg` `shots/word-dungeon-3-end.jpg` |
-| 31 | High Nest (`high-nest`) | OK | none | #play | play, over 3, restarts 1 | `shots/high-nest-1-title.jpg` `shots/high-nest-2-mid.jpg` `shots/high-nest-3-end.jpg` |
-| 32 | Merge Blocks (`hub-merge-blocks`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-merge-blocks-1-title.jpg` `shots/hub-merge-blocks-2-mid.jpg` `shots/hub-merge-blocks-3-end.jpg` |
-| 33 | Surviv Royale (`surviv-royale`) | OK | none | #btn-play | play, over 0, restarts 0 | `shots/surviv-royale-1-title.jpg` `shots/surviv-royale-2-mid.jpg` `shots/surviv-royale-3-end.jpg` |
-| 34 | 2048 (`hub-game-2048`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-game-2048-1-title.jpg` `shots/hub-game-2048-2-mid.jpg` `shots/hub-game-2048-3-end.jpg` |
-| 35 | Snake (`hub-snake`) | OK | none | #playBtn | play, over 2, restarts 2 | `shots/hub-snake-1-title.jpg` `shots/hub-snake-2-mid.jpg` `shots/hub-snake-3-end.jpg` |
+| 18 | Tower Stack (`hub-tower-stack`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-tower-stack-1-title.jpg` `shots/hub-tower-stack-2-mid.jpg` `shots/hub-tower-stack-3-end.jpg` |
+| 19 | Block Blast (`hub-block-blast`) | OK | none | centre (start button not tappable) + tap on game | play, over 0, restarts 0 | `shots/hub-block-blast-1-title.jpg` `shots/hub-block-blast-2-mid.jpg` `shots/hub-block-blast-3-end.jpg` |
+| 20 | Flappy Flight (`hub-flappy-flight`) | OK | none | #playBtn + tap on game | play, over 3, restarts 2 | `shots/hub-flappy-flight-1-title.jpg` `shots/hub-flappy-flight-2-mid.jpg` `shots/hub-flappy-flight-3-end.jpg` |
+| 21 | Sudoku (`hub-sudoku`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-sudoku-1-title.jpg` `shots/hub-sudoku-2-mid.jpg` `shots/hub-sudoku-3-end.jpg` |
+| 22 | Balloon Bust (`balloon-bust`) | OK | none | #c | play, over 0, restarts 0 | `shots/balloon-bust-1-title.jpg` `shots/balloon-bust-2-mid.jpg` `shots/balloon-bust-3-end.jpg` |
+| 23 | Bubble Pop (`hub-bubble-pop`) | OK | none | #playBtn | play, over 1, restarts 0 | `shots/hub-bubble-pop-1-title.jpg` `shots/hub-bubble-pop-2-mid.jpg` `shots/hub-bubble-pop-3-end.jpg` |
+| 24 | Connect Four (`hub-connect-four`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-connect-four-1-title.jpg` `shots/hub-connect-four-2-mid.jpg` `shots/hub-connect-four-3-end.jpg` |
+| 25 | Dino Dash (`hub-dino-dash`) | OK | none | #playBtn + tap on game | play, over 5, restarts 4 | `shots/hub-dino-dash-1-title.jpg` `shots/hub-dino-dash-2-mid.jpg` `shots/hub-dino-dash-3-end.jpg` |
+| 26 | Memory Match (`hub-memory-match`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-memory-match-1-title.jpg` `shots/hub-memory-match-2-mid.jpg` `shots/hub-memory-match-3-end.jpg` |
+| 27 | Tic Tac Toe (`hub-tic-tac-toe`) | OK | none | #playBtn | play, over 3, restarts 3 | `shots/hub-tic-tac-toe-1-title.jpg` `shots/hub-tic-tac-toe-2-mid.jpg` `shots/hub-tic-tac-toe-3-end.jpg` |
+| 28 | Market Merge (`market-merge`) | OK | none | #play | play, over 0, restarts 0 | `shots/market-merge-1-title.jpg` `shots/market-merge-2-mid.jpg` `shots/market-merge-3-end.jpg` |
+| 29 | Quiz Tower Defense (`quiz-tower`) | OK | none | tap:50%,76% | play, over 0, restarts 0 | `shots/quiz-tower-1-title.jpg` |
+| 30 | Volt Dash (`volt-dash`) | OK | none | #play | play, over 0, restarts 0 | `shots/volt-dash-1-title.jpg` `shots/volt-dash-2-mid.jpg` `shots/volt-dash-3-end.jpg` |
+| 31 | Word Dungeon (`word-dungeon`) | OK | none | tap:36%,56% | play, over 0, restarts 0 | `shots/word-dungeon-1-title.jpg` `shots/word-dungeon-2-mid.jpg` `shots/word-dungeon-3-end.jpg` |
+| 32 | High Nest (`high-nest`) | OK | none | #play | play, over 3, restarts 1 | `shots/high-nest-1-title.jpg` `shots/high-nest-2-mid.jpg` `shots/high-nest-3-end.jpg` |
+| 33 | Merge Blocks (`hub-merge-blocks`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-merge-blocks-1-title.jpg` `shots/hub-merge-blocks-2-mid.jpg` `shots/hub-merge-blocks-3-end.jpg` |
+| 34 | Surviv Royale (`surviv-royale`) | OK | none | #btn-play | play, over 0, restarts 0 | `shots/surviv-royale-1-title.jpg` `shots/surviv-royale-2-mid.jpg` `shots/surviv-royale-3-end.jpg` |
+| 35 | 2048 (`hub-game-2048`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-game-2048-1-title.jpg` `shots/hub-game-2048-2-mid.jpg` `shots/hub-game-2048-3-end.jpg` |
+| 36 | Minesweeper (`hub-minesweeper`) | OK | none | #playBtn | play, over 4, restarts 4 | `shots/hub-minesweeper-1-title.jpg` `shots/hub-minesweeper-2-mid.jpg` `shots/hub-minesweeper-3-end.jpg` |
+| 37 | Snake (`hub-snake`) | OK | none | #playBtn | play, over 2, restarts 2 | `shots/hub-snake-1-title.jpg` `shots/hub-snake-2-mid.jpg` `shots/hub-snake-3-end.jpg` |
 
 ## Numbers per game
 
@@ -67,6 +69,7 @@ Legend: FREEZE = main thread blocked over 1.5 s, or no animation frame for 3 s w
 | hub-whack-a-mole | 249 / 68 | 0 | 17, 11.25 / 11.25 | 1.9 > 2.1 | 181 > 152 | 1 | 4 | 10 | 898 | 0 > 0 |
 | snake-clash | 700 / 97 | 0 | 63, 14.94 / 58.67 | 2 > 2.2 | 77 > 79 | 1 | 4.5 | 4 | 4000 | 0 > 0 |
 | field-station | 648 / 156 | 2 | 792, 4.97 / 14.52 | 1.9 > 2.2 | 207 > 152 | 1 | 15.5 | 16 | 1441 | - |
+| hub-tower-stack | 575 / 416 | 0 | 105, 1.19 / 4.52 | 1.9 > 2 | 57 > 57 | 1 | 10.2 | 3 | 4002 | - |
 | hub-block-blast | 469 / 200 | 1 | 118, 2.66 / 6.17 | 2.1 > 2.4 | 154 > 177 | 1 | 2.1 | 7 | 1777 | 0 > 5 |
 | hub-flappy-flight | 478 / 174 | 0 | 121, 4.78 / 8.9 | 1.9 > 2 | 61 > 61 | 1 | 4.5 | 3 | 3999 | 0 > 0 |
 | hub-sudoku | 507 / 68 | 0 | 0, - / - | 1.8 > 2 | 162 > 162 | 1 | 8.9 | 10 | 1138 | - |
@@ -84,4 +87,5 @@ Legend: FREEZE = main thread blocked over 1.5 s, or no animation frame for 3 s w
 | hub-merge-blocks | 338 / 150 | 0 | 0, - / - | 1.8 > 2 | 104 > 105 | 1 | 0 | 11 | 1101 | - |
 | surviv-royale | 280 / 220 | 4 | 192, 7.28 / 110.89 | 2 > 2.2 | 143 > 146 | 0 | 4 | 8 | 1934 | - |
 | hub-game-2048 | 240 / 44 | 0 | 18, 0.37 / 0.37 | 1.8 > 2 | 85 > 93 | 1 | 0 | 9 | 779 | - |
+| hub-minesweeper | 231 / 86 | 0 | 0, - / - | 1.8 > 2 | 145 > 146 | 1 | 0 | 12 | 1170 | 0 > 0 |
 | hub-snake | 130 / 95 | 0 | 318, 1.47 / 2.45 | 1.9 > 2 | 69 > 69 | 1 | 4 | 5 | 2520 | 0 > 0 |

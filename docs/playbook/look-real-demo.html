@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1c33">
+<link rel="icon" href="data:,">
+<title>Look demo: realistic farm</title>
+<!-- The realistic-look recipes of docs/playbook/LOOK_REALISTIC.md on one farm valley: PBR ground from ambientCG textures,
+     golden-hour sun + hemisphere + sky IBL, soft shadow map, haze that matches the sky, instanced CC0 foliage, kit buildings,
+     a depth-gradient water shader with shoreline foam, and a navy-glass / wood / parchment UI. three.js r180 vendored, no CDN.
+     Flags: ?ui=hud|sheet|none  ?tm=aces|agx|neutral  ?shadow=0  ?foliage=0  ?fog=0  ?cam=0|1  ?still=1  ?dpr=2  ?aa=1 -->
+<script type="importmap">{"imports":{"three":"../../HoleGrind/vendor/three/three.module.min.js","three/addons/":"../../HoleGrind/vendor/three/jsm/"}}</script>
+<style>
+@font-face{font-family:Nunito;src:url(../../assets/fonts/nunito.woff2) format('woff2');font-weight:200 1000;font-display:swap}
+@font-face{font-family:Fredoka;src:url(../../assets/fonts/fredoka.woff2) format('woff2');font-weight:300 700;font-display:swap}
+:root{--navy:rgba(10,22,44,.74);--navy2:rgba(20,40,74,.86);--line:rgba(160,190,235,.28);--gold:#f6c343;--gold2:#b5761a;--ink:#f4f7ff;--parch:#efe3c4;--parch2:#d9c79a;--wood:#5a3a1f;--green:#3fb24a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#c9d6e6;overscroll-behavior:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;font-family:Nunito,system-ui,sans-serif;color:var(--ink);touch-action:manipulation}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#hud{position:fixed;inset:0;pointer-events:none;padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left))}
+.glass{background:linear-gradient(180deg,rgba(38,64,108,.78),var(--navy));border:1px solid var(--line);border-radius:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 6px 18px rgba(0,8,24,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.row{display:flex;align-items:center;gap:8px}.grow{flex:1}
+.player{pointer-events:auto;display:flex;align-items:center;gap:8px;height:46px;padding:3px 10px 3px 3px;border-radius:12px}
+.avatar{width:40px;height:40px;border-radius:9px;border:2px solid #d8e4ff;background:radial-gradient(circle at 50% 35%,#f0c9a0 0 22%,transparent 23%),linear-gradient(#3e6ab0,#1f3f75);position:relative;overflow:hidden}
+.avatar:before{content:"";position:absolute;left:8px;top:2px;width:24px;height:11px;border-radius:12px 12px 2px 2px;background:#222b3a}
+.avatar:after{content:"";position:absolute;left:5px;bottom:-6px;width:30px;height:18px;border-radius:12px 12px 0 0;background:#a9482f}
+.lv{display:flex;flex-direction:column;gap:3px;min-width:96px}.lv b{font:800 14px/1 Nunito;letter-spacing:.2px}
+.xp{position:relative;height:14px;border-radius:7px;background:#0a1730;border:1px solid #37568f;overflow:hidden}.xp i{position:absolute;inset:0 auto 0 0;width:82%;background:linear-gradient(#5cc7ff,#2a7fd6);box-shadow:inset 0 2px 0 rgba(255,255,255,.35)}.xp span{position:absolute;inset:0;text-align:center;font:800 10px/14px Nunito}
+.star{position:absolute;left:-2px;top:-2px;width:24px;height:24px}
+.round{pointer-events:auto;width:40px;height:40px;border-radius:11px;display:grid;place-items:center}.round svg{width:24px;height:24px}
+.cur{pointer-events:auto;display:flex;align-items:center;height:36px;border-radius:12px;padding:0 3px 0 6px;gap:5px;font:800 15px/1 Nunito;flex:1;min-width:0;background:linear-gradient(180deg,#1b2e52,#0e1a33);border:1px solid #4a6aa3;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 3px 10px rgba(0,8,24,.4)}
+.cur svg.ic{width:26px;height:26px;flex:none}.cur .n{flex:1;text-align:right;padding-right:4px;text-shadow:0 1px 0 #000;font-variant-numeric:tabular-nums}
+.plus{width:26px;height:26px;border-radius:7px;background:linear-gradient(#5fd35f,#2a9a35);border:1px solid #1c6a26;display:grid;place-items:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}.plus svg{width:16px;height:16px}
+.rail{position:absolute;left:max(8px,env(safe-area-inset-left));top:128px;display:flex;flex-direction:column;gap:8px}
+.tile{pointer-events:auto;width:56px;height:60px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font:800 11px/1 Nunito;color:#fff;position:relative}.tile svg{width:30px;height:30px}
+.badge{position:absolute;right:-3px;top:-4px;min-width:18px;height:18px;border-radius:9px;background:#e5382f;border:1px solid #fff;font:800 11px/16px Nunito;text-align:center}
+.tasks{position:absolute;right:max(8px,env(safe-area-inset-right));bottom:118px;width:172px;padding:9px 10px 9px 12px;border-radius:9px;background:linear-gradient(#22303c,#161f29);border:3px solid #7b4f27;box-shadow:inset 0 0 0 1px #3a4b5b,0 6px 16px rgba(0,0,0,.5);pointer-events:auto}
+.tasks h4{margin:0 0 5px;font:800 12px/1 Nunito;letter-spacing:.8px;color:#e8c98a;text-transform:uppercase}
+.tasks li{list-style:none;display:flex;gap:7px;align-items:center;font:700 13px/1.5 Nunito;color:#f1f5fa}.tasks ul{margin:0;padding:0}
+.box{width:15px;height:15px;border-radius:3px;border:2px solid #cfd7e2;flex:none;position:relative}.box.on{background:#3fb24a;border-color:#a9e8b0}.box.on:after{content:"";position:absolute;left:3px;top:0;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(40deg)}
+.nav{position:fixed;left:0;right:0;bottom:0;height:calc(72px + env(safe-area-inset-bottom));padding:8px 6px env(safe-area-inset-bottom);display:flex;background:linear-gradient(180deg,rgba(14,22,36,.86),#0a111d);border-top:1px solid rgba(160,190,235,.25);pointer-events:auto}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:800 12px/1 Nunito;color:#fff;letter-spacing:.3px}.nav svg{width:28px;height:28px}.nav a.on{color:var(--gold)}
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:190px;padding:8px 14px;border-radius:12px;font:800 14px/1 Nunito;white-space:nowrap;background:#fff;color:#2a3140;box-shadow:0 6px 16px rgba(0,0,0,.4)}
+.sheet{position:fixed;left:0;right:0;bottom:calc(72px + env(safe-area-inset-bottom));padding:10px 10px 12px;pointer-events:auto;border-radius:16px 16px 0 0;background:linear-gradient(180deg,rgba(24,40,72,.92),rgba(10,22,44,.94));border-top:2px solid #b5761a;box-shadow:0 -8px 24px rgba(0,0,0,.45)}
+.sheet h3{margin:0 0 8px;font:900 15px/1 Nunito;letter-spacing:1.2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}.sheet h3:before{content:"";width:8px;height:16px;border-radius:2px;background:linear-gradient(var(--gold),var(--gold2))}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{position:relative;border-radius:10px;padding:6px 4px 5px;text-align:center;color:#3b2a14;font:800 13px/1.1 Nunito;background:url(real-assets/tex/paper_c.webp) center/160px,linear-gradient(#f4e9cd,#dcc99a);background-blend-mode:multiply;border:2px solid #b89a5a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),inset 0 -10px 18px rgba(120,80,20,.22),0 3px 6px rgba(0,0,0,.35)}
+.card img{width:64px;height:64px;display:block;margin:0 auto 2px;filter:drop-shadow(0 3px 2px rgba(60,40,10,.4))}.card small{display:block;font:700 11px/1.2 Nunito;color:#6d5731;margin-top:2px}
+.card .buy{display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:3px 10px;border-radius:9px;background:linear-gradient(#5fd35f,#2a9a35);border:1px solid #1c6a26;color:#fff;font:900 12px/1 Nunito;text-shadow:0 1px 0 #17501e;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.plaque{position:absolute;left:50%;top:150px;transform:translateX(-50%);padding:9px 26px 8px;border-radius:12px;font:700 26px/1 Fredoka;letter-spacing:.4px;color:#fff;white-space:nowrap;text-shadow:0 2px 0 #3a2410,0 0 8px rgba(0,0,0,.55);background:url(real-assets/tex/wood_c.webp) center/220px,linear-gradient(#8a5a2b,#5d3a1a);background-blend-mode:multiply,normal;border:3px solid #d9a441;box-shadow:inset 0 0 0 2px #4a2d14,0 8px 18px rgba(0,0,0,.5)}
+.plaque:before,.plaque:after{content:"";position:absolute;top:-10px;width:22px;height:16px;background:radial-gradient(ellipse at 30% 60%,#6cc24a 0 55%,transparent 58%);transform:rotate(-25deg)}.plaque:before{left:-8px}.plaque:after{right:-8px;transform:scaleX(-1) rotate(-25deg)}
+#vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 42%,transparent 60%,rgba(20,14,30,.28) 100%)}
+</style>
+</head>
+<body>
+<canvas id="c" aria-label="A realistic farm valley"></canvas><div id="vig"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset=".55" stop-color="#f2a91d"/><stop offset="1" stop-color="#b56a10"/></linearGradient>
+<linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8be08f"/><stop offset="1" stop-color="#2f9a3c"/></linearGradient>
+<linearGradient id="gPurple" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3a5ff"/><stop offset=".5" stop-color="#a24be0"/><stop offset="1" stop-color="#5a1f9c"/></linearGradient>
+<linearGradient id="gSteel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#aebbd6"/></linearGradient>
+<symbol id="i-coin" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="url(#gGold)" stroke="#7a4a08" stroke-width="2"/><circle cx="16" cy="16" r="9.5" fill="none" stroke="#fff3b0" stroke-opacity=".8" stroke-width="2"/><path d="M12 9c2-2 5-2 7-1" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/></symbol>
+<symbol id="i-cash" viewBox="0 0 32 32"><rect x="2" y="7" width="28" height="18" rx="3" fill="url(#gGreen)" stroke="#1d6a2a" stroke-width="2"/><circle cx="16" cy="16" r="5" fill="#d8f7d6" stroke="#1d6a2a" stroke-width="1.5"/><circle cx="7" cy="16" r="1.6" fill="#1d6a2a"/><circle cx="25" cy="16" r="1.6" fill="#1d6a2a"/></symbol>
+<symbol id="i-gem" viewBox="0 0 32 32"><path d="M8 5h16l6 8-14 16L2 13z" fill="url(#gPurple)" stroke="#3c1470" stroke-width="2" stroke-linejoin="round"/><path d="M2 13h28M12 5l-3 8 7 16 7-16-3-8" fill="none" stroke="#f4d9ff" stroke-opacity=".7" stroke-width="1.2"/></symbol>
+<symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 2v12M2 8h12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></symbol>
+<symbol id="i-tasks" viewBox="0 0 32 32"><rect x="6" y="5" width="20" height="24" rx="3" fill="#f3e6c6" stroke="#7b5324" stroke-width="2"/><rect x="11" y="2.5" width="10" height="6" rx="2" fill="#8a929e" stroke="#4a515c" stroke-width="1.5"/><path d="M10 14h12M10 19h12M10 24h8" stroke="#8a6a3a" stroke-width="2" stroke-linecap="round"/><path d="M9 14l1.4 1.4 2.4-2.6" stroke="#2f9a3c" stroke-width="1.6" fill="none"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 32 32"><path d="M9 4h14v9a7 7 0 0 1-14 0z" fill="url(#gGold)" stroke="#7a4a08" stroke-width="2"/><path d="M9 7H4c0 5 2 8 6 8M23 7h5c0 5-2 8-6 8" fill="none" stroke="#b5761a" stroke-width="2"/><rect x="13" y="20" width="6" height="5" fill="#d8901c"/><rect x="9" y="25" width="14" height="4" rx="1.5" fill="url(#gGold)" stroke="#7a4a08" stroke-width="1.5"/></symbol>
+<symbol id="i-market" viewBox="0 0 32 32"><path d="M3 12l3-8h20l3 8z" fill="#fff" stroke="#8b1f1f" stroke-width="1.5"/><path d="M6 4l-1.5 8M12 4l-1 8M18 4v8M24 4l1 8M28 4l-1.5 8" stroke="#d63a30" stroke-width="3"/><rect x="5" y="13" width="22" height="15" fill="#c7864b" stroke="#6a4020" stroke-width="2"/><rect x="9" y="17" width="14" height="7" fill="#f0c98a"/></symbol>
+<symbol id="i-friends" viewBox="0 0 32 32"><circle cx="11" cy="11" r="5" fill="#f2c7a0" stroke="#7a4a2a" stroke-width="1.5"/><circle cx="22" cy="12" r="4.2" fill="#e8b98e" stroke="#7a4a2a" stroke-width="1.5"/><path d="M2 28c0-7 4-10 9-10s9 3 9 10z" fill="#3f7fd8" stroke="#1e4a91" stroke-width="1.5"/><path d="M17 28c0-5 2-8 6-8s7 3 7 8z" fill="#e58a2b" stroke="#8a4a10" stroke-width="1.5"/></symbol>
+<symbol id="i-map" viewBox="0 0 32 32"><path d="M3 8l8-3 10 3 8-3v19l-8 3-10-3-8 3z" fill="#e9dcae" stroke="#7a5a26" stroke-width="2" stroke-linejoin="round"/><path d="M11 5v19M21 8v19" stroke="#b9a15e" stroke-width="1.5"/><path d="M22 4a4.5 4.5 0 0 1 4.5 4.5C26.5 12 22 17 22 17s-4.5-5-4.5-8.5A4.5 4.5 0 0 1 22 4z" fill="#e5382f" stroke="#fff" stroke-width="1.4"/><circle cx="22" cy="8.5" r="1.7" fill="#fff"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.5 3.5l-1.8-.8a7 7 0 0 0-.7-1.6l.7-1.8-1.6-1.6-1.8.7a7 7 0 0 0-1.6-.7L13 4h-2l-.8 1.8a7 7 0 0 0-1.6.7L6.8 5.8 5.2 7.4l.7 1.8a7 7 0 0 0-.7 1.6L3.5 12v0l1.7.8a7 7 0 0 0 .7 1.6l-.7 1.8 1.6 1.6 1.8-.7c.5.3 1 .5 1.6.7L11 20h2l.8-1.8c.6-.2 1.1-.4 1.6-.7l1.8.7 1.6-1.6-.7-1.8c.3-.5.5-1 .7-1.6z" fill="#e9f0ff" stroke="#8ea4cf" stroke-width="1"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="url(#gSteel)" stroke="#7f92b8" stroke-width="1.4"/><path d="M3 7l9 7 9-7" fill="none" stroke="#6b7fa6" stroke-width="1.6"/></symbol>
+<symbol id="i-grow" viewBox="0 0 32 32"><path d="M16 28V15" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M16 17c-6 1-10-2-10-8 6-1 10 2 10 8z" fill="#fff"/><path d="M16 15c1-6 5-9 11-8 0 6-4 9-11 8z" fill="#dfe8f7"/></symbol>
+<symbol id="i-raise" viewBox="0 0 32 32"><path d="M5 12l3-5 4 2 4-1 5 1 4-2 2 4-2 3v9h-3v-5H11v5H8v-9z" fill="#fff"/><circle cx="12" cy="13" r="1.3" fill="#12203a"/></symbol>
+<symbol id="i-produce" viewBox="0 0 32 32"><path d="M3 28V12l6 4v-4l6 4v-4l6 4V6h5v22z" fill="#fff"/><rect x="8" y="21" width="3" height="4" fill="#12203a"/><rect x="15" y="21" width="3" height="4" fill="#12203a"/></symbol>
+<symbol id="i-trade" viewBox="0 0 32 32"><path d="M2 8h18v13H2zM20 12h6l4 5v4H20z" fill="#fff"/><circle cx="8" cy="23.5" r="3.3" fill="#fff" stroke="#12203a" stroke-width="1.8"/><circle cx="24" cy="23.5" r="3.3" fill="#fff" stroke="#12203a" stroke-width="1.8"/></symbol>
+<symbol id="i-build" viewBox="0 0 32 32"><circle cx="16" cy="9" r="4.5" fill="#fff"/><circle cx="6.5" cy="12" r="3.4" fill="#dfe8f7"/><circle cx="25.5" cy="12" r="3.4" fill="#dfe8f7"/><path d="M8 27c0-7 3-11 8-11s8 4 8 11z" fill="#fff"/></symbol>
+<symbol id="i-explore" viewBox="0 0 32 32"><path d="M2 27L12 9l5 7 3-4 10 15z" fill="#fff"/><path d="M12 9l-2.5 4.5L12 12l2 2z" fill="#aebbd6"/></symbol>
+</defs></svg>
+<div id="hud">
+  <div class="row"><div class="player glass"><div class="avatar"></div><div class="lv"><b>Sunny Acres</b><div class="xp"><i></i><span>12,480 / 15,000</span></div></div><svg class="star" viewBox="0 0 24 24" style="position:static;width:0"></svg></div>
+    <div class="grow"></div><div class="round glass"><svg><use href="#i-gear"/></svg></div><div class="round glass"><svg><use href="#i-mail"/></svg></div></div>
+  <div class="row" style="margin-top:8px">
+    <div class="cur"><svg class="ic"><use href="#i-coin"/></svg><span class="n">1,284,620</span><span class="plus"><svg><use href="#i-plus"/></svg></span></div>
+    <div class="cur" style="flex:.8"><svg class="ic"><use href="#i-cash"/></svg><span class="n">3,450</span><span class="plus"><svg><use href="#i-plus"/></svg></span></div>
+    <div class="cur" style="flex:.66"><svg class="ic"><use href="#i-gem"/></svg><span class="n">276</span><span class="plus"><svg><use href="#i-plus"/></svg></span></div></div>
+  <div class="rail" id="rail">
+    <div class="tile glass"><svg><use href="#i-tasks"/></svg>Tasks</div>
+    <div class="tile glass"><svg><use href="#i-trophy"/></svg>Events<span class="badge">3</span></div>
+    <div class="tile glass"><svg><use href="#i-market"/></svg>Market</div>
+    <div class="tile glass"><svg><use href="#i-friends"/></svg>Friends</div>
+    <div class="tile glass"><svg><use href="#i-map"/></svg>Map</div></div>
+  <div class="tasks" id="tasks"><h4>Today</h4><ul><li><i class="box on"></i>Harvest 50 Corn</li><li><i class="box on"></i>Feed Animals</li><li><i class="box"></i>Complete Order</li><li><i class="box"></i>Expand Barn</li></ul></div>
+  <div class="plaque" id="plaque" hidden>Sunny Acres</div>
+</div>
+<div class="sheet" id="sheet" hidden><h3>Crop variety</h3><div class="cards" id="cards"></div></div>
+<nav class="nav" id="nav"><a class="on"><svg><use href="#i-grow"/></svg>Grow</a><a><svg><use href="#i-raise"/></svg>Raise</a><a><svg><use href="#i-produce"/></svg>Produce</a><a><svg><use href="#i-trade"/></svg>Trade</a><a><svg><use href="#i-build"/></svg>Build</a><a><svg><use href="#i-explore"/></svg>Explore</a></nav>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const Q = new URLSearchParams(location.search), opt = (k, d) => (Q.has(k) ? Q.get(k) : d);
+const STILL = opt('still', '0') === '1', UI = opt('ui', 'hud'), SHADOW = opt('shadow', '1') === '1', FOLIAGE = opt('foliage', '1') === '1', FOG = opt('fog', '1') === '1', TMKEY = opt('tm', 'aces');
+const T0 = performance.now(), TEXB = { n: 0 };
+document.getElementById('sheet').hidden = UI !== 'sheet'; document.getElementById('plaque').hidden = UI !== 'title';
+if (UI === 'none') { document.getElementById('hud').style.display = 'none'; document.getElementById('nav').style.display = 'none'; document.getElementById('vig').style.display = 'none'; }
+if (UI === 'title') document.getElementById('tasks').style.display = 'none';
+
+/* ---------- small helpers: seeded random, value noise, smoothstep ---------- */
+const rng = (a => () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; })(20260929);
+const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const hash = (a, b) => { const v = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return v - Math.floor(v); };
+const vnoise = (x, z) => { const ix = Math.floor(x), iz = Math.floor(z), fx = x - ix, fz = z - iz, sx = fx * fx * (3 - 2 * fx), sz = fz * fz * (3 - 2 * fz), L = THREE.MathUtils.lerp; return L(L(hash(ix, iz), hash(ix + 1, iz), sx), L(hash(ix, iz + 1), hash(ix + 1, iz + 1), sx), sz); };
+const fbm = (x, z) => { let a = 0.5, s = 0, f = 1; for (let i = 0; i < 4; i++) { s += a * vnoise(x * f, z * f); f *= 2; a *= 0.5; } return s; };
+
+/* ---------- 1. Terrain height: farm plateau, bay, left hills, far mountains (water level is y = 0) ---------- */
+function H(x, z) {
+  let h = 0.9 + (fbm(x * 0.05, z * 0.05) - 0.5) * 0.7;
+  const bx = (x - 36) / 40, bz = (z + 48) / 24, r = Math.hypot(bx, bz);                 // the bay
+  h = THREE.MathUtils.lerp(h, -4.2, sstep(1.0, 0.55, r));
+  h += sstep(-22, -78, x) * (9 + 16 * fbm(x * 0.035 + 7, z * 0.035));                   // forested hills on the left
+  h += sstep(-84, -150, z) * (26 + 46 * fbm(x * 0.02 + 3, z * 0.02 + 1));               // far mountains
+  return h;
+}
+const FIELDS = [{ x0: -25, x1: -6, z0: 3, z1: 12, kind: 'wheat' }, { x0: -3, x1: 10, z0: 4, z1: 13, kind: 'corn' }, { x0: 13, x1: 23, z0: 5, z1: 12, kind: 'veg' }];
+const inField = (x, z, pad = 0) => FIELDS.some(f => x > f.x0 - pad && x < f.x1 + pad && z > f.z0 - pad && z < f.z1 + pad);
+const laneZ = x => -17.5 + Math.sin(x * 0.18) * 1.2, onLane = (x, z, w = 1.3) => Math.abs(z - laneZ(x)) < w && x > -22 && x < 26;
+const dirtPath = (x, z) => { const d = Math.hypot(x + 6 - (z + 6) * 0.15 + 4 * Math.sin(z * 0.2), 0); return Math.abs(x - (-4 + Math.sin(z * 0.22) * 2.2 - (z + 4) * 0.12)) < 1.0 && z > -18 && z < 3; };
+
+/* ---------- Renderer, camera, colour pipeline ---------- */
+const canvas = document.getElementById('c'), dpr = Math.min(window.devicePixelRatio || 1, +opt('dpr', 2));
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: opt('aa', dpr >= 2 ? '0' : '1') === '1', powerPreference: 'high-performance' });
+renderer.setPixelRatio(dpr);
+renderer.toneMapping = { aces: THREE.ACESFilmicToneMapping, agx: THREE.AgXToneMapping, neutral: THREE.NeutralToneMapping }[TMKEY]; renderer.toneMappingExposure = +opt('exp', 1.0);
+renderer.shadowMap.enabled = SHADOW; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const shaderErrors = []; renderer.debug.onShaderError = (gl, prog, vs, fs) => shaderErrors.push((gl.getShaderInfoLog(vs) || '') + (gl.getShaderInfoLog(fs) || ''));
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(46, 1, 0.5, 900);
+const HORIZON = new THREE.Color('#d9dfe6'), TOP = new THREE.Color('#5f8fd0');            // the sky and the fog share these colours
+if (FOG) scene.fog = new THREE.FogExp2(HORIZON, 0.0062);                                  // haze: about 30% at 100 m, 76% at 200 m
+const SUN_DIR = new THREE.Vector3(-0.62, 0.5, 0.30).normalize();
+
+/* ---------- 2. Sky dome (gradient + warm sun glow + soft clouds). Fog is applied after tone mapping, so the sky skips it. ---------- */
+const skyMat = new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, fog: false, toneMapped: false,
+  uniforms: { uTop: { value: TOP }, uHor: { value: HORIZON }, uSun: { value: SUN_DIR }, uT: { value: 0 } },
+  vertexShader: 'varying vec3 vD; void main(){ vec4 w = modelMatrix*vec4(position,1.0); vD = w.xyz - cameraPosition; gl_Position = projectionMatrix*viewMatrix*w; }',
+  fragmentShader: `uniform vec3 uTop,uHor,uSun; uniform float uT; varying vec3 vD;
+    float h21(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+    float vn(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f); return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y); }
+    float fb(vec2 p){ float a=.5,s=0.; for(int i=0;i<4;i++){ s+=a*vn(p); p*=2.03; a*=.5; } return s; }
+    void main(){ vec3 d = normalize(vD); float h = clamp(d.y,0.0,1.0); vec3 c = mix(uHor,uTop,pow(h,0.55));
+      float s = max(dot(d,uSun),0.0); c += vec3(1.0,0.78,0.5)*(pow(s,8.0)*0.32 + pow(s,180.0)*0.6);
+      vec2 cp = d.xz/(d.y+0.22)*1.4 + vec2(uT*0.01,0.0); float cl = smoothstep(0.52,0.86,fb(cp*1.6)) * smoothstep(0.02,0.22,d.y) * (1.0-smoothstep(0.55,0.95,d.y));
+      c = mix(c, mix(vec3(1.0,0.97,0.92), vec3(0.78,0.82,0.9), fb(cp*3.0+4.0)*0.8), cl*0.85);
+      gl_FragColor = vec4(c,1.0);
+      #include <colorspace_fragment>
+    }` });
+const sky = new THREE.Mesh(new THREE.SphereGeometry(600, 32, 16), skyMat); sky.frustumCulled = false; sky.renderOrder = -10; scene.add(sky);
+
+/* ---------- 3. Light: low warm sun + shadow map, hemisphere fill, and image-based light rendered from the sky ---------- */
+const sun = new THREE.DirectionalLight('#ffe2b6', 3.1); sun.position.copy(SUN_DIR).multiplyScalar(60); sun.target.position.set(0, 0, -6); scene.add(sun, sun.target);
+if (SHADOW) { sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); const c = sun.shadow.camera; c.left = -34; c.right = 34; c.top = 34; c.bottom = -34; c.near = 10; c.far = 130; sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.05; sun.shadow.radius = 3; }
+scene.add(new THREE.HemisphereLight('#a9c8f5', '#6f5a3a', 0.85));
+{ const pm = new THREE.PMREMGenerator(renderer), es = new THREE.Scene(); const m = sky.clone(); m.material = skyMat.clone(); m.material.uniforms.uT = { value: 0 }; es.add(m); scene.environment = pm.fromScene(es, 0.04).texture; scene.environmentIntensity = 0.55; pm.dispose(); }
+
+/* ---------- 4. Textures: ambientCG (CC0) WebP, sRGB colour + linear normal ---------- */
+const TL = new THREE.TextureLoader(), tex = (n, srgb = true) => { const t = TL.load(`real-assets/tex/${n}.webp`, i => { TEXB.n += i.image.width * i.image.height * 4 * 1.33; }); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; if (srgb) t.colorSpace = THREE.SRGBColorSpace; return t; };
+const TX = { grass: tex('grass_c'), grassN: tex('grass_n', false), meadow: tex('dirt_c'), dirt: tex('soil_c'), paving: tex('paving_c'), rock: tex('rock_c'), snow: tex('snow_c') };
+
+/* ---------- 5. Terrain: one PBR material, world-space splat of grass / meadow / path / paving / furrowed soil / rock / snow ---------- */
+const TW = 190, TD = 170, TCX = 0, TCZ = -55, SEG = 1.2;
+const terrain = (() => {
+  const g = new THREE.PlaneGeometry(TW, TD, Math.round(TW / SEG), Math.round(TD / SEG)); g.rotateX(-Math.PI / 2); g.translate(TCX, 0, TCZ);
+  const p = g.attributes.position, col = new Float32Array(p.count * 3), spl = new Float32Array(p.count * 3), c = new THREE.Color();
+  const FOOT = [[-14, -12, 6], [-8, -18, 4], [-19, -4, 3], [-11, -6, 1.6]];           // footprints that get baked AO on the ground
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), z = p.getZ(i), h = H(x, z); p.setY(i, h);
+    let ao = 1; for (const [fx, fz, fr] of FOOT) ao = Math.min(ao, 0.62 + 0.38 * sstep(fr * 0.5, fr * 1.5, Math.hypot(x - fx, z - fz)));
+    const v = 0.9 + 0.2 * fbm(x * 0.09, z * 0.09); c.setRGB(v * ao, v * ao * 0.985, v * ao * 0.94); c.toArray(col, i * 3);
+    const sw = (a, b) => 1 - sstep(a, b, 0); let dirt = 0, pave = 0, soil = 0;
+    if (dirtPath(x, z)) dirt = 1; if (onLane(x, z)) pave = 1; if (onLane(x, z, 2.2)) dirt = Math.max(dirt, 0.6);
+    for (const f of FIELDS) { const dx = Math.min(x - f.x0, f.x1 - x), dz = Math.min(z - f.z0, f.z1 - z); soil = Math.max(soil, sstep(-0.4, 0.6, Math.min(dx, dz))); }
+    const beach = sstep(0.55, 0.05, h) * sstep(-2.5, -0.1, h);                            // wet sand at the water line
+    spl.set([Math.max(dirt, beach), pave, soil], i * 3);
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('aSplat', new THREE.BufferAttribute(spl, 3)); g.computeVertexNormals();
+  const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.96, metalness: 0, normalMap: TX.grassN, normalScale: new THREE.Vector2(0.7, 0.7) });
+  TX.grassN.repeat.set(TW / 6, TD / 6);
+  m.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, { uGrass: { value: TX.grass }, uMeadow: { value: TX.meadow.clone && TX.meadow }, uDirt: { value: TX.dirt }, uPave: { value: TX.paving }, uRock: { value: TX.rock }, uSnow: { value: TX.snow } });
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute vec3 aSplat; varying vec3 vSpl; varying vec3 vWP; varying vec3 vWN;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvSpl = aSplat; vWP = (modelMatrix*vec4(transformed,1.0)).xyz; vWN = normal;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uGrass,uMeadow,uDirt,uPave,uRock,uSnow; varying vec3 vSpl; varying vec3 vWP; varying vec3 vWN;')
+      .replace('#include <map_fragment>', `
+        vec2 w = vWP.xz;
+        vec3 g1 = texture2D(uGrass, w*0.16).rgb, g2 = texture2D(uGrass, w*0.043+7.0).rgb, mw = texture2D(uMeadow, w*0.07).rgb;
+        float macro = texture2D(uMeadow, w*0.011).g;
+        vec3 grass = mix(g1*vec3(1.08,1.06,0.78), g2*vec3(1.2,1.12,0.7), 0.35) ;
+        grass = mix(grass, mw*vec3(1.1,1.0,0.65), 0.25 + 0.45*macro);
+        vec3 dirt = texture2D(uDirt, w*0.22).rgb;
+        vec3 pave = texture2D(uPave, w*0.30).rgb*1.15;
+        float row = 0.5 + 0.5*sin(w.y*6.9);                                            // furrows run along x, 0.9 m apart
+        vec3 soil = texture2D(uDirt, w*0.35).rgb*vec3(0.42,0.30,0.20)*(0.55 + 0.75*row);
+        vec3 alb = mix(grass, dirt*vec3(1.05,0.95,0.85), clamp(vSpl.x,0.,1.));
+        alb = mix(alb, pave, vSpl.y); alb = mix(alb, soil, vSpl.z);
+        float slope = 1.0 - clamp(normalize(vWN).y, 0.0, 1.0);
+        vec3 rk = texture2D(uRock, w*0.09).rgb*1.5;
+        alb = mix(alb, rk, smoothstep(0.30,0.55,slope) * step(0.5, vWP.y-1.5+0.0*vSpl.x));
+        alb = mix(alb, rk*0.8, smoothstep(0.42,0.6,slope));
+        float snow = smoothstep(24.0,32.0, vWP.y + 6.0*(macro-0.5)) * smoothstep(0.7,0.35,slope);
+        alb = mix(alb, texture2D(uSnow, w*0.08).rgb*1.6, snow);
+        diffuseColor.rgb *= alb;`);
+  };
+  const mesh = new THREE.Mesh(g, m); mesh.receiveShadow = true; scene.add(mesh); return mesh;
+})();
+
+/* ---------- 6. Water: depth gradient from a height texture, shoreline foam, sun glint, sky reflection. Same fog/tone chunks as the built-ins. ---------- */
+const HS = 256, hd = new Uint8Array(HS * HS);
+for (let j = 0; j < HS; j++) for (let i = 0; i < HS; i++) hd[j * HS + i] = Math.round(THREE.MathUtils.clamp((H(TCX - TW / 2 + (i + 0.5) / HS * TW, TCZ - TD / 2 + (j + 0.5) / HS * TD) + 6) / 9, 0, 1) * 255);
+const hTex = new THREE.DataTexture(hd, HS, HS, THREE.RedFormat, THREE.UnsignedByteType); hTex.minFilter = hTex.magFilter = THREE.LinearFilter; hTex.wrapS = hTex.wrapT = THREE.ClampToEdgeWrapping; hTex.needsUpdate = true;
+const waterMat = new THREE.ShaderMaterial({ fog: true, uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, { uH: { value: hTex }, uT: { value: 0 }, uSun: { value: SUN_DIR }, uHor: { value: HORIZON }, uTop: { value: TOP }, uBox: { value: new THREE.Vector4(TCX - TW / 2, TCZ - TD / 2, TW, TD) } }]),
+  vertexShader: 'varying vec3 vP;\n#include <fog_pars_vertex>\nvoid main(){ vec4 w = modelMatrix*vec4(position,1.0); vP = w.xyz; vec4 mvPosition = viewMatrix*w; gl_Position = projectionMatrix*mvPosition;\n#include <fog_vertex>\n}',
+  fragmentShader: `uniform sampler2D uH; uniform float uT; uniform vec3 uSun,uHor,uTop; uniform vec4 uBox; varying vec3 vP;
+    #include <fog_pars_fragment>
+    float wv(vec2 p){ return sin(p.x*1.3+uT*0.9)*0.5+sin(p.y*1.7-uT*1.2)*0.35+sin((p.x+p.y)*2.6+uT*1.7)*0.25; }
+    void main(){
+      vec2 uv = (vP.xz - uBox.xy)/uBox.zw; float ground = texture2D(uH, uv).r*9.0 - 6.0; float depth = max(0.0, -ground);
+      vec2 q = vP.xz*0.55; vec3 n = normalize(vec3(-(wv(q+vec2(.1,0.))-wv(q))*4.0, 1.0, -(wv(q+vec2(0.,.1))-wv(q))*4.0));
+      vec3 V = normalize(cameraPosition - vP); vec3 R = reflect(-V, n);
+      float fres = 0.04 + 0.96*pow(1.0-clamp(dot(V,n),0.0,1.0),5.0);
+      vec3 refl = mix(uHor, uTop, pow(clamp(R.y,0.0,1.0),0.5)); refl += vec3(1.0,0.8,0.5)*pow(max(dot(R,normalize(uSun)),0.0),120.0)*2.4;
+      float k = 1.0-exp(-depth*0.55);
+      vec3 col = mix(vec3(0.20,0.62,0.66), vec3(0.03,0.16,0.36), k);                     // turquoise shallows to deep navy
+      col = mix(col, vec3(0.60,0.60,0.46), (1.0-smoothstep(0.0,0.5,depth))*0.55);        // sand showing through
+      col = mix(col, refl, clamp(fres*1.1,0.0,0.85));
+      float sh = depth + 0.12*wv(vP.xz*1.7 + uT*0.4); float foam = (1.0-smoothstep(0.02,0.42,sh)) * (0.55+0.45*sin(depth*22.0 - uT*2.2 + wv(vP.xz*2.0)*3.0));
+      foam += (1.0-smoothstep(0.0,0.10,depth))*0.8; col = mix(col, vec3(0.97,0.98,0.96), clamp(foam,0.0,1.0)*0.9);
+      gl_FragColor = vec4(col,1.0);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+      #include <fog_fragment>
+    }` });
+const water = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200).rotateX(-Math.PI / 2), waterMat); water.position.y = 0; scene.add(water);
+
+/* ---------- 7. Kits: load CC0 GLBs, bake node transforms, share materials, add vertex-colour AO and a world-space grunge detail ---------- */
+const gl = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder), MAT = new Map();
+const grunge = (() => { const s = 256, cv = Object.assign(document.createElement('canvas'), { width: s, height: s }), x = cv.getContext('2d'), im = x.createImageData(s, s);
+  for (let j = 0; j < s; j++) for (let i = 0; i < s; i++) { const v = 0.5 * fbm(i / 24, j / 24) + 0.3 * vnoise(i / 6, j / 6) + 0.2 * hash(i, j); const k = 255 * (0.25 + 0.75 * v); im.data.set([k, k, k, 255], (j * s + i) * 4); }
+  x.putImageData(im, 0, 0); const t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; })();
+function detail(m, amt = 0.35) {                                                           // multiplies albedo by grey noise projected along the world axes (breaks flat kit colours)
+  m.onBeforeCompile = sh => { sh.uniforms.uGr = { value: grunge };
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWp; varying vec3 vWn;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvec4 wp4 = modelMatrix*vec4(transformed,1.0);\n#ifdef USE_INSTANCING\n wp4 = modelMatrix*instanceMatrix*vec4(transformed,1.0);\n#endif\nvWp = wp4.xyz; vWn = normalize(mat3(modelMatrix)*normal);');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', `#include <common>\nuniform sampler2D uGr; varying vec3 vWp; varying vec3 vWn;`).replace('#include <map_fragment>', `#include <map_fragment>
+      { vec3 an = abs(vWn); float g = (texture2D(uGr, vWp.zy*0.55).r*an.x + texture2D(uGr, vWp.xz*0.55).r*an.y + texture2D(uGr, vWp.xy*0.55).r*an.z)/(an.x+an.y+an.z+1e-4);
+        diffuseColor.rgb *= ${(1 - amt).toFixed(2)} + ${(amt * 2).toFixed(2)}*g; }`); };
+  m.customProgramCacheKey = () => 'detail' + amt; return m; }
+function stdOf(old, key) {                                                                 // GLTF unlit/basic -> a shared MeshStandardMaterial
+  const k = key + '|' + old.color.getHexString() + '|' + (old.map ? old.map.uuid : ''); if (MAT.has(k)) return MAT.get(k);
+  const m = detail(new THREE.MeshStandardMaterial({ color: old.color.clone(), map: old.map || null, roughness: 0.82, metalness: 0, vertexColors: true })); if (old.map) old.map.colorSpace = THREE.SRGBColorSpace; MAT.set(k, m); return m; }
+const KITS = {};
+async function kit(name, { h, w, key = name }) {                                          // returns [{geometry, material}] scaled to the target height (h) or width (w), base on y = 0, centred on x/z
+  if (KITS[name + h + w]) return KITS[name + h + w];
+  const gltf = await gl.loadAsync(`real-assets/models/${name}.glb`); gltf.scene.updateMatrixWorld(true); const parts = []; const box = new THREE.Box3().setFromObject(gltf.scene), sz = box.getSize(new THREE.Vector3());
+  const s = h ? h / sz.y : w / Math.max(sz.x, sz.z), ctr = box.getCenter(new THREE.Vector3());
+  gltf.scene.traverse(o => { if (!o.isMesh) return; const g = o.geometry.clone(); g.applyMatrix4(o.matrixWorld); g.translate(-ctr.x, -box.min.y, -ctr.z); g.scale(s, s, s);
+    g.deleteAttribute('uv1'); const pos = g.attributes.position, hh = sz.y * s, col = new Float32Array(pos.count * 3);                   // vertex-colour AO: dark at the base, light at the top
+    for (let i = 0; i < pos.count; i++) { const t = sstep(0, Math.max(0.6, hh * 0.85), pos.getY(i)), a = 0.5 + 0.5 * t, ta = 0.94 + 0.06 * t; col.set([a * 1.0, a * 0.97, a * ta * 0.92 + (1 - a) * 0.0], i * 3); }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3)); parts.push({ geometry: g, material: stdOf(o.material, key.startsWith('house') || key.startsWith('sky') || key.startsWith('low') ? key.split('_')[0] : key) }); });
+  return (KITS[name + h + w] = parts); }
+const M4 = new THREE.Matrix4(), Q4 = new THREE.Quaternion(), V3 = new THREE.Vector3(), S3 = new THREE.Vector3(), EU = new THREE.Euler();
+function place(x, z, ry, s, y = null) { return M4.compose(V3.set(x, y ?? H(x, z), z), Q4.setFromEuler(EU.set(0, ry, 0)), S3.set(s, s, s)).clone(); }
+function instances(parts, mats, { jitter = 0.12, hue = 0, castShadow = true } = {}) {                                  // one InstancedMesh per material, per-instance colour variation
+  const out = []; for (const { geometry, material } of parts) { const im = new THREE.InstancedMesh(geometry, material, mats.length); const c = new THREE.Color();
+    mats.forEach((m, i) => { im.setMatrixAt(i, m); c.setHSL(0, 0, 1); c.offsetHSL(hue * (rng() - 0.5), 0, (rng() - 0.5) * jitter); c.multiplyScalar(1); im.setColorAt(i, c); });
+    im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; im.castShadow = castShadow && SHADOW; im.receiveShadow = true; im.frustumCulled = false; scene.add(im); out.push(im); } return out; }
+function batch(list) {                                                                                                  // static batching: merge placed clones that share a material into one mesh
+  const by = new Map(); for (const { parts, m } of list) for (const p of parts) { const g = p.geometry.clone().applyMatrix4(m); (by.get(p.material) || by.set(p.material, []).get(p.material)).push(g); }
+  for (const [mat, gs] of by) { const mesh = new THREE.Mesh(mergeGeometries(gs), mat); mesh.castShadow = SHADOW; mesh.receiveShadow = true; mesh.frustumCulled = false; scene.add(mesh); } }
+window.__parts = () => Object.keys(KITS).length;
+
+/* ---------- 8. Build the world ---------- */
+const info = { trees: 0, bushes: 0, crops: 0, houses: 0 };
+async function build() {
+  const L = (n, o) => kit(n, o);
+  const [barn, sbarn, coop, well, windmill, tractor] = await Promise.all([L('q_Barn', { w: 8.6 }), L('q_SmallBarn', { w: 5.4 }), L('q_ChickenCoop', { w: 3.2 }), L('q_Well', { w: 1.9 }), L('fan_windmill', { h: 9 }), L('tractor', { w: 3.4, key: 'tractor' })]);
+  const houses = await Promise.all(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k'].map(t => L('house_' + t, { w: 4.6, key: 'house_' + t })));
+  const skys = await Promise.all(['a', 'b', 'c', 'd', 'e'].map((t, i) => L('sky_' + t, { h: [30, 24, 34, 20, 27][i], key: 'sky_' + t }))), lows = await Promise.all(['a', 'c', 'd', 'h'].map(t => L('lowrise_' + t, { h: 8, key: 'low_' + t })));
+  /* farmyard and village: static-batched into one or two draws */
+  const list = [{ parts: barn, m: place(-14, -12, 0.25, 1) }, { parts: sbarn, m: place(-6.5, -19, -0.2, 1) }, { parts: coop, m: place(-20, -4, 0.6, 1) }, { parts: well, m: place(-10.5, -5.5, 0, 1) }, { parts: windmill, m: place(14, -7, 0.4, 1) }, { parts: tractor, m: place(-1, 1.6, -0.6, 1) }];
+  for (let i = 0; i < 9; i++) { const x = 1 + i * 3.9, row = i % 2; list.push({ parts: houses[i % houses.length], m: place(x, laneZ(x) + (row ? 4.8 : -4.8), row ? Math.PI + 0.08 : 0.06 * Math.sin(i), 1) }); info.houses++; }
+  for (let i = 0; i < 7; i++) { const x = -2 + i * 4.4 + hash(i, 3), z = -50 - hash(i, 9) * 20; list.push({ parts: skys[i % 5], m: place(x + 12, -66 - (i % 3) * 5, 0, 1) }); }
+  for (let i = 0; i < 9; i++) list.push({ parts: lows[i % 4], m: place(2 + i * 6.4, -60 - hash(i, 5) * 3, Math.PI * 0.5 * (i % 2), 1) });
+  batch(list);
+  if (!FOLIAGE) return;
+  /* instanced foliage: forest on the hills, orchard rows, hedges, bushes, flowers, tufts, rocks, crops */
+  const species = [['tree_default', 5.2], ['tree_oak', 5.6], ['tree_fat', 4.6], ['tree_detailed', 6.2], ['tree_pineTallA', 8.5], ['tree_pineRoundA', 7.5], ['tree_thin', 5.5]];
+  const T = await Promise.all(species.map(([n, h]) => L(n, { h, key: n })));
+  const spots = [[], [], [], [], [], [], []]; let tries = 0;
+  const free = (x, z) => !inField(x, z, 2.5) && !onLane(x, z, 6) && !dirtPath(x, z) && Math.hypot(x + 14, z + 12) > 8 && H(x, z) > 0.4 && !(x > -2 && x < 26 && z < -8 && z > -30);
+  while (spots.flat().length < 620 && tries++ < 20000) { const x = -70 + rng() * 96, z = -95 + rng() * 110; if (!free(x, z)) continue; const hill = H(x, z) > 4; if (!hill && rng() < 0.72 && x > -22) continue; const conif = hill || x < -30; const k = conif ? (rng() < 0.6 ? 4 : rng() < 0.6 ? 5 : rng() < 0.5 ? 0 : 3) : [0, 1, 2, 3, 6][Math.floor(rng() * 5)]; spots[k].push(place(x, z, rng() * 6.28, 0.8 + rng() * 0.6)); }
+  for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) spots[1].push(place(-2 + i * 3.6, 16.5 + j * 2.4, rng() * 6.28, 0.7 + rng() * 0.15));                      // front orchard row
+  species.forEach((s, i) => { if (spots[i].length) instances(T[i], spots[i], { jitter: 0.32, hue: 0.06 }); }); info.trees = spots.flat().length;
+  const scat = async (name, o, n, area, sc = [0.8, 1.3]) => { const p = await L(name, o), m = []; let t = 0; while (m.length < n && t++ < n * 30) { const x = area[0] + rng() * (area[1] - area[0]), z = area[2] + rng() * (area[3] - area[2]); if (!free(x, z) || H(x, z) < 0.5) continue; m.push(place(x, z, rng() * 6.28, sc[0] + rng() * (sc[1] - sc[0]))); } instances(p, m, { jitter: 0.3, hue: 0.05, castShadow: false }); return m.length; };
+  info.bushes += await scat('plant_bushLarge', { h: 1.2 }, 90, [-40, 30, -40, 22]) + await scat('plant_bushDetailed', { h: 1.0 }, 80, [-40, 30, -40, 22]) + await scat('plant_bush', { h: 0.8 }, 60, [-40, 30, -40, 22]);
+  await scat('flower_redA', { h: 0.5, key: 'fr' }, 90, [-26, 26, -12, 20], [0.8, 1.4]); await scat('flower_yellowA', { h: 0.5, key: 'fy' }, 90, [-26, 26, -12, 20], [0.8, 1.4]); await scat('flower_purpleA', { h: 0.5, key: 'fp' }, 70, [-26, 26, -12, 20], [0.8, 1.4]);
+  await scat('grass_large', { h: 0.5 }, 260, [-30, 30, -24, 22], [0.9, 1.6]); await scat('rock_largeA', { h: 1.0 }, 14, [-40, 26, -30, 10], [0.7, 1.7]); await scat('rock_smallA', { h: 0.5 }, 24, [-40, 26, -30, 10], [0.7, 1.5]);
+  /* crop rows: rows follow the furrows in the ground shader (every 0.91 m along z), plants every 0.5 m along x */
+  const crops = { wheat: await L('crops_wheatStageB', { h: 0.95, key: 'wheat' }), corn: await L('crops_cornStageD', { h: 1.9, key: 'corn' }), pumpkin: await L('crop_pumpkin', { h: 0.55, key: 'pumpkin' }), melon: await L('crop_melon', { h: 0.55, key: 'melon' }), turnip: await L('crop_turnip', { h: 0.5, key: 'turnip' }) };
+  for (const f of FIELDS) { const kinds = f.kind === 'veg' ? ['pumpkin', 'melon', 'turnip'] : [f.kind], mats = kinds.map(() => []); const row0 = Math.ceil((f.z0 + 0.5) / 0.91) * 0.91; let r = 0;
+    for (let z = row0; z < f.z1 - 0.3; z += 0.91, r++) for (let x = f.x0 + 0.5; x < f.x1 - 0.3; x += f.kind === 'corn' ? 0.55 : f.kind === 'veg' ? 1.0 : 0.42) mats[f.kind === 'veg' ? r % 3 : 0].push(place(x + (rng() - 0.5) * 0.12, z + (rng() - 0.5) * 0.08, rng() * 6.28, 0.9 + rng() * 0.3));
+    kinds.forEach((k, i) => { info.crops += mats[i].length; instances(crops[k], mats[i], { jitter: 0.35, hue: 0.03, castShadow: f.kind !== 'wheat' }); }); }
+  /* fences around the fields and yard */
+  const fence = await L('fence_planks', { w: 1.0, key: 'fence' }), fm = []; for (let x = -25; x < 23; x += 1.0) { fm.push(place(x, 2.2, 0, 1)); fm.push(place(x, 14.2, 0, 1)); } for (let z = 2.2; z < 14; z += 1.0) { fm.push(place(-25.5, z, Math.PI / 2, 1)); fm.push(place(23.5, z, Math.PI / 2, 1)); } instances(fence, fm, { jitter: 0.1, castShadow: true });
+}
+
+/* ---------- Camera, frame loop, stats ---------- */
+const CAMS = [{ p: [25, 25, 31], t: [1, 1.5, -13], fov: 47 }, { p: [30, 19, 38], t: [-2, 3, -18], fov: 38 }];
+const cam = CAMS[+opt('cam', 0) % 2];
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w / h < 0.9 ? cam.fov : cam.fov * 0.62; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+let T = STILL ? 4 : 0, last = performance.now(), running = true, frames = 0;
+function frame(now) {
+  if (!running) return; requestAnimationFrame(frame); const dt = Math.min(0.05, (now - last) / 1000); last = now; if (!STILL) T += dt;
+  waterMat.uniforms.uT.value = T; skyMat.uniforms.uT.value = T; const a = STILL ? 0 : Math.sin(T * 0.15) * 0.06; camera.position.set(cam.p[0] + a * 30, cam.p[1], cam.p[2]); camera.lookAt(cam.t[0], cam.t[1], cam.t[2]);
+  renderer.render(scene, camera); if (++frames === 3 && window.__built) publish();
+}
+function publish() { const i = renderer.info, g = renderer.getContext(); window.__stats = { calls: i.render.calls, triangles: i.render.triangles, geometries: i.memory.geometries, textures: i.memory.textures, programs: i.programs.length, dpr, canvas: [canvas.width, canvas.height], tone: TMKEY, shadow: SHADOW, foliage: FOLIAGE, loadMs: Math.round(performance.now() - T0), texMBest: +(TEXB.n / 1048576).toFixed(1), info, shaderErrors, renderer: 'n/a' }; window.__ready = true; }
+window.__draws = () => { const g = renderer.getContext(), names = ['drawElements', 'drawArrays', 'drawElementsInstanced', 'drawArraysInstanced'], orig = {}; let n = 0; names.forEach(k => { orig[k] = g[k]; g[k] = function () { n++; return orig[k].apply(this, arguments); }; }); renderer.render(scene, camera); names.forEach(k => (g[k] = orig[k])); return n; };
+window.__frameStats = () => { renderer.render(scene, camera); const g = renderer.getContext(), w = canvas.width, h = canvas.height, b = new Uint8Array(w * h * 4); g.readPixels(0, 0, w, h, g.RGBA, g.UNSIGNED_BYTE, b);
+  let n = 0, L = 0, S = 0, dark = 0, white = 0, gr = 0; for (let y = 0; y < h; y += 6) for (let x = 0; x < w; x += 6) { const k = (y * w + x) * 4, r = b[k] / 255, gg = b[k + 1] / 255, bl = b[k + 2] / 255, mx = Math.max(r, gg, bl), mn = Math.min(r, gg, bl); n++; L += 0.2126 * r + 0.7152 * gg + 0.0722 * bl; S += mx ? (mx - mn) / mx : 0; if (mx < 0.1) dark++; if (mn > 0.97) white++; if (gg > r * 1.08 && gg > bl * 1.15) gr++; }
+  return { meanLuma: +(L / n).toFixed(3), meanSat: +(S / n).toFixed(3), darkShare: +(dark / n).toFixed(3), whiteShare: +(white / n).toFixed(3), greenShare: +(gr / n).toFixed(3) }; };
+window.__horizon = () => { const fwd = new THREE.Vector3(); camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize(); const p = camera.position.clone().addScaledVector(fwd, 5000); p.y = camera.position.y; p.project(camera); const saved = scene.children.map(c => [c, c.visible]); scene.children.forEach(c => { if (c !== sky) c.visible = false; });
+  renderer.render(scene, camera); const g = renderer.getContext(), b = new Uint8Array(4); g.readPixels(Math.round((p.x + 1) / 2 * (canvas.width - 1)), Math.round((p.y + 1) / 2 * (canvas.height - 1)), 1, 1, g.RGBA, g.UNSIGNED_BYTE, b); saved.forEach(([c, v]) => (c.visible = v));
+  const f = HORIZON.getHex(THREE.SRGBColorSpace); return { sky: Array.from(b.slice(0, 3)), fog: [(f >> 16) & 255, (f >> 8) & 255, f & 255] }; };
+canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); running = false; }); canvas.addEventListener('webglcontextrestored', () => { running = true; last = performance.now(); requestAnimationFrame(frame); });
+document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) { last = performance.now(); requestAnimationFrame(frame); } });
+
+/* ---------- 9. UI icons rendered from the game's own crop models (offscreen render target -> <img>) ---------- */
+async function icons() {
+  const rt = new THREE.WebGLRenderTarget(160, 160, { samples: 4 }); rt.texture.colorSpace = THREE.SRGBColorSpace; const sc = new THREE.Scene(), ca = new THREE.PerspectiveCamera(28, 1, 0.1, 50), out = {};
+  sc.add(new THREE.HemisphereLight('#ffffff', '#8a7a5a', 1.6)); const d = new THREE.DirectionalLight('#fff0d0', 2.6); d.position.set(3, 5, 4); sc.add(d);
+  const list = [['wheat', 'crops_wheatStageB', 'Wheat', '12'], ['corn', 'crops_cornStageD', 'Corn', '20'], ['pumpkin', 'crop_pumpkin', 'Pumpkin', '35'], ['carrot', 'crop_carrot', 'Carrot', '15'], ['melon', 'crop_melon', 'Melon', '40'], ['turnip', 'crop_turnip', 'Turnip', '18']];
+  const cards = document.getElementById('cards'); const cv = document.createElement('canvas'); cv.width = cv.height = 160; const cx = cv.getContext('2d'), buf = new Uint8Array(160 * 160 * 4);
+  for (const [k, file, label, price] of list) { const parts = await kit(file, { h: 1, key: 'ic_' + k }), g = new THREE.Group(); parts.forEach(p => { const m = new THREE.Mesh(p.geometry, p.material.clone()); m.material.vertexColors = false; m.material.onBeforeCompile = () => {}; g.add(m); }); g.rotation.y = -0.5; sc.add(g);
+    const bb = new THREE.Box3().setFromObject(g), c = bb.getCenter(new THREE.Vector3()), r = bb.getSize(new THREE.Vector3()).length(); ca.position.set(c.x + r * 0.8, c.y + r * 0.7, c.z + r * 1.5); ca.lookAt(c);
+    renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(sc, ca); renderer.readRenderTargetPixels(rt, 0, 0, 160, 160, buf); renderer.setRenderTarget(null); sc.remove(g);
+    const im = cx.createImageData(160, 160); for (let y = 0; y < 160; y++) im.data.set(buf.subarray((159 - y) * 640, (160 - y) * 640), y * 640); cx.putImageData(im, 0, 0);
+    const card = document.createElement('div'); card.className = 'card'; card.innerHTML = `<img alt="" src="${cv.toDataURL()}">${label}<small>Grows in ${price} min</small><span class="buy"><svg width="14" height="14"><use href="#i-coin"/></svg>${price * 4}</span>`; cards.appendChild(card); }
+  renderer.setClearColor(0x000000, 1); rt.dispose(); window.__icons = list.length;
+}
+
+await build(); window.__built = true; if (UI === 'sheet') await icons().catch(e => console.warn('icons', e.message)); requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -15,7 +15,7 @@ for (const eng of engines) {
   const t0 = Date.now();
   try {
     await page.goto(base + (q ? '?' + q : ''), { waitUntil: 'load' });
-    await page.waitForFunction(() => window.__ready === true, null, { timeout: 60000 });
+    await page.waitForFunction(() => window.__ready === true, null, { timeout: +(process.env.WAIT || 60000) });
     await page.waitForTimeout(400);
     const stats = await page.evaluate(() => window.__stats), fs2 = await page.evaluate(() => window.__frameStats && window.__frameStats());
     await page.screenshot({ path: `${prefix}-${eng}.png` });
