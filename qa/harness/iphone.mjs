@@ -6,7 +6,9 @@
 // scene, checks that touch controls are declared, sums the bytes downloaded, and saves a screenshot.
 // Chromium is not WebKit: this catches layout, touch and loading problems, not Safari-only bugs.
 // Output: REPORT_DIR (default qa/iphone-results)/iphone.json and shots/.
-import { chromium, devices } from 'playwright';
+import { chromium, webkit, devices } from 'playwright';
+// ENGINE=webkit tests in Playwright's WebKit build (the Safari engine) instead of Chromium. Set PLAYWRIGHT_BROWSERS_PATH to where it is installed.
+const ENGINE = process.env.ENGINE === 'webkit' ? 'webkit' : 'chromium';
 import fs from 'node:fs/promises';
 import fss from 'node:fs';
 import path from 'node:path';
@@ -48,6 +50,7 @@ async function routeExternal(ctx) {
 const preinstalled = (() => { try { const d = '/opt/pw-browsers'; const c = fss.readdirSync(d).filter(x => /^chromium-\d+$/.test(x)).sort().pop(); return c && path.join(d, c, 'chrome-linux/chrome'); } catch { return null; } })();
 const launchArgs = ['--enable-webgl', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'];
 const launch = async () => {
+  if (ENGINE === 'webkit') return webkit.launch();
   if (process.env.CHROMIUM_PATH) return chromium.launch({ executablePath: process.env.CHROMIUM_PATH, args: launchArgs });
   try { return await chromium.launch({ args: launchArgs }); }
   catch (e) { if (!preinstalled) throw e; return chromium.launch({ executablePath: preinstalled, args: launchArgs }); }
@@ -62,7 +65,8 @@ async function checkGame(g, browser, landscape) {
   r.orientation = landscape ? 'landscape' : 'portrait';
   await routeExternal(ctx);
   const page = await ctx.newPage(); page.setDefaultTimeout(10000);
-  page.on('pageerror', e => r.errors.push(String(e.message || e).slice(0, 200)));
+  // This sandbox has no sound card, so WebKit reports "Failed to start the audio device": an environment artefact, not a game bug.
+  page.on('pageerror', e => { const m = String(e.message || e); if (!/Failed to start the audio device/.test(m)) r.errors.push(m.slice(0, 200)); });
   page.on('response', async res => {
     if (res.status() >= 400 && !/favicon/.test(res.url())) r.failed.push(res.status() + ' ' + res.url().replace(BASE, '').slice(-80));
     try { const len = +res.headers()['content-length'] || (await res.body()).length; r.bytes += len; } catch {}
@@ -165,6 +169,6 @@ const worker = async () => {
 await Promise.all(Array.from({ length: +(process.env.WORKERS || 3) }, worker));
 server.close();
 results.sort((a, b) => a.id.localeCompare(b.id));
-await fs.writeFile(path.join(out, 'iphone.json'), JSON.stringify({ generated: new Date().toISOString(), device: 'iPhone 13 (Chromium emulation)', results }, null, 1));
+await fs.writeFile(path.join(out, 'iphone.json'), JSON.stringify({ generated: new Date().toISOString(), device: ENGINE === 'webkit' ? 'iPhone 13 (WebKit, Safari engine)' : 'iPhone 13 (Chromium emulation)', results }, null, 1));
 const n = v => results.filter(r => r.verdict === v).length;
 console.log(`\n${results.length} games: READY ${n('READY')}, CHECK ${n('CHECK')}, NO ${n('NO')}\n-> ${path.relative(process.cwd(), path.join(out, 'iphone.json'))}`);
