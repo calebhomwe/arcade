@@ -209,6 +209,8 @@
   /* ---------- daily quests ---------- */
   function allDone(T) { return !!(T && T.quests && T.quests.length && T.quests.every(function (q) { return q.done; })); }
   function catName(C, id) { return C.catName(id); }
+  var CAT_WORD = { hyper: 'quick-play', sim: 'sim & world' };
+  function catWord(C, id) { return CAT_WORD[id] || C.catName(id).toLowerCase(); }
   // Each definition returns a quest or null when it does not suit this player today. tier: easy | medium | hard.
   var QUESTS = [
     { kind: 'min-s', tier: 'easy', glyph: 'clock', w: function () { return 3; }, make: function (C, P) { var n = P.lvl < 5 ? 3 : P.lvl < 15 ? 4 : 5; return { target: n, title: 'Play for ' + n + ' minutes', desc: 'Any game counts.' }; }, prog: function (T) { return T.sec / 60; } },
@@ -219,8 +221,8 @@
     { kind: 'games-2', tier: 'medium', glyph: 'grid', w: function () { return 3; }, make: function () { return { target: 2, title: 'Play 2 different games', desc: 'Give each one at least 30 seconds.' }; }, prog: function (T) { return countGames(T); } },
     { kind: 'learn-5', tier: 'medium', glyph: 'cap', w: function (C) { return C.learnGames > 0 ? (C.learnTried ? 3 : 1) : 0; }, make: function () { return { target: 5, title: 'Play a learning game for 5 minutes', desc: 'Spelling, maths or music: your pick.' }; }, prog: function (T) { return T.learnSec / 60; } },
     { kind: 'min-m', tier: 'medium', glyph: 'clock', w: function () { return 2; }, make: function (C, P) { var n = P.lvl < 5 ? 8 : P.lvl < 15 ? 10 : 12; return { target: n, title: 'Play for ' + n + ' minutes', desc: 'Any games, any time today.' }; }, prog: function (T) { return T.sec / 60; } },
-    { kind: 'try-cat', tier: 'medium', glyph: 'globe', w: function (C) { return C.untriedCats.length ? 3 : 0; }, make: function (C, P, r) { var c = C.untriedCats[Math.floor(r() * C.untriedCats.length)]; return { target: 1, param: { cat: c }, title: 'Try a ' + catName(C, c) + ' game', desc: 'A new corner of the arcade.' }; }, prog: function (T, P, C, q) { return keys(T.cats).filter(function (k) { return k === q.param.cat && T.cats[k] >= XP.playSec; }).length; } },
-    { kind: 'cat-min', tier: 'medium', glyph: 'joy', w: function (C) { return C.favCat ? 2 : 0; }, make: function (C) { return { target: 6, param: { cat: C.favCat }, title: 'Play ' + catName(C, C.favCat) + ' for 6 minutes', desc: 'Your favourite kind of game.' }; }, prog: function (T, P, C, q) { return (T.cats[q.param.cat] || 0) / 60; } },
+    { kind: 'try-cat', tier: 'medium', glyph: 'globe', w: function (C) { return C.untriedCats.length ? 3 : 0; }, make: function (C, P, r) { var c = C.untriedCats[Math.floor(r() * C.untriedCats.length)]; return { target: 1, param: { cat: c }, title: 'Try a ' + catWord(C, c) + ' game', desc: 'A new corner of the arcade.' }; }, prog: function (T, P, C, q) { return keys(T.cats).filter(function (k) { return k === q.param.cat && T.cats[k] >= XP.playSec; }).length; } },
+    { kind: 'cat-min', tier: 'medium', glyph: 'joy', w: function (C) { return C.favCat ? 2 : 0; }, make: function (C) { return { target: 6, param: { cat: C.favCat }, title: 'Play ' + catWord(C, C.favCat) + ' games for 6 minutes', desc: 'Your favourite kind of game.' }; }, prog: function (T, P, C, q) { return (T.cats[q.param.cat] || 0) / 60; } },
     { kind: 'runs-3', tier: 'medium', glyph: 'flag', w: function (C, P) { return C.reporting.length ? 2 : 0; }, make: function (C) { return { target: 3, title: 'Finish 3 rounds', desc: 'Rounds that show a score count' + hintNames(C) + '.' }; }, prog: function (T) { return T.runs; } },
     { kind: 'beat', tier: 'hard', glyph: 'trophy', w: function (C) { return C.reporting.length ? 3 : 0; }, make: function (C, P, r) {
         var tagged = C.reportingTag; var g = C.reporting[Math.floor(r() * C.reporting.length)];

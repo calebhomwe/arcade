@@ -308,7 +308,10 @@ function onSheetClick(e) {
   const r = e.target.closest('.seg button[data-v]');
   if (r) {
     const k = r.parentElement.dataset.key;
-    if (r.dataset.locked) { toast('Locked: ' + r.dataset.locked + '. Play to unlock it.'); return; }
+    if (r.dataset.locked) {   // the site toast hides behind a modal, so the hint goes right under the options
+      const bar = r.parentElement; let m = bar.nextElementSibling; if (!m || !m.classList.contains('lock-msg')) { m = document.createElement('p'); m.className = 'lock-msg'; m.setAttribute('role', 'status'); bar.after(m); }
+      m.textContent = 'Locked: ' + r.dataset.locked + '. Play to unlock it.'; clearTimeout(m._t); m._t = setTimeout(() => m.remove(), 5000); return;
+    }
     const changed = S[k] !== r.dataset.v; S[k] = r.dataset.v; saveSettings(); $$('button', r.parentElement).forEach(b => b.setAttribute('aria-checked', b === r));
     if (changed && PU && (k === 'theme' || k === 'accent')) PU.noteStyle();
     return;

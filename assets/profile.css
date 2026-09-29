@@ -88,8 +88,9 @@
 .pf-toast .pf-btn:not(.green){background:#2b3060;color:#fff;border-color:#3d4488;box-shadow:0 3px 0 #171a3a}
 
 /* ---------- Daily quests card (home) ---------- */
-.qcard{display:grid;gap:12px;grid-template-columns:minmax(0,1fr);grid-template-areas:"me" "stats" "q";padding:14px;margin:0 0 20px;border-radius:26px;background:var(--surface);border:2px solid var(--line-2);box-shadow:0 5px 0 var(--pf-edge)}
-.qc-me{grid-area:me;display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:20px;text-align:left;color:inherit;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 18%,var(--surface-2)),var(--surface-2));border:2px solid var(--line-2);box-shadow:0 3px 0 var(--pf-edge);min-height:96px;font:inherit;transition:transform .08s,box-shadow .08s;-webkit-tap-highlight-color:transparent}
+.qcard{display:grid;gap:12px;grid-template-columns:minmax(0,1fr);padding:14px;margin:0 0 20px;border-radius:26px;background:var(--surface);border:2px solid var(--line-2);box-shadow:0 5px 0 var(--pf-edge)}
+.qc-l{display:grid;gap:12px;align-content:start;min-width:0}
+.qc-me{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:20px;text-align:left;color:inherit;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 18%,var(--surface-2)),var(--surface-2));border:2px solid var(--line-2);box-shadow:0 3px 0 var(--pf-edge);min-height:96px;font:inherit;transition:transform .08s,box-shadow .08s;-webkit-tap-highlight-color:transparent}
 .qc-me:active{transform:translateY(2px);box-shadow:0 1px 0 var(--pf-edge)}
 .qc-av{position:relative;width:80px;height:80px;flex:none;color:var(--ink)}
 .qc-ring{position:absolute;inset:0}.qc-ring .pf-ring{width:100%;height:100%}
@@ -101,14 +102,14 @@
 .qc-lv{display:flex;align-items:center;gap:8px;margin-top:6px}
 .qc-xp{flex:1;min-width:0;display:block}
 .qc-xp em{display:block;font:800 11.5px/1.5 var(--sans);font-style:normal;color:var(--ink-3);margin-top:3px}
-.qc-stats{grid-area:stats;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.qc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .qc-st{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:68px;padding:6px 4px;border-radius:18px;background:var(--surface-2);border:2px solid var(--line);color:var(--ink);text-decoration:none}
 .qc-st b{font:800 20px/1.1 var(--pf-font)}
 .qc-st small{font:800 11.5px/1.2 var(--sans);color:var(--ink-3)}
 .qc-st .i{width:20px;height:20px;color:var(--pf-gold-d)}
 .qc-st.lit{background:color-mix(in srgb,#ff9a2e 16%,var(--surface-2));border-color:color-mix(in srgb,#ff9a2e 40%,transparent)}
 .qc-st.link:hover{background:var(--surface-3)}
-.qc-q{grid-area:q;display:flex;flex-direction:column;gap:10px;min-width:0}
+.qc-q{display:flex;flex-direction:column;gap:10px;min-width:0}
 .qc-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .qc-head h2{font:800 22px/1.1 var(--pf-font);letter-spacing:0}
 .qc-count{display:inline-flex;gap:6px}
@@ -132,8 +133,7 @@
 .qc-foot{margin:0;font:700 13px/1.45 var(--sans);color:var(--ink-3)}
 .qc-next{display:block;margin-top:2px;color:var(--accent-ink);font-weight:800}
 @media(min-width:900px){
-  .qcard{grid-template-columns:minmax(300px,360px) minmax(0,1fr);grid-template-areas:"me q" "stats q";gap:14px 22px;padding:20px;align-items:start}
-  .qc-q{align-self:stretch}
+  .qcard{grid-template-columns:minmax(300px,360px) minmax(0,1fr);gap:14px 22px;padding:20px;align-items:start}
 }
 @media(min-width:900px) and (max-width:1100px){.qcard{grid-template-columns:minmax(260px,300px) minmax(0,1fr)}}
 
@@ -355,3 +355,5 @@ dialog.pf-lvlup::backdrop{background:radial-gradient(circle at 50% 38%,rgba(96,5
   .trophy-head .th-ring{width:52px;height:52px}.trophy-head .th-ring b{font-size:13px}
   .trophy-head .t p{font-size:13px}
 }
+
+.lock-msg{margin:8px 0 0;padding:8px 12px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,var(--surface-2));font:800 13px/1.4 var(--sans);color:var(--ink-2)}

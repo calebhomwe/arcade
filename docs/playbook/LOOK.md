@@ -1,5 +1,16 @@
 # LOOK: making a small three.js or canvas game look great on a phone
 
+> **DIRECTION FROM CALEB (overrides the toon recipes below).** The bright cartoon look in `look-demo.html` (flat
+> toon ramp, thick ink outlines, saturated primary colours, bubbly buttons) is **not** the look he wants. The target is
+> the rich, detailed, warm-lit, textured look of his key art: `/home/user/claires-big-life-adventure/references/calebs_farm/ref_01.png`
+> to `ref_04.png`. Read it as: golden-hour sun with long soft shadows, dense layered foliage with colour variation,
+> natural (not primary) colours with warm accents, detailed props and buildings with visible materials and wear,
+> deep blue water with depth, foam and shoreline, atmospheric haze toward the horizon, and UI made of dark navy glass panels,
+> wood and gold trim, parchment cards and glossy icons. Kids' games can stay friendly and colourful, but with depth,
+> texture and real lighting, not flat vector shapes with outlines. The toon and outline sections stay here only as
+> reference for what NOT to ship. A realistic-look playbook is being written to replace them.
+
+
 Status: every recipe below runs in [`look-demo.html`](look-demo.html) (a small farm, three.js r180 vendored from `HoleGrind/vendor/three`, no CDN).
 Code blocks are copied verbatim from tested files (`tests/check-snippets.py` checks that). Numbers are from `tests/results/`, measured in
 **Chromium 141 (SwiftShader)** and **Playwright WebKit 26.0** at the iPhone 13 profile (390x664 CSS px, DPR 3). Limits are stated in the last section.

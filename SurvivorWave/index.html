@@ -6079,7 +6079,7 @@ function openChest(){
 
     const rEl=document.getElementById('chestRes');
 
-    rEl.innerHTML=reward.iconK?('<img src="'+SKILL_URL[reward.iconK]+'" style="width:96px;height:96px">'):reward.icon;
+    rEl.innerHTML=reward.iconK?('<img src="'+(iconCV(reward.iconK,72),SKILL_URL[reward.iconK])+'" style="width:96px;height:96px">'):reward.icon;
 
     rEl.classList.remove('hidden');
 
@@ -7261,7 +7261,7 @@ function addDmgFloater(x,y,amount,crit){
 
 /* ============================== ICON PAINTER ============================== */
 
-function iconCanvas(Sz){const c=document.createElement('canvas');c.width=c.height=Sz;return [c,c.getContext('2d')];}
+function iconCanvas(Sz){const c=document.createElement('canvas');c.width=c.height=Sz;return [c,c.getContext('2d',{willReadFrequently:true})];}/*PERF: software canvas, so toDataURL does not stall on a GPU readback*/
 
 function icoStroke(g,Sz){g.strokeStyle='#232842';g.lineWidth=Math.max(1.5,Sz*0.055);g.lineJoin='round';g.lineCap='round';}
 
@@ -7619,9 +7619,13 @@ function iconCV(key,Sz){
 
 }
 
-function iconImg(key,cls){return SKILL_URL[key]?('<img class="'+(cls||'')+'" src="'+SKILL_URL[key]+'" alt="">'):'';}
+function iconImg(key,cls){if(!SKILL_URL[key])iconCV(key,72);return SKILL_URL[key]?('<img class="'+(cls||'')+'" src="'+SKILL_URL[key]+'" alt="">'):'';}
 
-['kunai','blade','bolt','orb','molotov','brick','drone','scroll','shield','battery','cube','shoe','fuel','belt','magnet','shotgun','bat','void','bullet','bracer','rpg','katana','orbit','chain','boomer','frost'].forEach(k=>iconCV(k,72));/*WPN-PATCH B008 B009*/
+/*PERF: the 26 weapon icons used to be painted and PNG-encoded synchronously at load (about 1.1 s unthrottled). They are built on first use (iconImg / iconCV) and the rest are warmed two at a time when the browser is idle, so the page answers taps at once.*/
+(function(){const ks=['kunai','blade','bolt','orb','molotov','brick','drone','scroll','shield','battery','cube','shoe','fuel','belt','magnet','shotgun','bat','void','bullet','bracer','rpg','katana','orbit','chain','boomer','frost'];let i=0;
+const idle=window.requestIdleCallback?(f=>window.requestIdleCallback(f,{timeout:1500})):(f=>setTimeout(f,120));
+function step(){for(let n=0;n<2&&i<ks.length;n++,i++){try{iconCV(ks[i],72);}catch(_){}}if(i<ks.length)idle(step);}
+window.addEventListener('load',()=>setTimeout(()=>idle(step),1200));})();/*WPN-PATCH B008 B009*/
 
 const [COIN_CV,coinG]=iconCanvas(36);
 
@@ -7651,7 +7655,7 @@ function heroPortraitURL(id,Sz){
 
   c.width=Sz;c.height=Sz;
 
-  const g=c.getContext('2d');
+  const g=c.getContext('2d',{willReadFrequently:true});
 
   const u=Sz/120;
 
@@ -8848,7 +8852,7 @@ function critterPreviewURL(ty,Sz){
 
   c.width=c.height=Sz;
 
-  const g=c.getContext('2d');
+  const g=c.getContext('2d',{willReadFrequently:true});
 
   g.save();
 

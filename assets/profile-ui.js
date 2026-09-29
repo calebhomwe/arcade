@@ -57,6 +57,13 @@
   /* ---------- toasts: inside the player when there is one, so they show in fullscreen too ---------- */
   var toastQueue = [], badgeBatch = [], badgeTimer = 0;
   function toastBox() {
+    // A modal dialog sits above everything on the page, so a toast made while one is open goes inside it.
+    var open = $$('dialog[open]'), host = open.length ? open[open.length - 1] : null;
+    if (host) {
+      var hb = $(':scope > .pf-toasts', host);
+      if (!hb) { hb = doc.createElement('div'); hb.className = 'pf-toasts floating'; hb.setAttribute('aria-live', 'polite'); host.appendChild(hb); }
+      return hb;
+    }
     var b = $('#pf-toasts');
     if (!b) { b = doc.createElement('div'); b.id = 'pf-toasts'; b.className = 'pf-toasts floating'; b.setAttribute('aria-live', 'polite'); doc.body.appendChild(b); }
     return b;
@@ -97,7 +104,10 @@
     else setTimeout(showLevelUp, 500);
   });
   Store.on('change', function () { paintChip(); refreshViews(); if (tracker) tracker.push(); });
-  window.addEventListener('storage', function (e) { if (e.key === Core.KEY) { paintChip(); refreshViews(); } });
+  function freshen() { paintChip(); refreshViews(); if (!tracker) setTimeout(showLevelUp, 350); }
+  window.addEventListener('storage', function (e) { if (e.key === Core.KEY) freshen(); });                // another tab earned something
+  window.addEventListener('pageshow', function (e) { if (e.persisted) freshen(); });                       // coming back with the Back button (the page was kept as it was)
+  doc.addEventListener('visibilitychange', function () { if (!doc.hidden) freshen(); });
 
   /* ---------- the header chip ---------- */
   function paintChip() {
@@ -125,10 +135,10 @@
       var p = Store.get(), li = Core.levelInfo(p.xp), Q = Store.quests(), n = Q.list.filter(function (q) { return q.done; }).length, lit = streakLit(p), ach = Store.achievements(), got = ach.filter(function (a) { return a.done; }).length;
       var nr = nextReward(li.level);
       el.innerHTML =
-        '<button type="button" class="qc-me" data-open-profile aria-label="Open your profile"><span class="qc-av"><span class="qc-ring">' + Art.ring(li.pct, 76, 5) + '</span><span class="qc-face">' + av(64) + '</span></span>' +
+        '<div class="qc-l"><button type="button" class="qc-me" data-open-profile aria-label="Open your profile"><span class="qc-av"><span class="qc-ring">' + Art.ring(li.pct, 76, 5) + '</span><span class="qc-face">' + av(64) + '</span></span>' +
         '<span class="qc-who"><span class="qc-name"><b>' + esc(p.name) + '</b><small>' + (p.flags.named ? esc(Store.title()) : 'Tap to pick your buddy') + '</small></span><span class="qc-lv">' + Art.levelBadge(li.level, 30) + '<span class="qc-xp">' + bar(li.pct, 'xp') + '<em>' + (li.max ? 'Max level' : fmt(li.into) + ' / ' + fmt(li.need) + ' XP') + '</em></span></span></span></button>' +
         '<div class="qc-stats"><span class="qc-st ' + (lit ? 'lit' : '') + '" title="Days in a row. One rest day a week is free.">' + Art.flame(lit, 18) + '<b>' + p.streak.n + '</b><small>' + (p.streak.n === 1 ? 'day' : 'days') + '</small></span><span class="qc-st">' + Art.star(18) + '<b>' + fmt(p.stars) + '</b><small>stars</small></span>' +
-        '<a class="qc-st link" href="./?view=trophies">' + ico('trophy') + '<b>' + got + '</b><small>badges</small></a></div>' +
+        '<a class="qc-st link" href="./?view=trophies">' + ico('trophy') + '<b>' + got + '</b><small>badges</small></a></div></div>' +
         '<div class="qc-q"><div class="qc-head"><h2 id="qc-h">Daily quests</h2><span class="qc-count" aria-label="' + n + ' of 3 done">' + [0, 1, 2].map(function (i) { return '<i class="' + (i < n ? 'on' : '') + '"></i>'; }).join('') + '</span></div>' +
         '<ul class="qlist">' + Q.list.map(questRow).join('') + Q.extra.map(function (g) { return questRow({ title: g.title, desc: byId[g.game] ? 'From ' + byId[g.game].title : 'From a game', prog: g.p, target: 1, done: g.done, xp: g.xp, stars: g.stars, glyph: 'medal', kind: 'game' }); }).join('') + '</ul>' +
         '<p class="qc-foot">' + (n === 3 ? 'All done for today! New quests tomorrow.' : n ? 'Nice! ' + (3 - n) + ' to go. Finish all three for +' + Q.setXp + ' XP and a star.' : 'Three new quests every day. No rush: they refresh tomorrow.') + (nr && !li.max ? '<span class="qc-next">Next reward: ' + esc(nr.name) + ' at level ' + nr.level + '</span>' : '') + '</p></div>';
@@ -265,7 +275,7 @@
   function download(name, text, type) { var a = doc.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type || 'application/json' })); a.download = name; doc.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000); }
   function afterImport(r) {
     if (r.error) { say(r.error, true); return; }
-    var p = Store.get(); say('Welcome back, ' + p.name + '! You are level ' + Core.levelOf(p.xp) + '.', false); toast({ kind: 'calm', art: av(40), title: 'Profile loaded', sub: 'Level ' + Core.levelOf(p.xp) + ' · ' + plural(p.streak.n, 'day') + ' streak' }); drawSheet();
+    var p = Store.get(); drawSheet(); say('Welcome back, ' + p.name + '! You are level ' + Core.levelOf(p.xp) + '.', false); toast({ kind: 'calm', art: av(40), title: 'Profile loaded', sub: 'Level ' + Core.levelOf(p.xp) + ' · ' + plural(p.streak.n, 'day') + ' streak' });
   }
   function onSheet(e) {
     var t = e.target;

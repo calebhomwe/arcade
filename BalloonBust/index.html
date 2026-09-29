@@ -198,6 +198,7 @@ syncDaily();
 /* ═══════════ arcade wiring ═══════════ */
 const SDK=window.ArcadeSDK||null;
 const sdk=(fn,a)=>{try{if(SDK&&SDK[fn])SDK[fn](a);}catch(e){}};
+window.addEventListener('unhandledrejection',e=>{try{if(e.reason&&/decod|encoding/i.test(String(e.reason.message||e.reason.name||e.reason)))e.preventDefault();}catch(_){}});
 const cheated=()=>!!(SDK&&SDK.cheated);
 const RM=window.matchMedia?matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
 const CHEAT={party:false,big:false,slow:false};
@@ -615,7 +616,7 @@ function drawBibi(c,x,y,s,mood,t){
 /* ═══════════ particles, floaters, flying stars ═══════════ */
 const MAXP=360;
 function addPart(p){if(state.parts.length<MAXP)state.parts.push(p);}
-function burst(x,y,hue,good,n){
+function burst(x,y,hue,good,n,noRing){
   const cols=good||CHEAT.party?['#ffd23f','#ff5f8f','#3fbcf5','#4fd68a','#a279ff','#ffffff']:['#ffffff',hue[1]];
   n=Math.round((n||(good?22:7))*(CHEAT.party?2:1)*(RM.matches?.3:1));
   for(let i=0;i<n;i++){
@@ -623,7 +624,7 @@ function burst(x,y,hue,good,n){
     addPart({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-90,rot:Math.random()*TAU,vr:(Math.random()-.5)*14,
       s:(shard?6:4)+Math.random()*5,col:shard?hue[0]:pick(cols),t:.9+Math.random()*.7,max:1.6,kind:shard?'shard':(i%4===1?'star':'conf'),g:520});
   }
-  if(!RM.matches)state.pops.push({x,y,r:10,t:.35,col:hue[0]});
+  if(!RM.matches&&!noRing)state.pops.push({x,y,r:10,t:.35,col:hue[0]});
 }
 function floatText(x,y,txt,col,size){if(state.floaters.length<14)state.floaters.push({x,y,txt,col,t:1.3,size:size||30});}
 function flyStar(x,y){
@@ -676,7 +677,7 @@ function startRound(mode,speed,withTutorial){
   newQuestion();
   sdk('state',{scene:'play'});
 }
-function ratingOf(n){return n>=13?3:n>=9?2:n>=5?1:0;}
+function ratingOf(n){return n>=11?3:n>=7?2:n>=3?1:0;}
 function endRound(){
   if(state.phase!=='playing')return;
   state.phase='over';state.endT=state.t;state.tut=0;state.shown=state.stars;state.revealT=0;state.revealOn=false;
@@ -748,7 +749,7 @@ function popBalloon(b,forceRight){
     AU.ding(Math.min(state.streak-1,13));
     buzz(12);state.pulse=1;state.mood='cheer';state.moodT=1.1;
     if(state.tut===1){state.tut=2;state.tutT=3;try{localStorage.setItem(TUTKEY,'1');}catch(e){}sdk('event','tutorial-done');}
-    for(const o of state.balloons)if(o!==b&&!o.dead){o.dead=true;o.fade=1;o.away=true;burst(o.x,o.y,o.hue,false,5);}
+    for(const o of state.balloons)if(o!==b&&!o.dead){o.dead=true;o.fade=1;o.away=true;burst(o.x,o.y,o.hue,false,5,true);}
     /* the adaptive ladder: six in a row and the questions get a bit harder */
     const m=state.mode;
     if(state.runOK>=6&&meta.lv[m]<MAXLV[m]&&!cheated()){meta.lv[m]++;state.runOK=0;state.levelUps++;saveMeta();levelBanner('Level up! Level '+meta.lv[m]);sfx('levelup');AU.fanfare();}
@@ -962,7 +963,7 @@ function qPanelH(){
 function LQ(){
   const h=qPanelH();
   if(WIDE){const w=Math.min(W*.46,440*U);return{cx:SAFE.l+12*U+w/2+W*.01,cy:H*.52,w,h,bottom:H*.52+h/2+30*U,limit:SAFE.t+70*U,laneL:W*.53,laneR:W-SAFE.r-14*U,lane:.5};}
-  const w=Math.min(W*.94,560*U),top=SAFE.t+82*U;
+  const w=Math.min(W*.94,560*U),top=SAFE.t+104*U;
   return{cx:W/2,cy:top+h/2,w,h,bottom:top+h+12*U,limit:top+h+8*U,laneL:0,laneR:W,lane:.66};
 }
 const qTopY=()=>LQ().cy-LQ().h/2;
@@ -1041,9 +1042,10 @@ function drawHUD(){
   pill(left,top,pw,ph);
   cx.save();cx.translate(left+24*U,top+ph/2);cx.scale(bump,bump);drawStarShape(0,0,15*U,'#ffd23f',0,state.bump>0);cx.restore();
   txt(String(state.shown),left+50*U,top+ph/2+1,24*U,'#5a2f8a','left',700);
-  /* timer: a fat friendly bar with a little clock */
-  const tx=left+pw+12*U,tw=W-tx-(SAFE.r+66*U),th=20*U,ty=top+ph/2-th/2;
-  if(tw>60){
+  /* timer: a fat friendly bar with a little clock, then the read-aloud button, then the arcade's pause */
+  const vs=44*U,hasV=SPEECH.voice;
+  const tx=left+pw+12*U,tw=W-tx-(SAFE.r+66*U)-(hasV?vs+8*U:0),th=20*U,ty=top+ph/2-th/2;
+  if(tw>50){
     cx.fillStyle='rgba(255,255,255,.85)';rr(cx,tx,ty,tw,th,th/2);cx.fill();
     const k=state.time/ROUND_LEN;
     if(k>0){const gr=cx.createLinearGradient(tx,0,tx+tw,0);gr.addColorStop(0,k>.25?'#6fe08a':'#ffc933');gr.addColorStop(1,k>.25?'#39c8a0':'#ff9a3f');cx.fillStyle=gr;rr(cx,tx+3,ty+3,Math.max(th-6,(tw-6)*k),th-6,(th-6)/2);cx.fill();}
@@ -1059,17 +1061,21 @@ function drawHUD(){
     cx.font=F(19*U,700);cx.textAlign='left';cx.textBaseline='middle';cx.fillStyle='#c93d00';cx.fillText(label,left+15*U,y2+17*U+1);
   }
   if(cheated()){cx.font=F(14*U,700);const cw=cx.measureText('codes on').width+22*U;pill(left,y2+40*U,cw,26*U,'#fff');txt('codes on',left+11*U,y2+40*U+13*U+1,14*U,'#c93d6f','left',700);}
-  /* read-aloud toggle under the pause button */
-  const vs=46*U,vx=W-SAFE.r-vs-8*U,vy=top+ph+10*U+(SDK?6:0);
+  /* read-aloud toggle, left of the arcade's pause button */
   if(SPEECH.voice){
+    const vx=W-SAFE.r-66*U-vs,vy=top+ph/2-vs/2;
     button('voice',vx,vy,vs,vs,meta.voice?PAL.green:PAL.white,()=>{meta.voice=meta.voice?0:1;saveMeta();if(!meta.voice)hush();else if(state.q)speak(state.q.say);},
       (bx,by,bw,bh)=>emo(meta.voice?'🔊':'🔈',bx+bw/2,by+bh/2+1,bh*.5),{r:vs/2});
   }
 }
+function tutRect(){
+  const L=LQ(),w=Math.min(WIDE?L.w+30*U:W-28*U,420*U),h=(state.tut===1?92:60)*U;
+  return{w,h,x:WIDE?clamp(L.cx-w/2,8,W):(W-w)/2,y:L.bottom};
+}
 function drawHintCard(){
   if(state.hintT<=0||!state.hint)return;
   const a=Math.min(1,state.hintT*2);
-  const L=LQ(),w=Math.min(WIDE?L.w+40*U:W-28*U,440*U),h=54*U,x=WIDE?clamp(L.cx-w/2,8,W):(W-w)/2,y=L.bottom;
+  const L=LQ(),w=Math.min(WIDE?L.w+40*U:W-28*U,440*U),h=54*U,x=WIDE?clamp(L.cx-w/2,8,W):(W-w)/2,y=L.bottom+(state.tut?tutRect().h+8*U:0);
   cx.save();cx.globalAlpha=a;
   cx.fillStyle='rgba(60,30,110,.18)';rr(cx,x,y+4,w,h,16*U);cx.fill();
   cx.fillStyle='#fff8dc';rr(cx,x,y,w,h,16*U);cx.fill();cx.lineWidth=3;cx.strokeStyle='#ffb02e';rr(cx,x,y,w,h,16*U);cx.stroke();
@@ -1088,7 +1094,7 @@ function drawTutorial(){
     cx.globalAlpha=RM.matches?.8:.45+.35*Math.sin(state.t*5);cx.lineWidth=6;cx.strokeStyle='#ffd23f';
     cx.beginPath();cx.ellipse(bx,good.y,good.r*1.1,good.r*1.25,0,0,TAU);cx.stroke();cx.restore();
   }
-  const L=LQ(),w=Math.min(WIDE?L.w+30*U:W-28*U,420*U),h=(state.tut===1?92:60)*U,x=WIDE?clamp(L.cx-w/2,8,W):(W-w)/2,y=WIDE?Math.min(H-h-14*U,L.bottom+64*U):Math.max(H*.5,L.bottom+80*U);
+  const L=tutRect(),w=L.w,h=L.h,x=L.x,y=L.y;
   cx.save();cx.globalAlpha=state.tut===2?clamp(state.tutT,0,1):1;
   cx.fillStyle='rgba(60,30,110,.2)';rr(cx,x,y+4,w,h,20*U);cx.fill();
   cx.fillStyle='#fff8e0';rr(cx,x,y,w,h,20*U);cx.fill();cx.lineWidth=4;cx.strokeStyle='#ffb02e';rr(cx,x,y,w,h,20*U);cx.stroke();
@@ -1170,12 +1176,13 @@ function drawMenuLayout(){
   /* logo blimp */
   const lg=R.logo;
   cx.save();
-  drawBlimp(cxL,lg.y+lg.h*.5,Math.min(colW,lg.h*4.3),lg.h*.76,null,t);
+  const lx0=two?lx:SAFE.l+20*U,lx1=two?lx+colW:W-SAFE.r-64*U,lw=Math.min((lx1-lx0)/1.16,lg.h*4.3),lcx=two?cxL:(lx0+lx1)/2+lw*.04;
+  drawBlimp(lcx,lg.y+lg.h*.5,lw,lg.h*.76,null,t);
   /* title text drawn over the blimp envelope */
   const bob=RM.matches?0:Math.sin(t*1.1)*5*U;
-  const fs=clamp(lg.h*.26,20,38);
-  txt('BALLOON BUST',cxL,lg.y+lg.h*.44+bob,fs,'#ff5f8f','center',700,['#ffffff',fs*.22]);
-  txt('BALLOON BUST',cxL,lg.y+lg.h*.44+bob,fs,'#c93d6f','center',700,null);
+  const fs=clamp(Math.min(lg.h*.26,lw*.105),18,38);
+  txt('BALLOON BUST',lcx,lg.y+lg.h*.44+bob,fs,'#ff5f8f','center',700,['#ffffff',fs*.22]);
+  txt('BALLOON BUST',lcx,lg.y+lg.h*.44+bob,fs,'#c93d6f','center',700,null);
   cx.restore();
   /* world picker */
   const w=R.world,arrow=Math.min(w.h,48*U);
@@ -1294,7 +1301,7 @@ function drawResults(){
   cx.fillStyle='rgba(60,30,110,.25)';rr(cx,px,py+6,pw,ph,28*U);cx.fill();
   cx.fillStyle='#fff9e6';rr(cx,px,py,pw,ph,28*U);cx.fill();cx.lineWidth=6;cx.strokeStyle='#ffb02e';rr(cx,px,py,pw,ph,28*U);cx.stroke();
   const cxm=W/2;
-  const heads=['Nice try!','Nice one!','Super popping!','AMAZING!'];
+  const heads=['Good try!','Nice one!','Super popping!','AMAZING!'];
   const rating=state.rating;
   if(WIDE){
     drawBibi(cx,px+pw*.14,py+ph*.36,ph*.13,rating>=2?'win':'idle',state.t);
