@@ -2,6 +2,22 @@
 
 `iphone.mjs` loads a game and taps once. These two go further: they **play** each game on an iPhone 13 profile with a monkey bot and report whether it freezes, stalls, janks, leaks, throws, and whether it has real progression.
 
+## Quick start for a builder (one game, about 1.5 minutes)
+
+The box is shared and loaded. Every browser job goes through the slot lock, and one game at a time is plenty:
+
+```sh
+cd /home/user/arcade
+SLOT=/tmp/claude-0/-home-user/28212254-9fa8-55fc-b811-ac4cef9788ed/scratchpad/slot.sh
+$SLOT env GAME_IDS=my-game DURATION=30 REPORT_DIR=/tmp/my-health node qa/harness/health.mjs        # Chromium, CPU x4
+cat /tmp/my-health/health.md                                                                     # worst first, with evidence and screenshot paths
+$SLOT env GAME_IDS=my-game REPORT_DIR=/tmp/my-prog node qa/harness/progression.mjs                # P0..P3
+PLAYWRIGHT_BROWSERS_PATH=/tmp/claude-0/-home-user/28212254-9fa8-55fc-b811-ac4cef9788ed/scratchpad/pw-webkit \
+  $SLOT env ENGINE=webkit GAME_IDS=my-game REPORT_DIR=/tmp/my-health-wk node qa/harness/health.mjs   # Safari engine
+```
+
+Read `games/<id>.json` for every number. A clean run means: no FREEZE, no STALL, no JANK, no LEAK, no ERRORS, and `scenes.restartsAfterOver` above 0 for a game that has a game over. Use `REPORT_DIR` outside `qa/health-results/` so you do not mix your runs with the portfolio results.
+
 ## Commands
 
 ```sh
@@ -19,6 +35,8 @@ PLAYWRIGHT_BROWSERS_PATH=/tmp/claude-0/-home-user/28212254-9fa8-55fc-b811-ac4cef
 
 # 3. Progression: play, diff what was saved, second session on the same profile, score P0..P3
 WORKERS=2 node qa/harness/progression.mjs                # -> qa/health-results/progression/progression.md
+
+# 3b. The whole portfolio in slot-locked batches (resumable): bash qa/harness/run-batches.sh health 2 2 ; bash qa/harness/run-batches.sh progression 2 2
 
 # 4. Does the harness detect what it claims? 10 fixtures that pass, freeze, hang, lose their loop, never start, ...
 node qa/harness/selftest.mjs

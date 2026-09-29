@@ -324,6 +324,17 @@ async function checkGame(g, browser) {
     }, saves).catch(() => ({ all: [], idb: [], found: [] }));
     if (saves.length) set('U12', store.found.length ? 'PASS' : 'REVIEW', store.found.length ? 'Progress saved under ' + store.found.join(', ') + '.' : 'Declared save key(s) ' + saves.join(', ') + ' not written in the scripted session (they may be written at the end of a run).');
     else set('U12', store.all.length || store.idb.length ? 'REVIEW' : meta.scan?.saves ? 'REVIEW' : 'FAIL', store.all.length || store.idb.length ? 'Writes storage (' + [...store.all, ...store.idb].slice(0, 4).join(', ') + ') but meta.saves does not say which key holds progress.' : meta.scan?.saves ? 'The code saves, but nothing was saved in the scripted session and meta.saves is empty.' : 'The game never saves progress or a best score.');
+    // ---- P01 progression: the harness lists what it saw; it never passes or fails a game for this (a person or the progression checker decides) ----
+    {
+      const seen = (dEnd?.events || []).filter(e => e.name === 'scene' && e.data).map(e => e.data);
+      const lv = seen.some(d => typeof d.level === 'number'), st = seen.some(d => typeof d.stars === 'number'), runs = seen.filter(d => d.scene === 'over').length;
+      const bits = [
+        saves.length ? (store.found.length ? 'saves ' + store.found.join(', ') + ' (written)' : 'saves declared (' + saves.join(', ') + ') but not written in the scripted session') : 'no meta.saves',
+        hasSdk ? 'reports ' + (['scene', lv && 'level', st && 'stars'].filter(Boolean).join(', ')) + (runs ? ' and ' + runs + ' finished round(s)' : '') : 'no SDK, so nothing reaches the arcade profile',
+        meta.progression || meta.features?.progression ? 'goals: ' + (meta.progression || meta.features.progression) : 'no goals described in meta.progression'
+      ];
+      set('P01', 'REVIEW', 'Saw: ' + bits.join('; ') + '. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real.');
+    }
     // ---- X01 graphics tier (desktop half; the crispness half is on the phone) ----
     const gl = (dEnd?.gl || []).filter(c => /webgl/i.test(c.type));
     ev.gl = dEnd?.gl || [];
