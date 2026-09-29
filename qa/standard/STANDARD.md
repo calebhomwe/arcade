@@ -123,7 +123,9 @@ Anything it can't observe is REVIEW, never PASS.
 | `qa/standard/standard.json` | The checks above, machine-readable. |
 | `qa/standard/meta/<game-id>.json` | Hand-written content for one game: `howto`, `tips`, `controls`, `tricks`, `cheats`, `difficulty`, `settings`, `features`, `saves` (the storage keys that hold progress), `start` (how the harness gets from the title into play: a CSS selector such as `#playBtn`, or `key:Space`), and overrides such as `pauseKeys` or `pauseButton`. |
 | `tools/game_meta.py` | Merges the catalogue, the genre and tier tables, a scan of each game's code and the files above into `assets/game-meta.json`. `--report` lists what each game is missing. |
-| `assets/arcade-sdk.js` | The SDK every game loads first. Its header shows the whole API. |
+| `assets/arcade-sdk.js` | The SDK every game loads first. Its header shows the whole API, including `ArcadeSDK.state` fields and `ArcadeSDK.profile`. |
+| `assets/profile-core.js`, `profile-ui.js`, `profile-art.js`, `profile.css` | The arcade-wide player profile: XP and levels, streak, daily quests, badges, cosmetics. `docs/PROGRESSION.md` has the rules and tables. |
+| `qa/harness/profile-test.mjs` | Unit and browser tests for the profile (XP curve, streak, quests, cheats, import/export). |
 | `assets/sfx/` | The shared sound kit: 30 short effects made with ElevenLabs (Creator plan, commercial licence), with a per-sound gain in `kit.json` that evens out loudness. |
 | `tools/audio/elevenlabs.py` | Makes voices, sound effects and music with ElevenLabs. The key comes from `ELEVENLABS_API_KEY` or `ELEVENLABS_KEY_FILE`, and never goes in a repo. |
 | `tools/inject_sdk.py` | Adds the SDK to every local game; run it again after re-vendoring a game or re-exporting a Godot build. `--check` fails if one is missing. |
@@ -137,6 +139,21 @@ Anything it can't observe is REVIEW, never PASS.
    `onHint` (puzzle and learning), `onCheat` (eligible games) and `tricks` (board sports). A game
    with its own pause menu sets `ownPauseUI: true`, handles `onPause` / `onResume`, and reports its
    own menu with `ArcadeSDK.gamePaused(true|false)`.
-3. Report scenes: `ArcadeSDK.state({scene: 'title' | 'play' | 'over', score})`.
+3. Report scenes: `ArcadeSDK.state({scene: 'title' | 'play' | 'over', score, level, stars})`. Send `play` when a round starts and `over` with the score when it ends (add `lower: true` if a smaller score is better). `level` and `stars` are where the player is in the game's own progression; the arcade profile reads them.
 4. Skip saving a best score when `ArcadeSDK.cheated` is true.
 5. Write `qa/standard/meta/<game-id>.json`, run `python3 tools/game_meta.py`, then the harness.
+
+## 9. Progression (P01)
+
+Every game gives a child a reason to come back tomorrow. The arcade already gives all games an arcade-wide
+profile (XP, level, daily streak, daily quests, badges, cosmetics; `docs/PROGRESSION.md`) for minutes played, first
+plays and rounds finished, with no change to the game. P01 asks for the game's own half:
+
+| ID | Feature | What "done" means |
+| -- | ------- | ----------------- |
+| P01 | Progression | Progress that persists (`saves` in the meta names a key the game really writes) and real goals to come back for: levels or worlds to reach, things to unlock, stars to earn or upgrades to buy. The game reports where the player is with `ArcadeSDK.state({scene, score, level, stars})`, and may add its own badges and goals with `ArcadeSDK.profile.achievement` and `.quest`. A title screen and an endless loop with only a best score is not progression. |
+
+`standard.mjs` reports P01 as REVIEW for every game and never fails one for it. The note lists what it saw: whether
+the declared save key was written, which state fields the game reports (`level`, `stars`, finished rounds), and the
+`progression` line from the game's meta `features` if there is one (`"features": {"progression": "12 levels with 3 stars each, 6 unlockable towers"}`).
+A person, or the separate progression checker, turns REVIEW into a verdict.

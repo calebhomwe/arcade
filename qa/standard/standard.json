@@ -27,6 +27,7 @@
     {"id": "C01", "name": "Cheat codes", "how": "observe+meta", "pass": "Eligible games list 3+ codes in meta and the game accepts each one through the SDK."},
     {"id": "G01", "name": "Genre module", "how": "meta+review", "pass": "Every feature of the genre module is described in meta.features (REVIEW until a person confirms it)."},
     {"id": "T01", "name": "Tricks", "how": "observe+meta", "pass": "Board-sports games: 6+ named tricks with inputs, shown in the pause menu's Trick list."},
-    {"id": "X01", "name": "Graphics tier", "how": "observe+scan", "pass": "3D tiers render in 3D (WebGL context plus a 3D engine); 2D-HD canvases are crisp at the device pixel ratio."}
+    {"id": "X01", "name": "Graphics tier", "how": "observe+scan", "pass": "3D tiers render in 3D (WebGL context plus a 3D engine); 2D-HD canvases are crisp at the device pixel ratio."},
+    {"id": "P01", "name": "Progression", "how": "observe+meta+review", "pass": "Progress that persists (meta.saves names a key that is written) and real goals to come back for: levels, worlds, unlocks, stars or upgrades. The game tells the arcade profile where the player is with ArcadeSDK.state({scene, score, level, stars}). Always REVIEW for now: the harness lists what it saw and a person (or the progression checker) confirms the goals are real."}
   ]
 }

@@ -10,13 +10,13 @@
  * new categories and streak days with no code, and a finished round when it reports ArcadeSDK.state 'over'):
  *
  *   ArcadeSDK.state({scene:'title'|'play'|'over', score, level, stars, lower})
- *       scene 'over' + score = one finished round (8 to 26 XP; a new personal best pays more; 12 rounds a day).
+ *       scene 'over' + score = one finished round (5 to 10 XP; a new personal best pays 8 more; 10 rounds a day).
  *       Send 'play' when a round starts. lower:true when a smaller score is better (a time, a rank).
  *       level and stars are read for the "Going Places" and "Star Chaser" badges and the profile.
- *   ArcadeSDK.profile.award({xp, reason})            1 to 50 XP per call, 100 XP a day per game. XP only.
+ *   ArcadeSDK.profile.award({xp, reason})            1 to 30 XP per call, 60 XP a day per game. XP only.
  *   ArcadeSDK.profile.achievement(id, {title, desc, tier})   A badge of the game's own in the Trophy room.
  *       id: letters, digits, _ . - up to 32 characters. tier: 'bronze' | 'silver' | 'gold' | 'diamond'
- *       (10, 15, 25 and 25 XP, 1 or 2 stars). Once per id, 5 a day per game.
+ *       (8, 12, 20 and 20 XP, 1 or 2 stars). Once per id, 5 a day per game.
  *   ArcadeSDK.profile.quest(id, progress, {title, xp, stars})   An extra goal under the daily quests.
  *       progress 0..1 (1 = done, pays once); xp 5..40, stars 0..2; 3 game goals a day in total.
  *   ArcadeSDK.profile.get()  ->  {level, xp, into, need, streak, stars, avatar, title} or null (no name is shared).
@@ -41,13 +41,13 @@
     minute: 2, minuteCap: 15,            // 2 XP per active minute, the first 15 minutes of each day
     firstPlay: 15, newCategory: 20,      // once per game, once per category (after 30 s of real play)
     playSec: 30,                         // seconds of play before a game or category counts as "tried"
-    runBase: 8, runScale: 8, runPB: 10, runFirst: 4, runsPerDay: 12, minRunSec: 6, runGap: 4,
-    streakStep: 5, streakCap: 30,        // streak bonus on the first qualifying play of a day: 5 XP per streak day, up to 30
+    runBase: 5, runScale: 5, runPB: 8, runFirst: 3, runsPerDay: 10, minRunSec: 6, runGap: 4,
+    streakStep: 3, streakCap: 20,        // streak bonus on the first qualifying play of a day: 3 XP per streak day, up to 20
     streakSec: 20,                       // a day counts once you have played 20 s (or finished a round)
-    legacyPerGame: 10, legacyCap: 200,   // welcome-back bonus for games played before profiles existed
-    awardMax: 50, awardPerGameDay: 100, gachPerGameDay: 5, gqPerDay: 3,
-    quest: { easy: [20, 1], medium: [35, 2], hard: [50, 3] }, questSet: [25, 1],
-    tier: { bronze: [15, 1], silver: [30, 2], gold: [60, 3], diamond: [120, 5] }, gameTier: { bronze: [10, 1], silver: [15, 1], gold: [25, 2], diamond: [25, 2] },
+    legacyPerGame: 5, legacyCap: 100,    // welcome-back bonus for games played before profiles existed
+    awardMax: 30, awardPerGameDay: 60, gachPerGameDay: 5, gqPerDay: 3,
+    quest: { easy: [15, 1], medium: [25, 2], hard: [35, 3] }, questSet: [20, 1],
+    tier: { bronze: [10, 1], silver: [20, 2], gold: [40, 3], diamond: [80, 5] }, gameTier: { bronze: [8, 1], silver: [12, 1], gold: [20, 2], diamond: [20, 2] },
     pbGap: 60, pbPerGameDay: 3           // inferred personal bests (from saved data) are limited
   };
 
@@ -146,7 +146,7 @@
   /* ---------- badges (achievements) ---------- */
   // fam picks the badge colour, glyph names an icon in the portal sprite (#i-<glyph>), need is the target the
   // progress bar shows. have(P, C) returns the current count. All are single steps: no grind, no timers.
-  var FAMS = { start: 'Getting started', streak: 'Streaks', explore: 'Explorer', learn: 'Learning', score: 'High scores', quest: 'Quests', level: 'Levels', time: 'Dedication', style: 'Style and care', game: 'Game badges' };
+  var FAMS = { start: 'Getting started', streak: 'Streaks', explore: 'Explorer', learn: 'Learning', score: 'High scores', quest: 'Quests', level: 'Levels and stars', time: 'Dedication', style: 'Style and care', game: 'Game badges' };
   var ACH = [];
   function A(id, fam, tier, title, desc, glyph, need, have, hint) { ACH.push({ id: id, fam: fam, tier: tier, title: title, desc: desc, glyph: glyph, need: need, have: have, hint: hint || '' }); }
   function tried(P) { return keys(P.games).filter(function (k) { return P.games[k].first; }).length; }

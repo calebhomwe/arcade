@@ -33,7 +33,7 @@
  * ArcadeSDK.state({scene:'over', score}), and notices a new best saved under a key the game lists in its meta
  * `saves`. Games that want to do more can, and every call is safe to make when the profile is not there:
  *   ArcadeSDK.state({scene:'over', score:120, level:4, stars:2});   // also: lower:true when a smaller score is better
- *   ArcadeSDK.profile.award({xp:20, reason:'Beat the boss'});       // 1..50 XP, 100 a day per game
+ *   ArcadeSDK.profile.award({xp:20, reason:'Beat the boss'});       // 1..30 XP, 60 a day per game
  *   ArcadeSDK.profile.achievement('first-win', {title:'First Win', desc:'Win a match', tier:'silver'});   // a badge in the Trophy room
  *   ArcadeSDK.profile.quest('clear-w5', 0.6, {title:'Clear wave 5'});   // 0..1 (1 = done): an extra goal on the quests card
  *   ArcadeSDK.profile.get();                                        // {level, xp, streak, stars, avatar, title} or null
@@ -505,7 +505,7 @@
     saveKeys.forEach(function (k) { saveLast[k] = readKey(k); }); saveTimer = rawSI(pollSaves, 2500);
   }
   var profileApi = {
-    award: function (o) { if (cheated || !inFrame || !o || !(+o.xp >= 1) || !rate('award', 8, 60000)) return false; post('profile', { op: 'award', xp: Math.min(50, Math.floor(+o.xp)), reason: String(o.reason || '').slice(0, 50) }); return true; },
+    award: function (o) { if (cheated || !inFrame || !o || !(+o.xp >= 1) || !rate('award', 8, 60000)) return false; post('profile', { op: 'award', xp: Math.min(30, Math.floor(+o.xp)), reason: String(o.reason || '').slice(0, 50) }); return true; },
     achievement: function (id, o) {
       id = String(id); if (cheated || !inFrame || !/^[A-Za-z0-9_.-]{1,32}$/.test(id) || doneAch[id] || !rate('ach', 10, 60000)) return false; doneAch[id] = 1; o = o || {};
       post('profile', { op: 'achievement', id: id, title: String(o.title || '').slice(0, 40), desc: String(o.desc || '').slice(0, 100), tier: /^(bronze|silver|gold|diamond)$/.test(o.tier) ? o.tier : 'bronze' }); return true;
@@ -525,7 +525,7 @@
     pause: function () { pause('user'); }, resume: function () { resume('user'); }, gamePaused: gamePaused,
     get paused() { return paused; }, get muted() { return muted; }, get cheated() { return cheated; },
     setMuted: setMuted, restart: restart, showMenu: function (w) { pause('user'); showMenu(w || 'pause'); },
-    state: function (s) { var o = {}; s = s || {}; for (var k in s) o[k] = s[k]; if (typeof o.score === 'string' && o.score !== '' && isFinite(+o.score)) o.score = +o.score; if (cheated) o.cheated = true; post('state', o); if (s.scene) log('scene', { scene: s.scene }); },
+    state: function (s) { var o = {}; s = s || {}; for (var k in s) o[k] = s[k]; if (typeof o.score === 'string' && o.score !== '' && isFinite(+o.score)) o.score = +o.score; if (cheated) o.cheated = true; post('state', o); if (s.scene) log('scene', { scene: s.scene, score: o.score, level: o.level, stars: o.stars }); },
     profile: profileApi,
     event: function (name, data) { log(name, data); post('event', { name: name, data: data || null }); },
     now: vnow,
