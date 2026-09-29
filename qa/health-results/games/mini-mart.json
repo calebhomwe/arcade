@@ -1,0 +1,200 @@
+{
+ "id": "mini-mart",
+ "title": "QuickStop Mini Mart",
+ "cat": "sim",
+ "genre": "management",
+ "src": "MiniMart/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "page reloaded 1x without a button press (MiniMart/index.html#; last input was canvas 230 ms earlier)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/mini-mart-1-title.jpg",
+  "2-mid": "shots/mini-mart-2-mid.jpg",
+  "3-end": "shots/mini-mart-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.13,
+  "cores": 4,
+  "load1End": 16.5,
+  "contention": 1.94,
+  "contentionSamples": [
+   1.94,
+   1.25,
+   4.72,
+   1.19,
+   1.11,
+   2.93,
+   2.6
+  ]
+ },
+ "loadMs": 760,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:45663/MiniMart/index.html",
+ "startPath": "http://127.0.0.1:45663/MiniMart/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 145,
+  "bench1Ms": 39.8,
+  "effectiveSlowdown": 3.6
+ },
+ "start": {
+  "how": "#titlePlay",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.94,
+  "loadMs": 369,
+  "playMs": 169,
+  "loadRawMs": 716,
+  "playRawMs": 327,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 18,
+  "longTasks100Play": 1,
+  "tbtLoadMs": 73,
+  "tbtPlayMs": 84,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 3,
+  "slowestPollMs": 154,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 1807.8,
+   "blocking": 0,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     11
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1732.9,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     5
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 568.5,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "navigations": [
+  {
+   "at": 25724,
+   "abs": "http://127.0.0.1:45663/MiniMart/index.html#",
+   "url": "MiniMart/index.html#",
+   "afterAction": 230,
+   "kind": "canvas",
+   "txt": ""
+  }
+ ],
+ "frames": {
+  "n": 5,
+  "jsMedian": 0.1,
+  "jsP95": 0.52,
+  "jsP99": 0.52,
+  "jsMax": 0.5,
+  "jsP95Raw": 1,
+  "rawWithGlP95": 1,
+  "glP95": 0,
+  "gapP95": 683.3,
+  "gapMedian": 683.3,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 9,
+  "heapMeasured": true,
+  "nodesStart": 402,
+  "nodesEnd": 424,
+  "nodesMax": 428,
+  "listeners0": 119,
+  "listeners1": 125,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 0,
+   "totalMB": 0,
+   "biggest": [],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 18,
+  "scriptPct": 1,
+  "layoutPerSec": 15.3
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 55,
+  "swipes": 5,
+  "holds": 2,
+  "keys": 6,
+  "buttonPresses": 25,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 152,
+  "inputLatencyP95Ms": 752,
+  "inputLatencyMaxMs": 1071,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 6.2,
+  "changeTitleToPlayPct": 59.6,
+  "maxChangeFromStartPct": 98.1,
+  "samples": 15
+ },
+ "severity": 102.4,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [],
+  "evidence": null,
+  "blockPlayMs": 71,
+  "blockLoadMs": 476,
+  "load1": 18.01
+ }
+}

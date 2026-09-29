@@ -105,6 +105,7 @@
     var p = Store.get(), li = Core.levelInfo(p.xp), lit = streakLit(p);
     chipEl.innerHTML = '<span class="pc-av">' + Art.ring(li.pct, 46, 7) + '<span class="pc-face">' + av(38) + '</span></span><span class="pc-tx"><b>Lv ' + li.level + '</b><span class="pc-fl' + (lit ? ' lit' : '') + '">' + Art.flame(lit, 14) + '<span>' + p.streak.n + '</span></span></span>' +
       (p.pending.ach.length ? '<span class="pc-dot" aria-hidden="true"></span>' : '');
+    chipEl.classList.add('ready');
     chipEl.setAttribute('aria-label', 'Your profile: ' + p.name + ', level ' + li.level + ', ' + plural(p.streak.n, 'day') + ' streak' + (p.pending.ach.length ? ', new badges' : ''));
   }
 
@@ -125,7 +126,7 @@
       var nr = nextReward(li.level);
       el.innerHTML =
         '<button type="button" class="qc-me" data-open-profile aria-label="Open your profile"><span class="qc-av"><span class="qc-ring">' + Art.ring(li.pct, 76, 5) + '</span><span class="qc-face">' + av(64) + '</span></span>' +
-        '<span class="qc-who"><span class="qc-name"><b>' + esc(p.name) + '</b><small>' + esc(Store.title()) + '</small></span><span class="qc-lv">' + Art.levelBadge(li.level, 30) + '<span class="qc-xp">' + bar(li.pct, 'xp') + '<em>' + (li.max ? 'Max level' : fmt(li.into) + ' / ' + fmt(li.need) + ' XP') + '</em></span></span></span></button>' +
+        '<span class="qc-who"><span class="qc-name"><b>' + esc(p.name) + '</b><small>' + (p.flags.named ? esc(Store.title()) : 'Tap to pick your buddy') + '</small></span><span class="qc-lv">' + Art.levelBadge(li.level, 30) + '<span class="qc-xp">' + bar(li.pct, 'xp') + '<em>' + (li.max ? 'Max level' : fmt(li.into) + ' / ' + fmt(li.need) + ' XP') + '</em></span></span></span></button>' +
         '<div class="qc-stats"><span class="qc-st ' + (lit ? 'lit' : '') + '" title="Days in a row. One rest day a week is free.">' + Art.flame(lit, 18) + '<b>' + p.streak.n + '</b><small>' + (p.streak.n === 1 ? 'day' : 'days') + '</small></span><span class="qc-st">' + Art.star(18) + '<b>' + fmt(p.stars) + '</b><small>stars</small></span>' +
         '<a class="qc-st link" href="./?view=trophies">' + ico('trophy') + '<b>' + got + '</b><small>badges</small></a></div>' +
         '<div class="qc-q"><div class="qc-head"><h2 id="qc-h">Daily quests</h2><span class="qc-count" aria-label="' + n + ' of 3 done">' + [0, 1, 2].map(function (i) { return '<i class="' + (i < n ? 'on' : '') + '"></i>'; }).join('') + '</span></div>' +
@@ -221,7 +222,7 @@
     var subs = [['buddy', 'Buddy'], ['hat', 'Hats'], ['frame', 'Frames'], ['title', 'Titles'], ['look', 'Colours']], S = readSettings(), h = '';
     h += '<div class="seg pk-tabs" role="tablist">' + subs.map(function (s) { return '<button type="button" role="tab" data-sub="' + s[0] + '" aria-selected="' + (styleTab === s[0]) + '"' + (styleTab === s[0] ? ' class="on"' : '') + '>' + s[1] + '</button>'; }).join('') + '</div>';
     if (styleTab === 'buddy') h += '<div class="pk-grid">' + Core.COSMETICS.avatar.map(function (d) { return pickBtn('avatar', d.id, d.name, p.avatar, '<span class="pk-art">' + Art.avatarBare(d.id) + '</span>'); }).join('') + '</div>';
-    if (styleTab === 'hat') h += '<div class="pk-grid">' + pickBtn('hat', '', 'No hat', p.hat, '<span class="pk-art none">' + ico('x') + '</span>') + Core.COSMETICS.hat.map(function (d) { return pickBtn('hat', d.id, d.name, p.hat, '<span class="pk-art">' + Art.hatPreview(d.id) + '</span>'); }).join('') + '</div>';
+    if (styleTab === 'hat') h += '<div class="pk-grid">' + pickBtn('hat', '', 'No hat', p.hat, '<span class="pk-art none">' + ico('x') + '</span>') + Core.COSMETICS.hat.map(function (d) { return pickBtn('hat', d.id, d.name, p.hat, '<span class="pk-art hat">' + Art.hatPreview(d.id) + '</span>'); }).join('') + '</div>';
     if (styleTab === 'frame') h += '<div class="pk-grid">' + Core.COSMETICS.frame.map(function (d) { return pickBtn('frame', d.id, d.name, p.frame, '<span class="pk-art">' + Art.framePreview(d.id) + '</span>'); }).join('') + '</div>';
     if (styleTab === 'title') h += '<div class="pk-list">' + Core.COSMETICS.title.map(function (d) { var lock = lockNote('title', d.id), on = p.title === d.id; return '<button type="button" class="pk-t' + (on ? ' on' : '') + (lock ? ' locked' : '') + '" data-pick="title:' + d.id + '" aria-pressed="' + on + '"><b>' + esc(d.id === 'auto' ? 'By level: ' + Core.levelTitle(Core.levelOf(p.xp)) : d.name) + '</b><small>' + (lock ? esc(lock) : on ? 'Wearing' : 'Tap to wear') + '</small>' + (lock ? ico('lock') : on ? ico('check') : '') + '</button>'; }).join('') + '</div>';
     if (styleTab === 'look') {
@@ -388,7 +389,15 @@
   function init() {
     paintChip();
     doc.addEventListener('click', function (e) { var b = e.target.closest('[data-open-profile]'); if (b) { e.preventDefault(); openProfile(b.dataset.openProfile || 'me'); } });
-    // first visit of a returning player: the badges they already earned are welcome, not a storm
+    // once: say hello, and thank a returning player for the games they already played
+    var p = Store.get();
+    if (!p.flags.welcomed) {
+      Store.noteFlag('welcomed');
+      setTimeout(function () {
+        toast(p.flags.legacy && p.xp > 0 ? { kind: 'calm', art: av(40), title: 'Welcome back, ' + p.name + '!', sub: 'Your arcade now has a profile. The games you already played earned you a head start.', ms: 7000 }
+          : { kind: 'calm', art: av(40), title: 'Hi ' + p.name + '!', sub: 'Play to earn XP, badges and hats. Tap your picture to change your buddy.', ms: 7000 });
+      }, 900);
+    }
     if (!tracker) setTimeout(showLevelUp, 600);
   }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', init); else init();

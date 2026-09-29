@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { farmMaterial } from './shaders.js';
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
 export async function fetchProgress(url, onProgress) {
   const res = await fetch(url);
@@ -102,6 +103,46 @@ export class Assets {
   }
 
   has(id) { return this.nodes.has(id); }
+
+  // rigged characters live in their own GLB each; the first call prepares the shared geometry (floats + outline)
+  async loadCharacter(name, url, onProgress) {
+    const buf = await fetchProgress(url, onProgress);
+    const gltf = await new Promise((res, rej) => this.loader.parse(buf, url.replace(/[^/]*$/, ''), res, rej));
+    this.chars = this.chars || {};
+    this.chars[name] = { scene: gltf.scene, clips: gltf.animations, ready: false, url };
+    return gltf;
+  }
+  character(name, opts = {}) {
+    const src = this.chars[name]; if (!src) throw new Error('missing character ' + name);
+    if (!src.ready) {
+      src.scene.traverse((o) => {
+        if (!o.isSkinnedMesh) return;
+        let g = floatize(o.geometry.clone());
+        const skinMap = o.material && o.material.map ? this._texture(o.material.map) : null;
+        const hasVC = !!g.attributes.color;
+        if (opts.shell !== false) g = addOutlineShell(g);
+        o.geometry = g; o.userData.map = skinMap; o.userData.vc = hasVC; o.userData.baseColor = o.material && o.material.color ? o.material.color.clone() : new THREE.Color(1, 1, 1);
+        o.frustumCulled = false;
+        if (g.userData.baseIndexCount) this.models.push(o);
+      });
+      src.ready = true;
+    }
+    const obj = SkeletonUtils.clone(src.scene);
+    obj.traverse((o) => {
+      if (!o.isSkinnedMesh) return;
+      const mat = farmMaterial({ map: o.userData.map, vertexColors: o.userData.vc, shell: !!o.geometry.attributes.aShell, tint: opts.tint, rim: opts.rim != null ? opts.rim : 0.5 });
+      if (!o.userData.map && !o.userData.vc) mat.uniforms.uTint.value.copy(o.userData.baseColor);
+      o.material = mat; o.frustumCulled = false;
+    });
+    const box = new THREE.Box3().setFromObject(obj);
+    // skinned bounds come from the bind pose; good enough to size the character
+    const size = box.getSize(new THREE.Vector3());
+    const h = opts.height || size.y, s = h / (size.y || 1);
+    const wrap = new THREE.Group(); obj.scale.setScalar(s); obj.position.y = -box.min.y * s; wrap.add(obj);
+    const mixer = new THREE.AnimationMixer(obj), actions = {};
+    for (const c of src.clips) { actions[c.name] = mixer.clipAction(c); }
+    return { group: wrap, obj, mixer, actions, scale: s, size: size.multiplyScalar(s) };
+  }
 
   // A finished model: { group, body, parts:{name:mesh}, box, size }. opts.width / opts.height scale it to
   // a size in world units (one is enough); opts.shell adds the outline; opts.yaw turns it; opts.tint/hue tweak colour.

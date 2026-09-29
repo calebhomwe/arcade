@@ -2,6 +2,21 @@
 
 Written for Caleb from what is in `/home/user/arcade` (`docs/`, `qa/`, `git log`), the four critic reports (`scratchpad/claire_r{3,4,5}_critic/REPORT.md`, `claire_r2_critic.md`, `surf_critic/REPORT.md`, `surf_critic/r3/REPORT.md`) and the briefs. Every number below has a file behind it. **Things I could not find are marked "not in the repo"; do not say them on camera until you have them.**
 
+## Do this first (12 rules for the video)
+
+1. **Open on your sister's phone, not on the architecture.** The problem is the hook; the swarm is the answer.
+2. **The spine is one chart:** critic score vs builder self-score per round (table below). It is flat, and the gap never closes. That is the honest story.
+3. **Never say "works on iPhone".** Say "passes in WebKit, waiting for a real phone" until someone has played five minutes on a real iPhone (`IPHONE.md`, item 25).
+4. **Show before/after from captured files** (list below), not re-created scenes; put the file name on screen.
+5. **Show one failure live:** Claire r5's phone market running off the screen, then the critic's line quoting it.
+6. **Show the harness in one sentence:** 25 checks per game; it "cannot certify game quality" (`qa/harness/README.md`). Do not oversell automation.
+7. **Chromium vs WebKit side by side** on a Godot game: it is the reveal that explains "freezes on my phone".
+8. **Put the 20 MB line on the download chart** (Claire 64.9 MB, LA City 75.0 MB, plus 10.2 MB engine).
+9. **Cost: say "I don't know yet" or read the bill on camera.** No figure is in the repo.
+10. **No commercial screenshots, no keys, no children's names.** See the last section.
+11. **Credit the research:** Poki and CrazyGames rules, Godot's iOS bug (#107390), Eiserloh's shake talk; link them in the description.
+12. **End on what is still owed:** a real-iPhone session, kids actually playing, and return-visit data for the new progression.
+
 ## The honest one-paragraph story
 
 You asked an AI swarm to turn a shelf of half-finished web games into a proper arcade. It did the boring, scalable part very well: one portal, one SDK, one 25-point standard, one harness, and 70-plus commits in a week (`git log`: 31 on 28 September alone). It did the *taste* part worse than it said it did. Independent critics kept scoring the games 5 to 6 out of 10 while the builders scored themselves 7 to 8, and the fifth round on the flagship (Claire's Big Life) scored lower than the fourth (5.6 vs 6.1). Then your sister opened the arcade on an iPhone, and the sharpest problems were ones nobody had been able to see: the tests ran in Chromium, not Safari, and the biggest games are 65 to 115 MB downloads. The fix that matters is not more polish: it is testing in the engine your audience uses.

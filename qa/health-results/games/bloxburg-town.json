@@ -1,0 +1,226 @@
+{
+ "id": "bloxburg-town",
+ "title": "Bloxburg Town",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "https://calebhomwe.github.io/bloxburg-town/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "ERRORS"
+ ],
+ "evidence": {
+  "ERRORS": "2 uncaught page error(s): Unable to decode audio data"
+ },
+ "notes": [
+  "3 touch input(s) took over 4 s to be acknowledged (machine slowdown x2)"
+ ],
+ "shots": {
+  "1-title": "shots/bloxburg-town-1-title.jpg",
+  "2-mid": null,
+  "3-end": null
+ },
+ "machine": {
+  "load1Start": 16.5,
+  "cores": 4,
+  "load1End": 17.44,
+  "contention": 1.97,
+  "contentionSamples": [
+   1.29,
+   2.1,
+   4.63,
+   1.97,
+   2.09,
+   1.97,
+   1.05
+  ]
+ },
+ "loadMs": 1500,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/bloxburg-town/index.html",
+ "startPath": "https://calebhomwe.github.io/bloxburg-town/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 489.9,
+  "bench1Ms": 97,
+  "effectiveSlowdown": 5.1
+ },
+ "start": {
+  "how": "centre (start button not tappable) + Play",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.97,
+  "loadMs": 1438,
+  "playMs": 251,
+  "loadRawMs": 2833,
+  "playRawMs": 496,
+  "playGlMs": 1,
+  "loadGlMs": 0,
+  "longTasksPlay": 6,
+  "longTasks100Play": 1,
+  "tbtLoadMs": 2639,
+  "tbtPlayMs": 253,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 5,
+  "slowestPollMs": 345,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 474.7,
+  "shaderCompileMaxCallMs": 100.3
+ },
+ "loafTop": [
+  {
+   "ms": 9936.6,
+   "blocking": 7.7,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     20
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     36
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     7
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 2935,
+   "blocking": 16.7,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     18
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     47
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     17
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 2818.2,
+   "blocking": 0,
+   "scripts": [
+    [
+     "Build/webgl-20260911_222125.loader.js",
+     "Worker.onmessage",
+     26
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 9,
+  "jsMedian": 7.72,
+  "jsP95": 15.13,
+  "jsP99": 15.13,
+  "jsMax": 15.1,
+  "jsP95Raw": 29.8,
+  "rawWithGlP95": 29.9,
+  "glP95": 5.3,
+  "gapP95": 2949.8,
+  "gapMedian": 1799.9,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [
+  "Unable to decode audio data"
+ ],
+ "errorCount": 2,
+ "consoleErrors": [
+  "Loading FSB failed for audio clip \"ambience_day\".\n",
+  "Loading FSB failed for audio clip \"ambience_night\".\n"
+ ],
+ "failed": [],
+ "resources": {
+  "heap0MB": 9.3,
+  "heap1MB": 9.4,
+  "heapGrowthPct": 1,
+  "heapMeasured": true,
+  "nodesStart": 49,
+  "nodesEnd": 52,
+  "nodesMax": 52,
+  "listeners0": 84,
+  "listeners1": 84,
+  "audioContexts": 1,
+  "audioElements": 20,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 5,
+  "scriptPct": 3,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 4,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 4010,
+  "inputLatencyP95Ms": 4037,
+  "inputLatencyMaxMs": 4037,
+  "inputTimeouts": 3
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": null,
+  "samples": 0
+ },
+ "severity": 23.8
+}
