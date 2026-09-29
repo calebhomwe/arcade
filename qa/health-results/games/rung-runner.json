@@ -1,0 +1,278 @@
+{
+ "id": "rung-runner",
+ "title": "Rung Runner",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/playables/RungRunner/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 5667 ms (during load), 418 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 3408 ms of JS; long-task API + timer heartbeat; longest frame 5754.2 ms: RungRunner/index.html https://calebhomwe.github.io/playables/RungRunner/index.html 2771 /  FrameRequestCallback 2967 | 2 touch inputs not acknowledged within 4 s while the main thread was blocked",
+  "JANK": "p95 JS frame cost 35.78 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.5; raw p95 55.1, median 5.52, p99 106.82, max 612.3; time inside WebGL calls excluded, p95 of it 4.2)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/rung-runner-1-title.jpg",
+  "2-mid": "shots/rung-runner-2-mid.jpg",
+  "3-end": "shots/rung-runner-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.89,
+  "cores": 4,
+  "load1End": 18.12,
+  "contention": 1.54,
+  "contentionSamples": [
+   1.47,
+   1.54,
+   1.09,
+   2.01,
+   1.14,
+   1.82,
+   2.11
+  ]
+ },
+ "loadMs": 6261,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/playables/RungRunner/index.html",
+ "startPath": "https://calebhomwe.github.io/playables/RungRunner/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 108.2,
+  "bench1Ms": 35,
+  "effectiveSlowdown": 3.1
+ },
+ "start": {
+  "how": "#play",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.54,
+  "loadMs": 3408,
+  "playMs": 620,
+  "loadRawMs": 5667,
+  "playRawMs": 959,
+  "playGlMs": 4,
+  "loadGlMs": 418,
+  "longTasksPlay": 12,
+  "longTasks100Play": 2,
+  "tbtLoadMs": 3097,
+  "tbtPlayMs": 669,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 4,
+  "slowestPollMs": 473,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 21.8,
+  "shaderCompileMaxCallMs": 4.6
+ },
+ "loafTop": [
+  {
+   "ms": 5754.2,
+   "blocking": 5698.6,
+   "scripts": [
+    [
+     "RungRunner/index.html",
+     "https://calebhomwe.github.io/playables/RungRunner/index.html",
+     2771
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     2967
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1628.8,
+   "blocking": 994.7,
+   "scripts": [
+    [
+     "RungRunner/index.html",
+     "BUTTON#play.onclick",
+     17
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     946
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 1407.4,
+   "blocking": 840.7,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     24
+    ],
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     5
+    ],
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     16
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 115,
+  "jsMedian": 5.52,
+  "jsP95": 35.78,
+  "jsP99": 106.82,
+  "jsMax": 612.3,
+  "jsP95Raw": 55.1,
+  "rawWithGlP95": 57.9,
+  "glP95": 4.2,
+  "gapP95": 900,
+  "gapMedian": 416.6,
+  "over100": 2,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.2,
+  "heap1MB": 5.6,
+  "heapGrowthPct": 7,
+  "heapMeasured": true,
+  "nodesStart": 80,
+  "nodesEnd": 102,
+  "nodesMax": 102,
+  "listeners0": 61,
+  "listeners1": 61,
+  "audioContexts": 1,
+  "audioElements": 1,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 7,
+   "totalMB": 6.1,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 390,
+     "h": 664,
+     "mpx": 0.26,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 256,
+     "h": 512,
+     "mpx": 0.13,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 160,
+     "mpx": 0.04,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 7,
+  "scriptPct": 4,
+  "layoutPerSec": 1.8
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 1
+ },
+ "gameScore": {
+  "updates": 3,
+  "first": 0,
+  "last": 0,
+  "max": 64,
+  "trajectory": [
+   [
+    14,
+    0
+   ],
+   [
+    47,
+    64
+   ],
+   [
+    49,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 14,
+  "swipes": 2,
+  "holds": 1,
+  "keys": 1,
+  "buttonPresses": 8,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 701,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 87.9,
+  "maxChangeFromStartPct": 36.8,
+  "samples": 10
+ },
+ "severity": 107.4,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 9989 ms (during load), 912 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 6348 ms of JS; long-task API + timer heartbeat; longest frame 10000.1 ms: RungRunner/index.html https://calebhomwe.github.io/playables/RungRunner/index.html 4818 /  FrameRequestCallback 5160 | 2 touch inputs not acknowledged within 4 s while the main thread was blocked",
+  "blockPlayMs": 952,
+  "blockLoadMs": 6348,
+  "load1": 19.02
+ }
+}

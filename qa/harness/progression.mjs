@@ -12,7 +12,7 @@
 import fs from 'node:fs/promises';
 import fss from 'node:fs';
 import path from 'node:path';
-import { root, ENGINE, startServer, launch, gameList, os } from './lib/common.mjs';
+import { root, ENGINE, startServer, launch, gameList, os, wait } from './lib/common.mjs';
 import { checkProgression, SYSTEMS } from './lib/progress-core.mjs';
 import { writeProgressReport } from './lib/progress-report.mjs';
 
@@ -30,8 +30,12 @@ const worker = async () => {
   while (next < games.length) {
     const g = games[next++];
     let r;
-    try { r = await checkProgression(g, browser, { BASE, out, DURATION, DURATION2 }); }
-    catch (e) { await browser.close().catch(() => {}); browser = await launch(); r = { id: g.id, title: g.title, cat: g.cat, genre: g.genre, level: 0, label: 'P0', why: 'check crashed: ' + e.message.slice(0, 100), notes: ['harness crashed'], lowConfidence: true, observedSystems: [], claimedOnly: [], lacks: [], persists: {}, storage: {}, session2: {}, session1: {} }; }
+    let lastErr;
+    for (let attempt = 0; attempt < 3 && !r; attempt++) {
+      try { r = await checkProgression(g, browser, { BASE, out, DURATION, DURATION2 }); }
+      catch (e) { lastErr = e; await browser.close().catch(() => {}); browser = await launch(); await wait(1500); }
+    }
+    if (!r) r = { id: g.id, title: g.title, cat: g.cat, genre: g.genre, level: 0, label: 'P0', why: 'the check itself failed 3 times: ' + lastErr.message.slice(0, 100), notes: ['harness crashed; re-run this game alone'], lowConfidence: true, harnessFailed: true, observedSystems: [], claimedOnly: [], lacks: [], persists: {}, storage: {}, session2: {}, session1: {} };
     await fs.writeFile(path.join(out, 'games', g.id + '.json'), JSON.stringify(r, null, 1));
     console.log(`${String(++done).padStart(3)}/${games.length} ${r.label} ${g.id.padEnd(28)} ${(r.why || '').slice(0, 100)}${r.lowConfidence ? '  [low confidence]' : ''}`);
   }

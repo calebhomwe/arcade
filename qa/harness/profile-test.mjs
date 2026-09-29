@@ -306,6 +306,29 @@ console.log('-- export and import');
   S2.P.reset(); check('reset starts a new profile', S2.P.get().xp === 0);
 }
 
+console.log('-- pace (simulated children, the real catalogue)');
+{
+  const vm = await import('node:vm');
+  const src = fs.readFileSync(path.join(root, 'catalog.js'), 'utf8'), CAT = vm.runInNewContext(src + ';CATALOG'), CATL = vm.runInNewContext(src + ';CATS');
+  const sim = (minutes, games, rounds, days) => {
+    const mem = {}; let t = new Date('2026-10-01T16:00:00').getTime(), seq = 7, picks = 0; const random = () => { seq = (seq * 1664525 + 1013904223) >>> 0; return seq / 4294967296; };
+    const P = Core.create({ storage: { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } }, now: () => t, random, catalog: CAT, cats: CATL }), out = {};
+    for (let d = 0; d < days; d++) {
+      const dt = new Date(t); dt.setDate(dt.getDate() + (d ? 1 : 0)); dt.setHours(16, 0, 0, 0); t = dt.getTime();
+      for (let i = 0; i < games; i++) {
+        const g = CAT[(picks++ * 7 + d * 3) % CAT.length]; P.startPlay(g.id); const s = P.startSession(g.id), secs = Math.round(minutes * 60 / games);
+        for (let x = 0; x < secs; x += 5) { t += 5000; P.tick(s, 5, true); if (rounds && x > 10 && x % Math.max(20, Math.round(secs / rounds)) < 5) { t += 1000; P.onState(s, { scene: 'over', score: 20 + Math.floor(random() * 80) + d }); P.onState(s, { scene: 'play' }); } }
+      }
+      if ([0, 6, 29, 59].includes(d)) out[d + 1] = Core.levelOf(P.get().xp);
+    }
+    return out;
+  };
+  const casual = sim(12, 2, 0, 60), keen = sim(30, 4, 8, 60);
+  check('a child who plays 12 minutes a day levels up in the first visit and is around level 10 to 14 after a week', casual[1] >= 2 && casual[7] >= 9 && casual[7] <= 15, JSON.stringify(casual));
+  check('...and is around level 18 to 26 after a month', casual[30] >= 18 && casual[30] <= 26);
+  check('a keen child (30 minutes, 8 rounds a day) is not through the levels in two months', keen[60] < 50 && keen[30] >= 28 && keen[30] <= 40, JSON.stringify(keen));
+}
+
 console.log('-- storage that fails');
 {
   const store = { getItem() { throw new Error('denied'); }, setItem() { throw new Error('denied'); }, removeItem() { throw new Error('denied'); } };

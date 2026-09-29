@@ -499,13 +499,13 @@
       var id = sess.game; if (!safeKey(id)) return;
       sess.active += dt; sess.runActive += dt;
       if (sess.cheated) {   // codes on: a fun mode. The day still counts for the streak, but nothing earns XP.
-        if (sess.active >= XP.streakSec) mutate(function (p) { touchStreak(p, p.today.date, true); });
+        if (sess.active >= XP.streakSec) mutate(function (p) { touchStreak(p, p.today.date, true); if (!p.days[p.today.date]) p.days[p.today.date] = 0.4; });
         return;
       }
       mutate(function (p) {
         var t = p.today, g = gameOf(p, id), ms = now(), hour = new Date(ms).getHours(), cat = C.cat(id);
         g.sec = Math.round((g.sec + dt) * 10) / 10; g.last = ms;
-        t.sec += dt; t.games[id] = (t.games[id] || 0) + dt; p.stats.sec += dt; p.days[t.date] = Math.round(t.sec / 6) / 10;
+        t.sec += dt; t.games[id] = (t.games[id] || 0) + dt; p.stats.sec += dt;
         if (cat) { t.cats[cat] = (t.cats[cat] || 0) + dt; if (cat === 'learning') { t.learnSec += dt; p.stats.learnSec += dt; } }
         if (hour >= 19 && hour < 22) p.flags.owl = 1; if (hour < 8) p.flags.bird = 1;
         var whole = Math.floor(t.sec / 60);
@@ -514,7 +514,7 @@
         if (!g.first && g.sec >= XP.playSec) { g.first = ms; addXp(p, XP.firstPlay, 'First time playing ' + (byId[id] ? byId[id].title : 'a game')); t.newGames.push(id); p.stats.newDay = Math.max(p.stats.newDay, t.newGames.length); }
         if (cat && !own(p.cats, cat) && t.cats[cat] >= XP.playSec) { p.cats[cat] = { first: ms, sec: 0 }; addXp(p, XP.newCategory, 'New category: ' + C.catName(cat)); }
         if (cat && own(p.cats, cat)) p.cats[cat].sec = Math.round((p.cats[cat].sec + dt) * 10) / 10;
-        p.days[t.date] = Math.round(t.sec / 6) / 10;
+        if (t.sec >= XP.streakSec) p.days[t.date] = Math.round(t.sec / 6) / 10;   // a day is "played" once it counts for the streak
         trimDays(p);
       });
     }
@@ -531,7 +531,7 @@
       mutate(function (p) {
         var t = p.today, g = gameOf(p, id), cat = C.cat(id), first = g.runs === 0;
         g.runs++; p.stats.runs++; t.runs++; g.last = ms; if (cat === 'learning') { t.learnRuns = (t.learnRuns || 0) + 1; }
-        touchStreak(p, t.date);
+        touchStreak(p, t.date); if (!p.days[t.date]) p.days[t.date] = 0.4;
         var xp = 0, prev = g.best, isPb = false;
         if (score != null) {
           if (prev == null) { g.best = score; g.low = low ? 1 : 0; }

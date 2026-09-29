@@ -34,8 +34,13 @@ const worker = async () => {
     const g = games[next++];
     let r;
     const run = async (opts) => {
-      try { return await checkHealth(g, browser, { BASE, out, DURATION, THROTTLE, ...opts }); }
-      catch (e) { await browser.close().catch(() => {}); browser = await launch(); return { id: g.id, title: g.title, cat: g.cat, genre: g.genre, engine: ENGINE, verdicts: ['STALL'], evidence: { STALL: 'harness crashed: ' + e.message.slice(0, 120) }, notes: [], shots: {}, throttle: THROTTLE, throttled: ENGINE === 'chromium' && THROTTLE > 1, severity: 80 }; }
+      // A browser can be killed under us (memory, someone else's pkill on a shared box): relaunch and retry before calling it a game problem.
+      let last;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try { return await checkHealth(g, browser, { BASE, out, DURATION, THROTTLE, ...opts }); }
+        catch (e) { last = e; await browser.close().catch(() => {}); browser = await launch(); await wait(1500); }
+      }
+      return { id: g.id, title: g.title, cat: g.cat, genre: g.genre, engine: ENGINE, verdicts: ['STALL'], evidence: { STALL: 'harness crashed 3 times: ' + last.message.slice(0, 120) }, notes: ['the check itself failed; re-run this game alone'], shots: {}, throttle: THROTTLE, throttled: ENGINE === 'chromium' && THROTTLE > 1, severity: 80, harnessFailed: true };
     };
     r = await run({});
     if (r.verdicts.includes('FREEZE') && process.env.RECHECK !== '0') {
