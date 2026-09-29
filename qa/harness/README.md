@@ -25,3 +25,11 @@ Environment options:
 - `REPORT_DIR`: change the output folder.
 
 Example: `GAME_IDS=market-merge,math-miner,maths-kart,surviv-royale node qa/harness/run.mjs`.
+
+## Player profile tests
+
+`node qa/harness/profile-test.mjs` checks the arcade-wide profile (`assets/profile-core.js`, see `docs/PROGRESSION.md`): the XP
+curve and its docs table, XP for play time and rounds, cheat blocking, the streak and its rest day, quest rotation and rewards,
+badges, cosmetics, export/import (code and JSON, hostile input), pace with simulated children, and storage that fails. Then it
+opens the real portal with a game and checks the whole path (SDK heartbeat, score, award, badge, cheat code, toasts, profile sheet,
+Trophy room, reduced motion). `LOGIC_ONLY=1` skips the browser part; `ENGINE=webkit` runs it in Safari's engine.

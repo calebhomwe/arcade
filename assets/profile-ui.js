@@ -297,7 +297,7 @@
   }
   function openProfile(which) {
     if (!sheet) {
-      sheet = doc.createElement('dialog'); sheet.id = 'profile'; sheet.className = 'sheet psheet'; sheet.setAttribute('aria-labelledby', 'pf-h'); doc.body.appendChild(sheet);
+      sheet = doc.createElement('dialog'); sheet.id = 'profile'; sheet.className = 'sheet psheet'; sheet.setAttribute('aria-label', 'Your profile'); doc.body.appendChild(sheet);
       sheet.addEventListener('click', onSheet);
       sheet.addEventListener('submit', function (e) {
         e.preventDefault(); var n = $('#pf-name', sheet), r = Store.setName(n ? n.value : '');
@@ -341,11 +341,11 @@
   /* ---------- watching a game frame ---------- */
   var BREAKS = [1800, 3600];
   function track(g, o) {
-    var sess = Store.startSession(g.id), started = false, ready = false, lastInput = 0, lastTick = 0, timer = 0, sid = '', lastPush = '';
+    var sess = Store.startSession(g.id), started = false, ready = false, beats = false, lastInput = 0, lastTick = 0, timer = 0, sid = '', lastPush = '';   // beats: this SDK sends input heartbeats (older copies of the SDK do not)
     function begin() { sess = Store.startSession(g.id); }
     function tick() {
       var n = Date.now(), dt = Math.min(8, (n - lastTick) / 1000); lastTick = n;
-      var active = started && !doc.hidden && !(o.isPaused && o.isPaused()) && (!ready || n - lastInput < 45000);
+      var active = started && !doc.hidden && !(o.isPaused && o.isPaused()) && (!ready || !beats || n - lastInput < 45000);
       Store.tick(sess, dt, active); breakCheck();
     }
     function breakCheck() {
@@ -358,13 +358,13 @@
     }
     var api = {
       start: function () { if (started) return; started = true; lastInput = lastTick = Date.now(); Store.startPlay(g.id); timer = setInterval(tick, 5000); },
-      reset: function () { ready = false; sid = ''; begin(); },
+      reset: function () { ready = false; beats = false; sid = ''; begin(); },
       busy: function () { return started && !doc.hidden; },
       howto: function () { Store.noteHowTo(g.id); },
       push: function () { if (!ready || !o.send) return; var s = JSON.stringify(Store.snapshot()); if (s !== lastPush) { lastPush = s; o.send('profile-state', { p: Store.snapshot() }); } },
       message: function (m) {
         if (!m || m.arcade !== 1) return;
-        if (m.type === 'ready') { ready = true; if (m.sid && m.sid !== sid) { if (sid) begin(); sid = m.sid; } lastInput = Date.now(); }
+        if (m.type === 'ready') { ready = true; beats = !!(m.caps && m.caps.profile); if (m.sid && m.sid !== sid) { if (sid) begin(); sid = m.sid; } lastInput = Date.now(); }
         else if (m.type === 'state') { if (m.cheated) sess.cheated = true; if (m.scene === 'over' || m.scene === 'play') tick(); if (typeof m.scene === 'string' || typeof m.level === 'number' || typeof m.stars === 'number') { var r = Store.onState(sess, m); if (r && r.xp) toast({ kind: 'xp', art: '<span class="pt-ico">' + ico('flag') + '</span>', title: 'Round finished  +' + r.xp + ' XP', sub: r.pb ? 'A new best!' : '', ms: 2600 }); } }
         else if (m.type === 'event') { if (m.name === 'cheat') sess.cheated = true; }
         else if (m.type === 'profile') {

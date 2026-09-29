@@ -393,6 +393,8 @@ await fr.evaluate(() => ArcadeSDK.profile.award({ xp: 12, reason: 'Test bonus' }
 check('a game award reaches the portal-owned profile', (await prof()).xp === x0 + 12, x0 + ' -> ' + (await prof()).xp);
 await fr.evaluate(() => ArcadeSDK.profile.achievement('hello', { title: 'Hello Badge', tier: 'silver' })); await page.waitForTimeout(400);
 check('a game badge reaches the profile', !!(await prof()).ach['g:tic-tac-toe:hello']);
+await page.waitForTimeout(1200);
+check('a badge toast slides in over the game (visible, not stuck at opacity 0)', await page.evaluate(() => { const t = document.querySelector('#pf-toasts .pf-toast.in'); return !!t && +getComputedStyle(t).opacity > 0.5; }));
 await fr.evaluate(() => ArcadeSDK.profile.quest('demo', 0.5, { title: 'Halfway there' })); await page.waitForTimeout(300);
 check('a game goal is shown under the quests', (await prof()).today.gq['tic-tac-toe:demo'].p === 0.5);
 await fr.evaluate(() => { ArcadeSDK.state({ scene: 'play' }); });
@@ -413,6 +415,11 @@ await page.goto(BASE + 'index.html', { waitUntil: 'load' });
 await page.evaluate(() => { localStorage.setItem('ca_settings', JSON.stringify({ theme: 'dark', accent: 'ruby' })); });
 await page.reload({ waitUntil: 'load' }); await page.waitForFunction(() => window.ArcadeProfileUI);
 check('a colour that is not unlocked yet shows as the default (ruby needs level 21)', await page.evaluate(() => document.documentElement.dataset.accent) === 'lime');
+// the level-up from the game session above is waiting for us on the portal: it shows once, and closes with one tap
+await page.waitForTimeout(900);
+const celebrated = await page.locator('.pf-lvlup[open]').count();
+if (celebrated) { check('a level reached while playing is celebrated when the child is back on the portal', await page.locator('.pf-lvlup[open] .lu-card h2').count() === 1); await page.click('.pf-lvlup [data-a=close]'); }
+else check('a level reached while playing is celebrated when the child is back on the portal', (await prof()).xp < 40, 'no level reached in this run');
 await page.click('#profile-btn'); await page.waitForSelector('#profile[open]');
 check('the chip opens the profile sheet with Me, Style, Stats and Backup', await page.locator('#profile [data-tab]').count() === 4);
 await page.click('#profile [data-act=edit]'); await page.fill('#pf-name', 'me@mail.com'); await page.click('#profile form button[type=submit]');

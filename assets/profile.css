@@ -63,7 +63,8 @@
 .pchip:not(.ready) .pc-av{background:var(--surface-3);border-radius:50%}
 @keyframes pf-bump{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
 @media(max-width:760px){#theme-btn{display:none}.pchip{height:48px;padding:0 9px 0 4px;gap:6px;margin-right:2px}.pc-av{width:40px;height:40px}.pc-tx b{font-size:14px}}
-@media(max-width:360px){.pc-tx{display:none}.pchip{padding:0 4px}}
+@media(max-width:389px){.top .brand .word{display:none}}   /* small phones (375): the logo mark is enough, the profile chip needs the room */
+@media(max-width:340px){.pc-tx{display:none}.pchip{padding:0 4px}}
 
 /* ---------- toasts ---------- */
 .pf-toasts{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:60;width:min(430px,calc(100% - 20px));display:grid;gap:8px;pointer-events:none}

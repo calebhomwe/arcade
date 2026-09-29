@@ -35,7 +35,6 @@ export class UI {
         <div class="spacer"></div>
         <button class="pill" id="coinpill" data-act="market" aria-label="Coins. Open the market">${icon('coin', 30)}<b id="coinnum">0</b><span class="plus">+</span></button>
         <button class="pill" id="starpill" data-act="stars" aria-label="Stars">${icon('star', 30)}<b id="starnum">0</b></button>
-        <button class="hudbtn gear" data-act="settings" aria-label="Settings">${SVG.gear}</button>
       </div>
       <div class="codes-tag" id="codestag">Codes on</div>
       <div class="rail" id="rail">
@@ -44,7 +43,8 @@ export class UI {
         <button class="hudbtn" data-act="shop" aria-label="Build and buy">${icon('hammer', 36)}<em class="lbl">Build</em><span class="dot" id="dotShop" hidden></span></button>
         <button class="hudbtn" data-act="barn" aria-label="Barn">${icon('barn', 36)}<em class="lbl">Barn</em><span class="dot" id="dotBarn" hidden></span></button>
         <button class="hudbtn" data-act="daily" aria-label="Daily gift and tasks">${icon('gift', 36)}<em class="lbl">Daily</em><span class="dot" id="dotDaily" hidden></span></button>
-        <button class="hudbtn" data-act="more" aria-label="Album, awards and wardrobe">${icon('album', 36)}<em class="lbl">More</em><span class="dot" id="dotMore" hidden></span></button>
+        <button class="hudbtn" data-act="more" aria-label="Album, awards and wardrobe">${icon('album', 36)}<em class="lbl">Book</em><span class="dot" id="dotMore" hidden></span></button>
+        <button class="hudbtn" data-act="settings" aria-label="Settings">${SVG.gear}<em class="lbl">Menu</em></button>
       </div>
       <div class="camctl" id="camctl">
         <button class="hudbtn" data-act="camHome" aria-label="Back to the farm">${SVG.home}</button>

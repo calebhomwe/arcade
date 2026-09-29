@@ -318,7 +318,7 @@ async function checkGame(g, browser) {
     // ---- U12 saving: the game names the key(s) that hold progress (meta.saves); any storage alone is not proof ----
     const saves = meta.saves || [];
     const store = await f.evaluate(async keys => {
-      let all = []; try { all = Object.keys(localStorage).filter(k => k !== 'arcade_muted'); } catch {}
+      let all = []; try { all = Object.keys(localStorage).filter(k => k !== 'arcade_muted' && !k.startsWith('ca_')); } catch {}   // ca_* is the portal's (settings, profile), not the game's
       let idb = []; try { idb = (await indexedDB.databases()).map(d => d.name); } catch {}
       return { all, idb, found: keys.filter(k => all.includes(k) || idb.includes(k.replace(/^idb:/, ''))) };
     }, saves).catch(() => ({ all: [], idb: [], found: [] }));

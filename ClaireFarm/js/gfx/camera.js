@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { clamp, lerp, wrapAngle } from '../util.js';
 
 const DEG = Math.PI / 180;
-export const PITCH_MIN = 24 * DEG, PITCH_MAX = 68 * DEG;
+export const PITCH_MIN = 15 * DEG, PITCH_MAX = 68 * DEG;
 
 export class CameraRig {
   constructor(camera, dom, opts = {}) {
@@ -169,10 +169,13 @@ export class CameraRig {
     const p = { id: e.pointerId, x: e.clientX - rect.left, y: e.clientY - rect.top, sx: e.clientX - rect.left, sy: e.clientY - rect.top, t: performance.now(), type: e.pointerType, button: e.button, moved: false, ctrl: e.ctrlKey || e.metaKey };
     this.pointers.set(e.pointerId, p);
     this.vel.x = this.vel.z = 0; this.samples.length = 0;
+    if (this.pointers.size === 1 && this.brushTest && !(e.pointerType === 'mouse' && (e.button === 2 || p.ctrl)) && this.brushTest(p.x, p.y)) {
+      this.gesture = { kind: 'brush', multi: false }; this.onBrush('down', p.x, p.y); return;
+    }
     if (this.pointers.size === 1) {
       const orbit = e.pointerType === 'mouse' && (e.button === 2 || p.ctrl);
       this.gesture = { kind: orbit ? 'orbit' : 'pan', grab: this.ground(p.x, p.y), multi: false, startYaw: this.cur.yaw, startPitch: this.cur.pitch };
-    } else if (this.pointers.size === 2) this._startPinch();
+    } else if (this.pointers.size === 2) { if (this.gesture && this.gesture.kind === 'brush') this.onBrush('cancel'); this._startPinch(); }
     if (e.pointerType === 'mouse') e.preventDefault();
   }
 
@@ -192,6 +195,7 @@ export class CameraRig {
     const g = this.gesture;
     if (!p.moved && Math.hypot(x - p.sx, y - p.sy) > (p.type === 'touch' ? 9 : 5)) p.moved = true;
     p.x = x; p.y = y;
+    if (g.kind === 'brush') { this.onBrush('move', x, y); return; }
     if (g.kind === 'pan') {
       if (!p.moved) return;
       // keep the ground point that was grabbed under the finger
@@ -232,6 +236,7 @@ export class CameraRig {
     this.pointers.delete(e.pointerId);
     try { this.dom.releasePointerCapture(e.pointerId); } catch (x) {}
     const g = this.gesture;
+    if (g && g.kind === 'brush') { if (this.pointers.size === 0) { this.onBrush('up', p.x, p.y); this.gesture = null; } return; }
     if (this.pointers.size === 0) {
       const dur = performance.now() - p.t;
       if (g && !g.multi && !p.moved && dur < 500 && e.type === 'pointerup') {
