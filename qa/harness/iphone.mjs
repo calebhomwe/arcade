@@ -64,9 +64,30 @@ async function checkGame(g, browser, landscape) {
   const ctx = await browser.newContext({ ...devices[landscape ? 'iPhone 13 landscape' : 'iPhone 13'], serviceWorkers: 'block' });
   r.orientation = landscape ? 'landscape' : 'portrait';
   await routeExternal(ctx);
+  if (ENGINE === 'webkit') await ctx.addInitScript(() => {
+    // This sandbox has no audio hardware, and WebKit's media pipeline crashes the whole page as soon as any media element
+    // loads (a game that preloads sounds with new Audio() dies at load). A real iPhone does not do this, so swap the
+    // media elements for silent stand-ins: everything else about the game still runs in the real Safari engine.
+    class SilentAudio extends EventTarget {
+      constructor(src) { super(); this.src = src || ''; this.volume = 1; this.muted = false; this.paused = true; this.ended = false; this.currentTime = 0; this.duration = 1; this.readyState = 4; this.preload = 'auto'; this.loop = false; this.playbackRate = 1; }
+      play() { this.paused = false; return Promise.resolve(); } pause() { this.paused = true; } load() {} canPlayType() { return 'maybe'; }
+      cloneNode() { return new SilentAudio(this.src); } setAttribute(k, v) { this[k] = v; } getAttribute(k) { return this[k]; } removeAttribute() {}
+    }
+    window.Audio = SilentAudio;
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+    HTMLMediaElement.prototype.load = function () {};
+    const rawCreate = document.createElement.bind(document);
+    document.createElement = function (tag, o) { return /^(audio|video)$/i.test(tag) && tag.toLowerCase() === 'audio' ? new SilentAudio() : rawCreate(tag, o); };
+  });
   const page = await ctx.newPage(); page.setDefaultTimeout(10000);
   // This sandbox has no sound card, so WebKit reports "Failed to start the audio device": an environment artefact, not a game bug.
-  page.on('pageerror', e => { const m = String(e.message || e); if (!/Failed to start the audio device/.test(m)) r.errors.push(m.slice(0, 200)); });
+  page.on('pageerror', e => {
+    const m = String(e.message || e);
+    if (/Failed to start the audio device/.test(m)) return;
+    // Audio/media decoding cannot work in this sandbox's WebKit (no codecs, no device): a warning, not a failure.
+    if (ENGINE === 'webkit' && /EncodingError|Decoding failed|NotSupportedError.*(media|audio)/i.test(m)) { (r.warnings = r.warnings || []).push(m.slice(0, 120)); return; }
+    r.errors.push(m.slice(0, 200));
+  });
   page.on('response', async res => {
     if (res.status() >= 400 && !/favicon/.test(res.url())) r.failed.push(res.status() + ' ' + res.url().replace(BASE, '').slice(-80));
     try { const len = +res.headers()['content-length'] || (await res.body()).length; r.bytes += len; } catch {}
