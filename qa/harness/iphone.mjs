@@ -180,7 +180,11 @@ const worker = async () => {
   while (next < games.length) {
     const g = games[next++];
     let r;
-    try { r = await checkGame(g, browser); }
+    try {
+      r = await checkGame(g, browser);
+      // A browser that crashed while the machine was busy says nothing about the game: retry once on a fresh browser.
+      if ((r.errors || []).some(e => /Page crashed|Target (page, context or browser )?has been closed/.test(e))) { await browser.close().catch(() => {}); browser = await launch(); r = await checkGame(g, browser); r.retried = true; }
+    }
     catch (e) { await browser.close().catch(() => {}); browser = await launch(); r = { id: g.id, title: g.title, verdict: 'NO', problems: ['check crashed: ' + e.message.slice(0, 100)] }; }
     results.push(r);
     console.log(r.verdict.padEnd(6), g.id.padEnd(28), (r.problems || []).join('; '));
