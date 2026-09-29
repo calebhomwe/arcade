@@ -20,6 +20,7 @@
  *     // or declare the codes and just get told which one was entered (engines that can't return values):
  *     // cheats: [{code:'GODMODE', effect:'Invincible'}], onCheat(code){ ... },
  *     tricks: [{name:'Backflip', input:'Up + Space'}],
+ *     orientation: 'landscape',     // phones held upright get a "turn sideways" card, and the game waits
  *   });
  *   ArcadeSDK.state({scene:'play', score:120});  // title | play | over
  *   ArcadeSDK.event('tutorial-done');
@@ -229,6 +230,33 @@
     if (on) { paused = true; soft = true; reason = 'game'; } else { paused = false; soft = false; reason = ''; }
     post('state', { paused: paused, reason: reason }); log(on ? 'pause' : 'resume', { reason: 'game', soft: true });
   }
+  // Landscape games on a phone held upright: a full-screen "turn sideways" card, and the game waits
+  // (a pause that ends by itself, like a hidden tab) until the phone is turned.
+  var rotateEl = null, rotatePaused = false;
+  function rotateCard() {
+    try {
+      if (rotateEl || !W.matchMedia) return;
+      var mq = W.matchMedia('(orientation: portrait) and (pointer: coarse)');
+      var phone = function () { try { return Math.min(W.screen.width, W.screen.height) < 700; } catch (e) { return false; } };   // phones only, not iPads
+      rotateEl = el('div', { id: 'arcade-sdk-rotate', role: 'dialog', 'aria-label': 'Turn your phone sideways' });
+      rotateEl.innerHTML = '<div class="ph"></div><b>Turn your phone sideways</b><span>This game plays across the screen.</span>';
+      var st = el('style', { text: '#arcade-sdk-rotate{position:fixed;inset:0;z-index:2147483646;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;background:#0b1024;color:#fff;font:700 22px/1.3 system-ui,-apple-system,sans-serif}' +
+        '#arcade-sdk-rotate span{font-weight:500;font-size:17px;opacity:.8}' +
+        '#arcade-sdk-rotate .ph{width:70px;height:116px;border:6px solid #fff;border-radius:16px;animation:arcade-sdk-turn 2.2s ease-in-out infinite}' +
+        '@keyframes arcade-sdk-turn{0%,20%{transform:rotate(0)}55%,80%{transform:rotate(-90deg)}100%{transform:rotate(0)}}' +
+        '@media (prefers-reduced-motion:reduce){#arcade-sdk-rotate .ph{animation:none;transform:rotate(-90deg)}}' });
+      (D.head || D.documentElement).appendChild(st); (D.body || D.documentElement).appendChild(rotateEl);
+      var sync = function () {
+        var upright = mq.matches && phone();
+        rotateEl.style.display = upright ? 'flex' : 'none';
+        if (upright && !paused) { rotatePaused = true; pause('hidden'); }
+        else if (!upright && rotatePaused) { rotatePaused = false; resume('visible'); }
+      };
+      if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
+      W.addEventListener('resize', sync);
+      sync();
+    } catch (e) {}
+  }
   var freezeEl = null, heldAnims = [];
   function freezeCss(on) {   // CSS animations stop with the game; the menu keeps its own
     try {
@@ -425,7 +453,7 @@
 
   var api = {
     version: V,
-    init: function (o) { o = o || {}; for (var k in o) cfg[k] = o[k]; cfg.declared = true; if (cfg.pauseKeys != null) pauseKeys = cfg.pauseKeys; post('ready', { caps: caps() }); if (D.body) pauseButton(); return api; },
+    init: function (o) { o = o || {}; for (var k in o) cfg[k] = o[k]; cfg.declared = true; if (cfg.pauseKeys != null) pauseKeys = cfg.pauseKeys; post('ready', { caps: caps() }); if (D.body) pauseButton(); if (cfg.orientation === 'landscape') rotateCard(); return api; },
     pause: function () { pause('user'); }, resume: function () { resume('user'); }, gamePaused: gamePaused,
     get paused() { return paused; }, get muted() { return muted; }, get cheated() { return cheated; },
     setMuted: setMuted, restart: restart, showMenu: function (w) { pause('user'); showMenu(w || 'pause'); },

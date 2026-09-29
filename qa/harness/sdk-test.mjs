@@ -101,6 +101,21 @@ for (const [keys, pressP, pressEsc] of [['esc', false, true], ['p', true, false]
   check(`pauseKeys '${keys}'`, r.p === pressP && r.esc === pressEsc, JSON.stringify(r));
 }
 
+// 9. orientation:'landscape' on a phone held upright: a turn-sideways card, and the game waits until it is turned.
+{
+  const { devices } = await import('playwright');
+  const ctx = await browser.newContext({ ...devices['iPhone 13'] });
+  const pg = await ctx.newPage();
+  await pg.setContent(`<!doctype html><html><head><script>${sdk}</script></head><body><p>game</p></body></html>`);
+  const up = await pg.evaluate(() => { ArcadeSDK.init({ orientation: 'landscape' }); const c = document.getElementById('arcade-sdk-rotate'); return { card: !!c && getComputedStyle(c).display !== 'none', paused: ArcadeSDK.paused }; });
+  check('landscape game: card shows and game waits when upright', up.card && up.paused, JSON.stringify(up));
+  await pg.setViewportSize({ width: 844, height: 390 });
+  await pg.waitForTimeout(300);
+  const side = await pg.evaluate(() => { const c = document.getElementById('arcade-sdk-rotate'); return { card: getComputedStyle(c).display !== 'none', paused: ArcadeSDK.paused }; });
+  check('landscape game: card hides and game resumes when turned', !side.card && !side.paused, JSON.stringify(side));
+  await ctx.close();
+}
+
 await browser.close();
 console.log(failed ? `\n${failed} failed` : '\nall passed');
 process.exit(failed ? 1 : 0);

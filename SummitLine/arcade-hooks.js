@@ -368,6 +368,7 @@
 
   /* ---------- init ---------- */
   SDK.init({
+    orientation: 'landscape',   // a sideways racer: phones held upright get the turn-sideways card
     ownPauseUI: false,              // switched by syncMode (see above)
     onPause: onPause,
     onResume: onResume,

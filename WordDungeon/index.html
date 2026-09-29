@@ -1361,7 +1361,7 @@ addEventListener('resize',()=>{if(coachIx>=0)coachPaint();});
 const _startRun=startRun;
 startRun=function(mode){_startRun(mode);let seen=false;try{seen=localStorage.getItem('wd_tut')==='1';}catch(e){}if(!seen&&coachIx<0){coachIx=0;coachPaint();}};
 
-if(window.ArcadeSDK)ArcadeSDK.init({
+if(window.ArcadeSDK)ArcadeSDK.init({orientation:'landscape',
   pauseButton:'tr',
   onRestart(){startRun(G.mode||'math');},
   onExit(){G.phase='menu';coachIx=-1;coachPaint();closeGrown();},

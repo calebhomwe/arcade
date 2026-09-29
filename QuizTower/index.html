@@ -1345,7 +1345,7 @@ startGame=function(mode,mapIdx){_startGame(mode,mapIdx);let seen=false;try{seen=
 let lastPhase='';
 function watchPhase(){if(G.phase===lastPhase)return;lastPhase=G.phase;if(G.phase==='menu'){closeGrown();sdkState({scene:'title'});}}
 
-if(window.ArcadeSDK)ArcadeSDK.init({
+if(window.ArcadeSDK)ArcadeSDK.init({orientation:'landscape',
   pauseButton:'tr',
   onRestart:function(){closeGrown();startGame(G.mode,G.map);},
   onExit:function(){closeGrown();coachIx=-1;coachPaint();G.phase='menu';},

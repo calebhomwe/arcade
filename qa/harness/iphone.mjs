@@ -55,10 +55,11 @@ const launch = async () => {
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const heavy = g => g.src.includes('Godot/') || g.id === 'bloxburg-town';
 
-async function checkGame(g, browser) {
+async function checkGame(g, browser, landscape) {
   const meta = g;
   const r = { id: g.id, title: g.title, cat: g.cat, src: g.src, errors: [], failed: [], bytes: 0 };
-  const ctx = await browser.newContext({ ...devices['iPhone 13'], serviceWorkers: 'block' });
+  const ctx = await browser.newContext({ ...devices[landscape ? 'iPhone 13 landscape' : 'iPhone 13'], serviceWorkers: 'block' });
+  r.orientation = landscape ? 'landscape' : 'portrait';
   await routeExternal(ctx);
   const page = await ctx.newPage(); page.setDefaultTimeout(10000);
   page.on('pageerror', e => r.errors.push(String(e.message || e).slice(0, 200)));
@@ -80,26 +81,47 @@ async function checkGame(g, browser) {
       await wait(1000);
     }
     r.sdk = !!(d && d.caps && d.caps.declared);
+    // A landscape game asks a phone held upright to turn: test it the way a player would, sideways.
+    if (!landscape && await page.locator('#arcade-sdk-rotate').isVisible().catch(() => false)) { await ctx.close().catch(() => {}); return checkGame(g, browser, true); }
     const scenes = () => page.evaluate(() => window.ArcadeSDK ? ArcadeSDK.debug().events.filter(e => e.name === 'scene').map(e => e.data && e.data.scene) : []).catch(() => []);
     r.overflow = await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body ? document.body.scrollWidth : 0) - innerWidth).catch(() => null);
     await fs.writeFile(path.join(out, 'shots', g.id + '-1-title.jpg'), await page.screenshot({ type: 'jpeg', quality: 60, timeout: 20000 }).catch(() => Buffer.alloc(0)));
     // Tap to start: the declared start button if it is a selector, else the middle of the screen.
+    const vp = page.viewportSize();
     const start = meta.start || '';
+    // touchStart "tap:X%,Y%": where a player taps to start a game whose Play button is drawn in a canvas.
+    const ts = /^tap:([\d.]+)%,([\d.]+)%$/.exec(meta.touchStart || '');
     const before = await scenes();
     let tapped = 'centre';
-    if (start && !/^key:/.test(start) && start !== 'auto') {
+    if (ts) { await page.touchscreen.tap(vp.width * ts[1] / 100, vp.height * ts[2] / 100).catch(() => {}); tapped = meta.touchStart; }
+    else if (start && !/^key:/.test(start) && start !== 'auto') {
       const ok = await page.locator(start).first().tap({ timeout: 5000 }).then(() => true).catch(() => false);
       tapped = ok ? start : 'centre (start button not tappable)';
-      if (!ok) await page.touchscreen.tap(195, 420).catch(() => {});
+      if (!ok) await page.touchscreen.tap(vp.width / 2, vp.height / 2).catch(() => {});
     } else {
       // No declared start button: tap a visible Play / Start button if there is one, as a player would.
       const btn = page.locator('button, [role=button], a, .btn').filter({ hasText: /^\s*(▶\s*)?(play|start|tap to (play|start)|let'?s go|begin|go)\b/i }).first();
       const ok = await btn.isVisible().catch(() => false) && await btn.tap({ timeout: 5000 }).then(() => true).catch(() => false);
-      if (ok) tapped = 'Play/Start button'; else await page.touchscreen.tap(195, 420).catch(() => {});
+      if (ok) tapped = 'Play/Start button'; else await page.touchscreen.tap(vp.width / 2, vp.height / 2).catch(() => {});
+    }
+    let after = before;
+    for (let i = 0; i < (heavy(g) ? 20 : 6); i++) { await wait(1000); after = await scenes(); if (after.includes('play')) break; }
+    // Many games show a how-to or coach card first: press up to two more start / continue buttons, as a player would.
+    const go = /^\s*(▶\s*)?(play|start|start playing|tap to (play|start|cook|jump)|let'?s (go|play)|race|begin|go|defend|continue|ok|got it)\b/i;
+    for (let extra = 0; extra < 2 && !after.includes('play'); extra++) {
+      const btn = page.locator('button, [role=button], a, .btn').filter({ hasText: go });
+      const n = await btn.count().catch(() => 0);
+      let hit = false;
+      for (let k = 0; k < n && !hit; k++) { const b = btn.nth(k); if (await b.isVisible().catch(() => false)) hit = await b.tap({ timeout: 4000 }).then(() => true).catch(() => false); }
+      if (!hit) break;
+      tapped += ' + ' + 'continue';
+      for (let i = 0; i < 6; i++) { await wait(1000); after = await scenes(); if (after.includes('play')) break; }
+    }
+    if (!after.includes('play')) {   // a "tap anywhere" card: one tap on the game itself
+      await page.touchscreen.tap(vp.width / 2, vp.height * 0.62).catch(() => {}); tapped += ' + tap on game';
+      for (let i = 0; i < 5; i++) { await wait(1000); after = await scenes(); if (after.includes('play')) break; }
     }
     r.tapped = tapped;
-    let after = before;
-    for (let i = 0; i < (heavy(g) ? 20 : 8); i++) { await wait(1000); after = await scenes(); if (after.includes('play')) break; }
     r.playAfterTap = after.includes('play');
     r.scenes = after.slice(-4);
     await fs.writeFile(path.join(out, 'shots', g.id + '-2-play.jpg'), await page.screenshot({ type: 'jpeg', quality: 60, timeout: 20000 }).catch(() => Buffer.alloc(0)));

@@ -18126,3 +18126,30 @@ if(window.ArcadeSDK) ArcadeSDK.init({
 });
 if(state==='ready') swScene('title');
 </script>
+<style>
+/* Phones: the title screen scrolls, so its Play button can sit far below the fold. A floating Play is always in reach. */
+#swQuickPlay{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;display:none;
+  min-width:190px;min-height:56px;padding:0 28px;border:0;border-radius:999px;font:800 22px/1 system-ui,sans-serif;letter-spacing:.04em;color:#07210f;
+  background:linear-gradient(180deg,#86efac,#22c55e);box-shadow:0 10px 26px -6px rgba(0,0,0,.6),inset 0 -4px 0 rgba(0,0,0,.18)}
+#swQuickPlay:active{transform:translateX(-50%) scale(.97)}
+</style>
+<button id="swQuickPlay" type="button" aria-label="Play">&#9654; PLAY</button>
+<script>
+(function(){
+  var btn=document.getElementById('swQuickPlay'), ov=document.getElementById('start'), real=document.getElementById('playBtn');
+  if(!btn||!ov||!real)return;
+  var coarse=matchMedia('(pointer: coarse)');
+  function update(){
+    var cs=getComputedStyle(ov), r=ov.getBoundingClientRect();
+    var onTitle=cs.display!=='none'&&cs.visibility!=='hidden'&&+cs.opacity>0.05&&r.height>0&&(typeof state==='undefined'||state==='ready');
+    var realInView=real.getBoundingClientRect().bottom<=innerHeight&&real.getBoundingClientRect().top>=0;
+    btn.style.display=(coarse.matches&&onTitle&&!realInView)?'block':'none';
+  }
+  btn.addEventListener('click',function(){real.click();update();});
+  ov.addEventListener('scroll',update,{passive:true});
+  new MutationObserver(update).observe(ov,{attributes:true,attributeFilter:['style','class']});
+  addEventListener('resize',update);
+  setInterval(update,400);
+  update();
+})();
+</script>
