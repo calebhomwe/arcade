@@ -268,10 +268,10 @@ function toFloat(g) {                                                           
   for (const k of Object.keys(g.attributes)) { const a = g.attributes[k]; if (a.array instanceof Float32Array) continue; const f = new Float32Array(a.count * a.itemSize); for (let i = 0; i < a.count; i++) for (let c = 0; c < a.itemSize; c++) f[i * a.itemSize + c] = [a.getX, a.getY, a.getZ, a.getW][c].call(a, i); g.setAttribute(k, new THREE.BufferAttribute(f, a.itemSize)); }
   return g; }
 function recolourPalette(map, hue, sat, light) {                                            // a kit's colormap is a tiny palette: rotate its greens to another hue in a canvas copy
-  const im = map.image, w = im.width, h = im.height, cv = Object.assign(document.createElement('canvas'), { width: w, height: h }), x = cv.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, w, h), c = new THREE.Color(), hsl = {};
+  const im = map.image, w = im.width, h = im.height, cv = Object.assign(document.createElement('canvas'), { width: w, height: h }), x = cv.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, w, h), c = new THREE.Color(), rgb = { r: 0, g: 0, b: 0 };
   for (let i = 0; i < d.data.length; i += 4) { const r = d.data[i] / 255, g = d.data[i + 1] / 255, b = d.data[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, dl = mx - mn, s = dl ? dl / (1 - Math.abs(2 * l - 1)) : 0;
     let hh = 0; if (dl) hh = (mx === r ? ((g - b) / dl + 6) % 6 : mx === g ? (b - r) / dl + 2 : (r - g) / dl + 4) / 6; if (hh < 0.33 || hh > 0.56 || s < 0.25) continue;
-    c.setHSL(hue, Math.min(1, s * sat), l * light, THREE.SRGBColorSpace); d.data[i] = c.r * 255; d.data[i + 1] = c.g * 255; d.data[i + 2] = c.b * 255; }
+    c.setHSL(hue, Math.min(1, s * sat), l * light, THREE.SRGBColorSpace); c.getRGB(rgb, THREE.SRGBColorSpace); d.data[i] = rgb.r * 255; d.data[i + 1] = rgb.g * 255; d.data[i + 2] = rgb.b * 255; }
   x.putImageData(d, 0, 0); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.flipY = map.flipY; t.magFilter = THREE.NearestFilter; return t; }
 const ROOFS = [[0.045, 0.85, 0.85], [0.6, 0.4, 0.62], [0.075, 0.55, 0.55]];                    // terracotta, slate blue, brown
 const KITS = {};
@@ -294,6 +294,7 @@ function batch(list) {                                                          
   const by = new Map(); for (const { parts, m } of list) for (const p of parts) { const g = p.geometry.clone().applyMatrix4(m); (by.get(p.material) || by.set(p.material, []).get(p.material)).push(g); }
   for (const [mat, gs] of by) { const mesh = new THREE.Mesh(mergeGeometries(gs), mat); mesh.castShadow = SHADOW; mesh.receiveShadow = true; mesh.frustumCulled = false; scene.add(mesh); } }
 window.__parts = () => Object.keys(KITS).length;
+window.__mats = () => [...MAT.entries()].filter(([k]) => k.startsWith('house')).map(([k, m]) => { const i = m.map && m.map.image; let px = null; if (i && i.getContext) px = Array.from(i.getContext('2d').getImageData(0, 0, 1, 1).data); return [k, i && i.constructor.name, i && i.width, i && i.height, px, m.map && m.map.flipY]; });
 
 /* ---------- 8. Build the world ---------- */
 const info = { trees: 0, bushes: 0, crops: 0, houses: 0 };
