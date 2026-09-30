@@ -251,19 +251,22 @@
       var mq = W.matchMedia('(orientation: portrait) and (pointer: coarse)');
       var phone = function () { try { return Math.min(W.screen.width, W.screen.height) < 700; } catch (e) { return false; } };   // phones only, not iPads
       rotateEl = el('div', { id: 'arcade-sdk-rotate', role: 'dialog', 'aria-label': 'Turn your phone sideways' });
-      rotateEl.innerHTML = '<div class="ph"></div><b>Turn your phone sideways</b><span>This game plays across the screen.</span>';
+      rotateEl.innerHTML = '<div class="ph"></div><b>Turn your phone sideways</b><span>This game plays across the screen.</span><button type="button" data-play-anyway>Play anyway</button>';
       var st = el('style', { text: '#arcade-sdk-rotate{position:fixed;inset:0;z-index:2147483646;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;background:#0b1024;color:#fff;font:700 22px/1.3 system-ui,-apple-system,sans-serif}' +
         '#arcade-sdk-rotate span{font-weight:500;font-size:17px;opacity:.8}' +
+        '#arcade-sdk-rotate button{margin-top:6px;min-height:48px;padding:0 26px;border-radius:24px;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font:700 17px system-ui,-apple-system,sans-serif}' +
         '#arcade-sdk-rotate .ph{width:70px;height:116px;border:6px solid #fff;border-radius:16px;animation:arcade-sdk-turn 2.2s ease-in-out infinite}' +
         '@keyframes arcade-sdk-turn{0%,20%{transform:rotate(0)}55%,80%{transform:rotate(-90deg)}100%{transform:rotate(0)}}' +
         '@media (prefers-reduced-motion:reduce){#arcade-sdk-rotate .ph{animation:none;transform:rotate(-90deg)}}' });
       (D.head || D.documentElement).appendChild(st); (D.body || D.documentElement).appendChild(rotateEl);
+      var anyway = false; try { anyway = W.sessionStorage.getItem('arcade-sdk-play-anyway') === '1'; } catch (e) {}
       var sync = function () {
-        var upright = mq.matches && phone();
+        var upright = mq.matches && phone() && !anyway;
         rotateEl.style.display = upright ? 'flex' : 'none';
         if (upright && !paused) { rotatePaused = true; pause('hidden'); }
         else if (!upright && rotatePaused) { rotatePaused = false; resume('visible'); }
       };
+      rotateEl.querySelector('button').addEventListener('click', function () { anyway = true; try { W.sessionStorage.setItem('arcade-sdk-play-anyway', '1'); } catch (e) {} sync(); });
       if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
       W.addEventListener('resize', sync);
       sync();

@@ -62,8 +62,8 @@
   };
 
   // ---- WebGL: count contexts, time the calls that block on the GPU process (software GL makes them meaningless on this machine) ----
-  const BLOCKING = ['drawArrays', 'drawElements', 'drawArraysInstanced', 'drawElementsInstanced', 'drawRangeElements', 'flush', 'finish', 'readPixels', 'getError', 'texImage2D', 'texSubImage2D', 'texStorage2D', 'compressedTexImage2D', 'bufferData', 'bufferSubData', 'checkFramebufferStatus', 'generateMipmap', 'clear', 'getParameter', 'readBuffer', 'blitFramebuffer', 'texImage3D', 'texSubImage3D'];
-  const COMPILE = ['compileShader', 'linkProgram', 'getProgramParameter', 'getShaderParameter'];   // CPU work on a phone too: counted as JS, reported separately
+  const BLOCKING = ['drawArrays', 'drawElements', 'drawArraysInstanced', 'drawElementsInstanced', 'drawRangeElements', 'flush', 'finish', 'readPixels', 'getError', 'texImage2D', 'texSubImage2D', 'texStorage2D', 'compressedTexImage2D', 'bufferData', 'bufferSubData', 'checkFramebufferStatus', 'generateMipmap', 'clear', 'getParameter', 'readBuffer', 'blitFramebuffer', 'texImage3D', 'texSubImage3D', 'getProgramInfoLog', 'getShaderInfoLog', 'getShaderParameter', 'getProgramParameter', 'getUniform', 'getActiveUniform', 'getActiveAttrib', 'getSyncParameter', 'clientWaitSync'];
+  const COMPILE = ['compileShader', 'linkProgram'];   // CPU work on a phone too: counted as JS, reported separately
   for (const name of ['WebGLRenderingContext', 'WebGL2RenderingContext']) {
     const P = window[name] && window[name].prototype; if (!P) continue;
     for (const m of BLOCKING) {
