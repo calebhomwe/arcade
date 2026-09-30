@@ -1373,12 +1373,13 @@ function drawMenu(tt){
   /* the two dungeons */
   const cw=Math.min(250,(W-120)/2),gap=26,cx0=W/2-cw-gap/2;
   const card=(x,mode,label,desc,best,cp)=>{
+    hit(x,120,cw,206,()=>{pressId='go_'+mode;pressT=G.time;AU.init();startRun(mode,1);});   /* the whole card starts the run: a big target for a small thumb */
     panelC('parch',x,120,cw,206,{r:18,gold:true});
     T(label,x+cw/2,148,26,'#a03a10','center',700,'engrave');
     T(desc,x+cw/2,176,14,INK2,'center',700,'engrave');
     T('Best floor '+best,x+cw/2,200,16,INK,'center',700,'engrave');
-    btnC('go_'+mode,x+14,214,cw-28,44,'green','Start',()=>{pressId='go_'+mode;pressT=G.time;AU.init();startRun(mode,1);},22);
-    if(cp>1)btnC('cp_'+mode,x+14,266,cw-28,44,'gold','Continue floor '+cp,()=>{pressId='cp_'+mode;pressT=G.time;AU.init();startRun(mode,cp);},18);
+    btnC('go_'+mode,x+14,210,cw-28,54,'green','Start',()=>{pressId='go_'+mode;pressT=G.time;AU.init();startRun(mode,1);},22);
+    if(cp>1)btnC('cp_'+mode,x+14,270,cw-28,50,'gold','Continue floor '+cp,()=>{pressId='cp_'+mode;pressT=G.time;AU.init();startRun(mode,cp);},18);
     else T('Beat a boss to save a checkpoint',x+cw/2,288,12,INK2,'center',700,'engrave');
   };
   card(cx0,'math','MATHS','sums, minus, times, divide',meta.bestMath,meta.cp.math);
@@ -1395,12 +1396,12 @@ function drawMenu(tt){
     T('Relics '+meta.relics.length+' / 12',dx+dw/2,228,14,INK,'center',700,'engrave');}
   /* age band and helpers */
   const cur=LK.bandIndex(),bw=Math.min(150,(W-80)/3),bx0=W/2-(bw*3+16)/2;
-  LK.BANDS.forEach((b,i)=>btnC('band'+i,bx0+i*(bw+8),350,bw,44,i===cur?'gold':'cream',b.label,()=>{LK.setBand(b.id);pressId='band'+i;pressT=G.time;},15));
+  LK.BANDS.forEach((b,i)=>btnC('band'+i,bx0+i*(bw+8),346,bw,54,i===cur?'gold':'cream',b.label,()=>{LK.setBand(b.id);pressId='band'+i;pressT=G.time;},15));
   const bw2=Math.min(160,(W-80)/3),bx1=W/2-(bw2*3+16)/2;
-  btnC('how',bx1,406,bw2,44,'wood','How to play',()=>{G.howto=!G.howto;},15);
-  btnC('tut',bx1+bw2+8,406,bw2,44,'wood','Tutorial',()=>{coachStart();},15);
-  btnC('grown',bx1+(bw2+8)*2,406,bw2,44,'wood','For grown-ups',()=>{openGrown();},15);
-  T('Tap or press 1 for maths, 2 for spelling',W/2,478,14,'#e8d8b0','center',600);
+  btnC('how',bx1,408,bw2,54,'wood','How to play',()=>{G.howto=!G.howto;},15);
+  btnC('tut',bx1+bw2+8,408,bw2,54,'wood','Tutorial',()=>{coachStart();},15);
+  btnC('grown',bx1+(bw2+8)*2,408,bw2,54,'wood','For grown-ups',()=>{openGrown();},15);
+  T('Tap a card to start, or press 1 for maths, 2 for spelling',W/2,490,14,'#e8d8b0','center',600);
   if(G.howto){
     ctx.fillStyle='rgba(6,4,10,.6)';ctx.fillRect(0,0,W,H);
     const pw=Math.min(W-60,640);panelC('parch',W/2-pw/2,40,pw,440,{r:20,gold:true});
