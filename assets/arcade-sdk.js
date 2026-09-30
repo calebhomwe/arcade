@@ -20,6 +20,7 @@
  *     // or declare the codes and just get told which one was entered (engines that can't return values):
  *     // cheats: [{code:'GODMODE', effect:'Invincible'}], onCheat(code){ ... },
  *     tricks: [{name:'Backflip', input:'Up + Space'}],
+ *     theme: {bg:'#123', ink:'#fff', accent:'#f80', font:'Fredoka, sans-serif'},  // pause sheet look (also --arcade-sdk-* CSS variables)
  *     orientation: 'landscape',     // phones held upright get a "turn sideways" card, and the game waits
  *   });
  *   ArcadeSDK.state({scene:'play', score:120});  // title | play | over
@@ -336,15 +337,15 @@
     if (styled || !(D.head || D.body)) return;
     styled = true;
     var css = el('style', { id: 'arcade-sdk-css', text:
-      '#arcade-sdk{position:fixed;inset:0;z-index:2147483600;display:none;align-items:center;justify-content:center;background:rgba(8,10,20,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c1f2e}' +
-      '#arcade-sdk.on{display:flex}#arcade-sdk .c{background:#fffdf7;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.45),inset 0 -5px 0 rgba(0,0,0,.08);padding:18px 20px 14px;width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 20px);overflow:auto;text-align:center;box-sizing:border-box}' +
+      '#arcade-sdk{position:fixed;inset:0;z-index:2147483600;display:none;align-items:center;justify-content:center;background:var(--arcade-sdk-overlay,rgba(8,10,20,.62));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font:15px/1.45 var(--arcade-sdk-font,system-ui,-apple-system,"Segoe UI",sans-serif);color:var(--arcade-sdk-ink,#1c1f2e)}' +
+      '#arcade-sdk.on{display:flex}#arcade-sdk .c{background:var(--arcade-sdk-bg,#fffdf7);border-radius:var(--arcade-sdk-radius,22px);box-shadow:0 24px 70px rgba(0,0,0,.45),inset 0 -5px 0 rgba(0,0,0,.08);padding:18px 20px 14px;width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 20px);overflow:auto;text-align:center;box-sizing:border-box}' +
       '#arcade-sdk h2{margin:0 0 2px;font-size:22px;font-weight:900;letter-spacing:.2px}#arcade-sdk .sub{margin:0 0 10px;color:#6a6f86;font-size:13px}' +
-      '#arcade-sdk button{display:block;width:100%;min-height:44px;margin:6px 0;border:0;border-radius:14px;font:800 16px system-ui,sans-serif;cursor:pointer;color:#1c1f2e;background:#eef0f8;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}' +
-      '#arcade-sdk button.p{background:linear-gradient(#5ee07c,#23b04b);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}#arcade-sdk button:focus-visible{outline:3px solid #6c7cff;outline-offset:2px}' +
+      '#arcade-sdk button{display:block;width:100%;min-height:44px;margin:6px 0;border:0;border-radius:14px;font:800 16px var(--arcade-sdk-font,system-ui,sans-serif);cursor:pointer;color:var(--arcade-sdk-ink,#1c1f2e);background:var(--arcade-sdk-button,#eef0f8);box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}' +
+      '#arcade-sdk button.p{background:var(--arcade-sdk-accent,linear-gradient(#5ee07c,#23b04b));color:var(--arcade-sdk-accent-ink,#fff);text-shadow:0 1px 0 rgba(0,0,0,.25)}#arcade-sdk button:focus-visible{outline:3px solid #6c7cff;outline-offset:2px}' +
       '#arcade-sdk .row{display:flex;gap:8px}#arcade-sdk .row button{flex:1}#arcade-sdk ol,#arcade-sdk ul{text-align:left;margin:6px 0 10px;padding-left:22px}#arcade-sdk li{margin:4px 0}' +
       '#arcade-sdk .tip{background:#fff4d6;border-radius:12px;padding:8px 12px;margin:8px 0;font-size:14px;text-align:left}#arcade-sdk input{width:100%;box-sizing:border-box;min-height:44px;border:2px solid #d9dcea;border-radius:12px;padding:0 12px;font:700 16px system-ui;text-transform:uppercase}' +
       '#arcade-sdk .msg{min-height:20px;font-weight:700;color:#23804a}#arcade-sdk table{width:100%;border-collapse:collapse;font-size:14px;text-align:left}#arcade-sdk td{padding:4px 6px;border-bottom:1px solid #eee}' +
-      '#arcade-sdk-btn{position:fixed;z-index:2147483599;width:40px;height:40px;border-radius:50%;border:0;background:rgba(10,12,24,.55);color:#fff;font:900 15px system-ui;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.3)}' +
+      '#arcade-sdk-btn{position:fixed;z-index:2147483599;width:44px;height:44px;border-radius:50%;border:0;background:var(--arcade-sdk-btn-bg,rgba(10,12,24,.55));color:var(--arcade-sdk-btn-ink,#fff);font:900 15px system-ui;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.3)}' +
       '#arcade-sdk-btn:focus-visible{outline:3px solid #6c7cff}@media (prefers-reduced-motion:reduce){#arcade-sdk{backdrop-filter:none}}@media (max-height:540px) and (min-width:420px){#arcade-sdk .c{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;align-content:start;width:min(600px,calc(100vw - 24px))}#arcade-sdk .c>h2,#arcade-sdk .c>.sub,#arcade-sdk .c>.tip,#arcade-sdk .c>ol,#arcade-sdk .c>ul,#arcade-sdk .c>table,#arcade-sdk .c>input,#arcade-sdk .c>.msg{grid-column:1/-1}#arcade-sdk .c>button[data-a=exit],#arcade-sdk .c>button[data-a=back]{grid-column:1/-1}#arcade-sdk button{min-height:40px;margin:4px 0}}' });
     D.head ? D.head.appendChild(css) : D.body.appendChild(css);
   }
@@ -356,11 +357,17 @@
     D.body.appendChild(root);
     return root;
   }
+  // theme: {bg, ink, font, accent, accentInk, button, overlay, radius, buttonBg, buttonInk} -> --arcade-sdk-* variables.
+  // Games can also just set those variables in their own CSS (e.g. :root{--arcade-sdk-bg:#123}).
+  function applyTheme() {
+    try { var t = cfg.theme; if (!t || !D.documentElement) return; var map = { bg: 'bg', ink: 'ink', font: 'font', accent: 'accent', accentInk: 'accent-ink', button: 'button', overlay: 'overlay', radius: 'radius', buttonBg: 'btn-bg', buttonInk: 'btn-ink' };
+      for (var k in map) if (t[k] != null) D.documentElement.style.setProperty('--arcade-sdk-' + map[k], String(t[k])); } catch (e) {}
+  }
   function pauseButton() {
     if (cfg.ownPauseUI || cfg.pauseButton === 'none' || D.getElementById('arcade-sdk-btn') || !D.body) return;
     ensureStyle();
     var pos = cfg.pauseButton || meta.pauseButton || 'tr', b = el('button', { id: 'arcade-sdk-btn', type: 'button', 'aria-label': 'Pause', title: pauseKeys === 'esc' ? 'Pause (Esc)' : pauseKeys ? 'Pause (P)' : 'Pause' });
-    b.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.6" height="12" rx="1.2" fill="#fff"/><rect x="9.4" y="2" width="3.6" height="12" rx="1.2" fill="#fff"/></svg>';
+    b.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.6" height="12" rx="1.2" fill="currentColor"/><rect x="9.4" y="2" width="3.6" height="12" rx="1.2" fill="currentColor"/></svg>';
     b.style[pos[0] === 't' ? 'top' : 'bottom'] = '10px'; b.style[pos[1] === 'l' ? 'left' : 'right'] = '10px';
     b.addEventListener('click', function (e) { e.stopPropagation(); pause('user'); });
     D.body.appendChild(b);
@@ -524,7 +531,7 @@
 
   var api = {
     version: V,
-    init: function (o) { o = o || {}; for (var k in o) cfg[k] = o[k]; cfg.declared = true; if (cfg.pauseKeys != null) pauseKeys = cfg.pauseKeys; post('ready', { caps: caps() }); if (D.body) pauseButton(); if (cfg.orientation === 'landscape') rotateCard(); return api; },
+    init: function (o) { o = o || {}; for (var k in o) cfg[k] = o[k]; cfg.declared = true; applyTheme(); if (cfg.pauseKeys != null) pauseKeys = cfg.pauseKeys; post('ready', { caps: caps() }); if (D.body) pauseButton(); if (cfg.orientation === 'landscape') rotateCard(); return api; },
     pause: function () { pause('user'); }, resume: function () { resume('user'); }, gamePaused: gamePaused,
     get paused() { return paused; }, get muted() { return muted; }, get cheated() { return cheated; },
     setMuted: setMuted, restart: restart, showMenu: function (w) { pause('user'); showMenu(w || 'pause'); },

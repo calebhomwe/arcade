@@ -116,6 +116,10 @@ for (const [keys, pressP, pressEsc] of [['esc', false, true], ['p', true, false]
   await pg.waitForTimeout(300);
   const side = await pg.evaluate(() => { const c = document.getElementById('arcade-sdk-rotate'); return { card: getComputedStyle(c).display !== 'none', paused: ArcadeSDK.paused }; });
   check('landscape game: card hides and game resumes when turned', !side.card && !side.paused, JSON.stringify(side));
+  await pg.setViewportSize({ width: 390, height: 844 });
+  await pg.evaluate(() => { ArcadeSDK.init({ theme: { bg: '#123456', accent: '#ff8800' } }); ArcadeSDK.pause && ArcadeSDK.pause(); });
+  const th = await pg.evaluate(() => { const b = document.getElementById('arcade-sdk-btn'); const r = b && b.getBoundingClientRect(); const c = document.querySelector('#arcade-sdk .c'); return { w: r && Math.round(r.width), h: r && Math.round(r.height), bg: c && getComputedStyle(c).backgroundColor }; });
+  check('pause button is 44 px and the theme option restyles the pause sheet', th.w === 44 && th.h === 44 && th.bg === 'rgb(18, 52, 86)', JSON.stringify(th));
   await ctx.close();
 }
 
