@@ -18,7 +18,7 @@ export const SU = {
   uNight: { value: 0 },
   uCamPos: { value: new THREE.Vector3() },
   uSat: { value: 1.08 },
-  uExposure: { value: 1.0 },
+  uExposure: { value: 0.92 },
   uWind: { value: 1 },
   uSnow: { value: 0 },
   uGrassA: { value: new THREE.Color(0.36, 0.62, 0.13) },
@@ -248,7 +248,7 @@ void main(){
   float gpatch = clamp(vC.r + (p1.r - 0.5) * 0.9, 0.0, 1.0);
   vec3 grass = mix(uGrassA, uGrassB, gpatch);
   float gd = 0.45 + 1.1 * mix(A.r, A.g, 0.35 + 0.4 * p2.r);
-  grass *= gd * (0.86 + 0.28 * p2.b);
+  grass *= gd * (0.8 + 0.5 * p2.b) * (0.85 + 0.3 * p1.g);
   grass = mix(grass, grass * vec3(1.22, 1.1, 0.62), smoothstep(0.6, 0.9, p1.b) * 0.5);   // sun-dried patches
   grass = mix(grass, grass * vec3(0.7, 0.82, 0.75), smoothstep(0.62, 0.86, p1.g) * 0.5); // cool clover patches
   vec3 dirt = mix(vec3(0.30, 0.19, 0.10), vec3(0.42, 0.29, 0.16), p2.r) * (0.5 + 1.0 * A.b);

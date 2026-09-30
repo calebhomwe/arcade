@@ -30,8 +30,8 @@ function mixKeys(p) {
 
 // season palettes: grass A/B, foliage multiplier, snow
 export const SEASONS = {
-  spring: { a: C(0x6aa03a), b: C(0x3f7a2e), foliage: C(0xfff4f6), snow: 0, name: 'Spring' },
-  summer: { a: C(0x74a238), b: C(0x3d7a2c), foliage: C(0xffffff), snow: 0, name: 'Summer' },
+  spring: { a: C(0x5b8c34), b: C(0x35692a), foliage: C(0xfff4f6), snow: 0, name: 'Spring' },
+  summer: { a: C(0x639332), b: C(0x33672a), foliage: C(0xffffff), snow: 0, name: 'Summer' },
   autumn: { a: C(0xa8a03a), b: C(0xb8782a), foliage: C(0xffb868), snow: 0, name: 'Autumn' },
   winter: { a: C(0xb8c8c0), b: C(0x98b0a8), foliage: C(0xcfe0e8), snow: 1, name: 'Winter' },
 };

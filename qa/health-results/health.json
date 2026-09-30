@@ -1,7 +1,7 @@
 {
- "generated": "2026-09-30T06:18:39.567Z",
+ "generated": "2026-09-30T06:37:26.984Z",
  "engine": "chromium",
- "count": 100,
+ "count": 105,
  "results": [
   {
    "id": "clean-house",
@@ -778,6 +778,476 @@
     "blockPlayMs": 193,
     "blockLoadMs": 4021,
     "load1": 19.73
+   }
+  },
+  {
+   "id": "godot-tidebreak",
+   "title": "TIDEBREAK",
+   "cat": "arcade",
+   "genre": "board-sports",
+   "src": "Godot/tidebreak/index.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "JANK",
+    "STALL"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 7691 ms (during load), 1874 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 3957 ms of JS; long-task API + timer heartbeat; longest frame 6532.8 ms: _engine/godot.js IDBRequest.onsuccess 6473 /  FrameRequestCallback 30",
+    "JANK": "p95 JS frame cost 18.37 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.5; raw p95 27, median 6.33, p99 28.37, max 106.6; time inside WebGL calls excluded, p95 of it 538.1)",
+    "STALL": "game never reported play after the start attempts (start: tap centre + tap on game); scenes seen: title | nothing on screen changed for 42 s while the bot kept tapping"
+   },
+   "notes": [
+    "3 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.5)"
+   ],
+   "shots": {
+    "1-title": "shots/godot-tidebreak-1-title.jpg",
+    "2-mid": "shots/godot-tidebreak-2-mid.jpg",
+    "3-end": "shots/godot-tidebreak-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 21.51,
+    "cores": 4,
+    "load1End": 17.69,
+    "contention": 1.47,
+    "contentionSamples": [
+     1.31,
+     1.08,
+     1.47,
+     1.58,
+     1.15,
+     2.22,
+     2.08
+    ]
+   },
+   "loadMs": 526,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:33001/Godot/tidebreak/index.html",
+   "startPath": "http://127.0.0.1:33001/Godot/tidebreak/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 122.7,
+    "bench1Ms": 31,
+    "effectiveSlowdown": 4
+   },
+   "start": {
+    "how": "tap centre + tap on game",
+    "viaKey": false,
+    "detectedBy": null
+   },
+   "block": {
+    "c": 1.47,
+    "loadMs": 3957,
+    "playMs": 210,
+    "loadRawMs": 7691,
+    "playRawMs": 1036,
+    "playGlMs": 727,
+    "loadGlMs": 1874,
+    "longTasksPlay": 219,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 3117,
+    "tbtPlayMs": 0,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 2,
+    "slowestPollMs": 793,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0.3,
+    "shaderCompileMaxCallMs": 0.1
+   },
+   "loafTop": [
+    {
+     "ms": 6532.8,
+     "blocking": 6459.2,
+     "scripts": [
+      [
+       "_engine/godot.js",
+       "IDBRequest.onsuccess",
+       6473
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       30
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 1204.1,
+     "blocking": 1068.5,
+     "scripts": [
+      [
+       "_engine/godot.js",
+       "AudioContext.onstatechange",
+       6
+      ],
+      [
+       "_engine/godot.js",
+       "IDBRequest.onsuccess",
+       28
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       1089
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 972,
+     "blocking": 920.8,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       970
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 224,
+    "jsMedian": 6.33,
+    "jsP95": 18.37,
+    "jsP99": 28.37,
+    "jsMax": 106.6,
+    "jsP95Raw": 27,
+    "rawWithGlP95": 543.9,
+    "glP95": 538.1,
+    "gapP95": 616.6,
+    "gapMedian": 266.6,
+    "over100": 1,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [
+    "WARNING: Occlusion culling is disabled at build-time.",
+    "   at: _print_warning (./servers/rendering/renderer_scene_occlusion_cull.h:211)"
+   ],
+   "failed": [],
+   "resources": {
+    "heap0MB": 8.9,
+    "heap1MB": 8.9,
+    "heapGrowthPct": 0,
+    "heapMeasured": true,
+    "nodesStart": 33,
+    "nodesEnd": 23,
+    "nodesMax": 33,
+    "listeners0": 78,
+    "listeners1": 78,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 3,
+    "canvases": {
+     "n": 1,
+     "totalMB": 3.6,
+     "biggest": [
+      {
+       "w": 741,
+       "h": 1261,
+       "mpx": 0.93,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 1.9
+    },
+    "sdkTimers": 1
+   },
+   "cpu": {
+    "mainThreadBusyPct": 97,
+    "scriptPct": 94,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title"
+    ],
+    "reachedPlay": false,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 9,
+    "swipes": 3,
+    "holds": 0,
+    "keys": 2,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 609,
+    "inputLatencyP95Ms": 4034,
+    "inputLatencyMaxMs": 4034,
+    "inputTimeouts": 3
+   },
+   "screen": {
+    "longestStaticS": 42.3,
+    "changeTitleToPlayPct": 0,
+    "maxChangeFromStartPct": 0,
+    "samples": 8
+   },
+   "severity": 110,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE",
+     "JANK",
+     "STALL"
+    ],
+    "evidence": "main thread blocked 5451 ms (during load), 490 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 3375 ms of JS; long-task API + timer heartbeat; longest frame 5526.1 ms: _engine/godot.js IDBRequest.onsuccess 5429 /  FrameRequestCallback 79",
+    "blockPlayMs": 485,
+    "blockLoadMs": 3375,
+    "load1": 18.25
+   }
+  },
+  {
+   "id": "godot-tidebreak-world-tour",
+   "title": "TIDEBREAK World Tour",
+   "cat": "sim",
+   "genre": "board-sports",
+   "src": "Godot/tidebreak-world-tour/index.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "JANK",
+    "STALL"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 6817 ms (during load), 1769 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 3853 ms of JS; long-task API + timer heartbeat; longest frame 5764.7 ms: _engine/godot.js IDBRequest.onsuccess 5622 /  FrameRequestCallback 130",
+    "JANK": "p95 JS frame cost 19.39 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.3; raw p95 25.4, median 5.95, p99 31.91, max 173.7; time inside WebGL calls excluded, p95 of it 494.8)",
+    "STALL": "game never reported play after the start attempts (start: tap centre + tap on game); scenes seen: title | nothing on screen changed for 27 s while the bot kept tapping"
+   },
+   "notes": [
+    "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.3)"
+   ],
+   "shots": {
+    "1-title": "shots/godot-tidebreak-world-tour-1-title.jpg",
+    "2-mid": "shots/godot-tidebreak-world-tour-2-mid.jpg",
+    "3-end": "shots/godot-tidebreak-world-tour-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 18.25,
+    "cores": 4,
+    "load1End": 17,
+    "contention": 1.31,
+    "contentionSamples": [
+     1.38,
+     1.65,
+     2.31,
+     1.3,
+     1.04,
+     1.3,
+     1.31
+    ]
+   },
+   "loadMs": 504,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:46179/Godot/tidebreak-world-tour/index.html",
+   "startPath": "http://127.0.0.1:46179/Godot/tidebreak-world-tour/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 136.8,
+    "bench1Ms": 32,
+    "effectiveSlowdown": 4.3
+   },
+   "start": {
+    "how": "tap centre + tap on game",
+    "viaKey": false,
+    "detectedBy": null
+   },
+   "block": {
+    "c": 1.31,
+    "loadMs": 3853,
+    "playMs": 269,
+    "loadRawMs": 6817,
+    "playRawMs": 565,
+    "playGlMs": 213,
+    "loadGlMs": 1769,
+    "longTasksPlay": 223,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 2910,
+    "tbtPlayMs": 31,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 4,
+    "slowestPollMs": 984,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0.8,
+    "shaderCompileMaxCallMs": 0.4
+   },
+   "loafTop": [
+    {
+     "ms": 5764.7,
+     "blocking": 5706.2,
+     "scripts": [
+      [
+       "_engine/godot.js",
+       "IDBRequest.onsuccess",
+       5622
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       130
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 1182.7,
+     "blocking": 189.3,
+     "scripts": [
+      [
+       "_engine/godot.js",
+       "MessagePort.onmessage",
+       6
+      ],
+      [
+       "_engine/godot.js",
+       "MessagePort.onmessage",
+       8
+      ],
+      [
+       "_engine/godot.js",
+       "MessagePort.onmessage",
+       6
+      ]
+     ],
+     "phase": "start"
+    },
+    {
+     "ms": 1085.9,
+     "blocking": 962.7,
+     "scripts": [
+      [
+       "_engine/godot.js",
+       "IDBRequest.onsuccess",
+       22
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       981
+      ]
+     ],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 233,
+    "jsMedian": 5.95,
+    "jsP95": 19.39,
+    "jsP99": 31.91,
+    "jsMax": 173.7,
+    "jsP95Raw": 25.4,
+    "rawWithGlP95": 502.6,
+    "glP95": 494.8,
+    "gapP95": 599.9,
+    "gapMedian": 266.7,
+    "over100": 2,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 8.9,
+    "heap1MB": 8.9,
+    "heapGrowthPct": 1,
+    "heapMeasured": true,
+    "nodesStart": 33,
+    "nodesEnd": 23,
+    "nodesMax": 33,
+    "listeners0": 78,
+    "listeners1": 78,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 3,
+    "canvases": {
+     "n": 1,
+     "totalMB": 3.6,
+     "biggest": [
+      {
+       "w": 741,
+       "h": 1261,
+       "mpx": 0.93,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 1.9
+    },
+    "sdkTimers": 1
+   },
+   "cpu": {
+    "mainThreadBusyPct": 97,
+    "scriptPct": 94,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title"
+    ],
+    "reachedPlay": false,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 9,
+    "swipes": 1,
+    "holds": 3,
+    "keys": 4,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 665,
+    "inputLatencyP95Ms": 4000,
+    "inputLatencyMaxMs": 4000,
+    "inputTimeouts": 2
+   },
+   "screen": {
+    "longestStaticS": 27.2,
+    "changeTitleToPlayPct": 0,
+    "maxChangeFromStartPct": 0.3,
+    "samples": 9
+   },
+   "severity": 109.9,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE",
+     "JANK",
+     "STALL"
+    ],
+    "evidence": "main thread blocked 5672 ms (during load), 412 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 3840 ms of JS; long-task API + timer heartbeat; longest frame 5689.4 ms: _engine/godot.js IDBRequest.onsuccess 5672 /  FrameRequestCallback 15",
+    "blockPlayMs": 185,
+    "blockLoadMs": 3840,
+    "load1": 16.23
    }
   },
   {
@@ -4235,6 +4705,224 @@
    }
   },
   {
+   "id": "godot-city-builder",
+   "title": "City Builder 2000",
+   "cat": "sim",
+   "genre": "life-sim",
+   "src": "Godot/city-builder/index.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 18138 ms (during load), 12926 ms of it inside WebGL calls (software GL), machine slowdown x1.6 -> about 3278 ms of JS; long-task API + timer heartbeat; longest frame 10236.7 ms:  FrameRequestCallback 10053"
+   },
+   "notes": [
+    "software-GL artefact: over 40% of the longest block was inside synchronous WebGL calls (getProgramInfoLog, readPixels, draw...) waiting for this box's software GL; an iPhone GPU would not wait",
+    "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.6)"
+   ],
+   "shots": {
+    "1-title": "shots/godot-city-builder-1-title.jpg",
+    "2-mid": null,
+    "3-end": "shots/godot-city-builder-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 24.72,
+    "cores": 4,
+    "load1End": 19,
+    "contention": 1.59,
+    "contentionSamples": [
+     1.86,
+     2.72,
+     2.4,
+     1.37,
+     1.59,
+     1.32,
+     1.11
+    ]
+   },
+   "loadMs": 690,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:46587/Godot/city-builder/index.html",
+   "startPath": "http://127.0.0.1:46587/Godot/city-builder/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 151.9,
+    "bench1Ms": 37.6,
+    "effectiveSlowdown": 4
+   },
+   "start": {
+    "how": "tap centre",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1.59,
+    "loadMs": 3278,
+    "playMs": 485,
+    "loadRawMs": 18138,
+    "playRawMs": 4312,
+    "playGlMs": 3540,
+    "loadGlMs": 12926,
+    "longTasksPlay": 30,
+    "longTasks100Play": 1,
+    "tbtLoadMs": 116,
+    "tbtPlayMs": 111,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 3,
+    "slowestPollMs": 3685,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 7.9,
+    "shaderCompileMaxCallMs": 6
+   },
+   "loafTop": [
+    {
+     "ms": 10236.7,
+     "blocking": 10163.4,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       10053
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 7880.3,
+     "blocking": 7819.7,
+     "scripts": [
+      [
+       "_engine/godot.js",
+       "IDBRequest.onsuccess",
+       7715
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       153
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 4059.8,
+     "blocking": 4000,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       4045
+      ]
+     ],
+     "phase": "start"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 28,
+    "jsMedian": 9.06,
+    "jsP95": 157.86,
+    "jsP99": 293.71,
+    "jsMax": 293.7,
+    "jsP95Raw": 251,
+    "rawWithGlP95": 2966.6,
+    "glP95": 2953.2,
+    "gapP95": 2916.5,
+    "gapMedian": 2116.5,
+    "over100": 2,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 9.7,
+    "heap1MB": 9.7,
+    "heapGrowthPct": 0,
+    "heapMeasured": true,
+    "nodesStart": 33,
+    "nodesEnd": 23,
+    "nodesMax": 33,
+    "listeners0": 78,
+    "listeners1": 78,
+    "audioContexts": 2,
+    "audioElements": 0,
+    "webglContexts": 3,
+    "canvases": {
+     "n": 1,
+     "totalMB": 3.6,
+     "biggest": [
+      {
+       "w": 741,
+       "h": 1261,
+       "mpx": 0.93,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 1.9
+    },
+    "sdkTimers": 1
+   },
+   "cpu": {
+    "mainThreadBusyPct": 95,
+    "scriptPct": 94,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 2,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 0,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 4001,
+    "inputLatencyP95Ms": 4001,
+    "inputLatencyMaxMs": 4001,
+    "inputTimeouts": 1
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": null,
+    "maxChangeFromStartPct": null,
+    "samples": 0
+   },
+   "severity": 105.3,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE",
+     "STALL"
+    ],
+    "evidence": "main thread blocked 6373 ms (during load), 1118 ms of it inside WebGL calls (software GL), machine slowdown x1.8 -> about 2936 ms of JS; long-task API + timer heartbeat; longest frame 6713.2 ms: _engine/godot.js IDBRequest.onsuccess 7 /  FrameRequestCallback 6668 | page did not answer the harness for 6 s (22 poll timeout(s)) | 3 touch inputs not acknowledged within 4 s while the main thread was blocked",
+    "blockPlayMs": 650,
+    "blockLoadMs": 2936,
+    "load1": 21.51
+   }
+  },
+  {
    "id": "long-way-home",
    "title": "The Long Way Home",
    "cat": "learning",
@@ -6339,6 +7027,218 @@
     "blockPlayMs": 156,
     "blockLoadMs": 584,
     "load1": 18.69
+   }
+  },
+  {
+   "id": "chili-firm",
+   "title": "Chili Firm 2: Replanted",
+   "cat": "idle",
+   "genre": "idle",
+   "src": "ChiliFirm/index.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE"
+   ],
+   "evidence": {
+    "FREEZE": "2 touch inputs not acknowledged within 4 s while the main thread was blocked"
+   },
+   "notes": [],
+   "shots": {
+    "1-title": "shots/chili-firm-1-title.jpg",
+    "2-mid": "shots/chili-firm-2-mid.jpg",
+    "3-end": "shots/chili-firm-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 15.26,
+    "cores": 4,
+    "load1End": 16.33,
+    "contention": 1.34,
+    "contentionSamples": [
+     1.31,
+     1.56,
+     1.33,
+     1.34,
+     1.16,
+     2.53,
+     3.33
+    ]
+   },
+   "loadMs": 1055,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:44881/ChiliFirm/index.html",
+   "startPath": "http://127.0.0.1:44881/ChiliFirm/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 77.3,
+    "bench1Ms": 34.7,
+    "effectiveSlowdown": 2.2
+   },
+   "start": {
+    "how": ".playbtn",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1.34,
+    "loadMs": 467,
+    "playMs": 733,
+    "loadRawMs": 626,
+    "playRawMs": 982,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 21,
+    "longTasks100Play": 1,
+    "tbtLoadMs": 419,
+    "tbtPlayMs": 249,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 6,
+    "slowestPollMs": 128,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 6402,
+     "blocking": 56.3,
+     "scripts": [
+      [
+       "",
+       "TimerHandler:setTimeout",
+       77
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       11
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 1198,
+     "blocking": 0,
+     "scripts": [
+      [
+       "assets/arcade-sdk.js",
+       "TimerHandler:setTimeout",
+       19
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       5
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 1152.2,
+     "blocking": 0,
+     "scripts": [
+      [
+       "",
+       "TimerHandler:setTimeout",
+       5
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       9
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 294,
+    "jsMedian": 0.9,
+    "jsP95": 12.84,
+    "jsP99": 37.24,
+    "jsMax": 102.3,
+    "jsP95Raw": 17.2,
+    "rawWithGlP95": 17.2,
+    "glP95": 0,
+    "gapP95": 633.4,
+    "gapMedian": 116.7,
+    "over100": 1,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 3,
+    "heap1MB": 3.4,
+    "heapGrowthPct": 11,
+    "heapMeasured": true,
+    "nodesStart": 1190,
+    "nodesEnd": 940,
+    "nodesMax": 1453,
+    "listeners0": 69,
+    "listeners1": 80,
+    "audioContexts": 1,
+    "audioElements": 2,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 0,
+     "totalMB": 0,
+     "biggest": [],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 5
+   },
+   "cpu": {
+    "mainThreadBusyPct": 16,
+    "scriptPct": 3,
+    "layoutPerSec": 7
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 15,
+    "swipes": 4,
+    "holds": 3,
+    "keys": 0,
+    "buttonPresses": 9,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 382,
+    "inputLatencyP95Ms": 4000,
+    "inputLatencyMaxMs": 4000,
+    "inputTimeouts": 2
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 81,
+    "maxChangeFromStartPct": 73.7,
+    "samples": 10
+   },
+   "severity": 102.7,
+   "recheck": {
+    "reproduced": false,
+    "verdicts": [],
+    "evidence": null,
+    "blockPlayMs": 264,
+    "blockLoadMs": 165,
+    "load1": 16.09
    }
   },
   {
@@ -10866,6 +11766,229 @@
     "samples": 16
    },
    "severity": 22.4
+  },
+  {
+   "id": "kingdom-defense",
+   "title": "Kingdom Defense",
+   "cat": "arcade",
+   "genre": "tower-defense",
+   "src": "KingdomDefense/index.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.7)"
+   ],
+   "shots": {
+    "1-title": null,
+    "2-mid": "shots/kingdom-defense-2-mid.jpg",
+    "3-end": "shots/kingdom-defense-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 14,
+    "cores": 4,
+    "load1End": 15.26,
+    "contention": 1.68,
+    "contentionSamples": [
+     1.23,
+     1.81,
+     1.64,
+     3.87,
+     1.65,
+     1.68,
+     1.72
+    ]
+   },
+   "loadMs": 4546,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:44881/KingdomDefense/index.html",
+   "startPath": "http://127.0.0.1:44881/KingdomDefense/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 78.8,
+    "bench1Ms": 34.1,
+    "effectiveSlowdown": 2.3
+   },
+   "start": {
+    "how": "declared start button not tappable -> tap centre",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": true
+   },
+   "block": {
+    "c": 1.68,
+    "loadMs": 959,
+    "playMs": 337,
+    "loadRawMs": 1610,
+    "playRawMs": 565,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 8,
+    "longTasks100Play": 2,
+    "tbtLoadMs": 331,
+    "tbtPlayMs": 332,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 5,
+    "slowestPollMs": 224,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 7615.3,
+     "blocking": 0,
+     "scripts": [
+      [
+       "assets/arcade-sdk.js",
+       "TimerHandler:setTimeout",
+       33
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 3728.7,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    },
+    {
+     "ms": 2981.4,
+     "blocking": 1014.4,
+     "scripts": [
+      [
+       "KingdomDefense/index.html",
+       "apply",
+       5
+      ],
+      [
+       "KingdomDefense/index.html",
+       "apply",
+       10
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       119
+      ]
+     ],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 55,
+    "jsMedian": 2.26,
+    "jsP95": 11.9,
+    "jsP99": 22.44,
+    "jsMax": 22.4,
+    "jsP95Raw": 20,
+    "rawWithGlP95": 20,
+    "glP95": 0,
+    "gapP95": 2066.5,
+    "gapMedian": 1133.4,
+    "over100": 0,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2.8,
+    "heap1MB": 2.9,
+    "heapGrowthPct": 6,
+    "heapMeasured": true,
+    "nodesStart": 353,
+    "nodesEnd": 353,
+    "nodesMax": 353,
+    "listeners0": 208,
+    "listeners1": 208,
+    "audioContexts": 2,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 51,
+     "totalMB": 40.5,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 750,
+       "h": 846,
+       "mpx": 0.63,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 520,
+       "h": 520,
+       "mpx": 0.27,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 520,
+       "h": 520,
+       "mpx": 0.27,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 1
+   },
+   "cpu": {
+    "mainThreadBusyPct": 4,
+    "scriptPct": 1,
+    "layoutPerSec": 1
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 6,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 2,
+    "buttonPresses": 2,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 1819,
+    "inputLatencyP95Ms": 4000,
+    "inputLatencyMaxMs": 4000,
+    "inputTimeouts": 1
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 5.9,
+    "maxChangeFromStartPct": 70.9,
+    "samples": 6
+   },
+   "severity": 1
   },
   {
    "id": "hub-isle-of-bells",

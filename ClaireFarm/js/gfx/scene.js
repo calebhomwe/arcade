@@ -228,7 +228,7 @@ export class FarmScene {
 
   // ---- scenery beyond the farm: a hamlet across the stream, a lighthouse islet, boats on the bay ------------------
   buildScenery() {
-    const A = this.assets, g = this.scenery = new THREE.Group(); this.root.add(g);
+    const A = this.assets, g = this.scenery = new THREE.Group(); g.name = 'scenery'; this.root.add(g);
     const stand = (id, x, z, yaw, w) => {
       if (!A.has(id)) return null;
       const m = A.model(id, { width: w });

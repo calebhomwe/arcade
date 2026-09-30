@@ -1,0 +1,212 @@
+{
+ "id": "chili-firm",
+ "title": "Chili Firm 2: Replanted",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "ChiliFirm/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "2 touch inputs not acknowledged within 4 s while the main thread was blocked"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/chili-firm-1-title.jpg",
+  "2-mid": "shots/chili-firm-2-mid.jpg",
+  "3-end": "shots/chili-firm-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 15.26,
+  "cores": 4,
+  "load1End": 16.33,
+  "contention": 1.34,
+  "contentionSamples": [
+   1.31,
+   1.56,
+   1.33,
+   1.34,
+   1.16,
+   2.53,
+   3.33
+  ]
+ },
+ "loadMs": 1055,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:44881/ChiliFirm/index.html",
+ "startPath": "http://127.0.0.1:44881/ChiliFirm/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 77.3,
+  "bench1Ms": 34.7,
+  "effectiveSlowdown": 2.2
+ },
+ "start": {
+  "how": ".playbtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.34,
+  "loadMs": 467,
+  "playMs": 733,
+  "loadRawMs": 626,
+  "playRawMs": 982,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 21,
+  "longTasks100Play": 1,
+  "tbtLoadMs": 419,
+  "tbtPlayMs": 249,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 6,
+  "slowestPollMs": 128,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 6402,
+   "blocking": 56.3,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     77
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     11
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1198,
+   "blocking": 0,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     19
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     5
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 1152.2,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     5
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     9
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 294,
+  "jsMedian": 0.9,
+  "jsP95": 12.84,
+  "jsP99": 37.24,
+  "jsMax": 102.3,
+  "jsP95Raw": 17.2,
+  "rawWithGlP95": 17.2,
+  "glP95": 0,
+  "gapP95": 633.4,
+  "gapMedian": 116.7,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 3,
+  "heap1MB": 3.4,
+  "heapGrowthPct": 11,
+  "heapMeasured": true,
+  "nodesStart": 1190,
+  "nodesEnd": 940,
+  "nodesMax": 1453,
+  "listeners0": 69,
+  "listeners1": 80,
+  "audioContexts": 1,
+  "audioElements": 2,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 0,
+   "totalMB": 0,
+   "biggest": [],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 5
+ },
+ "cpu": {
+  "mainThreadBusyPct": 16,
+  "scriptPct": 3,
+  "layoutPerSec": 7
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 15,
+  "swipes": 4,
+  "holds": 3,
+  "keys": 0,
+  "buttonPresses": 9,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 382,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4000,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 81,
+  "maxChangeFromStartPct": 73.7,
+  "samples": 10
+ },
+ "severity": 102.7,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [],
+  "evidence": null,
+  "blockPlayMs": 264,
+  "blockLoadMs": 165,
+  "load1": 16.09
+ }
+}
