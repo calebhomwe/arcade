@@ -1,7 +1,7 @@
 {
- "generated": "2026-09-30T07:13:55.228Z",
+ "generated": "2026-09-30T07:15:14.441Z",
  "engine": "chromium",
- "count": 77,
+ "count": 79,
  "results": [
   {
    "id": "clean-house",
@@ -4628,6 +4628,495 @@
     "samples": 15
    },
    "severity": 82.1
+  },
+  {
+   "id": "survivor-wave",
+   "title": "Survivor Wave",
+   "cat": "arcade",
+   "genre": "arcade",
+   "src": "SurvivorWave/index.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "JANK"
+   ],
+   "evidence": {
+    "JANK": "p95 JS frame cost 53.73 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.5; raw p95 82.2, median 5.75, p99 97.52, max 97.5; time inside WebGL calls excluded, p95 of it 0)"
+   },
+   "notes": [
+    "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.5)"
+   ],
+   "shots": {
+    "1-title": "shots/survivor-wave-1-title.jpg",
+    "2-mid": "shots/survivor-wave-2-mid.jpg",
+    "3-end": "shots/survivor-wave-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 17.71,
+    "cores": 4,
+    "load1End": 23.16,
+    "contention": 1.53,
+    "contentionSamples": [
+     1.53,
+     1.42,
+     1.53,
+     3.11,
+     1.44,
+     1.55,
+     1.06
+    ]
+   },
+   "loadMs": 2381,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:36997/SurvivorWave/index.html",
+   "startPath": "http://127.0.0.1:36997/SurvivorWave/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 113.3,
+    "bench1Ms": 55.9,
+    "effectiveSlowdown": 2
+   },
+   "start": {
+    "how": "tap centre + ▶ PLAY",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1.53,
+    "loadMs": 678,
+    "playMs": 240,
+    "loadRawMs": 1038,
+    "playRawMs": 368,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 14,
+    "longTasks100Play": 5,
+    "tbtLoadMs": 486,
+    "tbtPlayMs": 368,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 8,
+    "slowestPollMs": 320,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 7009.2,
+     "blocking": 41.4,
+     "scripts": [
+      [
+       "SurvivorWave/index.html",
+       "http://127.0.0.1:36997/SurvivorWave/index.html",
+       16
+      ],
+      [
+       "SurvivorWave/index.html",
+       "http://127.0.0.1:36997/SurvivorWave/index.html",
+       5
+      ],
+      [
+       "SurvivorWave/index.html",
+       "http://127.0.0.1:36997/SurvivorWave/index.html",
+       5
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 4487.6,
+     "blocking": 0,
+     "scripts": [
+      [
+       "assets/arcade-sdk.js",
+       "TimerHandler:setTimeout",
+       6
+      ],
+      [
+       "",
+       "TimerHandler:setTimeout",
+       5
+      ],
+      [
+       "assets/arcade-sdk.js",
+       "TimerHandler:setTimeout",
+       11
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 3695.2,
+     "blocking": 115.4,
+     "scripts": [
+      [
+       "SurvivorWave/index.html",
+       "BUTTON#swQuickPlay.onclick",
+       77
+      ],
+      [
+       "assets/arcade-sdk.js",
+       "TimerHandler:setTimeout",
+       13
+      ],
+      [
+       "assets/arcade-sdk.js",
+       "TimerHandler:setTimeout",
+       21
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 40,
+    "jsMedian": 5.75,
+    "jsP95": 53.73,
+    "jsP99": 97.52,
+    "jsMax": 97.5,
+    "jsP95Raw": 82.2,
+    "rawWithGlP95": 82.2,
+    "glP95": 0,
+    "gapP95": 2966.5,
+    "gapMedian": 1633.2,
+    "over100": 0,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 3.2,
+    "heap1MB": 4,
+    "heapGrowthPct": 26,
+    "heapMeasured": true,
+    "nodesStart": 355,
+    "nodesEnd": 323,
+    "nodesMax": 362,
+    "listeners0": 277,
+    "listeners1": 277,
+    "audioContexts": 1,
+    "audioElements": 25,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 73,
+     "totalMB": 22.3,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 600,
+       "h": 600,
+       "mpx": 0.36,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 512,
+       "h": 512,
+       "mpx": 0.26,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 512,
+       "h": 512,
+       "mpx": 0.26,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 40
+   },
+   "cpu": {
+    "mainThreadBusyPct": 11,
+    "scriptPct": 6,
+    "layoutPerSec": 1.7
+   },
+   "risks": [
+    "25 Audio elements created"
+   ],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 5,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 2,
+    "buttonPresses": 2,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 2896,
+    "inputLatencyP95Ms": 4001,
+    "inputLatencyMaxMs": 4001,
+    "inputTimeouts": 1
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 86.3,
+    "maxChangeFromStartPct": 68.6,
+    "samples": 4
+   },
+   "severity": 45.7
+  },
+  {
+   "id": "maths-kart",
+   "title": "Maths Kart GP",
+   "cat": "learning",
+   "genre": "learning",
+   "src": "MathsKart/index.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "JANK"
+   ],
+   "evidence": {
+    "JANK": "p95 JS frame cost 44.76 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.7; raw p95 76.1, median 8.12, p99 228.12, max 539.8; time inside WebGL calls excluded, p95 of it 5.3)"
+   },
+   "notes": [
+    "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.7)"
+   ],
+   "shots": {
+    "1-title": "shots/maths-kart-1-title.jpg",
+    "2-mid": "shots/maths-kart-2-mid.jpg",
+    "3-end": "shots/maths-kart-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 17.83,
+    "cores": 4,
+    "load1End": 22.2,
+    "contention": 1.7,
+    "contentionSamples": [
+     1.32,
+     29.17,
+     1.91,
+     1.95,
+     1.44,
+     1.7,
+     1.6
+    ]
+   },
+   "loadMs": 3011,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:42685/MathsKart/index.html",
+   "startPath": "http://127.0.0.1:42685/MathsKart/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 249.6,
+    "bench1Ms": 43.7,
+    "effectiveSlowdown": 5.7
+   },
+   "start": {
+    "how": "#bPlay",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1.7,
+    "loadMs": 1343,
+    "playMs": 581,
+    "loadRawMs": 2331,
+    "playRawMs": 992,
+    "playGlMs": 5,
+    "loadGlMs": 48,
+    "longTasksPlay": 54,
+    "longTasks100Play": 7,
+    "tbtLoadMs": 2135,
+    "tbtPlayMs": 1621,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 17,
+    "slowestPollMs": 1663,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 23.1,
+    "shaderCompileMaxCallMs": 22.3
+   },
+   "loafTop": [
+    {
+     "ms": 3443.9,
+     "blocking": 0,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       37
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 2737.1,
+     "blocking": 2654,
+     "scripts": [
+      [
+       "three/three.core.min.js",
+       "Promise.resolve",
+       277
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       2425
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 2450.7,
+     "blocking": 2294.9,
+     "scripts": [
+      [
+       "MathsKart/kart3d.js",
+       "http://127.0.0.1:42685/MathsKart/kart3d.js",
+       6
+      ],
+      [
+       "MathsKart/kart3d.js",
+       "http://127.0.0.1:42685/MathsKart/kart3d.js",
+       2326
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       6
+      ]
+     ],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 261,
+    "jsMedian": 8.12,
+    "jsP95": 44.76,
+    "jsP99": 228.12,
+    "jsMax": 539.8,
+    "jsP95Raw": 76.1,
+    "rawWithGlP95": 89.7,
+    "glP95": 5.3,
+    "gapP95": 550,
+    "gapMedian": 150,
+    "over100": 7,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 5.9,
+    "heap1MB": 6.4,
+    "heapGrowthPct": 9,
+    "heapMeasured": true,
+    "nodesStart": 141,
+    "nodesEnd": 148,
+    "nodesMax": 148,
+    "listeners0": 84,
+    "listeners1": 84,
+    "audioContexts": 2,
+    "audioElements": 0,
+    "webglContexts": 2,
+    "canvases": {
+     "n": 17,
+     "totalMB": 4.9,
+     "biggest": [
+      {
+       "w": 1024,
+       "h": 512,
+       "mpx": 0.52,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 512,
+       "h": 512,
+       "mpx": 0.26,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 256,
+       "h": 256,
+       "mpx": 0.07,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 256,
+       "h": 256,
+       "mpx": 0.07,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 28,
+    "scriptPct": 18,
+    "layoutPerSec": 3.6
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 20,
+    "swipes": 3,
+    "holds": 1,
+    "keys": 1,
+    "buttonPresses": 7,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 522,
+    "inputLatencyP95Ms": 3041,
+    "inputLatencyMaxMs": 4002,
+    "inputTimeouts": 1
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 87,
+    "maxChangeFromStartPct": 71.4,
+    "samples": 11
+   },
+   "severity": 43.3
   },
   {
    "id": "game-arcade-7",
