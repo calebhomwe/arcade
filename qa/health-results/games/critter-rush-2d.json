@@ -1,0 +1,210 @@
+{
+ "id": "critter-rush-2d",
+ "title": "Critter Rush 2D",
+ "cat": "arcade",
+ "genre": "racing",
+ "src": "CritterRush2D/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "STALL"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 3907 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 2537 ms of JS; long-task API + timer heartbeat; longest frame 4445.6 ms:  TimerHandler:setTimeout 5 /  TimerHandler:setTimeout 8 | 3 touch inputs not acknowledged within 4 s while the main thread was blocked",
+  "STALL": "started only with a keyboard key (tap centre + EASY + EASY + EASY + tap on game + KEY Enter); a phone has no keyboard"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/critter-rush-2d-1-title.jpg",
+  "2-mid": "shots/critter-rush-2d-2-mid.jpg",
+  "3-end": "shots/critter-rush-2d-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 18.29,
+  "cores": 4,
+  "load1End": 17.17,
+  "contention": 1.54,
+  "contentionSamples": [
+   1.54,
+   1.49,
+   1.58,
+   3.06,
+   1.39,
+   1.59,
+   1.21
+  ]
+ },
+ "loadMs": 783,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:43265/CritterRush2D/index.html",
+ "startPath": "http://127.0.0.1:43265/CritterRush2D/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 41.8,
+  "bench1Ms": 35,
+  "effectiveSlowdown": 1.2
+ },
+ "start": {
+  "how": "tap centre + EASY + EASY + EASY + tap on game + KEY Enter",
+  "viaKey": true,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.54,
+  "loadMs": 108,
+  "playMs": 2537,
+  "loadRawMs": 167,
+  "playRawMs": 3907,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 15,
+  "longTasks100Play": 12,
+  "tbtLoadMs": 75,
+  "tbtPlayMs": 7367,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 12,
+  "slowestPollMs": 3414,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 4445.6,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     5
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     8
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3120.4,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 3063.5,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     9
+    ]
+   ],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 93,
+  "jsMedian": 1.75,
+  "jsP95": 7.14,
+  "jsP99": 291.62,
+  "jsMax": 291.6,
+  "jsP95Raw": 11,
+  "rawWithGlP95": 11,
+  "glP95": 0,
+  "gapP95": 2066.6,
+  "gapMedian": 833.3,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 4,
+  "heapMeasured": true,
+  "nodesStart": 64,
+  "nodesEnd": 65,
+  "nodesMax": 65,
+  "listeners0": 70,
+  "listeners1": 68,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 7,
+  "scriptPct": 1,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 11,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 3,
+  "buttonPresses": 4,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 2722,
+  "inputLatencyP95Ms": 4008,
+  "inputLatencyMaxMs": 4008,
+  "inputTimeouts": 3
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 87.5,
+  "maxChangeFromStartPct": 34.1,
+  "samples": 6
+ },
+ "severity": 106.5,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [
+   "STALL"
+  ],
+  "evidence": null,
+  "blockPlayMs": 1097,
+  "blockLoadMs": 96,
+  "load1": 17.11
+ }
+}

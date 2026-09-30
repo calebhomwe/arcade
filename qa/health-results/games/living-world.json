@@ -1,0 +1,228 @@
+{
+ "id": "living-world",
+ "title": "Dominion: Living World",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "LivingWorld/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 4523 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.9 -> about 2406 ms of JS; long-task API + timer heartbeat; longest frame 6016.8 ms: unattributed",
+  "JANK": "p95 JS frame cost 18.19 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.9; raw p95 34.2, median 2.07, p99 18.72, max 18.7; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [
+  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.9)"
+ ],
+ "shots": {
+  "1-title": "shots/living-world-1-title.jpg",
+  "2-mid": "shots/living-world-2-mid.jpg",
+  "3-end": "shots/living-world-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.95,
+  "cores": 4,
+  "load1End": 17.36,
+  "contention": 1.88,
+  "contentionSamples": [
+   1.14,
+   1.46,
+   1.1,
+   2.55,
+   1.91,
+   1.88,
+   1.96
+  ]
+ },
+ "loadMs": 5009,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:45629/LivingWorld/index.html",
+ "startPath": "http://127.0.0.1:45629/LivingWorld/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 80,
+  "bench1Ms": 55.3,
+  "effectiveSlowdown": 1.4
+ },
+ "start": {
+  "how": "#dPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.88,
+  "loadMs": 2406,
+  "playMs": 92,
+  "loadRawMs": 4523,
+  "playRawMs": 173,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 1,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 2385,
+  "tbtPlayMs": 10,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 1,
+  "slowestPollMs": 97,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 6016.8,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 4758.2,
+   "blocking": 4571.1,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "http://127.0.0.1:45629/assets/arcade-sdk.js",
+     18
+    ],
+    [
+     "LivingWorld/index.html",
+     "http://127.0.0.1:45629/LivingWorld/index.html",
+     4501
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3226.4,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 37,
+  "jsMedian": 2.07,
+  "jsP95": 18.19,
+  "jsP99": 18.72,
+  "jsMax": 18.7,
+  "jsP95Raw": 34.2,
+  "rawWithGlP95": 34.2,
+  "glP95": 0,
+  "gapP95": 2899.9,
+  "gapMedian": 1516.6,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 3.1,
+  "heap1MB": 3.2,
+  "heapGrowthPct": 4,
+  "heapMeasured": true,
+  "nodesStart": 100,
+  "nodesEnd": 100,
+  "nodesMax": 100,
+  "listeners0": 68,
+  "listeners1": 68,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 45,
+   "totalMB": 29.1,
+   "biggest": [
+    {
+     "w": 2316,
+     "h": 1328,
+     "mpx": 3.08,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 664,
+     "h": 664,
+     "mpx": 0.44,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 390,
+     "h": 664,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 2,
+  "scriptPct": 1,
+  "layoutPerSec": 0.7
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 2,
+  "swipes": 2,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 2,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 4000,
+  "inputLatencyP95Ms": 4046,
+  "inputLatencyMaxMs": 4046,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 32.3,
+  "maxChangeFromStartPct": 78.8,
+  "samples": 5
+ },
+ "severity": 106.4,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "main thread blocked 4581 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 3249 ms of JS; long-task API + timer heartbeat; longest frame 4581.5 ms: LivingWorld/index.html http://127.0.0.1:45629/LivingWorld/index.html 4471",
+  "blockPlayMs": 245,
+  "blockLoadMs": 3249,
+  "load1": 18.32
+ }
+}

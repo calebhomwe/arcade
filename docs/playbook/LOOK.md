@@ -8,7 +8,7 @@
 > deep blue water with depth, foam and shoreline, atmospheric haze toward the horizon, and UI made of dark navy glass panels,
 > wood and gold trim, parchment cards and glossy icons. Kids' games can stay friendly and colourful, but with depth,
 > texture and real lighting, not flat vector shapes with outlines. The toon and outline sections stay here only as
-> reference for what NOT to ship. A realistic-look playbook is being written to replace them.
+> reference for what NOT to ship. **Use [`LOOK_REALISTIC.md`](LOOK_REALISTIC.md) and [`look-real-demo.html`](look-real-demo.html) instead;** the section "From toon to the realistic look" at the end of this file lists what to change.
 
 
 Status: every recipe below runs in [`look-demo.html`](look-demo.html) (a small farm, three.js r180 vendored from `HoleGrind/vendor/three`, no CDN).
@@ -166,6 +166,23 @@ Chunky rounded face: Fredoka (used here, self-hosted in `assets/fonts/`) or Balo
 ## 13. What makes it look cheap
 
 Pure-black shadows; a grey (tone-mapped) sky at the horizon; a single green with no hue variation; outlines that vary with distance; box corners cracking in the outline; flat white UI text without an outline; UI that ignores the notch; blob quads with a hard edge (fix: alpha falls to 0 at the edge; `darkShare` measured 0); glow that turns white to grey; wind that moves every blade in unison (use phase from position). The Claire critics found the same class of faults in this project: blobs that rendered as solid black squares, cylinder bales, a slab for a ship (`scratchpad/claire_r3_critic/REPORT.md`, `claire_r5_critic/REPORT.md`).
+
+## From toon to the realistic look (Caleb's direction)
+
+The toon recipes above are kept as a record of what was tested; the shipped look is in [`LOOK_REALISTIC.md`](LOOK_REALISTIC.md) and [`look-real-demo.html`](look-real-demo.html). To convert a game that already follows this file:
+
+| Toon recipe here | Replace with | Where |
+|---|---|---|
+| `MeshToonMaterial` + `gradientMap` (section 2) | `MeshStandardMaterial`, roughness 0.8 to 0.96, real CC0 textures (512 px WebP) | LOOK_REALISTIC rules 1 to 3 |
+| Inverted-hull ink outlines (section 3) | Nothing; use bake AO, a soft shadow map and a little haze for separation | rules 4, 6, 7 |
+| Saturated palette, ACES/Neutral (section 4) | Natural greens and warm accents; ACES exposure 1.0 | rule 5 |
+| Gradient sky + matched fog (section 5) | Keep it; add soft clouds and `FogExp2`; add sky-rendered image-based light | sections 1 and 2 |
+| Blob contact shadows (section 6) | One 2048 shadow map with a tight frustum, plus vertex-colour AO | rules 4 and 7 |
+| Blade grass with wind (section 7) | Instanced kit foliage with per-instance colour and world-space grunge; keep wind for tall crops if you can afford it | rules 8 to 10 |
+| Fragment water with a foam ring (section 8) | Depth-texture water with a shoreline that follows the terrain | section 4 |
+| Chunky rounded UI with ink text (section 11) | Navy glass panels, gold and wood trim, parchment cards, icons rendered from your models | section 7 |
+
+Order of work that showed the biggest change per hour: (1) turn off toon and outlines and add hemisphere plus sun light; (2) re-colour the kit and add AO; (3) ground splat with real textures; (4) haze that matches the sky; (5) instanced foliage; (6) water depth; (7) UI. Verify each step with a phone-size WebKit screenshot and the frame stats (`window.__frameStats()`).
 
 ## Tested, and what was not
 

@@ -18,7 +18,7 @@ const col = (h) => new THREE.Color(h);
 const SUNISH = new THREE.Vector3(0.45, 0.8, 0.35).normalize();
 function strip(g) { g.deleteAttribute('uv'); if (g.attributes.uv1) g.deleteAttribute('uv1'); return g; }
 function clump(cx, cy, cz, rad, sy, r, o) {
-  let g = new THREE.IcosahedronGeometry(rad, o.detail || 1);
+  let g = new THREE.IcosahedronGeometry(rad, o.detail != null ? o.detail : 1);
   g.deleteAttribute('uv'); g.deleteAttribute('normal');
   g = mergeVertices(g, 1e-4);
   const p = g.attributes.position, n = p.count, nor = new Float32Array(n * 3), colr = new Float32Array(n * 3);
@@ -106,9 +106,9 @@ export function makeTreeGeometry(kind, seed = 1, detail = 1) {
   g.computeBoundingSphere();
   return g;
 }
-export function makeBushGeometry(seed = 3, tone = [0x2a6a2a, 0x8fc548]) {
+export function makeBushGeometry(seed = 3, tone = [0x2a6a2a, 0x8fc548], detail = 1) {
   const r = rng(seed * 313), cen = new THREE.Vector3(0, 0.4, 0);
-  const o = { lo: col(tone[0]), hi: col(tone[1]), center: cen, base: 0, top: 0.95, detail: 1, wob: 0.22 };
+  const o = { lo: col(tone[0]), hi: col(tone[1]), center: cen, base: 0, top: 0.95, detail, wob: 0.22 };
   const parts = [clump(0, 0.42, 0, 0.55, 0.8, r, o), clump(0.42, 0.3, 0.15, 0.4, 0.8, r, o), clump(-0.4, 0.3, -0.1, 0.38, 0.8, r, o), clump(0.05, 0.3, 0.4, 0.32, 0.8, r, o)];
   const g = mergeGeometries(parts.map((q) => strip(q).toNonIndexed()), false); g.computeBoundingSphere(); return g;
 }

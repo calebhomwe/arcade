@@ -1,0 +1,295 @@
+{
+ "id": "bridge-race-classic",
+ "title": "Bridge Race",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 3206 ms (during load), 146 ms of it inside WebGL calls (software GL), machine slowdown x1.6 -> about 1949 ms of JS; long-task API + timer heartbeat; longest frame 3829.3 ms: games/bridge-race-classic.html https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html 3204 | 2 touch inputs not acknowledged within 4 s while the main thread was blocked",
+  "JANK": "p95 JS frame cost 27.52 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.6; raw p95 43.2, median 4.2, p99 159.3, max 290.8; time inside WebGL calls excluded, p95 of it 4.4)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/bridge-race-classic-1-title.jpg",
+  "2-mid": "shots/bridge-race-classic-2-mid.jpg",
+  "3-end": "shots/bridge-race-classic-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.82,
+  "cores": 4,
+  "load1End": 17.17,
+  "contention": 1.57,
+  "contentionSamples": [
+   1.21,
+   1.19,
+   1.39,
+   2.05,
+   1.81,
+   2.44,
+   1.57
+  ]
+ },
+ "loadMs": 4713,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 102.2,
+  "bench1Ms": 34.1,
+  "effectiveSlowdown": 3
+ },
+ "start": {
+  "how": "#brPlay + Let's go!",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.57,
+  "loadMs": 1949,
+  "playMs": 1012,
+  "loadRawMs": 3206,
+  "playRawMs": 1592,
+  "playGlMs": 3,
+  "loadGlMs": 146,
+  "longTasksPlay": 56,
+  "longTasks100Play": 36,
+  "tbtLoadMs": 2545,
+  "tbtPlayMs": 7922,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 26,
+  "slowestPollMs": 1565,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.1,
+  "shaderCompileMaxCallMs": 0.1
+ },
+ "loafTop": [
+  {
+   "ms": 3829.3,
+   "blocking": 3157.3,
+   "scripts": [
+    [
+     "games/bridge-race-classic.html",
+     "https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html",
+     3204
+    ]
+   ],
+   "phase": "calib"
+  },
+  {
+   "ms": 2018.1,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     6
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     8
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 1588.5,
+   "blocking": 48.7,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     47
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     18
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 231,
+  "jsMedian": 4.2,
+  "jsP95": 27.52,
+  "jsP99": 159.3,
+  "jsMax": 290.8,
+  "jsP95Raw": 43.2,
+  "rawWithGlP95": 47.2,
+  "glP95": 4.4,
+  "gapP95": 550,
+  "gapMedian": 183.3,
+  "over100": 3,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.5,
+  "heap1MB": 5.8,
+  "heapGrowthPct": 6,
+  "heapMeasured": true,
+  "nodesStart": 85,
+  "nodesEnd": 91,
+  "nodesMax": 91,
+  "listeners0": 60,
+  "listeners1": 60,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 4,
+   "totalMB": 0.8,
+   "biggest": [
+    {
+     "w": 372,
+     "h": 233,
+     "mpx": 0.09,
+     "dom": true,
+     "css": [
+      372,
+      233
+     ]
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 148,
+     "h": 237,
+     "mpx": 0.04,
+     "dom": true,
+     "css": [
+      0,
+      0
+     ]
+    },
+    {
+     "w": 256,
+     "h": 64,
+     "mpx": 0.02,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 38,
+  "scriptPct": 32,
+  "layoutPerSec": 4.7
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 12,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    20,
+    0
+   ],
+   [
+    23,
+    0
+   ],
+   [
+    27,
+    0
+   ],
+   [
+    29,
+    0
+   ],
+   [
+    31,
+    0
+   ],
+   [
+    36,
+    0
+   ],
+   [
+    37,
+    0
+   ],
+   [
+    38,
+    0
+   ],
+   [
+    49,
+    0
+   ],
+   [
+    53,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 21,
+  "swipes": 2,
+  "holds": 1,
+  "keys": 0,
+  "buttonPresses": 15,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 567,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4005,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 62.6,
+  "maxChangeFromStartPct": 61.2,
+  "samples": 10
+ },
+ "severity": 105.9,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 3337 ms (during load), 253 ms of it inside WebGL calls (software GL), machine slowdown x1.6 -> about 1928 ms of JS; long-task API + timer heartbeat; longest frame 3571.3 ms: games/bridge-race-classic.html https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html 3321 / assets/arcade-sdk.js DOMWindow.onload 6",
+  "blockPlayMs": 654,
+  "blockLoadMs": 1928,
+  "load1": 17.19
+ }
+}

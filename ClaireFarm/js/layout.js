@@ -83,6 +83,18 @@ keep(FIXED.cottage.x, FIXED.cottage.z, 5.5); keep(FIXED.barn.x, FIXED.barn.z, 5.
 keep(FIXED.tractor.x, FIXED.tractor.z, 2.2); keep(FIXED.market.x, FIXED.market.z, 3); keep(FIXED.fountain.x, FIXED.fountain.z, 2.6); keep(FIXED.board.x, FIXED.board.z, 1.6);
 keep(FIXED.windpump.x, FIXED.windpump.z, 2.2); keep(FIXED.dock.x - 2, FIXED.dock.z, 5);
 
+// decorative crop fields around the farm: not playable, just a working landscape. [x0, z0, x1, z1, blocks...]
+export const SCENIC = [
+  { x0: -41, z0: -15, x1: -31, z1: -3, kinds: ['wheat', 'greenwheat'] },
+  { x0: -41, z0: 2, x1: -31, z1: 15, kinds: ['sunflower', 'corn'] },
+  { x0: -40, z0: 20, x1: -31, z1: 32, kinds: ['lettuce', 'tomato', 'lavender'] },
+  { x0: -30, z0: -29, x1: -17, z1: -19, kinds: ['wheat', 'corn'] },
+  { x0: -14, z0: 35, x1: -1, z1: 44, kinds: ['pumpkin', 'lettuce', 'greenwheat'] },
+  { x0: 3, z0: 34, x1: 15, z1: 43, kinds: ['sunflower', 'wheat'] },
+  { x0: 20, z0: 27, x1: 29, z1: 38, kinds: ['lavender', 'tomato'] },
+];
+SCENIC.forEach((f) => { const cx = (f.x0 + f.x1) / 2, cz = (f.z0 + f.z1) / 2, hw = (f.x1 - f.x0) / 2, hd = (f.z1 - f.z0) / 2; const n = Math.ceil(Math.max(hw, hd) / 3.2); for (let i = 0; i < n; i++) { const t = n === 1 ? 0 : i / (n - 1) * 2 - 1; if (hw >= hd) keep(cx + t * (hw - hd), cz, hd + 1.5); else keep(cx, cz + t * (hd - hw), hw + 1.5); } });
+
 export function blocked(x, z, pad = 0) {
   for (const [kx, kz, kr] of KEEP) { const dx = x - kx, dz = z - kz; if (dx * dx + dz * dz < (kr + pad) * (kr + pad)) return true; }
   return false;

@@ -235,7 +235,9 @@ export class FarmScene {
       let y = 1e9; for (const [dx, dz] of [[0, 0], [w / 2, 0], [-w / 2, 0], [0, w / 2], [0, -w / 2]]) y = Math.min(y, heightAt(x + dx, z + dz));
       m.group.position.set(x, y - 0.25, z); m.group.rotation.y = yaw; g.add(m.group); return m;
     };
-    const hamlet = [['house_yellow', -22, -43, 0.35, 5.0], ['house_brick', -13, -45, 0.05, 4.8], ['farmhouse', -3, -47, -0.15, 5.8], ['workshop', 8, -46, 0.1, 5.2], ['cafe', 18, -42, -0.35, 5.4], ['chapel', -32, -38, 0.6, 4.4], ['library', 27, -37, -0.7, 4.8], ['house_brick', 3, -55, 0.2, 4.6], ['house_yellow', -9, -56, -0.1, 4.6]];
+    const hamlet = [['house_yellow', -22, -43, 0.35, 5.0], ['house_brick', -13, -45, 0.05, 4.8], ['farmhouse', -3, -47, -0.15, 5.8], ['workshop', 8, -46, 0.1, 5.2], ['cafe', 18, -42, -0.35, 5.4], ['chapel', -32, -38, 0.6, 4.4], ['library', 27, -37, -0.7, 4.8], ['house_brick', 3, -55, 0.2, 4.6], ['house_yellow', -9, -56, -0.1, 4.6],
+      ['house_brick', -52, -4, 1.5, 4.8], ['house_yellow', -50, 8, 1.3, 4.8], ['farmhouse', -53, 20, 1.6, 5.6], ['chapel', -48, -16, 1.2, 4.4], ['cafe', -51, 32, 1.4, 5.0], ['boutique', -46, 44, 1.0, 4.6],
+      ['house_yellow', -18, 52, 3.2, 4.8], ['house_brick', -6, 54, 3.1, 4.6], ['boutique', 6, 52, 3.3, 4.6], ['house_yellow', 18, 50, 3.0, 4.6], ['library', 30, 47, 2.8, 4.8], ['house_brick', -30, 50, 2.9, 4.6], ['farmhouse', 40, 38, 2.5, 5.4], ['workshop', 52, -30, -1.4, 5.2], ['house_yellow', 48, -42, -1.0, 4.8]];
     for (const [id, x, z, yaw, w] of hamlet) stand(id, x, z, yaw, w);
     // a lighthouse on a rocky islet in the bay
     const rockGeo = makeRockGeometry(5), rockMat = farmMaterial({ vertexColors: true, spec: 0.08 });

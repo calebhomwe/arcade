@@ -5,6 +5,7 @@ import { Sky } from './gfx/sky.js';
 import { buildTerrain, buildDepthTexture, buildWater, makePaintTexture } from './gfx/terrain.js';
 import { buildMountains, buildWaterfall, buildCity } from './gfx/backdrop.js';
 import { buildForest, GrassField } from './gfx/flora.js';
+import { buildDress } from './gfx/dress.js';
 import * as THREE from 'three';
 import { SU } from './gfx/shaders.js';
 import { Farm } from './state.js';
@@ -59,13 +60,14 @@ async function boot() {
   buildMountains(scene); buildWaterfall(scene); buildCity(scene, assets);
   setProg(0.76, 'Growing the trees…'); await yieldFrame();
   const forest = buildForest(scene);
+  const dress = buildDress(scene, engine.q);
   const grass = new GrassField(scene, 'grass', engine.q.grass, { x0: -40, x1: 44, z0: -34, z1: 40 }, 5);
   const flowers = new GrassField(scene, 'flower', engine.q.flowers, { x0: -36, x1: 36, z0: -30, z1: 36 }, 6);
   setProg(0.84, 'Building the barn…'); await yieldFrame();
 
   const audio = new GameAudio(farm.S.settings);
   const game = new Game({ engine, assets, farm, audio, sky });
-  Object.assign(game, { grass, flowers, forest });
+  Object.assign(game, { grass, flowers, forest, dress });
   game.build(paint);
   window.__cf.game = game; window.__cf.assets = assets; window.__cf.scene = scene; window.__cf.sky = sky;
   window.__cf.screenOf = (x, y, z) => game.rig.project(new THREE.Vector3(x, y, z));

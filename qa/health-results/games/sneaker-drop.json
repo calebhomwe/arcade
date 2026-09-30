@@ -1,0 +1,210 @@
+{
+ "id": "sneaker-drop",
+ "title": "SneakerDrop — Hype Market Tycoon",
+ "cat": "sim",
+ "genre": "management",
+ "src": "SneakerDrop/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 2796 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 2026 ms of JS; long-task API + timer heartbeat; longest frame 6055.9 ms:  FrameRequestCallback 70 | 2 touch inputs not acknowledged within 4 s while the main thread was blocked",
+  "JANK": "p95 JS frame cost 108.48 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.4; raw p95 149.7, median 3.12, p99 116.3, max 116.3; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/sneaker-drop-1-title.jpg",
+  "2-mid": "shots/sneaker-drop-2-mid.jpg",
+  "3-end": "shots/sneaker-drop-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 13.43,
+  "cores": 4,
+  "load1End": 14.66,
+  "contention": 1.38,
+  "contentionSamples": [
+   3.65,
+   1.38,
+   1.59,
+   1.11,
+   1.11,
+   1.58,
+   1.38
+  ]
+ },
+ "loadMs": 737,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:42087/SneakerDrop/index.html",
+ "startPath": "http://127.0.0.1:42087/SneakerDrop/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 113.6,
+  "bench1Ms": 30.2,
+  "effectiveSlowdown": 3.8
+ },
+ "start": {
+  "how": "#startBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.38,
+  "loadMs": 215,
+  "playMs": 2026,
+  "loadRawMs": 297,
+  "playRawMs": 2796,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 5,
+  "longTasks100Play": 4,
+  "tbtLoadMs": 114,
+  "tbtPlayMs": 336,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 7,
+  "slowestPollMs": 382,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 6055.9,
+   "blocking": 34.2,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     70
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 4975.1,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     5
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 4563.7,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     15
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 31,
+  "jsMedian": 3.12,
+  "jsP95": 108.48,
+  "jsP99": 116.3,
+  "jsMax": 116.3,
+  "jsP95Raw": 149.7,
+  "rawWithGlP95": 149.7,
+  "glP95": 0,
+  "gapP95": 2433.3,
+  "gapMedian": 1899.9,
+  "over100": 2,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.5,
+  "heap1MB": 2.7,
+  "heapGrowthPct": 5,
+  "heapMeasured": true,
+  "nodesStart": 35,
+  "nodesEnd": 35,
+  "nodesMax": 35,
+  "listeners0": 68,
+  "listeners1": 68,
+  "audioContexts": 0,
+  "audioElements": 1,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 1,
+   "totalMB": 6.2,
+   "biggest": [
+    {
+     "w": 975,
+     "h": 1660,
+     "mpx": 1.62,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 3,
+  "scriptPct": 1,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 2,
+  "swipes": 0,
+  "holds": 1,
+  "keys": 0,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 4000,
+  "inputLatencyP95Ms": 4031,
+  "inputLatencyMaxMs": 4031,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 10.2,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": 31.6,
+  "samples": 3
+ },
+ "severity": 106,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [],
+  "evidence": null,
+  "blockPlayMs": 368,
+  "blockLoadMs": 67,
+  "load1": 15.7
+ }
+}

@@ -68,6 +68,7 @@ vec3 paintLight(vec3 albedo, vec3 N, vec3 V, float shadow, float ao, float spec,
   float w = clamp((ndl + 0.22) / 1.22, 0.0, 1.0);
   w = w * w * (3.0 - 2.0 * w) * 0.4 + w * 0.6;
   vec3 hemi = mix(uAmbGround, uAmbSky, N.y * 0.5 + 0.5);
+  hemi *= mix(vec3(0.80, 0.88, 1.28), vec3(1.0), clamp(shadow * w * 1.6, 0.0, 1.0));   // cool blue-violet in the shade, warm in the light
   vec3 c = albedo * (hemi * ao + uSunCol * w * shadow * (0.35 + 0.65 * ao));
   if (spec > 0.001) {
     vec3 H = normalize(uSunDir + V); float nh = max(dot(N, H), 0.0);
@@ -245,11 +246,12 @@ void main(){
   vec3 a1 = texture2D(uGA, xz * 0.34).rgb, a2 = texture2D(uGA, xz * 0.079 + vec2(0.31, 0.17)).rgb;
   vec3 b1 = texture2D(uGB, xz * 0.34).rgb, b2 = texture2D(uGB, xz * 0.079 + vec2(0.31, 0.17)).rgb;
   vec3 A = mix(a1, a2, 0.42), B = mix(b1, b2, 0.42);
-  float gpatch = clamp(vC.r + (p1.r - 0.5) * 0.9, 0.0, 1.0);
+  float gpatch = clamp(vC.r + (p1.r - 0.5) * 1.6, 0.0, 1.0);
   vec3 grass = mix(uGrassA, uGrassB, gpatch);
   float gd = 0.45 + 1.1 * mix(A.r, A.g, 0.35 + 0.4 * p2.r);
   grass *= gd * (0.8 + 0.5 * p2.b) * (0.85 + 0.3 * p1.g);
-  grass = mix(grass, grass * vec3(1.22, 1.1, 0.62), smoothstep(0.6, 0.9, p1.b) * 0.5);   // sun-dried patches
+  grass = mix(grass, grass * vec3(1.32, 1.12, 0.55), smoothstep(0.5, 0.85, p1.b) * 0.7);   // sun-dried, golden patches
+  grass = mix(grass, grass * vec3(0.62, 0.86, 0.72), smoothstep(0.55, 0.8, texture2D(uPaint, xz * 0.021 + 0.6).r) * 0.75);   // deep green swathes
   grass = mix(grass, grass * vec3(0.7, 0.82, 0.75), smoothstep(0.62, 0.86, p1.g) * 0.5); // cool clover patches
   vec3 dirt = mix(vec3(0.30, 0.19, 0.10), vec3(0.42, 0.29, 0.16), p2.r) * (0.5 + 1.0 * A.b);
   vec3 rock = mix(vec3(0.36, 0.33, 0.30), vec3(0.5, 0.46, 0.4), p2.g) * (0.55 + 0.9 * B.g);

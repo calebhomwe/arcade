@@ -74,7 +74,8 @@ export function buildTerrain(paintTex) {
     const sl = slopeAt(x, z);
     const rock = clamp((sl - 0.42) * 2.4 + (h - 9) * 0.06, 0, 1);
     const sx = (h - WATER_Y) / 0.5, sand = h < 0.6 ? clamp(1 - (sx - 0.15) / 0.85, 0, 1) : 0;
-    col.push(grass, 0, rock, sand);
+    const dirtN = smooth(clamp((fbm(x * 0.11 - 8, z * 0.11 + 2, 3) - 0.6) * 5, 0, 1)) * 0.8 * (Math.max(Math.abs(x + 2), Math.abs(z - 2)) < 60 ? 1 : 0);
+    col.push(grass, dirtN, rock, sand);
   }
   for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { const a0 = j * (N + 1) + i, b = a0 + 1, c = a0 + N + 1, d = c + 1; idx.push(a0, c, b, b, c, d); }
   const g = new THREE.BufferGeometry();

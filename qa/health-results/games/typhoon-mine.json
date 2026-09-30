@@ -1,0 +1,200 @@
+{
+ "id": "typhoon-mine",
+ "title": "TYPHOON MINE",
+ "cat": "arcade",
+ "genre": "arcade",
+ "src": "TyphoonMine/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x2.5)"
+ ],
+ "shots": {
+  "1-title": "shots/typhoon-mine-1-title.jpg",
+  "2-mid": "shots/typhoon-mine-2-mid.jpg",
+  "3-end": "shots/typhoon-mine-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 15.7,
+  "cores": 4,
+  "load1End": 16.52,
+  "contention": 2.54,
+  "contentionSamples": [
+   1.06,
+   6.57,
+   6.34,
+   2.54,
+   5.95,
+   1.34,
+   1.08
+  ]
+ },
+ "loadMs": 519,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:42087/TyphoonMine/index.html",
+ "startPath": "http://127.0.0.1:42087/TyphoonMine/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 115.5,
+  "bench1Ms": 31,
+  "effectiveSlowdown": 3.7
+ },
+ "start": {
+  "how": "Play/Start button",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 2.54,
+  "loadMs": 76,
+  "playMs": 135,
+  "loadRawMs": 193,
+  "playRawMs": 342,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 4,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 26,
+  "tbtPlayMs": 35,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 2,
+  "slowestPollMs": 63,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 2418.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 2288.7,
+   "blocking": 5,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     8
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     44
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 2203.5,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 74,
+  "jsMedian": 0.59,
+  "jsP95": 10.91,
+  "jsP99": 33.43,
+  "jsMax": 33.4,
+  "jsP95Raw": 27.7,
+  "rawWithGlP95": 27.7,
+  "glP95": 0,
+  "gapP95": 2000,
+  "gapMedian": 766.6,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.2,
+  "heap1MB": 2.4,
+  "heapGrowthPct": 12,
+  "heapMeasured": true,
+  "nodesStart": 133,
+  "nodesEnd": 134,
+  "nodesMax": 134,
+  "listeners0": 81,
+  "listeners1": 90,
+  "audioContexts": 0,
+  "audioElements": 9,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 2,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 160,
+     "h": 160,
+     "mpx": 0.03,
+     "dom": true,
+     "css": [
+      62,
+      62
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 4,
+  "scriptPct": 1,
+  "layoutPerSec": 0.6
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 7,
+  "swipes": 1,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 4,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1460,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 6.9,
+  "changeTitleToPlayPct": 68.2,
+  "maxChangeFromStartPct": 69.9,
+  "samples": 7
+ },
+ "severity": 0.1
+}

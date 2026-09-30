@@ -1,0 +1,264 @@
+{
+ "id": "claire-farm",
+ "title": "Claire's Farm",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "ClaireFarm/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 2824 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 2046 ms of JS; long-task API + timer heartbeat; longest frame 7245.6 ms:  TimerHandler:setTimeout 6 /  TimerHandler:setTimeout 7 /  FrameRequestCallback 73",
+  "JANK": "p95 JS frame cost 59.06 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.4; raw p95 81.5, median 13.04, p99 315.58, max 315.6; time inside WebGL calls excluded, p95 of it 3.9)"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.4)"
+ ],
+ "shots": {
+  "1-title": "shots/claire-farm-1-title.jpg",
+  "2-mid": "shots/claire-farm-2-mid.jpg",
+  "3-end": "shots/claire-farm-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.19,
+  "cores": 4,
+  "load1End": 15.78,
+  "contention": 1.38,
+  "contentionSamples": [
+   1.11,
+   1.08,
+   1.05,
+   1.8,
+   1.38,
+   3.21,
+   5.38
+  ]
+ },
+ "loadMs": 2533,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:39251/ClaireFarm/index.html",
+ "startPath": "http://127.0.0.1:39251/ClaireFarm/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 58.7,
+  "bench1Ms": 29.6,
+  "effectiveSlowdown": 2
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.38,
+  "loadMs": 2046,
+  "playMs": 321,
+  "loadRawMs": 2824,
+  "playRawMs": 443,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 14,
+  "longTasks100Play": 2,
+  "tbtLoadMs": 3195,
+  "tbtPlayMs": 359,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 5,
+  "slowestPollMs": 185,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 4.3,
+  "shaderCompileMaxCallMs": 3.8
+ },
+ "loafTop": [
+  {
+   "ms": 7245.6,
+   "blocking": 31.6,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     6
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     7
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     73
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2849,
+   "blocking": 35,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     47
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 2683.4,
+   "blocking": 29.2,
+   "scripts": [
+    [
+     "js/audio.js",
+     "BaseAudioContext.decodeAudioData.then",
+     11
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     52
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 44,
+  "jsMedian": 13.04,
+  "jsP95": 59.06,
+  "jsP99": 315.58,
+  "jsMax": 315.6,
+  "jsP95Raw": 81.5,
+  "rawWithGlP95": 81.9,
+  "glP95": 3.9,
+  "gapP95": 2633.3,
+  "gapMedian": 1233.3,
+  "over100": 2,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 10.2,
+  "heap1MB": 10.4,
+  "heapGrowthPct": 2,
+  "heapMeasured": true,
+  "nodesStart": 38,
+  "nodesEnd": 168,
+  "nodesMax": 185,
+  "listeners0": 100,
+  "listeners1": 100,
+  "audioContexts": 2,
+  "audioElements": 2,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 4,
+   "totalMB": 1.2,
+   "biggest": [
+    {
+     "w": 390,
+     "h": 664,
+     "mpx": 0.26,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 256,
+     "h": 128,
+     "mpx": 0.03,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 128,
+     "h": 64,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 7,
+  "scriptPct": 4,
+  "layoutPerSec": 0.2
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 2,
+  "first": 1000,
+  "last": 1000,
+  "max": 1000,
+  "trajectory": [
+   [
+    9,
+    1000
+   ],
+   [
+    35,
+    1000
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 5,
+  "swipes": 0,
+  "holds": 1,
+  "keys": 0,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 2662,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 86.7,
+  "maxChangeFromStartPct": 82.7,
+  "samples": 5
+ },
+ "severity": 106,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [],
+  "evidence": null,
+  "blockPlayMs": 87,
+  "blockLoadMs": 1473,
+  "load1": 15.89
+ }
+}

@@ -60,6 +60,7 @@ export class Game {
   qualityChanged(name, cfg, first) {
     if (this.grass) { this.grass.setDensity(cfg.grass / this.grass.total); this.flowers.setDensity(cfg.flowers / this.flowers.total); }
     if (this.forest) this.forest.setDensity(cfg.trees);
+    if (this.dress) this.dress.setDensity(cfg.trees);
     this.particleScale = cfg.particles;
     if (!first) this.toastOnce('gfx', `Graphics set to ${name} to keep things smooth.`);
   }
@@ -516,7 +517,7 @@ export class Game {
   update(dt) {
     this.blobs.update(); this.labels.update(); this.floaters.update(dt); this.particles.update(dt); this.glow.update(dt);
     this.farmScene.update(dt); this.life.update(dt);
-    this.lodAcc = (this.lodAcc || 0) + dt; if (this.lodAcc > 0.3 && this.forest) { this.lodAcc = 0; this.forest.update(this.rig.cur.x, this.rig.cur.z); }
+    this.lodAcc = (this.lodAcc || 0) + dt; if (this.lodAcc > 0.3 && this.forest) { this.lodAcc = 0; this.forest.update(this.rig.cur.x, this.rig.cur.z); if (this.dress) { this.dress.update && this.dress.update(this.rig.cur.x, this.rig.cur.z); this.dress.syncPatches(this.farm.S.patches); } }
     // sky / time of day
     if (this.todTarget != null) { let d = this.todTarget - this.sky.phase; if (d > 0.5) d -= 1; if (d < -0.5) d += 1; this.sky.phase = (this.sky.phase + d * Math.min(1, dt * 0.8) + 1) % 1; }
     this.sky.update(dt);
