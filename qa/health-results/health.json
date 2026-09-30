@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-30T06:54:47.097Z",
+ "generated": "2026-09-30T07:06:23.486Z",
  "engine": "chromium",
  "count": 106,
  "results": [
@@ -6071,6 +6071,177 @@
    }
   },
   {
+   "id": "godot-la-city",
+   "title": "LA City",
+   "cat": "arcade",
+   "genre": "racing",
+   "src": "Godot/la-city/index.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "STALL"
+   ],
+   "evidence": {
+    "FREEZE": "page did not answer the harness for 6 s (47 poll timeout(s))",
+    "STALL": "game never reported play after the start attempts (start: tap centre + tap on game); scenes seen: none"
+   },
+   "notes": [
+    "4 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.3)"
+   ],
+   "shots": {
+    "1-title": null,
+    "3-end": null
+   },
+   "machine": {
+    "load1Start": 17.25,
+    "cores": 4,
+    "load1End": 17.95,
+    "contention": 1.34,
+    "contentionSamples": [
+     1.97,
+     1.14,
+     1.39,
+     1.34,
+     1.08
+    ]
+   },
+   "loadMs": 649,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:40121/Godot/la-city/index.html",
+   "startPath": "http://127.0.0.1:40121/Godot/la-city/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 120.6,
+    "bench1Ms": 46.7,
+    "effectiveSlowdown": 2.6
+   },
+   "start": {
+    "how": "tap centre + tap on game",
+    "viaKey": false,
+    "detectedBy": null
+   },
+   "block": {
+    "c": 1.34,
+    "loadMs": 0,
+    "playMs": 0,
+    "loadRawMs": 0,
+    "playRawMs": 0,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 0,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 0,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 0,
+    "slowestPollMs": 6067,
+    "pollTimeouts": 47,
+    "shaderCompileMs": 12.1,
+    "shaderCompileMaxCallMs": 3.3
+   },
+   "loafTop": [],
+   "rafStalls": [],
+   "frames": {
+    "n": 0,
+    "jsMedian": null,
+    "jsP95": null,
+    "jsP99": null,
+    "jsMax": null,
+    "jsP95Raw": null,
+    "rawWithGlP95": null,
+    "glP95": null,
+    "gapP95": null,
+    "gapMedian": null,
+    "over100": 0,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": null,
+    "heap1MB": null,
+    "heapGrowthPct": null,
+    "heapMeasured": false,
+    "nodesStart": null,
+    "nodesEnd": null,
+    "nodesMax": null,
+    "listeners0": 78,
+    "listeners1": 78,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 3,
+    "canvases": {
+     "n": 1,
+     "totalMB": 3.6,
+     "biggest": [
+      {
+       "w": 741,
+       "h": 1261,
+       "mpx": 0.93,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 1.9
+    },
+    "sdkTimers": null
+   },
+   "cpu": {
+    "mainThreadBusyPct": 100,
+    "scriptPct": 100,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [],
+    "reachedPlay": false,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 2,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 2,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 4002,
+    "inputLatencyP95Ms": 4005,
+    "inputLatencyMaxMs": 4005,
+    "inputTimeouts": 4
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": null,
+    "maxChangeFromStartPct": null,
+    "samples": 0
+   },
+   "severity": 104,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE",
+     "STALL"
+    ],
+    "evidence": "main thread blocked 32105 ms (during load), 5159 ms of it inside WebGL calls (software GL), machine slowdown x4 -> about 6736 ms of JS; long-task API + timer heartbeat; longest frame 31854.8 ms: _engine/godot.js Response.arrayBuffer.then 31689 /  FrameRequestCallback 151 | page did not answer the harness for 6 s (46 poll timeout(s))",
+    "blockPlayMs": 194,
+    "blockLoadMs": 6736,
+    "load1": 22.46
+   }
+  },
+  {
    "id": "hub-stack-ball",
    "title": "Stack Ball",
    "cat": "hyper",
@@ -10391,27 +10562,6 @@
     "samples": 15
    },
    "severity": 82.1
-  },
-  {
-   "id": "godot-swellrider",
-   "title": "SwellRider",
-   "cat": "arcade",
-   "genre": "board-sports",
-   "engine": "chromium",
-   "verdicts": [
-    "STALL"
-   ],
-   "evidence": {
-    "STALL": "harness crashed 3 times: n.toFixed is not a function"
-   },
-   "notes": [
-    "the check itself failed; re-run this game alone"
-   ],
-   "shots": {},
-   "throttle": 4,
-   "throttled": true,
-   "severity": 80,
-   "harnessFailed": true
   },
   {
    "id": "claire-farm",
