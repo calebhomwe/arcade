@@ -444,6 +444,16 @@ await page.goto(BASE + 'index.html?view=trophies', { waitUntil: 'load' }); await
 const nAch = await page.evaluate(() => ArcadeProfileCore.ACH.length + Object.keys(JSON.parse(localStorage.getItem('ca_profile')).ach).filter(k => k.startsWith('g:')).length);
 check('the Trophy room shows every arcade badge plus any a game gave (' + nAch + ')', await page.locator('.pf-bd').count() === nAch, await page.locator('.pf-bd').count());
 await page.click('.pf-bd >> nth=0'); await settle(page, 200); check('a badge opens its detail card', await page.locator('.pf-detail[open] h2').count() === 1); await page.keyboard.press('Escape');
+{ // opening a game and leaving quickly earns nothing: no XP, no first-game badge, no quest credit
+  const bc = await browser.newContext({ ...pw.devices['iPhone 13'], serviceWorkers: 'block' }); const bp = await bc.newPage();
+  await bp.goto(BASE + 'index.html', { waitUntil: 'load' }); await bp.evaluate(() => localStorage.clear());
+  await bp.goto(BASE + 'play.html?g=hole-grind', { waitUntil: 'load' }); await bp.waitForFunction(() => document.getElementById('playbtn') && window.ArcadeProfileUI);
+  await bp.evaluate(() => document.getElementById('playbtn').click()); await bp.waitForTimeout(6000);
+  const q = await bp.evaluate(() => { const p = JSON.parse(localStorage.getItem('ca_profile') || 'null'); return p ? { xp: p.xp, ach: Object.keys(p.ach), quests: p.today.quests.reduce((a, x) => a + x.prog, 0), first: Object.values(p.games).some(g => g.first) } : { xp: 0, ach: [], quests: 0, first: false }; });
+  check('opening a game and leaving early earns no XP, no badge and no quest credit', q.xp === 0 && !q.ach.length && !q.first && q.quests === 0, JSON.stringify(q));
+  check('in-game toasts sit at the bottom and are capped at two', await bp.evaluate(() => { const b = document.getElementById('pf-toasts'); if (!b) return false; for (let i = 0; i < 4; i++) ArcadeProfileUI.toast({ title: 'T' + i }); return b.children.length <= 2 && getComputedStyle(b).top !== '10px' && b.getBoundingClientRect().top > innerHeight / 2; }));
+  await bc.close();
+}
 const rm = await browser.newContext({ ...pw.devices['iPhone 13'], serviceWorkers: 'block', reducedMotion: 'reduce' }); const rp = await rm.newPage();
 await rp.goto(BASE + 'index.html', { waitUntil: 'load' }); await rp.waitForFunction(() => window.ArcadeProfileUI);
 await rp.evaluate(() => { const S = ArcadeProfileUI.store; S._mutate(p => { p.xp = ArcadeProfileCore.LEVEL_XP[3] - 1; }); S.award(S.startSession('hole-grind'), { xp: 5, reason: 't' }); });

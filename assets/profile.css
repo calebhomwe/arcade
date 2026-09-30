@@ -69,6 +69,10 @@
 /* ---------- toasts ---------- */
 .pf-toasts{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:60;width:min(430px,calc(100% - 20px));display:grid;gap:8px;pointer-events:none}
 .pf-toasts.floating{position:fixed;z-index:500}
+/* over a game the toasts sit low and small, so they never cover a wallet, score or other HUD at the top */
+.player>.pf-toasts:not(.floating){top:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(360px,calc(100% - 24px))}
+.player>.pf-toasts .pf-toast{padding:6px 12px 6px 6px;border-radius:16px;transform:translateY(14px) scale(.96)}
+.player>.pf-toasts .pf-toast.in{transform:none}
 .pf-toast{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border-radius:20px;background:#1b1f3c;color:#fff;border:2px solid rgba(255,255,255,.16);box-shadow:0 4px 0 rgba(0,0,0,.4),0 16px 30px -12px rgba(0,0,0,.65);opacity:0;transform:translateY(-14px) scale(.96);transition:opacity .25s,transform .38s var(--ease)}
 .pf-toast.in{opacity:1;transform:none}
 .pf-toast.has-actions{pointer-events:auto;flex-wrap:wrap}

@@ -75,7 +75,7 @@
       (o.actions ? '<span class="pt-acts">' + o.actions.map(function (a, i) { return '<button type="button" class="pf-btn sm ' + (a.cls || '') + '" data-i="' + i + '">' + esc(a.label) + '</button>'; }).join('') + '</span>' : '');
     var kill = function () { t.classList.remove('in'); setTimeout(function () { t.remove(); }, 300); };
     if (o.actions) t.addEventListener('click', function (e) { var bt = e.target.closest('button[data-i]'); if (bt) { try { o.actions[+bt.dataset.i].run(); } catch (x) {} kill(); } });
-    b.appendChild(t); while (b.children.length > 3) b.firstChild.remove();
+    b.appendChild(t); while (b.children.length > (b.id === 'pf-toasts' && !b.classList.contains('floating') ? 2 : 3)) b.firstChild.remove();
     void t.offsetWidth; t.classList.add('in');   // a reflow first, so the slide-in plays even where animation frames are throttled
     setTimeout(kill, o.ms || 4200);
     return t;

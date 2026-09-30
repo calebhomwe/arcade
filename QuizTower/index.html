@@ -80,7 +80,7 @@
    ═══════════════════════════════════════════════════════════════════════ */
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 let W=1100;const H=640;   /* the view is 640 tall and as wide as the screen allows (1100..1400), so a phone held sideways is filled */
-let SCALE=1;
+let SCALE=1,TMIN=14;
 const TAU=Math.PI*2;
 function fit(){
   const ar=innerWidth/Math.max(1,innerHeight);
@@ -93,6 +93,7 @@ function fit(){
   const bw=Math.round(W*s*d),bh=Math.round(H*s*d);
   if(cv.width!==bw||cv.height!==bh){cv.width=bw;cv.height=bh;}
   SCALE=bw/W;
+  TMIN=Math.min(30,Math.ceil(14/Math.max(.3,s)));   /* no text smaller than 14 CSS px, whatever the phone's scale */
   if(typeof KL!=='undefined')KL.dpr(SCALE);
   if(typeof resetSprites==='function')resetSprites();
   if(typeof layout==='function')layout();
@@ -554,9 +555,9 @@ const WORDS={
     ['hat','she wore a ~ on her head'],['bus','we rode the ~ to town'],['fish','a ~ has fins and gills'],
     ['frog','a green ~ jumps and croaks'],['bird','a robin is a small ~'],
     ['cake','we ate birthday ~'],['star','twinkle twinkle little ~'],['moon','the ~ circles the earth'],
-    ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a ~ crosses the sea'],
+    ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a huge ~ carries cargo across the ocean'],
     ['milk','the cat drank ~'],['book','she read a ~ at night'],['king','the ~ wore a golden crown'],
-    ['road','the ~ goes over the hill'],['snow','cold white ~ fell all night'],['bear','the big ~ slept all winter'] ],
+    ['road','the ~ goes over the hill'],['snow','we built a ~man in winter'],['bear','the big ~ slept all winter'] ],
  2:[ ['garden','we plant seeds in the ~'],['bridge','the train crossed the ~'],
     ['monkey','a ~ climbs and swings'],['orange','an ~ is a round citrus fruit'],
     ['purple','~ is red mixed with blue'],['school','you learn at ~'],
@@ -1512,7 +1513,7 @@ const coin=(x,y,s)=>{const c=coinSprite();ctx.drawImage(c.c,x-c.w*(s||1)/2,y-c.h
 
 /* ═══════════ drawing helpers ═══════════ */
 const INK='#4a2d12',INK2='#7a5428',CREAM='#fff3d2',GOLDT='#ffe7a0';
-function T(s,x,y,px,col,align,weight,mode){KL.text(ctx,s,x,y,px,col,align||'left',weight||700,'Fredoka,system-ui,sans-serif',mode);}
+function T(s,x,y,px,col,align,weight,mode){if(px<TMIN)px=TMIN;KL.text(ctx,s,x,y,px,col,align||'left',weight||700,'Fredoka,system-ui,sans-serif',mode);}
 function fitPx(s,maxW,px,minPx,weight){
   let f=px;ctx.font=(weight||700)+' '+f+'px Fredoka,system-ui,sans-serif';
   while(f>minPx&&ctx.measureText(s).width>maxW){f-=1;ctx.font=(weight||700)+' '+f+'px Fredoka,system-ui,sans-serif';}

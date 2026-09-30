@@ -89,7 +89,7 @@
   #hud .kl-btn{pointer-events:auto;min-height:44px;padding:0 14px;font-size:15px}
   #hud .kl-btn.sq{padding:0;min-width:44px}
   #hDyn{font-size:13px;color:#ffd76a}
-  #toasts{position:absolute;bottom:max(96px,calc(env(safe-area-inset-bottom) + 96px));left:50%;transform:translateX(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;width:min(92vw,420px)}
+  #toasts{position:absolute;top:206px;left:50%;transform:translateX(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;width:min(92vw,420px)}
   .toast{font-family:var(--kl-font);font-weight:600;font-size:16px;padding:8px 16px;border-radius:14px;animation:tst 2.6s forwards;text-align:center;max-width:100%}
   @keyframes tst{0%{opacity:0;transform:translateY(10px)}12%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
   #banner{position:absolute;left:50%;top:26%;transform:translateX(-50%);z-index:8;pointer-events:none;text-align:center;padding:12px 26px;font-family:var(--kl-font);font-size:26px;font-weight:700;opacity:0;transition:opacity .3s}
@@ -97,11 +97,12 @@
   /* dig pad */
   #digpad{position:absolute;right:max(10px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:7;display:none;pointer-events:none}
   body.touch #digpad{display:block}
-  #digpad .cluster{position:relative;width:196px;height:196px;pointer-events:auto}
-  #digpad button{position:absolute;width:64px;height:64px;border-radius:18px;border:1px solid rgba(190,215,255,.4);background:linear-gradient(180deg,rgba(42,70,116,.86),rgba(11,23,48,.86));color:#ffe7a0;
+  #digpad .cluster{position:relative;width:160px;height:160px;pointer-events:auto}
+  #digpad button{position:absolute;opacity:.55;width:52px;height:52px;border-radius:18px;border:1px solid rgba(190,215,255,.4);background:linear-gradient(180deg,rgba(42,70,116,.86),rgba(11,23,48,.86));color:#ffe7a0;
     font-size:26px;line-height:1;cursor:pointer;touch-action:none;box-shadow:0 4px 0 rgba(6,12,28,.8),inset 0 1px 0 rgba(255,255,255,.28)}
   #digpad button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(6,12,28,.8);background:linear-gradient(180deg,#e8b338,#a8721a);color:#4a2c08}
-  #dpU{left:66px;top:0}#dpL{left:0;top:66px}#dpR{left:132px;top:66px}#dpD{left:66px;top:132px}
+  #dpU{left:54px;top:0}#dpL{left:0;top:54px}#dpR{left:108px;top:54px}#dpD{left:54px;top:108px}
+  #digpad button:active{opacity:1}
   #coach{position:absolute;left:50%;top:120px;transform:translateX(-50%);z-index:8;display:none;width:min(440px,calc(100% - 24px));padding:10px 12px;font-size:15px;line-height:1.4;text-align:left;gap:10px;align-items:center;font-family:var(--kl-font)}
   #coach.show{display:flex}
   #coach b{color:#ffd76a}
@@ -852,13 +853,13 @@ const WORDS={
     ['hat','she wore a ~ on her head'],['bus','we rode the ~ to town'],['fish','a ~ swims in water'],
     ['frog','a green ~ jumps and croaks'],['bird','a ~ has feathers and wings'],
     ['cake','we ate birthday ~'],['star','each ~ burns far away'],['moon','the ~ circles the earth'],
-    ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a ~ crosses the sea'],
+    ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a huge ~ carries cargo across the ocean'],
     ['milk','the cat drank ~'],['book','she read a ~ at night'],['door','he knocked on the ~'],
     ['foot','put your sock on your ~'],['hand','wash your ~ before eating'],
     ['king','the ~ wore a golden crown'],['ring','a diamond ~ on her finger'],
-    ['road','the ~ goes over the hill'],['snow','cold white ~ fell all night'],
+    ['road','the ~ goes over the hill'],['snow','we built a ~man in winter'],
     ['bear','the big ~ slept all winter'],['nest','eggs rest in a ~'],
-    ['rain','~ fell from the grey clouds'],['boat','they sailed a small ~'],
+    ['rain','we splashed in puddles after the ~'],['boat','they rowed a small ~ across the lake'],
     ['farm','cows and sheep live on a ~'],['goat','the ~ ate the grass'],
     ['jump','you ~ over the log'],['lamp','turn on the ~ to read'],
     ['leaf','a red ~ fell from the tree'],['pond','ducks swim on the ~'],
@@ -877,7 +878,7 @@ const WORDS={
     ['clothes','fold your ~ neatly'],['dinner','~ is the evening meal'],
     ['eleven','ten plus one is ~'],['family','my ~ is big and loud'],
     ['forest','wolves live deep in the ~'],['friend','a ~ shares with you'],
-    ['granite','countertops are made of ~'],['happiness','~ is a warm feeling'],
+    ['happiness','~ is a warm feeling'],
     ['holiday','we travel on every ~'],['honey','bees make sweet ~'],
     ['horse','she rides her ~ daily'],['island','an ~ is land in the sea'],
     ['jacket','wear a ~ when it is cold'],['kitchen','soup cooks in the ~'],
@@ -903,30 +904,28 @@ const WORDS={
     ['important','brushing teeth is ~'],['impossible','it is ~ to touch the sun'],
     ['insect','an ~ has six legs'],['journey','the ~ took three days'],
     ['medicine','bitter ~ made him well'],['memory','a good ~ helps in school'],
-    ['multiply','~ five by four to get twenty'],['neighbor','our ~ borrowed sugar'],
+    ['multiply','~ five by four to get twenty'],['neighbour','our ~ borrowed sugar'],
     ['observe','scientists ~ carefully'],['partner','choose a ~ for the game'],
     ['protect','a coat will ~ you'],['receive','did you ~ my letter?'],
     ['special','today is a ~ day'],['subtract','~ nine from fifteen'],
     ['surface','the ~ of the lake was still'],['surprise','the party was a ~']],
  4:[['accomplish','you can ~ anything with practice'],['believe','always ~ in yourself'],
     ['calendar','mark the date on the ~'],['category','sort each word into a ~'],
-    ['cemetery','the old ~ sits on the hill'],['definite','a ~ maybe the answer is no'],
+    ['cemetery','the old ~ sits on the hill'],['definite','a ~ answer is final'],
     ['dictionary','look the word up in a ~'],['embarrass','do not ~ yourself on stage'],
     ['environment','care for the ~'],['equipment','check the climbing ~'],
     ['especially','I like fruit, ~ apples'],['exaggerate','do not ~ the story'],
-    ['familiar','that tune feels ~'],['February','~ is the shortest month'],
+    ['February','~ is the shortest month'],
     ['government','the ~ makes laws'],['guardian','a ~ watches over you'],
     ['height','the ~ of the mountain'],['immediately','come here ~'],
-    ['interrupt','do not ~ the speaker'],['knowledge','~ grows when shared'],
-    ['laboratory','experiments happen in a ~'],['language','a second ~ opens doors'],
+    ['interrupt','do not ~ the speaker'],['laboratory','experiments happen in a ~'],['language','a second ~ opens doors'],
     ['maintenance','car ~ prevents breakdowns'],['mathematics','~ is the language of science'],
     ['mischievous','the ~ kitten unraveled yarn'],['necessary','water is ~ for life'],
     ['occasion','a birthday is a happy ~'],['opposite','north is the ~ of south'],
     ['parallel','train tracks run ~'],['parliament','laws are debated in ~'],
     ['peninsula','Italy is a ~'],['perseverance','~ beats talent'],
     ['privilege','education is a ~, not a right'],['pronounce','~ each syllable slowly'],
-    ['question','raise a hand to ask a ~'],['receive','you ~ what you are given'],
-    ['recommend','I ~ this book'],['rhythm','clap the ~ of the song'],
+    ['question','raise a hand to ask a ~'],['recommend','I ~ this book'],['rhythm','clap the ~ of the song'],
     ['separate','~ the recycling'],['success','hard work leads to ~'],
     ['temperature','check the ~ outside'],['threshold','step across the ~'],
     ['twelfth','December is the ~ month'],['vacuum','a ~ cleans the carpet']],
@@ -938,19 +937,19 @@ const WORDS={
     ['controversy','the rule caused ~'],['determination','~ moved the boulder'],
     ['dilemma','a difficult ~ with no easy choice'],['diligent','the ~ bee worked all day'],
     ['ecosystem','a reef is a living ~'],['entrepreneur','an ~ starts a business'],
-    ['exaggerate','fishermen ~ the size'],['extraordinary','an ~ aurora lit the sky'],
+    ['extraordinary','an ~ aurora lit the sky'],
     ['fascinating','the documentary was ~'],['generosity','her ~ knew no limits'],
     ['hypocrisy','~ is saying one thing, doing another'],['hypothetical','a ~ question imagines what if'],
     ['influential','an ~ writer changes minds'],['innovation','~ reshapes the world'],
     ['interpret','poets ~ dreams'],['legitimate','a ~ claim stands in court'],
-    ['maintenance','the bridge needs ~'],['metaphor','a ~ says love is a rose'],
+    ['metaphor','a ~ says love is a rose'],
     ['negotiate','~ before you sign'],['omnipotent','no one is truly ~'],
     ['phenomenon','an eclipse is a rare ~'],['photosynthesis','leaves feed themselves by ~'],
     ['possibilities','the future holds endless ~'],['preliminary','the ~ results look good'],
     ['resilience','~ is bouncing back'],['sacrifice','a ~ for the team'],
     ['simultaneous','the drums kept a ~ beat'],['sophisticated','a ~ argument, well reasoned'],
     ['strategist','a great ~ sees three moves ahead'],['sufficient','one coat was ~'],
-    ['synonymous','kind and caring are ~'],['threshold','cross the ~ into the lab']]
+    ['synonymous','kind and caring are ~']]
 };
 const word=lv=>{const w=pick(WORDS[clamp(lv,1,5)]);return{t:w[0],h:w[1]}};
 /* render a sentence clue with the masked word in place */
@@ -1086,7 +1085,7 @@ resize();
 /* tile codes: 0 empty, 1 dirt, 2 puzzle rock, 3 hard rock, 10..13 ore */
 const T_EMPTY=0,T_DIRT=1,T_ROCK=2,T_HARD=3;
 const G={ rows:[], mode:'math', running:false, over:false, onSurface:true,
-  px:8, py:0, dx:8, dy:0, face:1, swing:0, energy:20, maxEnergy:20, cargo:{coal:0,iron:0,gold:0,diamond:0},
+  px:8, py:0, dx:8, dy:0, face:1, swing:0, energy:36, maxEnergy:36, cargo:{coal:0,iron:0,gold:0,diamond:0},
   score:0, rocksBroken:0, wrong:0, dug:0, shake:0, moveCd:0, biomeSeen:0, runGems:[], newGems:[], runBiome:0,
   lastHint:'', curRock:null, curQ:null, spellIdx:0, t:0, fps:60,
   frames:0, fpsT:performance.now(), particles:[], usedElev:0, maxDepth:0, hp:{}, glints:[], floats:[] };
@@ -1111,7 +1110,7 @@ function setTile(x,y,v){ rowAt(y)[x]=v; }
 
 function startRun(mode){
   G.mode=mode; G.running=true; G.over=false; G.onSurface=false;
-  G.maxEnergy=20+SAVE.up.tank*10; G.energy=G.maxEnergy;
+  G.maxEnergy=36+SAVE.up.tank*12; G.energy=G.maxEnergy;
   G.cargo={coal:0,iron:0,gold:0,diamond:0}; G.score=0; G.rocksBroken=0;
   G.wrong=0; G.dug=0; G.maxDepth=0; G.particles=[]; G.glints=[]; G.floats=[]; G.lastHint=''; G.curRock=null; G.hp={};
   G.answered=0; G.over=false; G.runGems=[]; G.newGems=[]; G.biomeSeen=0; G.runBiome=0;
@@ -1357,7 +1356,7 @@ document.getElementById('pzDyn').addEventListener('click',()=>{
 const SHOP=[
  {id:'pick', ico:'⛏️', nm:'Pickaxe power', max:4, price:l=>50*(l+1), ds:l=>`digs ${1+l} → ${2+l} hits deep: hard rock cracks faster`},
  {id:'lamp', ico:'🔦', nm:'Headlamp',      max:4, price:l=>60*(l+1), ds:l=>`light reaches ${(3.2+l*.9).toFixed(1)} → ${(4.1+l*.9).toFixed(1)} tiles`},
- {id:'tank', ico:'🔋', nm:'Battery tank',  max:4, price:l=>70*(l+1), ds:l=>`energy ${20+l*10} → ${30+l*10} per trip`},
+ {id:'tank', ico:'🔋', nm:'Battery tank',  max:4, price:l=>70*(l+1), ds:l=>`energy ${36+l*12} → ${48+l*12} per trip`},
  {id:'elev', ico:'🛗', nm:'Elevator shaft',max:4, price:l=>90*(l+1), ds:l=>`start at ${l*15} m → ${(l+1)*15} m down`},
  {id:'dyn',  ico:'🧨', nm:'Dynamite',      max:99,price:()=>30,      ds:()=>'solves one rock at once'},
 ];

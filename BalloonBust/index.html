@@ -1495,7 +1495,7 @@ function drawResults(){
     cx.restore();
     if(on&&el>delay&&el<delay+.05)sfx('coin',{rate:1+i*.2,volume:.6});
   }
-  const lines=[['⭐',`${state.stars} stars`],['🎯',`${state.correct} right pops`],['🔥',`best streak ${state.bestStreak}`]];
+  const lines=[['⭐',`${state.stars} star${state.stars===1?"":"s"}`],['🎯',`${state.correct} right pop${state.correct===1?"":"s"}`],['🔥',`best streak ${state.bestStreak}`]];
   const ly=py+(WIDE?ph*.5:250*U),lh=WIDE?ph*.11:34*U;
   lines.forEach((l,i)=>{emo(l[0],cxm-90*U,ly+i*lh,clamp(lh*.7,18,26));T(l[1],cxm-64*U,ly+i*lh+1,clamp(lh*.55,17,24),INK,'left',700,'engrave');});
   const dy=ly+lines.length*lh+6*U,gk=clamp(meta.daily.n/GOAL_POPS,0,1),gbw=pw-64*U,gbx=cxm-gbw/2,dn=meta.daily.n>=GOAL_POPS;
@@ -1528,8 +1528,8 @@ function drawRevealCard(){
   if(r.type==='sticker'){title='New sticker!';sub=stickerName(r.id);drawSticker(cx,r.id,W/2,py,Math.min(cw*.62,ch*.42),{t:state.t,wob:Math.sin(state.t*5)*.05});}
   else if(r.type==='world'){const w=WORLDS[r.idx];title='New place unlocked!';sub=w.name;emo(w.emoji,W/2,py,Math.min(cw*.4,ch*.3));}
   else if(r.type==='level'){title='Level up!';sub=({count:'Count Pop',math:'Math Pop',spell:'Word Pop'})[r.mode]+' level '+r.lv;goldStar(W/2,py,Math.min(cw*.28,ch*.2),Math.sin(state.t*3)*.1,true);T(String(r.lv),W/2,py+4,Math.min(cw*.2,ch*.14),'#fff6e0','center',700);}
-  else if(r.type==='gift'){title='Daily goal done!';sub='+'+r.n+' bonus stars';emo('🎁',W/2,py,Math.min(cw*.4,ch*.3));}
-  else{title='Week chest!';sub='+'+r.n+' bonus stars';emo('🧰',W/2,py,Math.min(cw*.4,ch*.3));}
+  else if(r.type==='gift'){title='Daily goal done!';sub='+'+r.n+' bonus star'+(r.n===1?'':'s');emo('🎁',W/2,py,Math.min(cw*.4,ch*.3));}
+  else{title='Week chest!';sub='+'+r.n+' bonus star'+(r.n===1?'':'s');emo('🧰',W/2,py,Math.min(cw*.4,ch*.3));}
   T(title,W/2,y+ch*.14,clamp(30*U,22,36),'#a03a10','center',700,'engrave');
   T(sub,W/2,y+ch*.74,clamp(28*U,20,34),INK,'center',700,'engrave');
   if(el>.8)T('Tap to keep going',W/2,y+ch-26*U,clamp(16*U,14,18),INK2,'center',600,'engrave');

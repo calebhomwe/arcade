@@ -581,12 +581,12 @@ const WORDS={
     ['hat','she wore a ~ on her head'],['bus','we rode the ~ to town'],['fish','a ~ swims in water'],
     ['frog','a green ~ jumps and croaks'],['bird','a ~ has feathers and wings'],
     ['cake','we ate birthday ~'],['star','each ~ burns far away'],['moon','the ~ circles the earth'],
-    ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a ~ crosses the sea'],
+    ['tree','a ~ has leaves and branches'],['duck','the ~ says quack'],['ship','a huge ~ carries cargo across the ocean'],
     ['milk','the cat drank ~'],['book','she read a ~ at night'],['door','he knocked on the ~'],
     ['king','the ~ wore a golden crown'],['ring','a diamond ~ on her finger'],
-    ['road','the ~ goes over the hill'],['snow','cold white ~ fell all night'],
+    ['road','the ~ goes over the hill'],['snow','we built a ~man in winter'],
     ['bear','the big ~ slept all winter'],['nest','eggs rest in a ~'],
-    ['rain','~ fell from the grey clouds'],['boat','they sailed a small ~'],
+    ['rain','we splashed in puddles after the ~'],['boat','they rowed a small ~ across the lake'],
     ['farm','cows and sheep live on a ~'],['goat','the ~ ate the grass'],
     ['jump','you ~ over the log'],['lamp','turn on the ~ to read'],
     ['leaf','a red ~ fell from the tree'],['pond','ducks swim on the ~'],
@@ -626,7 +626,7 @@ const WORDS={
     ['familiar','that song sounds ~'],['important','brushing teeth is ~'],
     ['insect','an ~ has six legs'],['journey','the ~ took three days'],
     ['medicine','bitter ~ made him well'],['memory','a good ~ helps in school'],
-    ['multiply','~ five by four to get twenty'],['neighbor','our ~ borrowed sugar'],
+    ['multiply','~ five by four to get twenty'],['neighbour','our ~ borrowed sugar'],
     ['observe','scientists ~ carefully'],['partner','choose a ~ for the game'],
     ['protect','a coat will ~ you'],['receive','did you ~ my letter?'],
     ['special','today is a ~ day'],['subtract','~ nine from fifteen'],
@@ -667,7 +667,7 @@ const WORDS={
     ['preliminary','the ~ results look good'],['resilience','~ is bouncing back'],
     ['sacrifice','a ~ for the team'],['simultaneous','the drums kept a ~ beat'],
     ['sophisticated','a ~ argument, well reasoned'],['strategist','a great ~ sees three moves ahead'],
-    ['sufficient','one coat was ~'],['threshold','cross the ~ into the lab']]
+    ['sufficient','one coat was ~']]
 };
 const word=lv=>{const w=pick(WORDS[clamp(lv,1,5)]);return{t:w[0],h:w[1]};};
 function clueSentence(w,idx){
@@ -787,6 +787,7 @@ const THEMES=[
   {name:'Ember Forge',   at:13,wall:['#8a5644','#552c22'], back:['#2c1310','#150705'], glow:'#ff7a30', fog:'#150806'},
   {name:'Crystal Vault', at:17,wall:['#7a68aa','#453a6c'], back:['#1c1434','#0b0818'], glow:'#e4a8ff', fog:'#0a0614'}
 ];
+for(const t of THEMES){t.back=t.back.map(c=>KL.mix(c,'#9aa8d8',.26));t.wall=t.wall.map(c=>KL.lit(c,.12));}
 const themeOf=n=>{let t=THEMES[0];for(const x of THEMES)if(n>=x.at)t=x;return t;};
 const HEROES=[
   {n:'Blue Knight',at:0, tunic:'#4f7fc8',cape:'#c8384f',hat:'helm'},{n:'Red Knight',at:3,tunic:'#c8384f',cape:'#e8b02a',hat:'helm'},
@@ -845,7 +846,7 @@ function makeLock(kind,drawX,runeX,level){
 }
 function makeLevel(n){
   G.solids=[];G.coinsArr=[];G.torches=[];G.slimes=[];G.locks=[];G.hazards=[];G.particles=[];G.boss=null;
-  G.trapCount=0;G.hurtCount=0;G.keys=0;G.safe={x:60,y:GY-40};
+  G.trapCount=0;G.hurtCount=0;G.keys=0;G.safe={x:250,y:GY-40};
   const R=mulberry32(G.runSeed+n*7919);
   if(n%4===0){ /* boss arena */
     G.level_w=1300;addFloor(G.solids,0,G.level_w);
@@ -854,10 +855,10 @@ function makeLevel(n){
     G.boss={x:G.level_w-260,y:GY-88,w:96,h:88,hp:3,maxhp:3,vy:0,hop:0,dir:-1,enrage:0,q:null,runes:[],idx:0,timer:18,anim:0,deadT:0};
     bossQuestion();return;
   }
-  const nsec=3+Math.min(2,Math.floor(n/3));
+  const nsec=n<=2?1:2+Math.min(2,Math.floor(n/4));
   const padStart=260+nsec*SECW,PAD=1300;
   G.level_w=padStart+PAD;
-  addFloor(G.solids,0,260);
+  addFloor(G.solids,0,330);
   const c={coins:G.coinsArr,torches:G.torches,hazards:G.hazards};
   const used=[];
   for(let i=0;i<nsec;i++){
@@ -871,7 +872,7 @@ function makeLevel(n){
   G.locks.push(makeLock('chest',padStart+560,padStart+60,n));
   G.locks.push(makeLock('door',padStart+1120,padStart+660,n));
   G.exit={x:G.level_w-110,y:GY-92,w:60,h:92};
-  G.player=newPlayer(60,GY-40);
+  G.player=newPlayer(250,GY-40);
 }
 function bossQuestion(){
   const b=G.boss;b.q=makeQuestion(G.mode,G.level);b.idx=0;
@@ -1113,7 +1114,7 @@ function bgTile(th){
 }
 function vignette(){
   if(vig&&vig.w===W&&vig.k===KL.dpr())return vig.c;
-  const m=KL.make(W,H),g=m.g,gr=g.createRadialGradient(W/2,H*.55,H*.35,W/2,H*.5,Math.max(W,H)*.68);gr.addColorStop(0,'rgba(4,2,10,0)');gr.addColorStop(1,'rgba(4,2,10,.62)');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  const m=KL.make(W,H),g=m.g,gr=g.createRadialGradient(W/2,H*.55,H*.35,W/2,H*.5,Math.max(W,H)*.68);gr.addColorStop(0,'rgba(4,2,10,0)');gr.addColorStop(1,'rgba(4,2,10,.4)');g.fillStyle=gr;g.fillRect(0,0,W,H);
   vig={c:m.c,w:W,k:KL.dpr()};return vig.c;
 }
 
@@ -1239,7 +1240,8 @@ function drawPlayer(p,tt){
   if(p.inv>0&&!RM.matches&&Math.floor(p.inv*12)%2)return;
   if(p.inv>0&&RM.matches)ctx.globalAlpha=.55;
   ctx.fillStyle='rgba(4,2,10,.35)';ctx.beginPath();ctx.ellipse(x+12,p.y+35,13,3.4,0,0,TAU);ctx.fill();
-  drawHeroSprite(ctx,x,p.y,p.face,p.anim,p.onG,p.vx,meta.hero,p.inv,p.squash);
+  ctx.save();ctx.translate(x+12,p.y+34);ctx.scale(1.4,1.4);ctx.translate(-12,-34);
+  drawHeroSprite(ctx,0,0,p.face,p.anim,p.onG,p.vx,meta.hero,p.inv,p.squash);ctx.restore();
   ctx.globalAlpha=1;
 }
 function drawSlime(s,tt){
