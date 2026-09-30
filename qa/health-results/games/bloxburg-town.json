@@ -1,0 +1,251 @@
+{
+ "id": "bloxburg-town",
+ "title": "Bloxburg Town",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "https://calebhomwe.github.io/bloxburg-town/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK",
+  "ERRORS"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 4243 ms (while playing), 30 ms of it inside WebGL calls (software GL), machine slowdown x1.7 -> about 2523 ms of JS; long-task API + timer heartbeat; longest frame 8334.9 ms: assets/arcade-sdk.js TimerHandler:setTimeout 51 /  TimerHandler:setTimeout 9 / assets/arcade-sdk.js TimerHandler:setTimeout 11 | 2 touch inputs not acknowledged within 4 s while the main thread was blocked",
+  "JANK": "p95 JS frame cost 31.56 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.7; raw p95 52.7, median 0.24, p99 1467.25, max 1467.2; time inside WebGL calls excluded, p95 of it 3.4)",
+  "ERRORS": "2 uncaught page error(s): Unable to decode audio data"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/bloxburg-town-1-title.jpg",
+  "2-mid": null,
+  "3-end": null
+ },
+ "machine": {
+  "load1Start": 19.11,
+  "cores": 4,
+  "load1End": 16.3,
+  "contention": 1.67,
+  "contentionSamples": [
+   3.62,
+   5.49,
+   1.32,
+   2.79,
+   1.67,
+   1.51,
+   1.56
+  ]
+ },
+ "loadMs": 2306,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/bloxburg-town/index.html",
+ "startPath": "https://calebhomwe.github.io/bloxburg-town/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 88.3,
+  "bench1Ms": 40.3,
+  "effectiveSlowdown": 2.2
+ },
+ "start": {
+  "how": "#bt-play",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.67,
+  "loadMs": 1009,
+  "playMs": 2523,
+  "loadRawMs": 1687,
+  "playRawMs": 4243,
+  "playGlMs": 30,
+  "loadGlMs": 3,
+  "longTasksPlay": 13,
+  "longTasks100Play": 6,
+  "tbtLoadMs": 1033,
+  "tbtPlayMs": 4898,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 8,
+  "slowestPollMs": 4029,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 836.8,
+  "shaderCompileMaxCallMs": 448.3
+ },
+ "loafTop": [
+  {
+   "ms": 8334.9,
+   "blocking": 73.9,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     51
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     9
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     11
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 5366,
+   "blocking": 397.1,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     10
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "DOMWindow.onpointerdown",
+     7
+    ],
+    [
+     "bloxburg-town/index.html",
+     "BUTTON#bt-play.onclick",
+     20
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 4562.2,
+   "blocking": 128.8,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     13
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     24
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     20
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 40,
+  "jsMedian": 0.24,
+  "jsP95": 31.56,
+  "jsP99": 1467.25,
+  "jsMax": 1467.2,
+  "jsP95Raw": 52.7,
+  "rawWithGlP95": 52.7,
+  "glP95": 3.4,
+  "gapP95": 2466.6,
+  "gapMedian": 16.7,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [
+  "Unable to decode audio data"
+ ],
+ "errorCount": 2,
+ "consoleErrors": [
+  "Loading FSB failed for audio clip \"ambience_day\".\n",
+  "Loading FSB failed for audio clip \"ambience_night\".\n"
+ ],
+ "failed": [],
+ "resources": {
+  "heap0MB": 9.7,
+  "heap1MB": 9.8,
+  "heapGrowthPct": 1,
+  "heapMeasured": true,
+  "nodesStart": 49,
+  "nodesEnd": 52,
+  "nodesMax": 52,
+  "listeners0": 97,
+  "listeners1": 97,
+  "audioContexts": 1,
+  "audioElements": 20,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 7,
+  "scriptPct": 5,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 2,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 4001,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": null,
+  "samples": 0
+ },
+ "severity": 108.9,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK",
+   "ERRORS"
+  ],
+  "evidence": "main thread blocked 3116 ms (while playing), 25 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 2075 ms of JS; long-task API + timer heartbeat; longest frame 6151.3 ms: assets/arcade-sdk.js TimerHandler:setTimeout 66 / assets/arcade-sdk.js TimerHandler:setTimeout 5 / assets/arcade-sdk.js TimerHandler:setTimeout 21",
+  "blockPlayMs": 2075,
+  "blockLoadMs": 386,
+  "load1": 17.76
+ }
+}

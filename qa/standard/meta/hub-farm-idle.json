@@ -5,11 +5,11 @@
     "At 1M coins earned, start a New Farm+ for Legacy Points that raise all income by 10% each."
   ],
   "tips": [
-    "Tap quickly for a combo: fast taps pay extra.",
-    "25 taps charge a Golden Harvest: +25% income for 10 seconds.",
-    "Fill the market orders for a big coin bonus before their timer runs out.",
-    "Catch the butterflies that flutter past for a reward.",
-    "Use the ×10 and ×25 buttons to buy buildings in bulk."
+    "Tap the cow to milk it early on.",
+    "Catch the butterfly for a bonus.",
+    "Upgrades unlock when you own 10, 40, 75, 150 and 250 of a farm building.",
+    "The daily gift grows with your streak.",
+    "Blue ribbons are permanent: spend them in the Fair tab."
   ],
   "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -17,19 +17,31 @@
   },
   "difficulty": "An idle curve: each building costs more than the last, owning 25, 50 and 100 of one multiplies its income, and every New Farm+ restarts the farm with more income per building.",
   "cheats": [
-    {"code": "HAYRAIN", "effect": "Hay rain: a big pile of coins (ten minutes' worth, at least 10,000)"},
-    {"code": "GOLDENHOUR", "effect": "Golden hour: a Golden Harvest that lasts a whole minute"},
-    {"code": "BUMPERCROP", "effect": "Bumper crop: every tractor tap is worth 10 times more"}
+    {
+      "code": "GOLDRAIN",
+      "effect": "Coin shower: 1M coins"
+    },
+    {
+      "code": "MIDAS",
+      "effect": "Golden udder: taps 10 times stronger"
+    },
+    {
+      "code": "TIMEWARP",
+      "effect": "One hour of income now"
+    }
   ],
   "features": {
-    "offline-earnings": "Welcome back card: coins the farm earned while away at half rate, up to 8 hours",
-    "upgrade-tree": "Ten buildings from Wheat Field to Mega Farm with income milestones, plus the Farm Market and achievements",
-    "big-number-format": "Coins shown as 1.2K, 3.4M, 5.6B and beyond",
-    "prestige-or-next-goal": "New Farm+ for Legacy Points (+10% income each), and timed market orders as the next goal",
-    "tutorial": "Coach cards on the first visit: tap, buy and prestige; replay with Learn to play",
-    "results": "New Farm+ card with coins earned, Legacy Points and the new income multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, new building, welcome back and prestige sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%"
   },
-  "saves": ["farmIdleSave_v1"],
-  "start": "#playBtn",
+  "saves": [
+    "farmIdleSave_v2"
+  ],
+  "start": "#btnPlay",
   "pauseButton": "tr"
 }

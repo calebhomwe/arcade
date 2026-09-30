@@ -5,11 +5,11 @@
     "Deeper tiers have richer ore. Past 1000m, Prestige for gems that add 3% mining power each."
   ],
   "tips": [
-    "Tap quickly to build Flow: every 10 in a row pays a bonus.",
-    "Dynamite makes all digging 10 times faster for 20 seconds.",
-    "Each new ore tier doubles the value of every stone.",
-    "Gems also buy permanent upgrades like the Eternal Pick.",
-    "Use the ×10 and MAX buttons to hire miners in bulk."
+    "Tap the rock early, then dig new shafts.",
+    "Each shaft you dig lights the way to a richer ore.",
+    "Tap the gold cart when it rolls by.",
+    "The daily gift grows with your streak.",
+    "Gems are permanent: spend them in the Blast tab."
   ],
   "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -17,19 +17,31 @@
   },
   "difficulty": "An idle curve: pickaxes cost 60% more each level and miners 50% more each, while ore gets richer every tier from Stone at 0m to Void at 5000m.",
   "cheats": [
-    {"code": "STONERAIN", "effect": "Stone rain: a big pile of stones (ten minutes' worth, at least 1000)"},
-    {"code": "BIGBOOM", "effect": "Big boom: free dynamite, ×10 digging for 60 seconds"},
-    {"code": "DEEPDIVE", "effect": "Deep dive: 500m deeper at once"}
+    {
+      "code": "GOLDRAIN",
+      "effect": "Gold rain: 1M coins"
+    },
+    {
+      "code": "MIDAS",
+      "effect": "Golden pick: taps 10 times stronger"
+    },
+    {
+      "code": "TIMEWARP",
+      "effect": "One hour of income now"
+    }
   ],
   "features": {
-    "offline-earnings": "Welcome back card: stones your miners dug while away at 50% rate, up to 8 hours",
-    "upgrade-tree": "Pickaxe levels, auto-miners, dynamite and four gem upgrades",
-    "big-number-format": "Stones shown as 1.2K, 3.4M, 5.6B and beyond",
-    "prestige-or-next-goal": "Prestige for gems (+3% mining each) plus the next ore tier and its depth shown under the rock",
-    "tutorial": "Coach cards on the first visit: dig, shop and dynamite; replay with Learn to play",
-    "results": "Prestige card with stones this run, depth reached, total gems and the new multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, new building, welcome back and prestige sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%"
   },
-  "saves": ["im_state"],
+  "saves": [
+    "im_state"
+  ],
   "start": "#btnPlay",
   "pauseButton": "tr"
 }
