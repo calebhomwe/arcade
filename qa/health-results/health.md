@@ -1,10 +1,10 @@
 # Health check: chromium, CPU throttled x4
 
-Generated 2026-09-30T06:01:01.797Z. 84 games, 45 s of monkey input each, iPhone 13 profile (390x844 touch, mobile user agent).
+Generated 2026-09-30T06:12:58.350Z. 96 games, 45 s of monkey input each, iPhone 13 profile (390x844 touch, mobile user agent).
 
-**FREEZE 27, STALL 7, JANK 18, LEAK 0, ERRORS 4, clean 44.**
+**FREEZE 27, STALL 12, JANK 18, LEAK 0, ERRORS 4, clean 51.**
 
-Machine: 4 cores, 1-minute load average at the end of each game ranged 13.2 to 23.45 (median 17.32). Measured CPU contention while running (wall/CPU of a spin): median x1.73, range x1.08 to x5.42. Measured slowdown of the throttled page against an unthrottled page (a fixed JS benchmark): median x3.4, range x0.7 to x8.6. The machine is shared and loaded, so every duration is divided by the machine slowdown measured at the time (wall time over CPU time of a spin in the harness, contention in games/<id>.json, capped at 4) and time inside GPU-blocking WebGL calls is taken out; raw numbers are kept in games/<id>.json. A FREEZE is re-run once and marked reproduced or not.
+Machine: 4 cores, 1-minute load average at the end of each game ranged 13.2 to 24.68 (median 17.26). Measured CPU contention while running (wall/CPU of a spin): median x1.73, range x1.08 to x5.42. Measured slowdown of the throttled page against an unthrottled page (a fixed JS benchmark): median x3.3, range x0.7 to x8.6. The machine is shared and loaded, so every duration is divided by the machine slowdown measured at the time (wall time over CPU time of a spin in the harness, contention in games/<id>.json, capped at 4) and time inside GPU-blocking WebGL calls is taken out; raw numbers are kept in games/<id>.json. A FREEZE is re-run once and marked reproduced or not.
 
 Legend: FREEZE = main thread blocked over 1.5 s, or no animation frame for 3 s while visible, or crash / reload / WebGL context lost. STALL = never leaves the title (SDK never reports `play`), starts only by keyboard, screen static 20 s under input, or dead end after game over. JANK = p95 JS frame cost over 16 ms (throttled) or 33 ms (unthrottled), GL-call time excluded. LEAK = JS heap over +60% after forced GC, or DOM nodes / listeners exploding. ERRORS = uncaught page errors. Judged on JS cost, long tasks and stalls, not fps: software WebGL makes the GPU part meaningless.
 
@@ -38,62 +38,74 @@ Legend: FREEZE = main thread blocked over 1.5 s, or no animation frame for 3 s w
 | 26 | SneakerDrop — Hype Market Tycoon (`sneaker-drop`) | FREEZE | FREEZE: 2 touch inputs not acknowledged within 4 s while the main thread was blocked [not reproduced on re-run] | #startBtn | play, over 0, restarts 0 | `shots/sneaker-drop-1-title.jpg` `shots/sneaker-drop-2-mid.jpg` `shots/sneaker-drop-3-end.jpg` |
 | 27 | QuickStop Mini Mart (`mini-mart`) | FREEZE | FREEZE: page reloaded 1x without a button press (MiniMart/index.html#; last input was canvas 230 ms earlier) [not reproduced on re-run] | #titlePlay | play, over 0, restarts 0 | `shots/mini-mart-1-title.jpg` `shots/mini-mart-2-mid.jpg` `shots/mini-mart-3-end.jpg` |
 | 28 | Idle Empire (`hub-idle-empire`) | ERRORS+STALL | ERRORS: 1 uncaught page error(s): Cannot read properties of undefined (reading 'empire') \|\| STALL: game reports no scenes; after the start attempts (start: declared start button not tappable -> tap centre) the screen changed only 0% from the title \| nothing on screen changed for 44 s while the bot kept tapping | declared start button not tappable -> tap centre | NO play, over 0, restarts 0 | `shots/hub-idle-empire-1-title.jpg` `shots/hub-idle-empire-2-mid.jpg` `shots/hub-idle-empire-3-end.jpg` |
-| 29 | Bridge Race (`bridge-race-classic`) | STALL | STALL: game over screen reached 1x and the game never got back to play (bot pressed buttons for 20 s) | #brPlay + Let's go! | play, over 1, restarts 0 | `shots/bridge-race-classic-1-title.jpg` `shots/bridge-race-classic-2-mid.jpg` `shots/bridge-race-classic-3-end.jpg` |
-| 30 | Math Miner (`math-miner`) | STALL | STALL: game over screen reached 1x and the game never got back to play (bot pressed buttons for 38 s) | #btnMath | play, over 1, restarts 0 | `shots/math-miner-1-title.jpg` `shots/math-miner-2-mid.jpg` `shots/math-miner-3-end.jpg` |
-| 31 | Cut the Rope (`sky-cut-rope`) | STALL | STALL: nothing on screen changed for 27 s while the bot kept tapping | tap centre | play, over 0, restarts 0 | `shots/sky-cut-rope-1-title.jpg` `shots/sky-cut-rope-2-mid.jpg` `shots/sky-cut-rope-3-end.jpg` |
-| 32 | Critter Rush 2D (`critter-rush-2d`) | STALL | STALL: started only with a keyboard key (tap centre + EASY + EASY + EASY + tap on game + KEY Enter); a phone has no keyboard | tap centre + EASY + EASY + EASY + tap on game + KEY Enter | play, over 0, restarts 0 | `shots/critter-rush-2d-1-title.jpg` `shots/critter-rush-2d-2-mid.jpg` `shots/critter-rush-2d-3-end.jpg` |
-| 33 | Color Match (`sky-color-match`) | STALL | STALL: game over screen reached 1x and the game never got back to play (bot pressed buttons for 23 s) | tap centre | play, over 1, restarts 0 | `shots/sky-color-match-1-title.jpg` `shots/sky-color-match-2-mid.jpg` `shots/sky-color-match-3-end.jpg` |
-| 34 | Tic Tac Toe — Beat the Bot (`tic-tac-toe`) | STALL | STALL: nothing on screen changed for 21 s while the bot kept tapping | Play/Start button | play, over 0, restarts 0 | `shots/tic-tac-toe-1-title.jpg` `shots/tic-tac-toe-2-mid.jpg` `shots/tic-tac-toe-3-end.jpg` |
-| 35 | Claire's Farm (`claire-farm`) | JANK | JANK: p95 JS frame cost 29.92 ms over 16 ms (CPU throttled x4, divided by machine slowdown x2.4; raw p95 72.4, median 8.51, p99 54.63, max 54.6; time inside WebGL calls excluded, p95 of it 6.6) | #playBtn | play, over 0, restarts 0 | `shots/claire-farm-1-title.jpg` `shots/claire-farm-2-mid.jpg` `shots/claire-farm-3-end.jpg` |
-| 36 | Hole Grind (`hole-grind`) | JANK | JANK: p95 JS frame cost 20.73 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.4; raw p95 28.4, median 5.55, p99 113.58, max 289.4; time inside WebGL calls excluded, p95 of it 4) | #btnPlay | play, over 0, restarts 0 | `shots/hole-grind-1-title.jpg` `shots/hole-grind-2-mid.jpg` `shots/hole-grind-3-end.jpg` |
-| 37 | Maths Kart GP (`maths-kart`) | JANK | JANK: p95 JS frame cost 20.74 ms over 16 ms (CPU throttled x4, divided by machine slowdown x3.9; raw p95 81.7, median 1.85, p99 213.3, max 398.8; time inside WebGL calls excluded, p95 of it 4.2) | #bPlay | play, over 0, restarts 0 | `shots/maths-kart-1-title.jpg` `shots/maths-kart-2-mid.jpg` `shots/maths-kart-3-end.jpg` |
-| 38 | TYPHOON MINE (`typhoon-mine`) | JANK | JANK: p95 JS frame cost 21.4 ms over 16 ms (CPU throttled x4, divided by machine slowdown x2.1; raw p95 46, median 1.63, p99 39.21, max 39.2; time inside WebGL calls excluded, p95 of it 0) | Play/Start button | play, over 0, restarts 0 | `shots/typhoon-mine-1-title.jpg` `shots/typhoon-mine-2-mid.jpg` `shots/typhoon-mine-3-end.jpg` |
-| 39 | Game Arcade — Bridge Race & Fashion Princess (`game-arcade-7`) | ERRORS | ERRORS: 2 uncaught page error(s): Cannot set properties of undefined (setting 'right') | .game-card .card-btn + Let's play | play, over 0, restarts 0 | `shots/game-arcade-7-1-title.jpg` `shots/game-arcade-7-2-mid.jpg` `shots/game-arcade-7-3-end.jpg` |
-| 40 | Whack-a-Mole (`hub-whack-a-mole`) | ERRORS | ERRORS: 1 uncaught page error(s): KKs.banner is not a function | #playBtn | play, over 0, restarts 0 | `shots/hub-whack-a-mole-1-title.jpg` `shots/hub-whack-a-mole-2-mid.jpg` `shots/hub-whack-a-mole-3-end.jpg` |
-| 41 | Isle of Bells (`hub-isle-of-bells`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-isle-of-bells-1-title.jpg` `shots/hub-isle-of-bells-2-mid.jpg` `shots/hub-isle-of-bells-3-end.jpg` |
-| 42 | Snake Clash (`snake-clash`) | OK | none | #play | play, over 0, restarts 0 | `shots/snake-clash-1-title.jpg` `shots/snake-clash-2-mid.jpg` `shots/snake-clash-3-end.jpg` |
-| 43 | Field Station (`field-station`) | OK | none | #playNext | play, over 0, restarts 0 | `shots/field-station-1-title.jpg` `shots/field-station-2-mid.jpg` `shots/field-station-3-end.jpg` |
-| 44 | Knife Hit (`hub-knife-hit`) | OK | none | #playBtn | play, over 1, restarts 1 | `shots/hub-knife-hit-1-title.jpg` `shots/hub-knife-hit-2-mid.jpg` `shots/hub-knife-hit-3-end.jpg` |
-| 45 | Tower Stack (`hub-tower-stack`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-tower-stack-1-title.jpg` `shots/hub-tower-stack-2-mid.jpg` `shots/hub-tower-stack-3-end.jpg` |
-| 46 | Block Blast (`hub-block-blast`) | OK | none | centre (start button not tappable) + tap on game | play, over 0, restarts 0 | `shots/hub-block-blast-1-title.jpg` `shots/hub-block-blast-2-mid.jpg` `shots/hub-block-blast-3-end.jpg` |
-| 47 | Flappy Flight (`hub-flappy-flight`) | OK | none | #playBtn + tap on game | play, over 3, restarts 2 | `shots/hub-flappy-flight-1-title.jpg` `shots/hub-flappy-flight-2-mid.jpg` `shots/hub-flappy-flight-3-end.jpg` |
-| 48 | Sudoku (`hub-sudoku`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-sudoku-1-title.jpg` `shots/hub-sudoku-2-mid.jpg` `shots/hub-sudoku-3-end.jpg` |
-| 49 | Word Scramble (`hub-word-scramble`) | OK | none | .diff-btn.sel | play, over 0, restarts 0 | `shots/hub-word-scramble-1-title.jpg` `shots/hub-word-scramble-2-mid.jpg` `shots/hub-word-scramble-3-end.jpg` |
-| 50 | Balloon Bust (`balloon-bust`) | OK | none | #c | play, over 0, restarts 0 | `shots/balloon-bust-1-title.jpg` `shots/balloon-bust-2-mid.jpg` `shots/balloon-bust-3-end.jpg` |
-| 51 | DEEPCUT (`deepcut-mine`) | OK | none | Play/Start button | play, over 0, restarts 0 | `shots/deepcut-mine-1-title.jpg` `shots/deepcut-mine-2-mid.jpg` `shots/deepcut-mine-3-end.jpg` |
-| 52 | Bubble Pop (`hub-bubble-pop`) | OK | none | #playBtn | play, over 1, restarts 0 | `shots/hub-bubble-pop-1-title.jpg` `shots/hub-bubble-pop-2-mid.jpg` `shots/hub-bubble-pop-3-end.jpg` |
-| 53 | Connect Four (`hub-connect-four`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-connect-four-1-title.jpg` `shots/hub-connect-four-2-mid.jpg` `shots/hub-connect-four-3-end.jpg` |
-| 54 | Dino Dash (`hub-dino-dash`) | OK | none | #playBtn + tap on game | play, over 5, restarts 4 | `shots/hub-dino-dash-1-title.jpg` `shots/hub-dino-dash-2-mid.jpg` `shots/hub-dino-dash-3-end.jpg` |
-| 55 | Memory Match (`hub-memory-match`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-memory-match-1-title.jpg` `shots/hub-memory-match-2-mid.jpg` `shots/hub-memory-match-3-end.jpg` |
-| 56 | Tic Tac Toe (`hub-tic-tac-toe`) | OK | none | #playBtn | play, over 3, restarts 3 | `shots/hub-tic-tac-toe-1-title.jpg` `shots/hub-tic-tac-toe-2-mid.jpg` `shots/hub-tic-tac-toe-3-end.jpg` |
-| 57 | Market Merge (`market-merge`) | OK | none | #play | play, over 0, restarts 0 | `shots/market-merge-1-title.jpg` `shots/market-merge-2-mid.jpg` `shots/market-merge-3-end.jpg` |
-| 58 | Quiz Tower Defense (`quiz-tower`) | OK | none | tap:50%,76% | play, over 0, restarts 0 | `shots/quiz-tower-1-title.jpg` |
-| 59 | Volt Dash (`volt-dash`) | OK | none | #play | play, over 0, restarts 0 | `shots/volt-dash-1-title.jpg` `shots/volt-dash-2-mid.jpg` `shots/volt-dash-3-end.jpg` |
-| 60 | Word Dungeon (`word-dungeon`) | OK | none | tap:36%,56% | play, over 0, restarts 0 | `shots/word-dungeon-1-title.jpg` `shots/word-dungeon-2-mid.jpg` `shots/word-dungeon-3-end.jpg` |
-| 61 | High Nest (`high-nest`) | OK | none | #play | play, over 3, restarts 1 | `shots/high-nest-1-title.jpg` `shots/high-nest-2-mid.jpg` `shots/high-nest-3-end.jpg` |
-| 62 | Farm Harvest (`hub-farm-harvest`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-farm-harvest-1-title.jpg` `shots/hub-farm-harvest-2-mid.jpg` `shots/hub-farm-harvest-3-end.jpg` |
-| 63 | Math Blast (`hub-math-blast`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-math-blast-1-title.jpg` `shots/hub-math-blast-2-mid.jpg` `shots/hub-math-blast-3-end.jpg` |
-| 64 | Math Snake (`hub-math-snake`) | OK | none | #playBtn | play, over 1, restarts 1 | `shots/hub-math-snake-1-title.jpg` `shots/hub-math-snake-2-mid.jpg` `shots/hub-math-snake-3-end.jpg` |
-| 65 | Merge Blocks (`hub-merge-blocks`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-merge-blocks-1-title.jpg` `shots/hub-merge-blocks-2-mid.jpg` `shots/hub-merge-blocks-3-end.jpg` |
-| 66 | Rap Academy (`rap-academy`) | OK | none | .hero-cta .btn-primary | play, over 0, restarts 0 | `shots/rap-academy-1-title.jpg` `shots/rap-academy-2-mid.jpg` `shots/rap-academy-3-end.jpg` |
-| 67 | Balance Tile (`sky-balance-tile`) | OK | none | tap centre | play, over 4, restarts 0 | `shots/sky-balance-tile-1-title.jpg` `shots/sky-balance-tile-2-mid.jpg` `shots/sky-balance-tile-3-end.jpg` |
-| 68 | Brick Breaker (`sky-breakout`) | OK | none | tap centre | play, over 0, restarts 0 | `shots/sky-breakout-1-title.jpg` `shots/sky-breakout-2-mid.jpg` `shots/sky-breakout-3-end.jpg` |
-| 69 | Surviv Royale (`surviv-royale`) | OK | none | #btn-play | play, over 0, restarts 0 | `shots/surviv-royale-1-title.jpg` `shots/surviv-royale-2-mid.jpg` `shots/surviv-royale-3-end.jpg` |
-| 70 | 2048 (`hub-game-2048`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-game-2048-1-title.jpg` `shots/hub-game-2048-2-mid.jpg` `shots/hub-game-2048-3-end.jpg` |
-| 71 | Math Battle (`hub-math-battle`) | OK | none | #playBtn | play, over 1, restarts 0 | `shots/hub-math-battle-1-title.jpg` `shots/hub-math-battle-2-mid.jpg` `shots/hub-math-battle-3-end.jpg` |
-| 72 | Minesweeper (`hub-minesweeper`) | OK | none | #playBtn | play, over 4, restarts 4 | `shots/hub-minesweeper-1-title.jpg` `shots/hub-minesweeper-2-mid.jpg` `shots/hub-minesweeper-3-end.jpg` |
-| 73 | Spell & Say (`hub-spell-and-say`) | OK | none | #btnPlay | play, over 0, restarts 0 | `shots/hub-spell-and-say-1-title.jpg` `shots/hub-spell-and-say-2-mid.jpg` `shots/hub-spell-and-say-3-end.jpg` |
-| 74 | Grow or Shrink (`sky-grow-shrink`) | OK | none | tap centre | play, over 0, restarts 0 | `shots/sky-grow-shrink-1-title.jpg` `shots/sky-grow-shrink-2-mid.jpg` `shots/sky-grow-shrink-3-end.jpg` |
-| 75 | Snap Jigsaw — Daily Puzzle Challenge (`snap-jigsaw`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/snap-jigsaw-1-title.jpg` `shots/snap-jigsaw-2-mid.jpg` `shots/snap-jigsaw-3-end.jpg` |
-| 76 | Claire's Big Life (`claire-pip`) | OK | none | #ageBands .ageband + ▶ Start play | play, over 0, restarts 0 | `shots/claire-pip-1-title.jpg` `shots/claire-pip-2-mid.jpg` `shots/claire-pip-3-end.jpg` |
-| 77 | Farm Idle Tycoon (`hub-farm-idle`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-farm-idle-1-title.jpg` `shots/hub-farm-idle-2-mid.jpg` `shots/hub-farm-idle-3-end.jpg` |
-| 78 | Hangman (`hub-hangman`) | OK | none | .cat-btn[data-cat=animals] | play, over 0, restarts 0 | `shots/hub-hangman-1-title.jpg` `shots/hub-hangman-2-mid.jpg` `shots/hub-hangman-3-end.jpg` |
-| 79 | Idle Miner (`hub-idle-miner`) | OK | none | #btnPlay | play, over 0, restarts 0 | `shots/hub-idle-miner-1-title.jpg` `shots/hub-idle-miner-2-mid.jpg` `shots/hub-idle-miner-3-end.jpg` |
-| 80 | Math Run (`hub-math-run`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-math-run-1-title.jpg` `shots/hub-math-run-2-mid.jpg` `shots/hub-math-run-3-end.jpg` |
-| 81 | Missing Letter (`hub-missing-letter`) | OK | none | #btnPlay | play, over 0, restarts 0 | `shots/hub-missing-letter-1-title.jpg` `shots/hub-missing-letter-2-mid.jpg` `shots/hub-missing-letter-3-end.jpg` |
-| 82 | Rhyme Time (`hub-rhyme-time`) | OK | none | #btnStart | play, over 0, restarts 0 | `shots/hub-rhyme-time-1-title.jpg` `shots/hub-rhyme-time-2-mid.jpg` `shots/hub-rhyme-time-3-end.jpg` |
-| 83 | Snake (`hub-snake`) | OK | none | #playBtn | play, over 2, restarts 2 | `shots/hub-snake-1-title.jpg` `shots/hub-snake-2-mid.jpg` `shots/hub-snake-3-end.jpg` |
-| 84 | Flap & Fly (`sky-flappy-bird`) | OK | none | tap centre | play, over 2, restarts 0 | `shots/sky-flappy-bird-1-title.jpg` `shots/sky-flappy-bird-2-mid.jpg` `shots/sky-flappy-bird-3-end.jpg` |
+| 29 | Parking Puzzle (`sky-parking-puzzle`) | STALL | STALL: nothing on screen changed for 24 s while the bot kept tapping | tap centre | play, over 0, restarts 0 | `shots/sky-parking-puzzle-1-title.jpg` `shots/sky-parking-puzzle-2-mid.jpg` `shots/sky-parking-puzzle-3-end.jpg` |
+| 30 | Bridge Race (`bridge-race-classic`) | STALL | STALL: game over screen reached 1x and the game never got back to play (bot pressed buttons for 20 s) | #brPlay + Let's go! | play, over 1, restarts 0 | `shots/bridge-race-classic-1-title.jpg` `shots/bridge-race-classic-2-mid.jpg` `shots/bridge-race-classic-3-end.jpg` |
+| 31 | Math Miner (`math-miner`) | STALL | STALL: game over screen reached 1x and the game never got back to play (bot pressed buttons for 38 s) | #btnMath | play, over 1, restarts 0 | `shots/math-miner-1-title.jpg` `shots/math-miner-2-mid.jpg` `shots/math-miner-3-end.jpg` |
+| 32 | Cut the Rope (`sky-cut-rope`) | STALL | STALL: nothing on screen changed for 27 s while the bot kept tapping | tap centre | play, over 0, restarts 0 | `shots/sky-cut-rope-1-title.jpg` `shots/sky-cut-rope-2-mid.jpg` `shots/sky-cut-rope-3-end.jpg` |
+| 33 | Critter Rush 2D (`critter-rush-2d`) | STALL | STALL: started only with a keyboard key (tap centre + EASY + EASY + EASY + tap on game + KEY Enter); a phone has no keyboard | tap centre + EASY + EASY + EASY + tap on game + KEY Enter | play, over 0, restarts 0 | `shots/critter-rush-2d-1-title.jpg` `shots/critter-rush-2d-2-mid.jpg` `shots/critter-rush-2d-3-end.jpg` |
+| 34 | Color Match (`sky-color-match`) | STALL | STALL: game over screen reached 1x and the game never got back to play (bot pressed buttons for 23 s) | tap centre | play, over 1, restarts 0 | `shots/sky-color-match-1-title.jpg` `shots/sky-color-match-2-mid.jpg` `shots/sky-color-match-3-end.jpg` |
+| 35 | Slingshot (`sky-slingshot`) | STALL | STALL: game over screen reached 1x and the game never got back to play (bot pressed buttons for 37 s) | tap centre | play, over 1, restarts 0 | `shots/sky-slingshot-1-title.jpg` `shots/sky-slingshot-2-mid.jpg` `shots/sky-slingshot-3-end.jpg` |
+| 36 | Spike Jump (`sky-spike-jump`) | STALL | STALL: game over screen reached 1x and the game never got back to play (bot pressed buttons for 47 s) | tap centre | play, over 1, restarts 0 | `shots/sky-spike-jump-1-title.jpg` `shots/sky-spike-jump-2-mid.jpg` `shots/sky-spike-jump-3-end.jpg` |
+| 37 | Stack Tower (`sky-stack-tower`) | STALL | STALL: game over screen reached 2x and the game never got back to play (bot pressed buttons for 28 s) | tap centre | play, over 2, restarts 0 | `shots/sky-stack-tower-1-title.jpg` `shots/sky-stack-tower-2-mid.jpg` `shots/sky-stack-tower-3-end.jpg` |
+| 38 | Slide Runner (`sky-slide-runner`) | STALL | STALL: game over screen reached 1x and the game never got back to play (bot pressed buttons for 29 s) | tap centre | play, over 1, restarts 0 | `shots/sky-slide-runner-1-title.jpg` `shots/sky-slide-runner-2-mid.jpg` `shots/sky-slide-runner-3-end.jpg` |
+| 39 | Tic Tac Toe — Beat the Bot (`tic-tac-toe`) | STALL | STALL: nothing on screen changed for 21 s while the bot kept tapping | Play/Start button | play, over 0, restarts 0 | `shots/tic-tac-toe-1-title.jpg` `shots/tic-tac-toe-2-mid.jpg` `shots/tic-tac-toe-3-end.jpg` |
+| 40 | Claire's Farm (`claire-farm`) | JANK | JANK: p95 JS frame cost 29.92 ms over 16 ms (CPU throttled x4, divided by machine slowdown x2.4; raw p95 72.4, median 8.51, p99 54.63, max 54.6; time inside WebGL calls excluded, p95 of it 6.6) | #playBtn | play, over 0, restarts 0 | `shots/claire-farm-1-title.jpg` `shots/claire-farm-2-mid.jpg` `shots/claire-farm-3-end.jpg` |
+| 41 | Hole Grind (`hole-grind`) | JANK | JANK: p95 JS frame cost 20.73 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.4; raw p95 28.4, median 5.55, p99 113.58, max 289.4; time inside WebGL calls excluded, p95 of it 4) | #btnPlay | play, over 0, restarts 0 | `shots/hole-grind-1-title.jpg` `shots/hole-grind-2-mid.jpg` `shots/hole-grind-3-end.jpg` |
+| 42 | Maths Kart GP (`maths-kart`) | JANK | JANK: p95 JS frame cost 20.74 ms over 16 ms (CPU throttled x4, divided by machine slowdown x3.9; raw p95 81.7, median 1.85, p99 213.3, max 398.8; time inside WebGL calls excluded, p95 of it 4.2) | #bPlay | play, over 0, restarts 0 | `shots/maths-kart-1-title.jpg` `shots/maths-kart-2-mid.jpg` `shots/maths-kart-3-end.jpg` |
+| 43 | TYPHOON MINE (`typhoon-mine`) | JANK | JANK: p95 JS frame cost 21.4 ms over 16 ms (CPU throttled x4, divided by machine slowdown x2.1; raw p95 46, median 1.63, p99 39.21, max 39.2; time inside WebGL calls excluded, p95 of it 0) | Play/Start button | play, over 0, restarts 0 | `shots/typhoon-mine-1-title.jpg` `shots/typhoon-mine-2-mid.jpg` `shots/typhoon-mine-3-end.jpg` |
+| 44 | Game Arcade — Bridge Race & Fashion Princess (`game-arcade-7`) | ERRORS | ERRORS: 2 uncaught page error(s): Cannot set properties of undefined (setting 'right') | .game-card .card-btn + Let's play | play, over 0, restarts 0 | `shots/game-arcade-7-1-title.jpg` `shots/game-arcade-7-2-mid.jpg` `shots/game-arcade-7-3-end.jpg` |
+| 45 | Whack-a-Mole (`hub-whack-a-mole`) | ERRORS | ERRORS: 1 uncaught page error(s): KKs.banner is not a function | #playBtn | play, over 0, restarts 0 | `shots/hub-whack-a-mole-1-title.jpg` `shots/hub-whack-a-mole-2-mid.jpg` `shots/hub-whack-a-mole-3-end.jpg` |
+| 46 | Isle of Bells (`hub-isle-of-bells`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-isle-of-bells-1-title.jpg` `shots/hub-isle-of-bells-2-mid.jpg` `shots/hub-isle-of-bells-3-end.jpg` |
+| 47 | Snake Clash (`snake-clash`) | OK | none | #play | play, over 0, restarts 0 | `shots/snake-clash-1-title.jpg` `shots/snake-clash-2-mid.jpg` `shots/snake-clash-3-end.jpg` |
+| 48 | Field Station (`field-station`) | OK | none | #playNext | play, over 0, restarts 0 | `shots/field-station-1-title.jpg` `shots/field-station-2-mid.jpg` `shots/field-station-3-end.jpg` |
+| 49 | Knife Hit (`hub-knife-hit`) | OK | none | #playBtn | play, over 1, restarts 1 | `shots/hub-knife-hit-1-title.jpg` `shots/hub-knife-hit-2-mid.jpg` `shots/hub-knife-hit-3-end.jpg` |
+| 50 | Tower Stack (`hub-tower-stack`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-tower-stack-1-title.jpg` `shots/hub-tower-stack-2-mid.jpg` `shots/hub-tower-stack-3-end.jpg` |
+| 51 | Block Blast (`hub-block-blast`) | OK | none | centre (start button not tappable) + tap on game | play, over 0, restarts 0 | `shots/hub-block-blast-1-title.jpg` `shots/hub-block-blast-2-mid.jpg` `shots/hub-block-blast-3-end.jpg` |
+| 52 | Flappy Flight (`hub-flappy-flight`) | OK | none | #playBtn + tap on game | play, over 3, restarts 2 | `shots/hub-flappy-flight-1-title.jpg` `shots/hub-flappy-flight-2-mid.jpg` `shots/hub-flappy-flight-3-end.jpg` |
+| 53 | Sudoku (`hub-sudoku`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-sudoku-1-title.jpg` `shots/hub-sudoku-2-mid.jpg` `shots/hub-sudoku-3-end.jpg` |
+| 54 | Word Scramble (`hub-word-scramble`) | OK | none | .diff-btn.sel | play, over 0, restarts 0 | `shots/hub-word-scramble-1-title.jpg` `shots/hub-word-scramble-2-mid.jpg` `shots/hub-word-scramble-3-end.jpg` |
+| 55 | Balloon Bust (`balloon-bust`) | OK | none | #c | play, over 0, restarts 0 | `shots/balloon-bust-1-title.jpg` `shots/balloon-bust-2-mid.jpg` `shots/balloon-bust-3-end.jpg` |
+| 56 | DEEPCUT (`deepcut-mine`) | OK | none | Play/Start button | play, over 0, restarts 0 | `shots/deepcut-mine-1-title.jpg` `shots/deepcut-mine-2-mid.jpg` `shots/deepcut-mine-3-end.jpg` |
+| 57 | Bubble Pop (`hub-bubble-pop`) | OK | none | #playBtn | play, over 1, restarts 0 | `shots/hub-bubble-pop-1-title.jpg` `shots/hub-bubble-pop-2-mid.jpg` `shots/hub-bubble-pop-3-end.jpg` |
+| 58 | Connect Four (`hub-connect-four`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-connect-four-1-title.jpg` `shots/hub-connect-four-2-mid.jpg` `shots/hub-connect-four-3-end.jpg` |
+| 59 | Dino Dash (`hub-dino-dash`) | OK | none | #playBtn + tap on game | play, over 5, restarts 4 | `shots/hub-dino-dash-1-title.jpg` `shots/hub-dino-dash-2-mid.jpg` `shots/hub-dino-dash-3-end.jpg` |
+| 60 | Memory Match (`hub-memory-match`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-memory-match-1-title.jpg` `shots/hub-memory-match-2-mid.jpg` `shots/hub-memory-match-3-end.jpg` |
+| 61 | Tic Tac Toe (`hub-tic-tac-toe`) | OK | none | #playBtn | play, over 3, restarts 3 | `shots/hub-tic-tac-toe-1-title.jpg` `shots/hub-tic-tac-toe-2-mid.jpg` `shots/hub-tic-tac-toe-3-end.jpg` |
+| 62 | Market Merge (`market-merge`) | OK | none | #play | play, over 0, restarts 0 | `shots/market-merge-1-title.jpg` `shots/market-merge-2-mid.jpg` `shots/market-merge-3-end.jpg` |
+| 63 | Quiz Tower Defense (`quiz-tower`) | OK | none | tap:50%,76% | play, over 0, restarts 0 | `shots/quiz-tower-1-title.jpg` |
+| 64 | Volt Dash (`volt-dash`) | OK | none | #play | play, over 0, restarts 0 | `shots/volt-dash-1-title.jpg` `shots/volt-dash-2-mid.jpg` `shots/volt-dash-3-end.jpg` |
+| 65 | Word Dungeon (`word-dungeon`) | OK | none | tap:36%,56% | play, over 0, restarts 0 | `shots/word-dungeon-1-title.jpg` `shots/word-dungeon-2-mid.jpg` `shots/word-dungeon-3-end.jpg` |
+| 66 | High Nest (`high-nest`) | OK | none | #play | play, over 3, restarts 1 | `shots/high-nest-1-title.jpg` `shots/high-nest-2-mid.jpg` `shots/high-nest-3-end.jpg` |
+| 67 | Farm Harvest (`hub-farm-harvest`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-farm-harvest-1-title.jpg` `shots/hub-farm-harvest-2-mid.jpg` `shots/hub-farm-harvest-3-end.jpg` |
+| 68 | Math Blast (`hub-math-blast`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-math-blast-1-title.jpg` `shots/hub-math-blast-2-mid.jpg` `shots/hub-math-blast-3-end.jpg` |
+| 69 | Math Snake (`hub-math-snake`) | OK | none | #playBtn | play, over 1, restarts 1 | `shots/hub-math-snake-1-title.jpg` `shots/hub-math-snake-2-mid.jpg` `shots/hub-math-snake-3-end.jpg` |
+| 70 | Merge Blocks (`hub-merge-blocks`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-merge-blocks-1-title.jpg` `shots/hub-merge-blocks-2-mid.jpg` `shots/hub-merge-blocks-3-end.jpg` |
+| 71 | Rap Academy (`rap-academy`) | OK | none | .hero-cta .btn-primary | play, over 0, restarts 0 | `shots/rap-academy-1-title.jpg` `shots/rap-academy-2-mid.jpg` `shots/rap-academy-3-end.jpg` |
+| 72 | Balance Tile (`sky-balance-tile`) | OK | none | tap centre | play, over 4, restarts 0 | `shots/sky-balance-tile-1-title.jpg` `shots/sky-balance-tile-2-mid.jpg` `shots/sky-balance-tile-3-end.jpg` |
+| 73 | Brick Breaker (`sky-breakout`) | OK | none | tap centre | play, over 0, restarts 0 | `shots/sky-breakout-1-title.jpg` `shots/sky-breakout-2-mid.jpg` `shots/sky-breakout-3-end.jpg` |
+| 74 | Sniper Shot (`sky-sniper-shot`) | OK | none | tap centre | play, over 1, restarts 0 | `shots/sky-sniper-shot-1-title.jpg` `shots/sky-sniper-shot-2-mid.jpg` `shots/sky-sniper-shot-3-end.jpg` |
+| 75 | Surviv Royale (`surviv-royale`) | OK | none | #btn-play | play, over 0, restarts 0 | `shots/surviv-royale-1-title.jpg` `shots/surviv-royale-2-mid.jpg` `shots/surviv-royale-3-end.jpg` |
+| 76 | 2048 (`hub-game-2048`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-game-2048-1-title.jpg` `shots/hub-game-2048-2-mid.jpg` `shots/hub-game-2048-3-end.jpg` |
+| 77 | Math Battle (`hub-math-battle`) | OK | none | #playBtn | play, over 1, restarts 0 | `shots/hub-math-battle-1-title.jpg` `shots/hub-math-battle-2-mid.jpg` `shots/hub-math-battle-3-end.jpg` |
+| 78 | Minesweeper (`hub-minesweeper`) | OK | none | #playBtn | play, over 4, restarts 4 | `shots/hub-minesweeper-1-title.jpg` `shots/hub-minesweeper-2-mid.jpg` `shots/hub-minesweeper-3-end.jpg` |
+| 79 | Spell & Say (`hub-spell-and-say`) | OK | none | #btnPlay | play, over 0, restarts 0 | `shots/hub-spell-and-say-1-title.jpg` `shots/hub-spell-and-say-2-mid.jpg` `shots/hub-spell-and-say-3-end.jpg` |
+| 80 | Grow or Shrink (`sky-grow-shrink`) | OK | none | tap centre | play, over 0, restarts 0 | `shots/sky-grow-shrink-1-title.jpg` `shots/sky-grow-shrink-2-mid.jpg` `shots/sky-grow-shrink-3-end.jpg` |
+| 81 | Pull the Pin (`sky-key-unlock`) | OK | none | tap centre | play, over 0, restarts 0 | `shots/sky-key-unlock-1-title.jpg` `shots/sky-key-unlock-2-mid.jpg` `shots/sky-key-unlock-3-end.jpg` |
+| 82 | Match Swipe (`sky-match-swipe`) | OK | none | tap centre | play, over 0, restarts 0 | `shots/sky-match-swipe-1-title.jpg` `shots/sky-match-swipe-2-mid.jpg` `shots/sky-match-swipe-3-end.jpg` |
+| 83 | Rope Swing (`sky-rope-swing`) | OK | none | tap centre | play, over 2, restarts 0 | `shots/sky-rope-swing-1-title.jpg` `shots/sky-rope-swing-2-mid.jpg` `shots/sky-rope-swing-3-end.jpg` |
+| 84 | Snake (`sky-snake`) | OK | none | tap centre | play, over 6, restarts 0 | `shots/sky-snake-1-title.jpg` `shots/sky-snake-2-mid.jpg` `shots/sky-snake-3-end.jpg` |
+| 85 | Snap Jigsaw — Daily Puzzle Challenge (`snap-jigsaw`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/snap-jigsaw-1-title.jpg` `shots/snap-jigsaw-2-mid.jpg` `shots/snap-jigsaw-3-end.jpg` |
+| 86 | Claire's Big Life (`claire-pip`) | OK | none | #ageBands .ageband + ▶ Start play | play, over 0, restarts 0 | `shots/claire-pip-1-title.jpg` `shots/claire-pip-2-mid.jpg` `shots/claire-pip-3-end.jpg` |
+| 87 | Farm Idle Tycoon (`hub-farm-idle`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-farm-idle-1-title.jpg` `shots/hub-farm-idle-2-mid.jpg` `shots/hub-farm-idle-3-end.jpg` |
+| 88 | Hangman (`hub-hangman`) | OK | none | .cat-btn[data-cat=animals] | play, over 0, restarts 0 | `shots/hub-hangman-1-title.jpg` `shots/hub-hangman-2-mid.jpg` `shots/hub-hangman-3-end.jpg` |
+| 89 | Idle Miner (`hub-idle-miner`) | OK | none | #btnPlay | play, over 0, restarts 0 | `shots/hub-idle-miner-1-title.jpg` `shots/hub-idle-miner-2-mid.jpg` `shots/hub-idle-miner-3-end.jpg` |
+| 90 | Math Run (`hub-math-run`) | OK | none | #playBtn | play, over 0, restarts 0 | `shots/hub-math-run-1-title.jpg` `shots/hub-math-run-2-mid.jpg` `shots/hub-math-run-3-end.jpg` |
+| 91 | Missing Letter (`hub-missing-letter`) | OK | none | #btnPlay | play, over 0, restarts 0 | `shots/hub-missing-letter-1-title.jpg` `shots/hub-missing-letter-2-mid.jpg` `shots/hub-missing-letter-3-end.jpg` |
+| 92 | Rhyme Time (`hub-rhyme-time`) | OK | none | #btnStart | play, over 0, restarts 0 | `shots/hub-rhyme-time-1-title.jpg` `shots/hub-rhyme-time-2-mid.jpg` `shots/hub-rhyme-time-3-end.jpg` |
+| 93 | Snake (`hub-snake`) | OK | none | #playBtn | play, over 2, restarts 2 | `shots/hub-snake-1-title.jpg` `shots/hub-snake-2-mid.jpg` `shots/hub-snake-3-end.jpg` |
+| 94 | Flap & Fly (`sky-flappy-bird`) | OK | none | tap centre | play, over 2, restarts 0 | `shots/sky-flappy-bird-1-title.jpg` `shots/sky-flappy-bird-2-mid.jpg` `shots/sky-flappy-bird-3-end.jpg` |
+| 95 | Lane Switcher (`sky-lane-switcher`) | OK | none | tap centre | play, over 1, restarts 0 | `shots/sky-lane-switcher-1-title.jpg` `shots/sky-lane-switcher-2-mid.jpg` `shots/sky-lane-switcher-3-end.jpg` |
+| 96 | Maze Runner (`sky-maze-runner`) | OK | none | tap centre | play, over 0, restarts 0 | `shots/sky-maze-runner-1-title.jpg` `shots/sky-maze-runner-2-mid.jpg` `shots/sky-maze-runner-3-end.jpg` |
 
 ## Numbers per game
 
@@ -127,11 +139,16 @@ Legend: FREEZE = main thread blocked over 1.5 s, or no animation frame for 3 s w
 | sneaker-drop | 0 / 701 | 0 | 95, 5.73 / 54.82 | 2.1 > 2.3 | 35 > 35 | 0 | 6.2 | 2 | 4000 | - |
 | mini-mart | 369 / 169 | 1 | 5, 0.52 / 0.52 | 1.9 > 2.1 | 402 > 424 | 1 | 0 | 18 | 752 | - |
 | hub-idle-empire | 216 / 115 | 0 | 0, - / - | 1.8 > 1.9 | 21 > 21 | 0 | 0.2 | 4 | 881 | - |
+| sky-parking-puzzle | 288 / 1357 | 5 | 81, 8.96 / 325.52 | 1.9 > 2.1 | 24 > 24 | 1 | 3.8 | 12 | 4000 | - |
 | bridge-race-classic | 929 / 388 | 26 | 439, 7.73 / 26.44 | 5.5 > 5.9 | 91 > 106 | 1 | 0.8 | 22 | 2045 | 0 > 470 |
 | math-miner | 291 / 153 | 3 | 253, 5.9 / 12.6 | 1.9 > 2.1 | 99 > 145 | 1 | 4 | 9 | 3999 | 1 > 1 |
 | sky-cut-rope | 164 / 336 | 1 | 145, 9.74 / 21.87 | 1.9 > 2.1 | 20 > 20 | 1 | 3.7 | 5 | 4000 | - |
 | critter-rush-2d | 47 / 244 | 1 | 159, 6.16 / 10.61 | 2.1 > 2.3 | 64 > 69 | 1 | 4 | 4 | 4000 | - |
 | sky-color-match | 168 / 168 | 1 | 198, 7.22 / 24.84 | 1.9 > 2 | 21 > 21 | 1 | 3.7 | 5 | 4013 | 0 > 0 |
+| sky-slingshot | 110 / 238 | 1 | 221, 3.86 / 7.65 | 1.9 > 2 | 21 > 21 | 1 | 3.7 | 5 | 4001 | 0 > 0 |
+| sky-spike-jump | 173 / 129 | 0 | 206, 3.77 / 15.43 | 1.9 > 2.1 | 21 > 21 | 1 | 3.7 | 5 | 4002 | 0 > 0 |
+| sky-stack-tower | 113 / 187 | 1 | 218, 5.95 / 19.05 | 1.9 > 2 | 21 > 21 | 1 | 3.7 | 5 | 4000 | 3 > 3 |
+| sky-slide-runner | 85 / 147 | 1 | 216, 2.96 / 8.48 | 1.9 > 2 | 21 > 21 | 1 | 3.8 | 7 | 4015 | 0 > 0 |
 | tic-tac-toe | 107 / 122 | 0 | 0, - / - | 1.8 > 1.9 | 70 > 70 | 0 | 0 | 10 | 474 | - |
 | claire-farm | 1330 / 810 | 0 | 34, 29.92 / 54.63 | 10.1 > 10.3 | 38 > 168 | 2 | 1.2 | 5 | 4000 | 1000 > 1000 |
 | hole-grind | 1144 / 292 | 5 | 398, 20.73 / 113.58 | 5.8 > 5.8 | 142 > 143 | 1 | 2.2 | 16 | 2266 | - |
@@ -167,12 +184,17 @@ Legend: FREEZE = main thread blocked over 1.5 s, or no animation frame for 3 s w
 | rap-academy | 266 / 228 | 3 | 740, 4.72 / 13.44 | 2.7 > 3.2 | 285 > 59 | 0 | 5.7 | 21 | 1706 | - |
 | sky-balance-tile | 289 / 127 | 0 | 191, 5.89 / 30.31 | 1.9 > 2 | 21 > 21 | 1 | 3.7 | 5 | 4002 | 55 > 3 |
 | sky-breakout | 132 / 343 | 0 | 141, 7.87 / 12.68 | 1.9 > 2.1 | 21 > 21 | 1 | 3.8 | 4 | 4000 | - |
+| sky-sniper-shot | 90 / 338 | 0 | 174, 9.24 / 32.52 | 1.9 > 2 | 21 > 21 | 1 | 4 | 6 | 4001 | 0 > 0 |
 | surviv-royale | 280 / 220 | 4 | 192, 7.28 / 110.89 | 2 > 2.2 | 143 > 146 | 0 | 4 | 8 | 1934 | - |
 | hub-game-2048 | 240 / 44 | 0 | 18, 0.37 / 0.37 | 1.8 > 2 | 85 > 93 | 1 | 0 | 9 | 779 | - |
 | hub-math-battle | 168 / 170 | 0 | 0, - / - | 1.8 > 1.9 | 134 > 135 | 1 | 0 | 9 | 3124 | 0 > 0 |
 | hub-minesweeper | 231 / 86 | 0 | 0, - / - | 1.8 > 2 | 145 > 146 | 1 | 0 | 12 | 1170 | 0 > 0 |
 | hub-spell-and-say | 76 / 200 | 0 | 0, - / - | 1.8 > 1.9 | 127 > 131 | 1 | 0 | 4 | 3754 | - |
 | sky-grow-shrink | 140 / 235 | 0 | 180, 4.77 / 42.95 | 1.9 > 2 | 21 > 21 | 1 | 3.7 | 6 | 4000 | - |
+| sky-key-unlock | 73 / 201 | 1 | 97, 7.49 / 127.25 | 1.9 > 2 | 20 > 20 | 1 | 3.7 | 5 | 4040 | - |
+| sky-match-swipe | 65 / 181 | 1 | 88, 4.14 / 177.15 | 1.9 > 2 | 21 > 21 | 1 | 3.7 | 4 | 4002 | - |
+| sky-rope-swing | 87 / 225 | 1 | 158, 5.07 / 66.21 | 1.9 > 2 | 21 > 21 | 1 | 3.7 | 6 | 1580 | 0 > 0 |
+| sky-snake | 135 / 223 | 2 | 331, 4.25 / 15.22 | 1.9 > 2.1 | 21 > 21 | 1 | 5.2 | 8 | 3077 | 0 > 0 |
 | snap-jigsaw | 100 / 182 | 3 | 34, 13.44 / 142.54 | 2 > 2.1 | 71 > 71 | 1 | 5.2 | 4 | 4000 | - |
 | claire-pip | 119 / 134 | 0 | 109, 3.64 / 4.97 | 2 > 2.2 | 493 > 575 | 1 | 0 | 11 | 2553 | - |
 | hub-farm-idle | 110 / 134 | 0 | 1375, 0.94 / 4.91 | 1.8 > 2 | 164 > 226 | 0 | 0 | 11 | 975 | - |
@@ -183,3 +205,5 @@ Legend: FREEZE = main thread blocked over 1.5 s, or no animation frame for 3 s w
 | hub-rhyme-time | 105 / 93 | 0 | 1108, 0.78 / 3.05 | 1.9 > 2.1 | 94 > 88 | 1 | 0 | 15 | 1219 | - |
 | hub-snake | 130 / 95 | 0 | 318, 1.47 / 2.45 | 1.9 > 2 | 69 > 69 | 1 | 4 | 5 | 2520 | 0 > 0 |
 | sky-flappy-bird | 113 / 115 | 0 | 117, 11.72 / 23.38 | 1.9 > 2.2 | 21 > 21 | 1 | 4.6 | 6 | 2096 | 0 > 0 |
+| sky-lane-switcher | 43 / 74 | 0 | 127, 3.14 / 12.62 | 1.9 > 2.1 | 21 > 21 | 1 | 3.7 | 5 | 4000 | 0 > 0 |
+| sky-maze-runner | 95 / 92 | 0 | 184, 3.61 / 10.33 | 1.9 > 2 | 24 > 24 | 1 | 3.7 | 6 | 4005 | - |
