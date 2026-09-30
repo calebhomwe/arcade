@@ -1,0 +1,216 @@
+{
+ "id": "hub-idle-empire",
+ "title": "Idle Empire",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "ERRORS"
+ ],
+ "evidence": {
+  "ERRORS": "1 uncaught page error(s): EncodingError: Decoding failed"
+ },
+ "notes": [
+  "bot navigated away to https://calebhomwe.github.io/arcade-hub/index.html and was sent back",
+  "page reloaded 1x right after a button press (the game's own restart): 🦖 Dino Dash Play",
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/hub-idle-empire-wk-1-title.jpg",
+  "2-mid": "shots/hub-idle-empire-wk-2-mid.jpg",
+  "3-end": "shots/hub-idle-empire-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 11.06,
+  "cores": 4,
+  "load1End": 10.57,
+  "contention": 1.05,
+  "contentionSamples": [
+   1,
+   1.05,
+   1.17,
+   1.17,
+   1.02,
+   1.27,
+   1.05
+  ]
+ },
+ "loadMs": 1511,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 60,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#btnPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.05,
+  "loadMs": 1412,
+  "playMs": 1201,
+  "loadRawMs": 1483,
+  "playRawMs": 1261,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 44,
+  "slowestPollMs": 436,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "navigations": [
+  {
+   "at": 52521,
+   "abs": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+   "url": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+   "afterAction": 59,
+   "kind": "item",
+   "txt": "🦖 Dino Dash Play"
+  }
+ ],
+ "frames": {
+  "n": 65,
+  "jsMedian": 3.81,
+  "jsP95": 12.38,
+  "jsP99": 293.33,
+  "jsMax": 293.3,
+  "jsP95Raw": 13,
+  "rawWithGlP95": 13,
+  "glP95": 0,
+  "gapP95": 1727,
+  "gapMedian": 629,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [
+  "EncodingError: Decoding failed"
+ ],
+ "errorCount": 1,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 298,
+  "nodesEnd": 307,
+  "nodesMax": 313,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 3,
+   "totalMB": 7.4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 780,
+     "h": 580,
+     "mpx": 0.45,
+     "dom": true,
+     "css": [
+      390,
+      290
+     ]
+    },
+    {
+     "w": 780,
+     "h": 580,
+     "mpx": 0.45,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "title"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 4,
+  "first": 0,
+  "last": 2,
+  "max": 2,
+  "trajectory": [
+   [
+    0,
+    0
+   ],
+   [
+    7,
+    0
+   ],
+   [
+    35,
+    2
+   ],
+   [
+    0,
+    2
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 52,
+  "swipes": 5,
+  "holds": 3,
+  "keys": 6,
+  "buttonPresses": 24,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 13,
+  "inputLatencyP95Ms": 521,
+  "inputLatencyMaxMs": 1377,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 55.8,
+  "maxChangeFromStartPct": 22.7,
+  "samples": 13
+ },
+ "severity": 23.6
+}

@@ -1,0 +1,153 @@
+{
+ "id": "sneaker-drop",
+ "title": "SneakerDrop — Hype Market Tycoon",
+ "cat": "sim",
+ "genre": "management",
+ "src": "SneakerDrop/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "STALL"
+ ],
+ "evidence": {
+  "FREEZE": "page crashed (renderer process died)",
+  "STALL": "game never reported play after the start attempts (start: #startBtn + tap on game); scenes seen: title"
+ },
+ "notes": [
+  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.1)",
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/sneaker-drop-wk-1-title.jpg",
+  "3-end": null
+ },
+ "machine": {
+  "load1Start": 13.55,
+  "cores": 4,
+  "load1End": 11.93,
+  "contention": 1.05,
+  "contentionSamples": [
+   1.34,
+   1.05,
+   1.14,
+   1.05,
+   1.02
+  ]
+ },
+ "loadMs": 192,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:36275/SneakerDrop/index.html",
+ "startPath": "http://127.0.0.1:36275/SneakerDrop/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 97,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#startBtn + tap on game",
+  "viaKey": false,
+  "detectedBy": null,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.05,
+  "loadMs": 730,
+  "playMs": 198,
+  "loadRawMs": 767,
+  "playRawMs": 208,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 1,
+  "slowestPollMs": 183,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 6,
+  "jsMedian": 5.71,
+  "jsP95": 8.57,
+  "jsP99": 8.57,
+  "jsMax": 8.6,
+  "jsP95Raw": 9,
+  "rawWithGlP95": 9,
+  "glP95": 0,
+  "gapP95": 528,
+  "gapMedian": 412,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 35,
+  "nodesEnd": 35,
+  "nodesMax": 35,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": null,
+  "sdkTimers": null
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title"
+  ],
+  "reachedPlay": false,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 1,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 2,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 4000,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": null,
+  "samples": 0
+ },
+ "severity": 104.7,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "STALL"
+  ],
+  "evidence": "page crashed (renderer process died)",
+  "blockPlayMs": 0,
+  "blockLoadMs": 581,
+  "load1": 10.85
+ }
+}

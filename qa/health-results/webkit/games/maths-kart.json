@@ -1,0 +1,182 @@
+{
+ "id": "maths-kart",
+ "title": "Maths Kart GP",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "MathsKart/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK",
+  "ERRORS"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 95.9 ms over 33 ms (unthrottled, divided by machine slowdown x1.2; raw p95 117, median 12.3, p99 323.77, max 398.4; time inside WebGL calls excluded, p95 of it 262)",
+  "ERRORS": "2 uncaught page error(s): EncodingError: Decoding failed"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/maths-kart-wk-1-title.jpg",
+  "2-mid": "shots/maths-kart-wk-2-mid.jpg",
+  "3-end": "shots/maths-kart-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 14.44,
+  "cores": 4,
+  "load1End": 15.52,
+  "contention": 1.22,
+  "contentionSamples": [
+   1.52,
+   1.24,
+   1.08,
+   1.22,
+   1.04,
+   1.37,
+   1.18
+  ]
+ },
+ "loadMs": 1294,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:42875/MathsKart/index.html",
+ "startPath": "http://127.0.0.1:42875/MathsKart/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 33,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#bPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.22,
+  "loadMs": 470,
+  "playMs": 643,
+  "loadRawMs": 573,
+  "playRawMs": 945,
+  "playGlMs": 160,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 27,
+  "slowestPollMs": 449,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 845,
+  "shaderCompileMaxCallMs": 299
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 105,
+  "jsMedian": 12.3,
+  "jsP95": 95.9,
+  "jsP99": 323.77,
+  "jsMax": 398.4,
+  "jsP95Raw": 117,
+  "rawWithGlP95": 291,
+  "glP95": 262,
+  "gapP95": 985,
+  "gapMedian": 408,
+  "over100": 5,
+  "limit": 33
+ },
+ "errors": [
+  "EncodingError: Decoding failed"
+ ],
+ "errorCount": 2,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 141,
+  "nodesEnd": 148,
+  "nodesMax": 148,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 2,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 17,
+   "totalMB": 4.9,
+   "biggest": [
+    {
+     "w": 1024,
+     "h": 512,
+     "mpx": 0.52,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 51,
+  "swipes": 6,
+  "holds": 5,
+  "keys": 4,
+  "buttonPresses": 16,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 22,
+  "inputLatencyP95Ms": 1074,
+  "inputLatencyMaxMs": 1882,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 84.3,
+  "maxChangeFromStartPct": 81.1,
+  "samples": 14
+ },
+ "severity": 45
+}

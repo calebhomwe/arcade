@@ -1,0 +1,151 @@
+{
+ "id": "helix-drop",
+ "title": "Helix Drop",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "STALL"
+ ],
+ "evidence": {
+  "FREEZE": "2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+  "STALL": "game never reported play after the start attempts (start: #play + tap on game); scenes seen: title"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/helix-drop-wk-1-title.jpg",
+  "3-end": null
+ },
+ "machine": {
+  "load1Start": 12.84,
+  "cores": 4,
+  "load1End": 10.98,
+  "contention": 1.07,
+  "contentionSamples": [
+   1.05,
+   1.07,
+   1.02,
+   1.14,
+   1.1
+  ]
+ },
+ "loadMs": 816,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
+ "startPath": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 81,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#play + tap on game",
+  "viaKey": false,
+  "detectedBy": null,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.07,
+  "loadMs": 302,
+  "playMs": 503,
+  "loadRawMs": 324,
+  "playRawMs": 638,
+  "playGlMs": 100,
+  "loadGlMs": 1,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 3,
+  "slowestPollMs": 418,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 241,
+  "shaderCompileMaxCallMs": 50
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 5,
+  "jsMedian": 32.71,
+  "jsP95": 63.55,
+  "jsP99": 63.55,
+  "jsMax": 63.6,
+  "jsP95Raw": 68,
+  "rawWithGlP95": 964,
+  "glP95": 896,
+  "gapP95": 2017,
+  "gapMedian": 762,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 93,
+  "nodesEnd": 93,
+  "nodesMax": 93,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 1,
+  "canvases": null,
+  "sdkTimers": null
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title"
+  ],
+  "reachedPlay": false,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 1,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 2,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 4000,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": null,
+  "samples": 0
+ },
+ "severity": 104.5,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "page crashed (renderer process died)",
+  "blockPlayMs": 956,
+  "blockLoadMs": 711,
+  "load1": 10.9
+ }
+}

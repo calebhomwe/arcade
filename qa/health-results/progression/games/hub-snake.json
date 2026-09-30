@@ -1,0 +1,182 @@
+{
+ "id": "hub-snake",
+ "title": "Snake",
+ "cat": "classic",
+ "genre": "arcade",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/snake.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "snakeBest",
+  "snakeTotal",
+  "hm-snake"
+ ],
+ "session1": {
+  "start": "#playBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over"
+  ],
+  "gameOvers": 3,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 26,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "snakeTut",
+   "gamesMuted",
+   "hm-snake"
+  ],
+  "savedKeysWrittenInSession1": 3,
+  "titleTextChanged": true,
+  "title1": "🔊 Snake THE GARDEN GAME Best 0 · 0 fruits eaten in total 🍎 0 🎨 Skins 📋 Goals 4 🔥 0/5 Garden hedge is deadly Portals wrap around Rocks g",
+  "title2": "🔊 Snake THE GARDEN GAME Best 0 · 0 fruits eaten in total 🍎 8 🎨 Skins 📋 Goals 4 🔥 1/5 Garden hedge is deadly Portals wrap around Rocks g",
+  "keysUpdatedAgain": [
+   "gamesMuted"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 3,
+  "added": [
+   "snakeTut",
+   "gamesMuted"
+  ],
+  "changed": [
+   "hm-snake"
+  ],
+  "removed": [],
+  "sample": {
+   "snakeTut": "1",
+   "hm-snake": "{\"v\":1,\"coins\":8,\"life\":8,\"owned\":{\"emerald\":1},\"skin\":\"emerald\",\"runs",
+   "gamesMuted": "0"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "settings",
+   "currency",
+   "unlocks",
+   "cosmetics",
+   "score",
+   "levels",
+   "stars"
+  ],
+  "categoriesPresent": [
+   "other",
+   "currency",
+   "unlocks",
+   "cosmetics",
+   "score",
+   "levels",
+   "stars",
+   "settings"
+  ],
+  "writesDuringPlay": {
+   "hm-snake": "4x",
+   "snakeTut": "1x",
+   "gamesMuted": "8x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": false,
+  "meta": false
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "upgrades"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "unlocks",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, unlocks, cosmetics); systems seen: levels, unlocks, stars, goals, daily, cosmetics; sinks unlocks/cosmetics fed by levels/stars/goals/daily/currency",
+ "expected": [
+  "levels",
+  "upgrades",
+  "unlocks",
+  "achievements",
+  "daily"
+ ],
+ "lacks": [
+  "upgrades",
+  "achievements"
+ ],
+ "pageErrors": []
+}

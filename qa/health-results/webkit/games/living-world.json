@@ -1,0 +1,202 @@
+{
+ "id": "living-world",
+ "title": "Dominion: Living World",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "LivingWorld/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/living-world-wk-1-title.jpg",
+  "2-mid": "shots/living-world-wk-2-mid.jpg",
+  "3-end": "shots/living-world-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 14.01,
+  "cores": 4,
+  "load1End": 13.62,
+  "contention": 1.07,
+  "contentionSamples": [
+   1,
+   1.15,
+   1.04,
+   1.07,
+   1.11,
+   1.17,
+   1.03
+  ]
+ },
+ "loadMs": 1547,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:34789/LivingWorld/index.html",
+ "startPath": "http://127.0.0.1:34789/LivingWorld/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 120,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#dPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.07,
+  "loadMs": 1228,
+  "playMs": 601,
+  "loadRawMs": 1314,
+  "playRawMs": 643,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 104,
+  "slowestPollMs": 377,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 118,
+  "jsMedian": 1.87,
+  "jsP95": 26.17,
+  "jsP99": 50.47,
+  "jsMax": 249.5,
+  "jsP95Raw": 28,
+  "rawWithGlP95": 28,
+  "glP95": 0,
+  "gapP95": 697,
+  "gapMedian": 389,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 95,
+  "nodesEnd": 107,
+  "nodesMax": 107,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 86,
+   "totalMB": 51.8,
+   "biggest": [
+    {
+     "w": 2316,
+     "h": 1328,
+     "mpx": 3.08,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 2316,
+     "h": 1328,
+     "mpx": 3.08,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 664,
+     "h": 664,
+     "mpx": 0.44,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 3,
+  "restartsAfterOver": 2
+ },
+ "gameScore": {
+  "updates": 3,
+  "first": 7,
+  "last": 8,
+  "max": 8,
+  "trajectory": [
+   [
+    15,
+    7
+   ],
+   [
+    41,
+    8
+   ],
+   [
+    52,
+    8
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 45,
+  "swipes": 12,
+  "holds": 1,
+  "keys": 5,
+  "buttonPresses": 16,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 15,
+  "inputLatencyP95Ms": 704,
+  "inputLatencyMaxMs": 1443,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 34.4,
+  "maxChangeFromStartPct": 79.1,
+  "samples": 14
+ },
+ "severity": 1.2
+}

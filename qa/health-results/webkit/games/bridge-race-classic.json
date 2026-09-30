@@ -1,0 +1,236 @@
+{
+ "id": "bridge-race-classic",
+ "title": "Bridge Race",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK",
+  "ERRORS"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 34.56 ms over 33 ms (unthrottled, divided by machine slowdown x1.4; raw p95 47, median 5.88, p99 310.29, max 310.3; time inside WebGL calls excluded, p95 of it 131)",
+  "ERRORS": "3 uncaught page error(s): EncodingError: Decoding failed"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/bridge-race-classic-wk-1-title.jpg",
+  "2-mid": "shots/bridge-race-classic-wk-2-mid.jpg",
+  "3-end": "shots/bridge-race-classic-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 13.62,
+  "cores": 4,
+  "load1End": 12.96,
+  "contention": 1.36,
+  "contentionSamples": [
+   2.82,
+   1.36,
+   1.37,
+   1.43,
+   1.22,
+   1.13,
+   1.14
+  ]
+ },
+ "loadMs": 973,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/bridge-race-classic.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 54,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#brPlay + Let's go!",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.36,
+  "loadMs": 240,
+  "playMs": 386,
+  "loadRawMs": 326,
+  "playRawMs": 1689,
+  "playGlMs": 1164,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 29,
+  "slowestPollMs": 991,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 185,
+  "shaderCompileMaxCallMs": 22
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 85,
+  "jsMedian": 5.88,
+  "jsP95": 34.56,
+  "jsP99": 310.29,
+  "jsMax": 310.3,
+  "jsP95Raw": 47,
+  "rawWithGlP95": 154,
+  "glP95": 131,
+  "gapP95": 1259,
+  "gapMedian": 550,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [
+  "EncodingError: Decoding failed"
+ ],
+ "errorCount": 3,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 85,
+  "nodesEnd": 91,
+  "nodesMax": 91,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 4,
+   "totalMB": 4.9,
+   "biggest": [
+    {
+     "w": 1116,
+     "h": 698,
+     "mpx": 0.78,
+     "dom": true,
+     "css": [
+      372,
+      233
+     ]
+    },
+    {
+     "w": 513,
+     "h": 822,
+     "mpx": 0.42,
+     "dom": true,
+     "css": [
+      0,
+      0
+     ]
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 64,
+     "mpx": 0.02,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 21,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    12,
+    0
+   ],
+   [
+    16,
+    0
+   ],
+   [
+    17,
+    0
+   ],
+   [
+    18,
+    0
+   ],
+   [
+    19,
+    0
+   ],
+   [
+    21,
+    0
+   ],
+   [
+    27,
+    0
+   ],
+   [
+    28,
+    0
+   ],
+   [
+    29,
+    0
+   ],
+   [
+    47,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 59,
+  "swipes": 12,
+  "holds": 6,
+  "keys": 4,
+  "buttonPresses": 33,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 16,
+  "inputLatencyP95Ms": 892,
+  "inputLatencyMaxMs": 1318,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 5.5,
+  "changeTitleToPlayPct": 54,
+  "maxChangeFromStartPct": 72.2,
+  "samples": 16
+ },
+ "severity": 45
+}

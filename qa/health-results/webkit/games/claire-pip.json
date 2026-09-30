@@ -1,0 +1,159 @@
+{
+ "id": "claire-pip",
+ "title": "Claire's Big Life",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "ClairePip/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 4172 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 3936 ms of JS; timer heartbeat (no long-task API in this engine)"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/claire-pip-wk-1-title.jpg",
+  "2-mid": "shots/claire-pip-wk-2-mid.jpg",
+  "3-end": "shots/claire-pip-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 12.96,
+  "cores": 4,
+  "load1End": 13.13,
+  "contention": 1.06,
+  "contentionSamples": [
+   1.11,
+   1.05,
+   1.01,
+   1.06,
+   1.06,
+   2.22,
+   1.34
+  ]
+ },
+ "loadMs": 2085,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:33021/ClairePip/index.html",
+ "startPath": "http://127.0.0.1:33021/ClairePip/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 124,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#ageBands .ageband + ▶ Start play",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.06,
+  "loadMs": 1836,
+  "playMs": 3936,
+  "loadRawMs": 1946,
+  "playRawMs": 4172,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 15,
+  "slowestPollMs": 1712,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 5,
+  "jsMedian": 0.94,
+  "jsP95": 1.89,
+  "jsP99": 1.89,
+  "jsMax": 1.9,
+  "jsP95Raw": 2,
+  "rawWithGlP95": 2,
+  "glP95": 0,
+  "gapP95": null,
+  "gapMedian": null,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 493,
+  "nodesEnd": 724,
+  "nodesMax": 724,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 0,
+   "totalMB": 0,
+   "biggest": [],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 4
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 21,
+  "swipes": 3,
+  "holds": 3,
+  "keys": 2,
+  "buttonPresses": 6,
+  "resumes": 1,
+  "touchApi": true,
+  "inputLatencyMedianMs": 40,
+  "inputLatencyP95Ms": 1111,
+  "inputLatencyMaxMs": 1444,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 95.9,
+  "maxChangeFromStartPct": 92.1,
+  "samples": 7
+ },
+ "severity": 105.9,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "main thread blocked 5558 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.2 -> about 4710 ms of JS; timer heartbeat (no long-task API in this engine)",
+  "blockPlayMs": 4710,
+  "blockLoadMs": 1274,
+  "load1": 13.73
+ }
+}

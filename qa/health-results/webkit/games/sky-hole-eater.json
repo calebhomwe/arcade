@@ -1,0 +1,201 @@
+{
+ "id": "sky-hole-eater",
+ "title": "Hole Eater",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK",
+  "ERRORS"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 72.03 ms over 33 ms (unthrottled, divided by machine slowdown x1.2; raw p95 85, median 9.32, p99 103.39, max 135.6; time inside WebGL calls excluded, p95 of it 229)",
+  "ERRORS": "3 uncaught page error(s): EncodingError: Decoding failed"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/sky-hole-eater-wk-1-title.jpg",
+  "2-mid": "shots/sky-hole-eater-wk-2-mid.jpg",
+  "3-end": "shots/sky-hole-eater-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 13.4,
+  "cores": 4,
+  "load1End": 12.56,
+  "contention": 1.18,
+  "contentionSamples": [
+   1.2,
+   1.07,
+   1.09,
+   1.89,
+   1.33,
+   1.18,
+   1.08
+  ]
+ },
+ "loadMs": 2099,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 45,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.18,
+  "loadMs": 726,
+  "playMs": 444,
+  "loadRawMs": 2506,
+  "playRawMs": 588,
+  "playGlMs": 64,
+  "loadGlMs": 1649,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 38,
+  "slowestPollMs": 860,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 242,
+  "shaderCompileMaxCallMs": 29
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 150,
+  "jsMedian": 9.32,
+  "jsP95": 72.03,
+  "jsP99": 103.39,
+  "jsMax": 135.6,
+  "jsP95Raw": 85,
+  "rawWithGlP95": 274,
+  "glP95": 229,
+  "gapP95": 566,
+  "gapMedian": 328,
+  "over100": 2,
+  "limit": 33
+ },
+ "errors": [
+  "EncodingError: Decoding failed"
+ ],
+ "errorCount": 3,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 26,
+  "nodesEnd": 26,
+  "nodesMax": 26,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 7,
+   "totalMB": 12.9,
+   "biggest": [
+    {
+     "w": 1024,
+     "h": 1024,
+     "mpx": 1.05,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 390,
+     "h": 664,
+     "mpx": 0.26,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 1
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 1,
+  "last": 1,
+  "max": 1,
+  "trajectory": [
+   [
+    48,
+    1
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 46,
+  "swipes": 9,
+  "holds": 3,
+  "keys": 3,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 9,
+  "inputLatencyP95Ms": 1231,
+  "inputLatencyMaxMs": 1696,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 99.3,
+  "maxChangeFromStartPct": 96.6,
+  "samples": 15
+ },
+ "severity": 45.3
+}

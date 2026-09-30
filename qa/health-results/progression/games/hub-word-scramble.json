@@ -1,0 +1,157 @@
+{
+ "id": "hub-word-scramble",
+ "title": "Word Scramble",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/word-scramble.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "ws_best",
+  "ws_kk",
+  "ws_progress"
+ ],
+ "session1": {
+  "start": "declared start button not tappable -> Play/Start button",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 35,
+   "max": 35
+  },
+  "botTaps": 66,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "ws_progress",
+   "ws_kk"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": true,
+  "title1": "← Word Scramble Spell the picture! C A T ▶ Play Levels My words ! Grown-ups Help 0 M T W T F S S Today: win 3 levels 0/3",
+  "title2": "← Word Scramble Spell the picture! C A T ▶ Play Levels My words ! Grown-ups Help 1 M T T F S S Today: win 3 levels 0/3",
+  "keysUpdatedAgain": [
+   "ws_progress"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "ws_progress",
+   "ws_kk"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "ws_progress": "{\"bands\":{\"3\":{\"n\":3,\"ok\":1}},\"miss\":{\"cat\":1,\"pie\":1},\"days\":[\"2026-9",
+   "ws_kk": "{\"v\":1,\"lv\":{},\"own\":{},\"eq\":{},\"days\":[\"2026-09-30\"],\"daily\":{\"d\":\"20"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "levels",
+   "daily",
+   "settings"
+  ],
+  "categoriesPresent": [
+   "levels",
+   "daily",
+   "settings"
+  ],
+  "writesDuringPlay": {
+   "ws_kk": "6x",
+   "ws_progress": "4x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": false,
+  "meta": false
+ },
+ "observedSystems": [
+  "levels",
+  "daily"
+ ],
+ "claimedOnly": [
+  "stars",
+  "goals"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "daily"
+  ],
+  "unclassifiedBlob": false
+ },
+ "level": 2,
+ "label": "P2",
+ "why": "progress persists (levels, daily) with levels, daily",
+ "expected": [
+  "levels",
+  "stars",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "lacks": [
+  "stars",
+  "achievements",
+  "goals"
+ ],
+ "pageErrors": []
+}

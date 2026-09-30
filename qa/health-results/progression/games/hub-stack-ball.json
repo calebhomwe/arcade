@@ -1,0 +1,208 @@
+{
+ "id": "hub-stack-ball",
+ "title": "Stack Ball",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/stack-ball.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "stack-ball-prog-v1",
+  "stack-ball-best",
+  "stack-ball-depth",
+  "stack-ball-gems",
+  "stack-ball-chain",
+  "stack-ball-close",
+  "sb-days"
+ ],
+ "session1": {
+  "start": "#playBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 3,
+  "score": {
+   "first": 5,
+   "last": 5,
+   "max": 19
+  },
+  "botTaps": 53,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "sb-days",
+   "stack-ball-gems",
+   "stack-ball-chain",
+   "stack-ball-close",
+   "stack-ball-tut",
+   "stack-ball-best-mute"
+  ],
+  "savedKeysWrittenInSession1": 7,
+  "titleTextChanged": true,
+  "title1": "0 Stack Ball LEVELS ENDLESS LEVEL 1 WORLD 1 · TERRACOTTA Reach the finish Slam streak x2 Finish in 16s PLAY LEVEL 1 SKINS Daily goal Slam 30",
+  "title2": "2 Stack Ball LEVELS ENDLESS LEVEL 1 WORLD 1 · TERRACOTTA Reach the finish Slam streak x2 Finish in 16s PLAY LEVEL 1 SKINS Daily goal Slam 30",
+  "keysUpdatedAgain": [
+   "stack-ball-gems",
+   "stack-ball-prog-v1"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 7,
+  "added": [
+   "sb-days",
+   "stack-ball-gems",
+   "stack-ball-chain",
+   "stack-ball-close",
+   "stack-ball-tut",
+   "stack-ball-best-mute"
+  ],
+  "changed": [
+   "stack-ball-prog-v1"
+  ],
+  "removed": [],
+  "sample": {
+   "sb-days": "{\"d\":20726,\"s\":1,\"b\":1}",
+   "stack-ball-prog-v1": "{\"coins\":2,\"level\":1,\"stars\":{},\"skin\":\"sky\",\"owned\":[\"sky\"],\"days\":[\"",
+   "stack-ball-gems": "6",
+   "stack-ball-chain": "3",
+   "stack-ball-close": "4",
+   "stack-ball-tut": "1",
+   "stack-ball-best-mute": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "levels",
+   "currency",
+   "other",
+   "score",
+   "stars",
+   "cosmetics",
+   "unlocks",
+   "daily",
+   "goals",
+   "settings"
+  ],
+  "categoriesPresent": [
+   "levels",
+   "currency",
+   "stars",
+   "cosmetics",
+   "unlocks",
+   "daily",
+   "goals",
+   "settings",
+   "score",
+   "other"
+  ],
+  "writesDuringPlay": {
+   "stack-ball-prog-v1": "10x",
+   "sb-days": "1x",
+   "stack-ball-tut": "1x",
+   "stack-ball-best-mute": "23x",
+   "stack-ball-gems": "6x",
+   "stack-ball-chain": "3x",
+   "stack-ball-close": "3x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "goals": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "upgrades"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "unlocks",
+   "goals",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, unlocks, goals, daily, cosmetics); systems seen: levels, unlocks, stars, goals, daily, cosmetics; sinks unlocks/cosmetics fed by levels/stars/goals/daily/currency",
+ "expected": [
+  "unlocks",
+  "cosmetics",
+  "daily",
+  "achievements",
+  "goals"
+ ],
+ "lacks": [
+  "achievements"
+ ],
+ "pageErrors": []
+}

@@ -1,0 +1,192 @@
+{
+ "id": "word-dungeon",
+ "title": "Word Dungeon",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "WordDungeon/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "landscape",
+ "verdicts": [
+  "STALL"
+ ],
+ "evidence": {
+  "STALL": "started only with a keyboard key (tap:36%,56% + tap on game + KEY Digit1); a phone has no keyboard"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/word-dungeon-wk-1-title.jpg",
+  "2-mid": "shots/word-dungeon-wk-2-mid.jpg",
+  "3-end": "shots/word-dungeon-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 13.72,
+  "cores": 4,
+  "load1End": 13.06,
+  "contention": 1.22,
+  "contentionSamples": [
+   1.15,
+   1.24,
+   1.24,
+   1.38,
+   1.03,
+   1.22,
+   1.14
+  ]
+ },
+ "loadMs": 1304,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:46237/WordDungeon/index.html",
+ "startPath": "http://127.0.0.1:46237/WordDungeon/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 69,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap:36%,56% + tap on game + KEY Digit1",
+  "viaKey": true,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.22,
+  "loadMs": 859,
+  "playMs": 512,
+  "loadRawMs": 1048,
+  "playRawMs": 625,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 32,
+  "slowestPollMs": 262,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 215,
+  "jsMedian": 5.74,
+  "jsP95": 13.93,
+  "jsP99": 33.61,
+  "jsMax": 304.1,
+  "jsP95Raw": 17,
+  "rawWithGlP95": 17,
+  "glP95": 0,
+  "gapP95": 515,
+  "gapMedian": 236,
+  "over100": 2,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 39,
+  "nodesEnd": 41,
+  "nodesMax": 41,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 25,
+   "totalMB": 12.9,
+   "biggest": [
+    {
+     "w": 1500,
+     "h": 684,
+     "mpx": 1.03,
+     "dom": true,
+     "css": [
+      750,
+      342
+     ]
+    },
+    {
+     "w": 1500,
+     "h": 684,
+     "mpx": 1.03,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 659,
+     "h": 684,
+     "mpx": 0.45,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1145,
+     "h": 101,
+     "mpx": 0.12,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 1,
+  "last": 1,
+  "max": 1,
+  "trajectory": [
+   [
+    13,
+    1
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 57,
+  "swipes": 10,
+  "holds": 5,
+  "keys": 6,
+  "buttonPresses": 17,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 18,
+  "inputLatencyP95Ms": 867,
+  "inputLatencyMaxMs": 1504,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 13,
+  "changeTitleToPlayPct": 70.3,
+  "maxChangeFromStartPct": 14.3,
+  "samples": 15
+ },
+ "severity": 82.9
+}

@@ -1,0 +1,174 @@
+{
+ "id": "survivor-wave",
+ "title": "Survivor Wave",
+ "cat": "arcade",
+ "genre": "arcade",
+ "src": "SurvivorWave/index.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "survivorBest2",
+  "survivorMeta"
+ ],
+ "session1": {
+  "start": "tap centre + ▶ PLAY",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 21,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "survivorMute",
+   "survivorSettings",
+   "survivorMissions",
+   "survivorBestiary"
+  ],
+  "savedKeysWrittenInSession1": 4,
+  "titleTextChanged": true,
+  "title1": "← Hub 🔊 ⚙ ⚡ ULT SURVIVOR WAVE The horde took the city. You have 10 minutes, an auto-firing arsenal and one job: survive. Level up, max your",
+  "title2": "← Hub 🔇 ⚙ ⚡ ULT SURVIVOR WAVE The horde took the city. You have 10 minutes, an auto-firing arsenal and one job: survive. Level up, max your",
+  "keysUpdatedAgain": [
+   "survivorMute"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 11,
+  "added": [
+   "survivorMute",
+   "survivorSettings",
+   "survivorMissions",
+   "survivorBestiary"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "survivorGold": "80",
+   "survivorMute": "1",
+   "survivorDaily": "{\"signin\":\"2026-09-30\",\"tile\":1,\"streak\":0}",
+   "survivorMeta": "{}",
+   "survivorAchievements": "{\"done\":{},\"lifeK\":0,\"lifeE\":0,\"lifeB\":0,\"lifeG\":0,\"lifeW\":0,\"_pk\":0,\"",
+   "survivorSettings": "{\"shake\":true,\"flash\":true,\"floaters\":true,\"haptics\":true,\"sfxVol\":1,\"",
+   "survivorSaveVer": "1",
+   "survivorMissions": "{\"set\":[{\"id\":\"boss\",\"goal\":3,\"pts\":20,\"prog\":0,\"done\":false},{\"id\":\"g"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "settings",
+   "goals",
+   "score"
+  ],
+  "categoriesPresent": [
+   "other",
+   "settings",
+   "daily",
+   "save-blob",
+   "goals",
+   "score"
+  ],
+  "writesDuringPlay": {
+   "survivorSaveVer": "1x",
+   "survivorDaily": "1x",
+   "survivorMeta": "1x",
+   "survivorGold": "1x",
+   "survivorHero": "1x",
+   "survivorAchievements": "1x",
+   "survivorPerks": "1x",
+   "survivorBestiary": "3x",
+   "survivorMissions": "3x",
+   "survivorMute": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": false,
+   "dom": true,
+   "meta": false
+  },
+  "goals": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": true,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "stars",
+  "goals",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "upgrades"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "goals"
+  ],
+  "unclassifiedBlob": false
+ },
+ "level": 2,
+ "label": "P2",
+ "why": "progress persists (goals) with levels, stars, goals, daily, cosmetics",
+ "expected": [
+  "levels",
+  "upgrades",
+  "unlocks",
+  "achievements",
+  "daily"
+ ],
+ "lacks": [
+  "upgrades",
+  "unlocks",
+  "achievements"
+ ],
+ "pageErrors": []
+}

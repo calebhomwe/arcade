@@ -1,0 +1,81 @@
+{
+ "id": "hub-helix-smash",
+ "title": "Helix Smash",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/helix-smash.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "STALL",
+  "FREEZE"
+ ],
+ "evidence": {
+  "loadError": "page.goto: Page crashed\nCall log:\n\u001b[2m  - navigating to \"https://calebhomwe.github.io/arcade-hub/games/helix-smash.html\", waiting until \"load\"\u001b[22m\n",
+  "STALL": "did not load: page.goto: Page crashed\nCall log:\n\u001b[2m  - navigating to \"https://calebhomwe.github.io/arcade-hub/games/helix-smash.html\", waiting until \"load\"\u001b[22m\n",
+  "FREEZE": "page crashed (renderer process died)"
+ },
+ "notes": [],
+ "shots": {},
+ "machine": {
+  "load1Start": 13.04,
+  "cores": 4
+ },
+ "loadMs": 1728,
+ "loaded": false,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/helix-smash.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/helix-smash.html",
+ "block": {
+  "c": 1,
+  "loadMs": 0,
+  "playMs": 0,
+  "loadRawMs": 0,
+  "playRawMs": 0,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 0,
+  "slowestPollMs": 1,
+  "pollTimeouts": 0,
+  "shaderCompileMs": null,
+  "shaderCompileMaxCallMs": null
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 0,
+  "jsMedian": null,
+  "jsP95": null,
+  "jsP99": null,
+  "jsMax": null,
+  "jsP95Raw": null,
+  "rawWithGlP95": null,
+  "glP95": null,
+  "gapP95": null,
+  "gapMedian": null,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "severity": 104,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "STALL",
+   "FREEZE"
+  ],
+  "evidence": "page crashed (renderer process died)",
+  "blockPlayMs": 0,
+  "blockLoadMs": 0
+ }
+}

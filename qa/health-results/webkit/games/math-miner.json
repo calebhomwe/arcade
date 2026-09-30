@@ -1,0 +1,209 @@
+{
+ "id": "math-miner",
+ "title": "Math Miner",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "MathMiner/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 2061 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.2 -> about 1676 ms of JS; timer heartbeat (no long-task API in this engine)"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/math-miner-wk-1-title.jpg",
+  "2-mid": "shots/math-miner-wk-2-mid.jpg",
+  "3-end": "shots/math-miner-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 15.52,
+  "cores": 4,
+  "load1End": 14.53,
+  "contention": 1.23,
+  "contentionSamples": [
+   1.13,
+   1.64,
+   1.23,
+   1.42,
+   1.08,
+   1.27,
+   1.23
+  ]
+ },
+ "loadMs": 967,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:42875/MathMiner/index.html",
+ "startPath": "http://127.0.0.1:42875/MathMiner/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 47,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#btnMath",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.23,
+  "loadMs": 714,
+  "playMs": 1676,
+  "loadRawMs": 878,
+  "playRawMs": 2061,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 28,
+  "slowestPollMs": 64,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 130,
+  "jsMedian": 1.63,
+  "jsP95": 9.76,
+  "jsP99": 63.41,
+  "jsMax": 197.6,
+  "jsP95Raw": 12,
+  "rawWithGlP95": 12,
+  "glP95": 0,
+  "gapP95": 1122,
+  "gapMedian": 206,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 136,
+  "nodesEnd": 198,
+  "nodesMax": 198,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 2,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 21,
+   "totalMB": 8.3,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 780,
+     "h": 894,
+     "mpx": 0.7,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 431,
+     "h": 226,
+     "mpx": 0.1,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 436,
+     "h": 184,
+     "mpx": 0.08,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 2
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 2,
+  "restartsAfterOver": 2
+ },
+ "gameScore": {
+  "updates": 2,
+  "first": 1,
+  "last": 1,
+  "max": 1,
+  "trajectory": [
+   [
+    10,
+    1
+   ],
+   [
+    48,
+    1
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 46,
+  "swipes": 11,
+  "holds": 5,
+  "keys": 4,
+  "buttonPresses": 13,
+  "resumes": 1,
+  "touchApi": true,
+  "inputLatencyMedianMs": 21,
+  "inputLatencyP95Ms": 979,
+  "inputLatencyMaxMs": 1350,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 4.5,
+  "changeTitleToPlayPct": 88.2,
+  "maxChangeFromStartPct": 94,
+  "samples": 13
+ },
+ "severity": 103.7,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [],
+  "evidence": null,
+  "blockPlayMs": 1061,
+  "blockLoadMs": 1177,
+  "load1": 13.87
+ }
+}

@@ -1,0 +1,182 @@
+{
+ "id": "sky-cut-rope",
+ "title": "Cut the Rope",
+ "cat": "hyper",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/cut-rope.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "ERRORS"
+ ],
+ "evidence": {
+  "ERRORS": "5 uncaught page error(s): EncodingError: Decoding failed"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/sky-cut-rope-wk-1-title.jpg",
+  "2-mid": "shots/sky-cut-rope-wk-2-mid.jpg",
+  "3-end": "shots/sky-cut-rope-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 13.62,
+  "cores": 4,
+  "load1End": 13.4,
+  "contention": 1.16,
+  "contentionSamples": [
+   1.06,
+   1.17,
+   1.11,
+   1.1,
+   1.16,
+   1.67,
+   1.46
+  ]
+ },
+ "loadMs": 105,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/cut-rope.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/cut-rope.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 152,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.16,
+  "loadMs": 769,
+  "playMs": 248,
+  "loadRawMs": 892,
+  "playRawMs": 288,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 17,
+  "slowestPollMs": 102,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 144,
+  "jsMedian": 0.86,
+  "jsP95": 5.17,
+  "jsP99": 56.03,
+  "jsMax": 111.2,
+  "jsP95Raw": 6,
+  "rawWithGlP95": 6,
+  "glP95": 0,
+  "gapP95": 485,
+  "gapMedian": 312,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [
+  "EncodingError: Decoding failed"
+ ],
+ "errorCount": 5,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 20,
+  "nodesEnd": 20,
+  "nodesMax": 20,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 5,
+   "totalMB": 3.7,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 50,
+  "swipes": 15,
+  "holds": 7,
+  "keys": 5,
+  "buttonPresses": 23,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 29,
+  "inputLatencyP95Ms": 800,
+  "inputLatencyMaxMs": 1258,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 17.5,
+  "changeTitleToPlayPct": 90.2,
+  "maxChangeFromStartPct": 1.2,
+  "samples": 16
+ },
+ "severity": 23.8
+}

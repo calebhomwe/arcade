@@ -1,0 +1,151 @@
+{
+ "id": "clean-house",
+ "title": "Clean House",
+ "cat": "sim",
+ "genre": "management",
+ "src": "CleanHouse/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 3077 ms (during load), 766 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 2010 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/clean-house-wk-1-title.jpg",
+  "3-end": null
+ },
+ "machine": {
+  "load1Start": 10.35,
+  "cores": 4,
+  "load1End": 10.22,
+  "contention": 1.15,
+  "contentionSamples": [
+   1.26,
+   1.34,
+   1.11,
+   1.15,
+   1.07
+  ]
+ },
+ "loadMs": 1929,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:37797/CleanHouse/index.html",
+ "startPath": "http://127.0.0.1:37797/CleanHouse/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 113,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "declared start button not tappable -> tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.15,
+  "loadMs": 2010,
+  "playMs": 136,
+  "loadRawMs": 3077,
+  "playRawMs": 156,
+  "playGlMs": 0,
+  "loadGlMs": 766,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 2,
+  "slowestPollMs": 182,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 155,
+  "shaderCompileMaxCallMs": 35
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 5,
+  "jsMedian": 0,
+  "jsP95": 220,
+  "jsP99": 220,
+  "jsMax": 220,
+  "jsP95Raw": 253,
+  "rawWithGlP95": 1019,
+  "glP95": 766,
+  "gapP95": 2134,
+  "gapMedian": 21,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 281,
+  "nodesEnd": 281,
+  "nodesMax": 281,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 0,
+  "audioElements": 3,
+  "webglContexts": 1,
+  "canvases": null,
+  "sdkTimers": null
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 1,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 4,
+  "inputLatencyP95Ms": 4,
+  "inputLatencyMaxMs": 4,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": null,
+  "samples": 0
+ },
+ "severity": 104,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "STALL"
+  ],
+  "evidence": "page crashed (renderer process died)",
+  "blockPlayMs": 0,
+  "blockLoadMs": 981,
+  "load1": 10.17
+ }
+}

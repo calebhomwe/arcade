@@ -1,0 +1,148 @@
+{
+ "id": "tic-tac-toe",
+ "title": "Tic Tac Toe — Beat the Bot",
+ "cat": "classic",
+ "genre": "board",
+ "src": "TicTacToe/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "STALL"
+ ],
+ "evidence": {
+  "STALL": "nothing on screen changed for 43 s while the bot kept tapping"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/tic-tac-toe-wk-1-title.jpg",
+  "2-mid": "shots/tic-tac-toe-wk-2-mid.jpg",
+  "3-end": "shots/tic-tac-toe-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 10.17,
+  "cores": 4,
+  "load1End": 12.58,
+  "contention": 1.41,
+  "contentionSamples": [
+   1.15,
+   1.96,
+   1.34,
+   1.43,
+   1.02,
+   2.15,
+   1.41
+  ]
+ },
+ "loadMs": 265,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:37797/TicTacToe/index.html",
+ "startPath": "http://127.0.0.1:37797/TicTacToe/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 103,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "Play/Start button",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.41,
+  "loadMs": 216,
+  "playMs": 331,
+  "loadRawMs": 304,
+  "playRawMs": 467,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 7,
+  "slowestPollMs": 38,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 0,
+  "jsMedian": null,
+  "jsP95": null,
+  "jsP99": null,
+  "jsMax": null,
+  "jsP95Raw": null,
+  "rawWithGlP95": null,
+  "glP95": null,
+  "gapP95": null,
+  "gapMedian": null,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 70,
+  "nodesEnd": 70,
+  "nodesMax": 70,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 0,
+   "totalMB": 0,
+   "biggest": [],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 114,
+  "swipes": 3,
+  "holds": 2,
+  "keys": 6,
+  "buttonPresses": 86,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 6,
+  "inputLatencyP95Ms": 325,
+  "inputLatencyMaxMs": 1003,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 43.3,
+  "changeTitleToPlayPct": 0,
+  "maxChangeFromStartPct": 0,
+  "samples": 16
+ },
+ "severity": 82.3
+}

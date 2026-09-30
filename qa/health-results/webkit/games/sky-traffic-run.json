@@ -1,0 +1,199 @@
+{
+ "id": "sky-traffic-run",
+ "title": "Traffic Run",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/traffic-run.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "ERRORS",
+  "STALL"
+ ],
+ "evidence": {
+  "ERRORS": "4 uncaught page error(s): EncodingError: Decoding failed",
+  "STALL": "game over screen reached 1x and the game never got back to play (bot pressed buttons for 21 s)"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/sky-traffic-run-wk-1-title.jpg",
+  "2-mid": "shots/sky-traffic-run-wk-2-mid.jpg",
+  "3-end": "shots/sky-traffic-run-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 13.37,
+  "cores": 4,
+  "load1End": 13.08,
+  "contention": 1.18,
+  "contentionSamples": [
+   1.32,
+   3.11,
+   1.14,
+   1.22,
+   1.16,
+   1.18,
+   1.1
+  ]
+ },
+ "loadMs": 121,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/traffic-run.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/traffic-run.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 62,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.18,
+  "loadMs": 233,
+  "playMs": 252,
+  "loadRawMs": 275,
+  "playRawMs": 297,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 45,
+  "slowestPollMs": 215,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 153,
+  "jsMedian": 0.85,
+  "jsP95": 20.34,
+  "jsP99": 101.69,
+  "jsMax": 172,
+  "jsP95Raw": 24,
+  "rawWithGlP95": 24,
+  "glP95": 0,
+  "gapP95": 485,
+  "gapMedian": 291,
+  "over100": 2,
+  "limit": 33
+ },
+ "errors": [
+  "EncodingError: Decoding failed"
+ ],
+ "errorCount": 4,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 21,
+  "nodesEnd": 21,
+  "nodesMax": 21,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 8,
+   "totalMB": 3.7,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 90,
+  "last": 90,
+  "max": 90,
+  "trajectory": [
+   [
+    28,
+    90
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 70,
+  "swipes": 9,
+  "holds": 4,
+  "keys": 6,
+  "buttonPresses": 2,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 12,
+  "inputLatencyP95Ms": 537,
+  "inputLatencyMaxMs": 1125,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0.5,
+  "changeTitleToPlayPct": 91.4,
+  "maxChangeFromStartPct": 88.2,
+  "samples": 16
+ },
+ "severity": 85.1
+}

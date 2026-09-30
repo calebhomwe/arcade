@@ -1,0 +1,152 @@
+{
+ "id": "chili-firm",
+ "title": "Chili Firm 2: Replanted",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "ChiliFirm/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "STALL"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 2690 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 2587 ms of JS; timer heartbeat (no long-task API in this engine) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+  "STALL": "game never reported play after the start attempts (start: .playbtn + tap on game); scenes seen: title"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/chili-firm-wk-1-title.jpg",
+  "3-end": null
+ },
+ "machine": {
+  "load1Start": 12.58,
+  "cores": 4,
+  "load1End": 11.21,
+  "contention": 1.04,
+  "contentionSamples": [
+   1.06,
+   1,
+   1.04,
+   1.04,
+   1.05
+  ]
+ },
+ "loadMs": 1194,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:46207/ChiliFirm/index.html",
+ "startPath": "http://127.0.0.1:46207/ChiliFirm/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 36,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": ".playbtn + tap on game",
+  "viaKey": false,
+  "detectedBy": null,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.04,
+  "loadMs": 1167,
+  "playMs": 2587,
+  "loadRawMs": 1214,
+  "playRawMs": 2690,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 2,
+  "slowestPollMs": 2353,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 1,
+  "jsMedian": 1.92,
+  "jsP95": 1.92,
+  "jsP99": 1.92,
+  "jsMax": 1.9,
+  "jsP95Raw": 2,
+  "rawWithGlP95": 2,
+  "glP95": 0,
+  "gapP95": null,
+  "gapMedian": null,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 1190,
+  "nodesEnd": 1151,
+  "nodesMax": 1190,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": null,
+  "sdkTimers": null
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title"
+  ],
+  "reachedPlay": false,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 1,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 2,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 4000,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": null,
+  "samples": 0
+ },
+ "severity": 106.6,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "STALL"
+  ],
+  "evidence": "main thread blocked 7897 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 7380 ms of JS; timer heartbeat (no long-task API in this engine) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+  "blockPlayMs": 3298,
+  "blockLoadMs": 7380,
+  "load1": 11.03
+ }
+}

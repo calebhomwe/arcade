@@ -48,7 +48,7 @@ const until = async (fn, ms, label, arg) => { const t0 = Date.now(); for (;;) { 
 const state = () => page.evaluate(() => { const S = __cf.farm.S; return { level: S.level, xp: S.xp, coins: S.coins, inv: { ...S.inv }, plots: Object.keys(S.plots).length, harvests: S.stats.harvests, orders: S.stats.orders, batches: S.stats.batches, chapter: S.story.i, bakery: !!(S.blds.bakery && S.blds.bakery.built), v: S.v, name: S.name }; });
 const at = (id) => page.evaluate((id) => { const P = window.__cfPlots[id]; return __cf.screenOf(P.x, 0.25, P.z); }, id);
 const atSite = (id) => page.evaluate((id) => { const s = window.__cfSites.find((q) => q.id === id); return __cf.screenOf(s.x, 1.6, s.z); }, id);
-const settle = () => until(() => { const r = __cf.game.rig; return !r.tween && Math.abs(r.offsetY - r.tOffsetY) < 0.003 && Math.hypot(r.cur.x - r.tgt.x, r.cur.z - r.tgt.z) < 0.02; }, 15000, 'camera settled');
+const settle = () => until(() => { const r = __cf.game.rig; return !r.tween && Math.abs(r.offsetY - r.tOffsetY) < 0.003 && Math.hypot(r.cur.x - r.tgt.x, r.cur.z - r.tgt.z) < 0.02; }, 15000, 'camera settled').catch(async (e) => { const st = await page.evaluate(() => { const r = __cf.game.rig; return JSON.stringify({ tween: !!r.tween, off: [r.offsetY, r.tOffsetY], cur: [r.cur.x, r.cur.z], tgt: [r.tgt.x, r.tgt.z], ui: __cf.game.ui.busy, mode: __cf.game.mode, fps: __cf.engine.stats.ms }); }).catch(() => '?'); throw new Error(e.message + ' ' + st); });
 const tap = async (pt) => { if (MODE === 'phone') await page.touchscreen.tap(pt.x, pt.y); else await page.mouse.click(pt.x, pt.y); };
 async function drag(ids) {
   await settle();
@@ -139,7 +139,7 @@ try {
   // ---- build the bakery ------------------------------------------------------------------------------------------------------
   await page.click('[data-act=shop]'); await page.waitForSelector('.sheet.on [data-act=buySite][data-id=bakery]', { timeout: 8000 }); await wait(500); await shot('09-shop');
   await page.click('.sheet.on [data-act=buySite][data-id=bakery]'); await page.waitForSelector('[data-act=confirmBuy]', { timeout: 8000 });
-  await page.click('[data-act=confirmBuy]'); await wait(1500);
+  await page.click('[data-act=confirmBuy]', { force: true, timeout: 8000 }); await wait(1500);
   await dismiss(); await page.keyboard.press('Escape'); await wait(800); await shot('10-bakery-built');
   const built = await state();
   log('building the bakery spends coins and puts it on the farm', built.bakery && built.coins < st.coins, `coins ${st.coins} -> ${built.coins}`);

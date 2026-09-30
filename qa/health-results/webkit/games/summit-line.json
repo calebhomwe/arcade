@@ -1,0 +1,197 @@
+{
+ "id": "summit-line",
+ "title": "Summit Line",
+ "cat": "arcade",
+ "genre": "board-sports",
+ "src": "SummitLine/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "landscape",
+ "verdicts": [
+  "FREEZE",
+  "ERRORS"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 10953 ms (while playing), 7668 ms of it inside WebGL calls (software GL), machine slowdown x1.2 -> about 2715 ms of JS; timer heartbeat (no long-task API in this engine)",
+  "ERRORS": "1 uncaught page error(s): EncodingError: Decoding failed"
+ },
+ "notes": [
+  "software-GL artefact: over 40% of the longest block was inside synchronous WebGL calls (getProgramInfoLog, readPixels, draw...) waiting for this box's software GL; an iPhone GPU would not wait",
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/summit-line-wk-1-title.jpg",
+  "2-mid": "shots/summit-line-wk-2-mid.jpg",
+  "3-end": "shots/summit-line-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 11.96,
+  "cores": 4,
+  "load1End": 12.61,
+  "contention": 1.21,
+  "contentionSamples": [
+   1.33,
+   1.42,
+   1.21,
+   1.09,
+   1.08,
+   1.55,
+   1.04
+  ]
+ },
+ "loadMs": 1547,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:43609/SummitLine/index.html",
+ "startPath": "http://127.0.0.1:43609/SummitLine/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 35,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#btnPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.21,
+  "loadMs": 558,
+  "playMs": 2715,
+  "loadRawMs": 675,
+  "playRawMs": 10953,
+  "playGlMs": 7668,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 20,
+  "slowestPollMs": 5896,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 1101,
+  "shaderCompileMaxCallMs": 114
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 21,
+  "jsMedian": 69.42,
+  "jsP95": 228.93,
+  "jsP99": 292.56,
+  "jsMax": 292.6,
+  "jsP95Raw": 277,
+  "rawWithGlP95": 1373,
+  "glP95": 1339,
+  "gapP95": 2917,
+  "gapMedian": 2255,
+  "over100": 5,
+  "limit": 33
+ },
+ "errors": [
+  "EncodingError: Decoding failed"
+ ],
+ "errorCount": 1,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 328,
+  "nodesEnd": 341,
+  "nodesMax": 341,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 15,
+   "totalMB": 13.2,
+   "biggest": [
+    {
+     "w": 1500,
+     "h": 684,
+     "mpx": 1.03,
+     "dom": true,
+     "css": [
+      750,
+      342
+     ]
+    },
+    {
+     "w": 2048,
+     "h": 256,
+     "mpx": 0.52,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1024,
+     "h": 256,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1024,
+     "h": 256,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 27,
+  "swipes": 3,
+  "holds": 2,
+  "keys": 0,
+  "buttonPresses": 11,
+  "resumes": 3,
+  "touchApi": true,
+  "inputLatencyMedianMs": 12,
+  "inputLatencyP95Ms": 663,
+  "inputLatencyMaxMs": 2185,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 4.9,
+  "changeTitleToPlayPct": 96.6,
+  "maxChangeFromStartPct": 55.2,
+  "samples": 11
+ },
+ "severity": 106.9,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "ERRORS"
+  ],
+  "evidence": "main thread blocked 9022 ms (while playing), 4210 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 3437 ms of JS; timer heartbeat (no long-task API in this engine)",
+  "blockPlayMs": 3437,
+  "blockLoadMs": 233,
+  "load1": 14.02
+ }
+}

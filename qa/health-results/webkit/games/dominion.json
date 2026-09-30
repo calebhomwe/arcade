@@ -1,0 +1,208 @@
+{
+ "id": "dominion",
+ "title": "Dominion",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "Dominion/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 4163 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 3330 ms of JS; timer heartbeat (no long-task API in this engine)",
+  "JANK": "p95 JS frame cost 48.8 ms over 33 ms (unthrottled, divided by machine slowdown x1.3; raw p95 61, median 9.6, p99 710.4, max 710.4; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/dominion-wk-1-title.jpg",
+  "2-mid": "shots/dominion-wk-2-mid.jpg",
+  "3-end": "shots/dominion-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 13.57,
+  "cores": 4,
+  "load1End": 13.69,
+  "contention": 1.25,
+  "contentionSamples": [
+   1.48,
+   2.02,
+   1.11,
+   1.25,
+   1.08,
+   1.52,
+   1.09
+  ]
+ },
+ "loadMs": 8015,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:35033/Dominion/index.html",
+ "startPath": "http://127.0.0.1:35033/Dominion/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 125,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#dPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.25,
+  "loadMs": 3330,
+  "playMs": 1747,
+  "loadRawMs": 4163,
+  "playRawMs": 2184,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 94,
+  "slowestPollMs": 1054,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 99,
+  "jsMedian": 9.6,
+  "jsP95": 48.8,
+  "jsP99": 710.4,
+  "jsMax": 710.4,
+  "jsP95Raw": 61,
+  "rawWithGlP95": 61,
+  "glP95": 0,
+  "gapP95": 801,
+  "gapMedian": 495,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 71,
+  "nodesEnd": 106,
+  "nodesMax": 106,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 64,
+   "totalMB": 35.5,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 1280,
+     "h": 720,
+     "mpx": 0.92,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1280,
+     "h": 510,
+     "mpx": 0.65,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1280,
+     "h": 510,
+     "mpx": 0.65,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 1
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 4,
+  "last": 4,
+  "max": 4,
+  "trajectory": [
+   [
+    56,
+    4
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 38,
+  "swipes": 12,
+  "holds": 3,
+  "keys": 2,
+  "buttonPresses": 10,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 17,
+  "inputLatencyP95Ms": 1349,
+  "inputLatencyMaxMs": 1847,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 31,
+  "maxChangeFromStartPct": 78.8,
+  "samples": 15
+ },
+ "severity": 107.3,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 6677 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 5857 ms of JS; timer heartbeat (no long-task API in this engine)",
+  "blockPlayMs": 1782,
+  "blockLoadMs": 5857,
+  "load1": 13.92
+ }
+}

@@ -169,8 +169,10 @@ export class Game {
     if (this.mode !== 'play' || this.ui.busy) return;
     if (this.ghost) return;
     const who = this.actorAt(x, y);
-    if (who) return this.tapActor(who);
     const g = this.rig.ground(x, y), plot = this.farmScene.plotAt(g.x, g.z), hit = this.farmScene.pick(x, y);
+    // Claire and Pip often stand on the plot you just worked: a tap there still means the plot, not a chat
+    if (who && (who === 'claire' || who === 'pip') && plot && this.farm.patchOwned(plot.patch)) return this.tapPlot(plot);
+    if (who) return this.tapActor(who);
     if (plot && (!hit || ['patch', 'pen', 'decor', 'dock'].includes(hit.kind))) return this.tapPlot(plot);
     if (hit) return this.tapObject(hit);
     if (this.brush) return;   // stay in planting mode until Done
