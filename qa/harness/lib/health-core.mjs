@@ -7,7 +7,7 @@ import { makeBot } from './bot.mjs';
 
 const INJECT = await fs.readFile(path.join(import.meta.dirname, 'inject.js'), 'utf8');
 const race = (p, ms, label = 'timeout') => Promise.race([p, wait(ms).then(() => label)]);
-const round = (n, d = 1) => n == null || Number.isNaN(n) ? null : +n.toFixed(d);
+const round = (n, d = 1) => typeof n !== 'number' || Number.isNaN(n) ? null : +n.toFixed(d);
 
 export async function checkHealth(g, browser, o) {
   const { BASE, out, DURATION = 45, THROTTLE = 4 } = o;
