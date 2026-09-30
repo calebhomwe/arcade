@@ -6,7 +6,7 @@ export class Labels {
   add(id, o) {
     let it = this.items.get(id);
     if (!it) {
-      const el = document.createElement('button'); el.type = 'button'; el.className = 'wl'; el.tabIndex = -1;
+      const el = document.createElement(/\bname\b/.test(o.cls || '') ? 'div' : 'button'); if (el.tagName === 'BUTTON') el.type = 'button'; el.className = 'wl'; el.tabIndex = -1;
       el.addEventListener('pointerdown', (e) => e.stopPropagation());
       el.addEventListener('click', (e) => { e.stopPropagation(); const cur = this.items.get(id); if (cur && cur.onTap) cur.onTap(); });
       this.root.appendChild(el); it = { el, pos: new THREE.Vector3(), last: '' }; this.items.set(id, it);

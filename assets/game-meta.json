@@ -1279,16 +1279,16 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "tr",
    "howto": [
     "Pick your age band, a mode (Math or Spelling) and a map, then Defend the Castle.",
@@ -2260,7 +2260,8 @@
     "flappyBest",
     "flappyPipes",
     "flappyFeathers",
-    "hm-flappy"
+    "hm-flappy",
+    "flappyGale"
    ],
    "start": "#playBtn",
    "authored": [
@@ -2356,7 +2357,9 @@
     "dinoBest",
     "dinoYards",
     "dinoBones",
-    "hm-dino"
+    "hm-dino",
+    "dinoRuns",
+    "dinoMedals"
    ],
    "start": "#playBtn",
    "authored": [
@@ -2685,23 +2688,21 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseButton": "tr",
    "howto": [
-    "Pick Easy (6 pairs), Normal (8) or Hard (10) and press Play.",
-    "Tap a card to flip it, then tap a second card.",
-    "Two matching cards stay face up; two different cards flip back.",
-    "Find every pair in as few moves as you can: fewer moves earn more stars."
+    "Press Play. Tap a card to flip it.",
+    "Tap a second card to find its twin.",
+    "Match all pairs in few tries for 3 stars."
    ],
    "tips": [
-    "Flip a new card first, then think: have you seen its twin already?",
-    "Three matches in a row earn a Peek, which shows every card for a moment.",
-    "A game with no misses is Flawless and adds a bonus star to your bank.",
-    "Shuffle mode reshuffles the face-down cards after every miss: pure short-term memory.",
-    "Hint only uses cards you have already seen."
+    "Every third match in a row earns a peek.",
+    "The magnifier shows a twin you have already seen.",
+    "Find every animal to fill your album.",
+    "Win stars to unlock new card backs."
    ],
    "controls": {
     "keyboard": "Tab or the arrow keys pick a card, Enter or Space flips it. P or Esc pauses.",
-    "touch": "Tap a card to flip it. Hint, Peek and Shuffle sit above the cards."
+    "touch": "Tap a card to flip it. Hint and Peek sit at the top."
    },
    "tricks": [],
    "cheats": [
@@ -2718,16 +2719,17 @@
      "effect": "Slow flip: a wrong pair stays face up for 3 seconds"
     }
    ],
-   "difficulty": "Three levels on the title: Easy has 6 pairs, Normal 8 and Hard 10; the star targets grow with the deck.",
+   "difficulty": "15 levels in five worlds (farm, ocean, jungle, sweets, space): from 2 up to 10 pairs, with a shorter look at the cards each time.",
    "features": {
-    "hints": "The bulb button (and Pause > Hint) points at a twin you have already seen, or at a card you have not tried yet, and makes it glow",
-    "undo": "Not offered: a flipped card cannot be un-seen, so Hint and Peek help instead",
-    "level-select-or-daily": "Easy, Normal and Hard decks on the title, each with its own best",
-    "results": "You Win card with stars, moves, time, new-best badge, star bank and flawless streak"
+    "hints": "The magnifier (and Pause > Hint) makes a twin you have already seen glow; an idle hint appears after 12 seconds",
+    "undo": "Not offered: peeks and hints help instead",
+    "level-select-or-daily": "Level map with stars, plus a daily goal of 3 wins",
+    "results": "Stars card with tries, new album friends and prizes"
    },
    "saves": [
     "memBest",
-    "memStars"
+    "memStars",
+    "memory_kk"
    ],
    "start": "#playBtn",
    "authored": [
@@ -3378,7 +3380,8 @@
     "results": "Round banners with a gold line through the winning three; a match card with stars, round score and XP",
     "tutorial": "First match: coach notes teach placing a piece and winning a round; skippable, replayed from How to play",
     "ai-difficulty": "Six skill levels from a random player to a near-perfect look-ahead, plus Opposite Day",
-    "progression": "6 opponents x 3 stars; XP levels unlock 6 piece sets (oak and ivory, chalkboard, marble and brass, jade and ruby, neon glass, gold and onyx); 3 daily goals and a weekly stamp chest; meet every critter"
+    "progression": "6 opponents x 3 stars; XP levels unlock 6 piece sets (oak and ivory, chalkboard, marble and brass, jade and ruby, neon glass, gold and onyx); 3 daily goals and a weekly stamp chest; meet every critter",
+    "rules-screen": "The How-to card (title, Pause > How to play) lists the rules; the first match has coach notes"
    },
    "saves": [
     "tttBest",
@@ -3432,49 +3435,48 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseButton": "tr",
    "howto": [
-    "Choose which round to start at (1, 5 or 10) and press Play.",
-    "Watch Simon light up the pads and play their notes.",
-    "Repeat the whole sequence by tapping the pads in the same order.",
-    "Each round adds one more colour. One wrong tap ends the game."
+    "Press Play. Watch the animals sing.",
+    "Tap them in the same order.",
+    "Finish all the rounds with few mistakes for 3 stars."
    ],
    "tips": [
-    "Say the colours in your head, or hum the notes: sound is easier to remember.",
-    "Group long sequences into chunks of three or four.",
-    "Replay shows the sequence again once per game.",
-    "The flashes speed up every round, so stay focused.",
-    "Missed one? Undo that tap once per game, right from the Game Over card."
+    "Hum the tune in your head.",
+    "The ear button plays the round again.",
+    "You have three hearts on each level.",
+    "Jam lets you play the animals freely."
    ],
    "controls": {
-    "keyboard": "1 red, 2 green, 3 blue, 4 yellow (or Tab to a pad and Enter). R replays. P or Esc pauses.",
-    "touch": "Tap the pads. Replay sits above them."
+    "keyboard": "1 to 4 tap the pads, R replays. P or Esc pauses.",
+    "touch": "Tap the animals"
    },
    "tricks": [],
    "cheats": [
     {
      "code": "SLOWSIMON",
-     "effect": "Slow Simon: flashes last almost twice as long"
+     "effect": "Slow Simon: the animals sing almost twice as slowly"
     },
     {
      "code": "SHOWNEXT",
      "effect": "Show next: the pad to tap next is outlined"
     },
     {
-     "code": "ENDLESSREPLAY",
-     "effect": "Endless replay: replay the sequence as often as you like"
+     "code": "EXTRALIVES",
+     "effect": "Extra lives: three more hearts"
     }
    ],
-   "difficulty": "An adaptive curve: every round adds a colour and the flashes get quicker. Starting at round 5 or 10 skips the easy part; Mirror mode (tap the opposite pad) is the expert setting.",
+   "difficulty": "15 levels in three bands. Sequences grow from 3 to 12 sounds and the tune speeds up.",
    "features": {
-    "hints": "Replay button shows the sequence again once per game; Pause > Hint names the next colour (and the mirrored pad in Mirror mode)",
-    "undo": "Undo that tap on the Game Over card takes back one wrong tap per game and lets you carry on",
-    "level-select-or-daily": "Start at round 1, 5 or 10 on the title",
-    "results": "Game Over card with the round reached, score, best, pads collected and the correct sequence played back"
+    "hints": "The ear button replays the round; Pause > Hint names the next animal",
+    "undo": "Hearts forgive mistakes: the round replays",
+    "level-select-or-daily": "Level map with stars and a daily goal",
+    "results": "Stars card with new stickers"
    },
    "saves": [
     "simonBest",
-    "simonScore"
+    "simonScore",
+    "simon_kk"
    ],
    "start": "#playBtn",
    "authored": [
@@ -3620,20 +3622,18 @@
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [
-    "Press Play: a 30-second round starts.",
-    "Tap each 🐹 mole as it pops up, before it ducks back down.",
-    "⭐ gold moles are worth 5, 👑 crowns 10; a 🎃 boss takes three taps for 25.",
-    "Don't tap the 💣: it rumbles before it pops up and costs 3 points."
+    "Press Play. Tap each mole as it pops up.",
+    "Do not tap the bunny and chick friends.",
+    "Whack enough moles to earn 1, 2 or 3 stars, then go on to the next level."
    ],
    "tips": [
-    "Five hits in a row without letting one escape raises the multiplier (up to x3).",
-    "A hit within 350 ms of a mole popping up earns a +1 speed bonus.",
-    "A boss appears every 100 points.",
-    "Moles pop up faster and stay up for less time as the clock runs down.",
-    "On a keyboard, the number pad layout (7 8 9 / 4 5 6 / 1 2 3) matches the holes."
+    "Gold moles count as three and add two seconds.",
+    "Hard-hat moles need two taps.",
+    "Win stars to unlock new hammers and meadow friends.",
+    "Win 3 levels a day to fill your daily goal."
    ],
    "controls": {
-    "keyboard": "Number keys 1 to 9 whack the matching hole (number-pad layout); Space starts. P or Esc pauses.",
+    "keyboard": "Number keys 1 to 9 whack the matching hole (number-pad layout, 1 to 4 on small boards); Space starts. P or Esc pauses.",
     "touch": "Tap the moles"
    },
    "tricks": [],
@@ -3643,25 +3643,25 @@
      "effect": "Big hammer: a whack also hits the moles next door"
     },
     {
-     "code": "NOBOMBS",
-     "effect": "No bombs: only moles pop up"
+     "code": "EXTRATIME",
+     "effect": "Extra time: rounds last 15 seconds longer"
     },
     {
-     "code": "EXTRATIME",
-     "effect": "Extra time: rounds last 45 seconds"
+     "code": "SLOWMOLES",
+     "effect": "Slow moles: they stay up much longer"
     }
    ],
-   "difficulty": "An adaptive curve inside each round: moles appear faster and hide sooner as the timer runs down, and bosses arrive every 100 points.",
+   "difficulty": "15 levels in three worlds. Holes grow from 4 to 9, moles pop up faster and hide sooner, friends and hard-hat moles join in, and every fifth level has a crowned boss. Star goals are set from a simulated round.",
    "features": {
-    "one-tap-start": "Play starts the 30-second round at once",
-    "instant-restart": "Play Again (or Space) on the results card starts a new round",
-    "best-score-badge": "🏆 best in the top bar next to the score",
-    "tutorial-card": "First-round card with a tapping finger that stays until your first whack",
-    "results": "Time's Up card with score, best, new-best badge and rank"
+    "one-tap-start": "Play starts the next level at once",
+    "instant-restart": "Play again on the results card",
+    "best-score-badge": "Best score saved as whackBest",
+    "tutorial-card": "Level 1 holds the first mole until you tap it; Help replays",
+    "results": "Stars card with whacks, goal, new prizes and daily goal"
    },
    "saves": [
     "whackBest",
-    "whackTWhacks"
+    "whack_kk"
    ],
    "start": "#playBtn",
    "authored": [
@@ -3712,27 +3712,25 @@
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [
-    "Press Play: a 45-second round starts.",
-    "Tap bubbles to pop them before they float off the top.",
-    "Bigger bubbles score more; ⭐ bubbles split in two, gold bubbles add 4 seconds.",
-    "Never tap a 💣: it ends the round at once."
+    "Press Play. Tap the bubbles to set the animals free.",
+    "On some levels free one kind of animal.",
+    "Free enough to earn 1, 2 or 3 stars."
    ],
    "tips": [
-    "Pop quickly one after another to build a combo: every 4 pops raises the multiplier.",
-    "Gold bubbles buy time: +4 seconds each.",
-    "Bombs never appear in the first 8 seconds or the last 7.",
-    "Bubbles rise faster as the round goes on.",
-    "A ⭐ bubble needs two taps: the first splits it."
+    "Clock bubbles add 5 seconds.",
+    "Rainbow bubbles pop the ones around them.",
+    "Big bubbles need two taps.",
+    "Drag a finger across bubbles to pop many."
    ],
    "controls": {
-    "keyboard": "Space or Enter on Play; the round is played with the mouse. P or Esc pauses.",
-    "touch": "Tap the bubbles"
+    "keyboard": "Play with the mouse; Space or Enter on Play. P or Esc pauses.",
+    "touch": "Tap or drag over the bubbles"
    },
    "tricks": [],
    "cheats": [
     {
-     "code": "NOBOMBS",
-     "effect": "No bombs: only bubbles float up"
+     "code": "NOBIGS",
+     "effect": "No big bubbles: every bubble pops in one tap"
     },
     {
      "code": "SLOWBUBBLES",
@@ -3743,17 +3741,18 @@
      "effect": "Big bubbles: every bubble is a big one"
     }
    ],
-   "difficulty": "An adaptive curve inside each round: bubbles come more often and rise faster, and bombs become more likely as time runs down.",
+   "difficulty": "15 levels in three sea worlds. Bubbles come faster, get smaller and more kinds of animals appear; even levels ask for one kind only.",
    "features": {
-    "one-tap-start": "Play starts the 45-second round at once",
-    "instant-restart": "Play Again on the results card starts a new round",
-    "best-score-badge": "🏆 best in the top bar next to the score",
-    "tutorial-card": "First-round card with a tapping finger that stays until your first pop",
-    "results": "Time's Up or Boomed card with score, best, run stats, rank, lifetime pops and badges"
+    "one-tap-start": "Play starts the next level",
+    "instant-restart": "Play again on the results card",
+    "best-score-badge": "Best score saved as bubbleBest",
+    "tutorial-card": "Level 1 holds a slow bubble until you pop it",
+    "results": "Stars card with animals freed, goal and new friends"
    },
    "saves": [
     "bubbleBest",
-    "bubblePops"
+    "bubblePops",
+    "bubble_kk"
    ],
    "start": "#playBtn",
    "authored": [
@@ -3877,8 +3876,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/word-scramble.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -3893,34 +3892,33 @@
    "pauseKeys": "esc",
    "pauseButton": "tr",
    "howto": [
-    "Pick a level on the title: 3 letters up to 9+ letters. Harder levels unlock as you earn XP.",
-    "Tap the letter tiles in order to spell the hidden word. Tap a filled slot to send a letter back.",
-    "Finish each word before the time bar runs out. Three misses or time-outs end the game."
+    "Press Play. Look at the picture.",
+    "Tap the letters in order to spell it.",
+    "Spell without help for more stars."
    ],
    "tips": [
-    "Look for common endings like -ING, -ER and -LE first.",
-    "A word with no hints and no mistakes scores a PERFECT +5.",
-    "Your streak adds up to +30 points a word, so a skip costs more than it looks.",
-    "Shuffle the tiles when you are stuck: a new order often shows the word.",
-    "Gold tiles count towards your gold collection on the title screen."
+    "Tap the picture to hear the word.",
+    "The magnifier shows the next letter.",
+    "Tap a letter in a box to send it back.",
+    "Every word you spell goes into your book."
    ],
    "controls": {
-    "keyboard": "Type letters to place tiles, Backspace takes the last one back. Esc pauses.",
-    "touch": "Tap tiles to place them, tap a slot to send its letter back"
+    "keyboard": "Type letters to place tiles, Backspace takes one back. P or Esc pauses.",
+    "touch": "Tap the letter tiles"
    },
    "tricks": [],
    "cheats": [],
-   "difficulty": "Five level bands by word length: 3 letters (ages 5-6), 4-5 (6-7), 6 (7-8), 7-8 (8-9) and 9+ (9 and up). Each band unlocks with XP and gives more time for longer words.",
+   "difficulty": "15 levels from 3-letter to 9-letter words, each word has its own picture. The first six levels only accept the right letter.",
    "features": {
     "age-or-level-bands": "Five word-length levels on the title, with an age guide in the grown-ups report",
     "hints": "In-game Hint button places the next letter; the arcade Hint names the next letter or the wrong slot",
     "grown-up-progress-report": "Grown-ups button on the title: words tried and accuracy per level, practice days, the words missed most and a suggested next level",
     "tutorial": "Guided first word with coach cards (the timer waits); replay with Learn to play",
-    "results": "Game Over card with score, best, best streak and fastest word"
+    "results": "Stars card with the words you spelled and new prizes"
    },
    "saves": [
     "ws_best",
-    "ws_xp",
+    "ws_kk",
     "ws_progress"
    ],
    "start": ".diff-btn.sel",
@@ -4597,11 +4595,11 @@
     "Own 25, 50 or 100 of a building to double its output. At 1M coins earned, Prestige for golden coins that raise all income by 10% each."
    ],
    "tips": [
-    "Cursors also make every tap stronger.",
-    "Use the ×10, ×25 and MAX buttons to buy in bulk.",
-    "Send a Trade Caravan with spare coins: it comes back with 1.5 to 2.4 times as much.",
-    "A Golden Rush doubles taps for 12 seconds: tap fast!",
-    "Claim the Daily Tribute once a day for a minute of income."
+    "Tap the fountain early, then let the buildings work.",
+    "Upgrades unlock when you own 10, 40, 75, 150 and 250 of a building.",
+    "Tap the delivery truck when it rolls in for a reward.",
+    "Come back tomorrow: the daily gift grows with your streak.",
+    "Crowns are permanent: spend them in the Crown tab."
    ],
    "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -4624,12 +4622,13 @@
    ],
    "difficulty": "An idle curve: each building costs 15% more than the last, and every prestige resets buildings but multiplies income, so each run goes further.",
    "features": {
-    "offline-earnings": "Welcome back card: coins earned while away at 50% rate, up to 8 hours",
-    "upgrade-tree": "Ten buildings from Cursor to Empire, each with ×2 milestones at 25, 50 and 100 owned, plus deeds worth +2% each",
-    "big-number-format": "Coins shown as 1.2K, 3.4M, 5.6B and on to Qi",
-    "prestige-or-next-goal": "Prestige for golden coins (+10% income each) with a progress bar to the next golden coin",
-    "tutorial": "Coach cards on the first visit: tap, buy, milestones and prestige; replay with Learn to play",
-    "results": "Prestige card with coins this run, all-time earnings, golden coins and the new multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, new building, welcome back and prestige sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%"
    },
    "saves": [
     "ie_state"
@@ -4688,11 +4687,11 @@
     "Every 10th level is a boss. When you have earned enough gold, Ascend for souls that raise your damage by 5% each."
    ],
    "tips": [
-    "Every hero you own also makes your taps 10% stronger.",
-    "Each tap has a 10% chance to CRIT for triple damage.",
-    "Golden monsters pay extra: tap them fast.",
-    "Keep killing quickly to build a Fever streak for bonus gold.",
-    "Crystals from bosses open Loot Caches full of gold."
+    "Tap crits hit three times harder.",
+    "Friends fight for you every second, even while away.",
+    "Bosses have ten times the health and drop twenty times the gold.",
+    "Tap the treasure bird when it flies over.",
+    "Souls are permanent: spend them in the Ascend tab."
    ],
    "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -4702,25 +4701,27 @@
    "cheats": [
     {
      "code": "GOLDRAIN",
-     "effect": "Gold rain: a big pile of gold (25 monsters' worth)"
+     "effect": "Gold rain: 1M gold"
     },
     {
      "code": "ONEPUNCH",
-     "effect": "One punch: taps hit 100 times harder"
+     "effect": "One punch: taps 10 times stronger"
     },
     {
-     "code": "HEROPARTY",
-     "effect": "Hero party: 5 of every hero join for free"
+     "code": "TIMEWARP",
+     "effect": "One hour of gold now"
     }
    ],
    "difficulty": "An idle curve: monsters gain health and pay more gold every level, bosses every 10 levels have ten times the health, and each hero costs 50% more than the last.",
    "features": {
-    "offline-earnings": "Welcome back card: gold your heroes earned while away at 50% rate, up to 8 hours",
-    "upgrade-tree": "Five heroes from Knight to Dragon, bought one, ten or MAX at a time, plus badges",
-    "big-number-format": "Gold and damage shown as 1.2K, 3.4M, 5.6B and beyond",
-    "prestige-or-next-goal": "Ascend for souls (+5% damage each) with the gold needed for the next soul shown under the button",
-    "tutorial": "Coach cards on the first visit: tap, hire, bosses and ascending; replay with Learn to play",
-    "results": "Ascended card with gold this run, level reached, best level, souls and the new multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, welcome back and Ascend sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%",
+    "collection": "Monster Dex of 30 monsters; every tenth stage is a boss"
    },
    "saves": [
     "tm_state"
@@ -4758,18 +4759,18 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/idle-miner.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -4779,11 +4780,11 @@
     "Deeper tiers have richer ore. Past 1000m, Prestige for gems that add 3% mining power each."
    ],
    "tips": [
-    "Tap quickly to build Flow: every 10 in a row pays a bonus.",
-    "Dynamite makes all digging 10 times faster for 20 seconds.",
-    "Each new ore tier doubles the value of every stone.",
-    "Gems also buy permanent upgrades like the Eternal Pick.",
-    "Use the ×10 and MAX buttons to hire miners in bulk."
+    "Tap the rock early, then dig new shafts.",
+    "Each shaft you dig lights the way to a richer ore.",
+    "Tap the gold cart when it rolls by.",
+    "The daily gift grows with your streak.",
+    "Gems are permanent: spend them in the Blast tab."
    ],
    "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -4792,26 +4793,27 @@
    "tricks": [],
    "cheats": [
     {
-     "code": "STONERAIN",
-     "effect": "Stone rain: a big pile of stones (ten minutes' worth, at least 1000)"
+     "code": "GOLDRAIN",
+     "effect": "Gold rain: 1M coins"
     },
     {
-     "code": "BIGBOOM",
-     "effect": "Big boom: free dynamite, ×10 digging for 60 seconds"
+     "code": "MIDAS",
+     "effect": "Golden pick: taps 10 times stronger"
     },
     {
-     "code": "DEEPDIVE",
-     "effect": "Deep dive: 500m deeper at once"
+     "code": "TIMEWARP",
+     "effect": "One hour of income now"
     }
    ],
    "difficulty": "An idle curve: pickaxes cost 60% more each level and miners 50% more each, while ore gets richer every tier from Stone at 0m to Void at 5000m.",
    "features": {
-    "offline-earnings": "Welcome back card: stones your miners dug while away at 50% rate, up to 8 hours",
-    "upgrade-tree": "Pickaxe levels, auto-miners, dynamite and four gem upgrades",
-    "big-number-format": "Stones shown as 1.2K, 3.4M, 5.6B and beyond",
-    "prestige-or-next-goal": "Prestige for gems (+3% mining each) plus the next ore tier and its depth shown under the rock",
-    "tutorial": "Coach cards on the first visit: dig, shop and dynamite; replay with Learn to play",
-    "results": "Prestige card with stones this run, depth reached, total gems and the new multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, new building, welcome back and prestige sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%"
    },
    "saves": [
     "im_state"
@@ -4865,16 +4867,17 @@
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [
-    "Pick a crop, then tap an empty plot to plant it.",
-    "Tap a growing plot to water it (twice as fast), and tap it again when it glows to harvest and sell it.",
-    "Spend coins in the shop on plots, a sprinkler, a harvester and chickens, and chase the goal at the top."
+    "Tap an empty plot to plant the seed you chose. Swipe across plots to do several at once.",
+    "Tap a growing plot to water it: it grows twice as fast. Tap a ripe crop to harvest it.",
+    "Fill orders in the Orders tab for coins and XP, or sell crops from the barn.",
+    "Level up to unlock crops, then buy plots, a bigger barn and helpers."
    ],
    "tips": [
-    "Each harvest of a crop raises its price by 6% for good.",
-    "Harvests sometimes drop a seed. Saved seeds are planted first, for free.",
-    "Three harvests within two seconds of each other make a combo.",
-    "The Sprinkler waters everything and the Harvester replants for you.",
-    "Crops and chickens keep working while you are away, for up to two hours."
+    "Water right after planting to halve the wait.",
+    "Slow crops pay much more per plot.",
+    "Orders pay 1.5 times the market price.",
+    "A full barn blocks harvesting: deliver or sell.",
+    "Helpers work while the game is open."
    ],
    "controls": {
     "keyboard": "Tab to a plot or button and press Enter or Space. P or Esc pauses.",
@@ -4883,31 +4886,33 @@
    "tricks": [],
    "cheats": [
     {
-     "code": "COINSHOWER",
-     "effect": "Coin shower: a big pile of coins"
+     "code": "HOTMONEY",
+     "effect": "+100,000 coins"
     },
     {
-     "code": "QUICKGROW",
-     "effect": "Quick grow: every planted crop is ready now"
+     "code": "GREENTHUMB",
+     "effect": "Every crop ripens now"
     },
     {
-     "code": "MAGICBEANS",
-     "effect": "Magic beans: 10 free seeds of every crop"
+     "code": "FULLBARN",
+     "effect": "Stock the barn with crops"
     }
    ],
    "difficulty": "Self-paced: dearer crops take longer but pay more, plot unlocks double in price, and each goal is a bigger coin total.",
    "features": {
-    "autosave": "The farm saves on this device every 5 seconds and when you leave (not while codes are on)",
-    "goals-or-quests": "Goal bar under the top bar: the next coin total to earn, with a coin reward when you reach it",
-    "day-time-ui": "Day number and clock in the top bar (6:00 to 22:00, dusk dims the farm) and a Day summary card at the end of each day",
-    "inventory": "The 🎒 Barn: saved seeds for every crop, harvest counts and mastery prices, plots and helpers",
-    "tutorial": "Coach cards on the first visit: pick, plant, water, harvest and the shop; replay with Learn to play",
-    "results": "Day summary card with crops harvested and coins earned that day"
+    "autosave": "Crops keep growing by the clock, even when the game is closed",
+    "goals-or-quests": "Delivery-truck orders, daily goals with a streak, 15 deeds",
+    "day-time-ui": "Timers on every plot and a golden-hour scene",
+    "inventory": "A barn with a capacity you can upgrade; sell or deliver crops",
+    "tutorial": "Coach cards: plant, water, harvest, deliver",
+    "results": "Level-up and order sheets",
+    "progression": "7 crops unlock from level 1 to 10, 12 plots, barn upgrades, two helpers that work for you",
+    "upgrade-tree": "Plots, barn and helper upgrades"
    },
    "saves": [
-    "farmHarvestSave_v1"
+    "farmHarvestSave_v2"
    ],
-   "start": "#playBtn",
+   "start": "#btnPlay",
    "authored": [
     "cheats",
     "controls",
@@ -4961,11 +4966,11 @@
     "At 1M coins earned, start a New Farm+ for Legacy Points that raise all income by 10% each."
    ],
    "tips": [
-    "Tap quickly for a combo: fast taps pay extra.",
-    "25 taps charge a Golden Harvest: +25% income for 10 seconds.",
-    "Fill the market orders for a big coin bonus before their timer runs out.",
-    "Catch the butterflies that flutter past for a reward.",
-    "Use the ×10 and ×25 buttons to buy buildings in bulk."
+    "Tap the cow to milk it early on.",
+    "Catch the butterfly for a bonus.",
+    "Upgrades unlock when you own 10, 40, 75, 150 and 250 of a farm building.",
+    "The daily gift grows with your streak.",
+    "Blue ribbons are permanent: spend them in the Fair tab."
    ],
    "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -4974,31 +4979,32 @@
    "tricks": [],
    "cheats": [
     {
-     "code": "HAYRAIN",
-     "effect": "Hay rain: a big pile of coins (ten minutes' worth, at least 10,000)"
+     "code": "GOLDRAIN",
+     "effect": "Coin shower: 1M coins"
     },
     {
-     "code": "GOLDENHOUR",
-     "effect": "Golden hour: a Golden Harvest that lasts a whole minute"
+     "code": "MIDAS",
+     "effect": "Golden udder: taps 10 times stronger"
     },
     {
-     "code": "BUMPERCROP",
-     "effect": "Bumper crop: every tractor tap is worth 10 times more"
+     "code": "TIMEWARP",
+     "effect": "One hour of income now"
     }
    ],
    "difficulty": "An idle curve: each building costs more than the last, owning 25, 50 and 100 of one multiplies its income, and every New Farm+ restarts the farm with more income per building.",
    "features": {
-    "offline-earnings": "Welcome back card: coins the farm earned while away at half rate, up to 8 hours",
-    "upgrade-tree": "Ten buildings from Wheat Field to Mega Farm with income milestones, plus the Farm Market and achievements",
-    "big-number-format": "Coins shown as 1.2K, 3.4M, 5.6B and beyond",
-    "prestige-or-next-goal": "New Farm+ for Legacy Points (+10% income each), and timed market orders as the next goal",
-    "tutorial": "Coach cards on the first visit: tap, buy and prestige; replay with Learn to play",
-    "results": "New Farm+ card with coins earned, Legacy Points and the new income multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, new building, welcome back and prestige sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%"
    },
    "saves": [
-    "farmIdleSave_v1"
+    "farmIdleSave_v2"
    ],
-   "start": "#playBtn",
+   "start": "#btnPlay",
    "authored": [
     "cheats",
     "controls",
@@ -6481,7 +6487,8 @@
     "progression": "Levels 1 to 50 with an XP curve, new crops, animals, workshops and recipes at set levels, expansion fields, decorations, wardrobe cosmetics, a critter album, awards and a daily gift streak",
     "tutorial": "The first play is guided by Milo and a pointing hand; replay it from Settings or the arcade Tutorial button",
     "offline-progress": "Crops, animals and workshop batches keep going while the game is closed; a kind welcome-back card adds a capped thank-you of up to four hours",
-    "graphics": "Adaptive quality: 3D lighting with soft sun shadows and haze, instanced grass and trees; drops resolution and effects by itself if a phone gets warm"
+    "graphics": "Adaptive quality: 3D lighting with soft sun shadows and haze, instanced grass and trees; drops resolution and effects by itself if a phone gets warm",
+    "results": "Level-up card (coins, gems, what unlocked), chapter-complete card, welcome-back card and the Lantern Fair finale card each show what you earned, with one tap to keep playing"
    },
    "saves": [
     "claireFarm.save"

@@ -81,6 +81,9 @@ export class Assets {
       if (!inf.map && !inf.vc) mat.uniforms.uTint.value.copy(inf.baseColor);
       o.material = mat; o.frustumCulled = false; if (opts.cast !== false) o.layers.enable(SHADOW_LAYER);
     });
+    // measure the skinned pose, not the bind pose (Meshy rigs carry a 100x bone scale that the raw mesh bounds hide)
+    obj.updateMatrixWorld(true);
+    obj.traverse((o) => { if (o.isSkinnedMesh) { o.skeleton.update(); o.boundingBox = null; o.computeBoundingBox(); } });
     const box = new THREE.Box3().setFromObject(obj);
     // skinned bounds come from the bind pose; good enough to size the character
     const size = box.getSize(new THREE.Vector3());

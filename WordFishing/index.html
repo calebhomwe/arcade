@@ -1158,7 +1158,7 @@ function resize(){
   U = WIDE ? clamp(VH/430,.6,1.2) : clamp(Math.min(VW/390,VH/720),.72,1.3);
   WL = Math.round(clamp(VH*(WIDE?.44:.4), 170, 380));
   try{ const cs=getComputedStyle(safeEl); SAFE={t:parseFloat(cs.paddingTop)||0,b:parseFloat(cs.paddingBottom)||0,l:parseFloat(cs.paddingLeft)||0,r:parseFloat(cs.paddingRight)||0}; }catch(e){}
-  bg=null; bgKey=''; weeds=[]; pads=[];
+  bg=null; bgWant=""; bgKey=''; weeds=[]; pads=[];
 }
 window.addEventListener("resize", resize); window.addEventListener("orientationchange", ()=>setTimeout(resize,120));
 
@@ -1708,10 +1708,10 @@ function refreshMenu(){
   $("m-daily").innerHTML = '<div class="row"><b>Daily goal: catch '+DAILY_GOAL+' fish</b><span>'+Math.min(DAILY_GOAL,meta.daily.n)+'/'+DAILY_GOAL+(meta.daily.got?' 🎁':'')+'</span></div><div class="kl-trough '+(meta.daily.got?'gold':'')+'"><i style="width:'+Math.max(4,Math.min(1,meta.daily.n/DAILY_GOAL)*100)+'%"></i></div>'
     +'<div style="margin-top:6px;font-size:14px;font-weight:800;color:var(--kl-ink2)">🔥 '+meta.streak.n+' day'+(meta.streak.n===1?'':'s')+' in a row'+(meta.streak.best>meta.streak.n?' · best '+meta.streak.best:'')+'</div>';
 }
-function cyclePond(d){ const n = PONDS.length; meta.pond = (meta.pond+d+n)%n; if (meta.pond>=pondsOpen()){ /* locked waters can be looked at, but not fished */ } saveMeta(meta); bg=null; refreshMenu(); kit('swap',{volume:.6}); }
+function cyclePond(d){ const n = PONDS.length; meta.pond = (meta.pond+d+n)%n; if (meta.pond>=pondsOpen()){ /* locked waters can be looked at, but not fished */ } saveMeta(meta); bg=null; bgWant=""; refreshMenu(); kit('swap',{volume:.6}); }
 $("pond-l").addEventListener("click", ()=>cyclePond(-1));
 $("pond-r").addEventListener("click", ()=>cyclePond(1));
-function tryStart(m){ if (meta.pond>=pondsOpen()){ setToast("This water opens at "+PONDS[meta.pond].at+" stars", 2, "#fff3d2"); meta.pond = pondsOpen()-1; bg=null; refreshMenu(); return; } audio(); kit('button',{volume:.7}); startDay(m); }
+function tryStart(m){ if (meta.pond>=pondsOpen()){ setToast("This water opens at "+PONDS[meta.pond].at+" stars", 2, "#fff3d2"); meta.pond = pondsOpen()-1; bg=null; bgWant=""; refreshMenu(); return; } audio(); kit('button',{volume:.7}); startDay(m); }
 $("btn-spell").addEventListener("click", ()=>tryStart("spell"));
 $("btn-math").addEventListener("click", ()=>tryStart("math"));
 $("btn-nextday").addEventListener("click", ()=>{ audio(); nextDay(); });
@@ -1863,7 +1863,7 @@ window.__fish_debug = {
   endTrip(){ if (phase!=="menu"&&phase!=="dayend") endTrip(); },
   openBook(i){ openBook(i||0); showOverlay("book"); },
   openShop(){ buildShop(); showOverlay("shop"); },
-  setPond(i){ meta.pond = clamp(i,0,PONDS.length-1); bg=null; },
+  setPond(i){ meta.pond = clamp(i,0,PONDS.length-1); bg=null; bgWant=""; },
 };
 /* the title has a living pond behind it */
 (function initMenuScene(){
