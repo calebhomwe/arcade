@@ -1,29 +1,32 @@
 {
   "howto": [
-    "Pick a level on the title: 3 letters up to 9+ letters. Harder levels unlock as you earn XP.",
-    "Tap the letter tiles in order to spell the hidden word. Tap a filled slot to send a letter back.",
-    "Finish each word before the time bar runs out. Three misses or time-outs end the game."
+    "Press Play. Look at the picture.",
+    "Tap the letters in order to spell it.",
+    "Spell without help for more stars."
   ],
   "tips": [
-    "Look for common endings like -ING, -ER and -LE first.",
-    "A word with no hints and no mistakes scores a PERFECT +5.",
-    "Your streak adds up to +30 points a word, so a skip costs more than it looks.",
-    "Shuffle the tiles when you are stuck: a new order often shows the word.",
-    "Gold tiles count towards your gold collection on the title screen."
+    "Tap the picture to hear the word.",
+    "The magnifier shows the next letter.",
+    "Tap a letter in a box to send it back.",
+    "Every word you spell goes into your book."
   ],
   "controls": {
-    "keyboard": "Type letters to place tiles, Backspace takes the last one back. Esc pauses.",
-    "touch": "Tap tiles to place them, tap a slot to send its letter back"
+    "keyboard": "Type letters to place tiles, Backspace takes one back. P or Esc pauses.",
+    "touch": "Tap the letter tiles"
   },
-  "difficulty": "Five level bands by word length: 3 letters (ages 5-6), 4-5 (6-7), 6 (7-8), 7-8 (8-9) and 9+ (9 and up). Each band unlocks with XP and gives more time for longer words.",
+  "difficulty": "15 levels from 3-letter to 9-letter words, each word has its own picture. The first six levels only accept the right letter.",
   "features": {
     "age-or-level-bands": "Five word-length levels on the title, with an age guide in the grown-ups report",
     "hints": "In-game Hint button places the next letter; the arcade Hint names the next letter or the wrong slot",
     "grown-up-progress-report": "Grown-ups button on the title: words tried and accuracy per level, practice days, the words missed most and a suggested next level",
     "tutorial": "Guided first word with coach cards (the timer waits); replay with Learn to play",
-    "results": "Game Over card with score, best, best streak and fastest word"
+    "results": "Stars card with the words you spelled and new prizes"
   },
-  "saves": ["ws_best", "ws_xp", "ws_progress"],
+  "saves": [
+    "ws_best",
+    "ws_kk",
+    "ws_progress"
+  ],
   "start": ".diff-btn.sel",
   "pauseKeys": "esc",
   "pauseButton": "tr"

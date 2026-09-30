@@ -1,21 +1,46 @@
 {
-  "howto": ["Press Play: a 45-second round starts.", "Tap bubbles to pop them before they float off the top.", "Bigger bubbles score more; ⭐ bubbles split in two, gold bubbles add 4 seconds.", "Never tap a 💣: it ends the round at once."],
-  "tips": ["Pop quickly one after another to build a combo: every 4 pops raises the multiplier.", "Gold bubbles buy time: +4 seconds each.", "Bombs never appear in the first 8 seconds or the last 7.", "Bubbles rise faster as the round goes on.", "A ⭐ bubble needs two taps: the first splits it."],
-  "controls": {"keyboard": "Space or Enter on Play; the round is played with the mouse. P or Esc pauses.", "touch": "Tap the bubbles"},
-  "difficulty": "An adaptive curve inside each round: bubbles come more often and rise faster, and bombs become more likely as time runs down.",
+  "howto": [
+    "Press Play. Tap the bubbles to set the animals free.",
+    "On some levels free one kind of animal.",
+    "Free enough to earn 1, 2 or 3 stars."
+  ],
+  "tips": [
+    "Clock bubbles add 5 seconds.",
+    "Rainbow bubbles pop the ones around them.",
+    "Big bubbles need two taps.",
+    "Drag a finger across bubbles to pop many."
+  ],
+  "controls": {
+    "keyboard": "Play with the mouse; Space or Enter on Play. P or Esc pauses.",
+    "touch": "Tap or drag over the bubbles"
+  },
+  "difficulty": "15 levels in three sea worlds. Bubbles come faster, get smaller and more kinds of animals appear; even levels ask for one kind only.",
   "cheats": [
-    {"code": "NOBOMBS", "effect": "No bombs: only bubbles float up"},
-    {"code": "SLOWBUBBLES", "effect": "Slow bubbles: everything rises at 60% speed"},
-    {"code": "BIGBUBBLES", "effect": "Big bubbles: every bubble is a big one"}
+    {
+      "code": "NOBIGS",
+      "effect": "No big bubbles: every bubble pops in one tap"
+    },
+    {
+      "code": "SLOWBUBBLES",
+      "effect": "Slow bubbles: everything rises at 60% speed"
+    },
+    {
+      "code": "BIGBUBBLES",
+      "effect": "Big bubbles: every bubble is a big one"
+    }
   ],
   "features": {
-    "one-tap-start": "Play starts the 45-second round at once",
-    "instant-restart": "Play Again on the results card starts a new round",
-    "best-score-badge": "🏆 best in the top bar next to the score",
-    "tutorial-card": "First-round card with a tapping finger that stays until your first pop",
-    "results": "Time's Up or Boomed card with score, best, run stats, rank, lifetime pops and badges"
+    "one-tap-start": "Play starts the next level",
+    "instant-restart": "Play again on the results card",
+    "best-score-badge": "Best score saved as bubbleBest",
+    "tutorial-card": "Level 1 holds a slow bubble until you pop it",
+    "results": "Stars card with animals freed, goal and new friends"
   },
-  "saves": ["bubbleBest", "bubblePops"],
+  "saves": [
+    "bubbleBest",
+    "bubblePops",
+    "bubble_kk"
+  ],
   "start": "#playBtn",
   "pauseButton": "tr"
 }
