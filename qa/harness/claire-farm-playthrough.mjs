@@ -35,11 +35,27 @@ const preinstalled = (() => { try { const d = '/opt/pw-browsers'; const c = fss.
 const args = ['--enable-webgl', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'];
 const browser = ENGINE === 'webkit' ? await webkit.launch() : await chromium.launch(preinstalled ? { executablePath: preinstalled, args } : { args });
 const ctx = await browser.newContext(MODE === 'phone' ? { ...devices['iPhone 13'] } : { viewport: { width: 1280, height: 800 } });
+  if (ENGINE === 'webkit') await ctx.addInitScript(() => {
+    // This sandbox has no audio hardware, and WebKit's media pipeline crashes the whole page as soon as any media element
+    // loads (a game that preloads sounds with new Audio() dies at load). A real iPhone does not do this, so swap the
+    // media elements for silent stand-ins: everything else about the game still runs in the real Safari engine.
+    class SilentAudio extends EventTarget {
+      constructor(src) { super(); this.src = src || ''; this.volume = 1; this.muted = false; this.paused = true; this.ended = false; this.currentTime = 0; this.duration = 1; this.readyState = 4; this.preload = 'auto'; this.loop = false; this.playbackRate = 1; }
+      play() { this.paused = false; return Promise.resolve(); } pause() { this.paused = true; } load() {} canPlayType() { return 'maybe'; }
+      cloneNode() { return new SilentAudio(this.src); } setAttribute(k, v) { this[k] = v; } getAttribute(k) { return this[k]; } removeAttribute() {}
+    }
+    window.Audio = SilentAudio;
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+    HTMLMediaElement.prototype.load = function () {};
+    const rawCreate = document.createElement.bind(document);
+    document.createElement = function (tag, o) { return /^(audio|video)$/i.test(tag) && tag.toLowerCase() === 'audio' ? new SilentAudio() : rawCreate(tag, o); };
+  });
 const page = await ctx.newPage();
 const problems = [];
 page.on('console', (m) => { if (m.type() === 'error') problems.push('console: ' + m.text().slice(0, 200)); });
-page.on('pageerror', (e) => problems.push('pageerror: ' + e.message.slice(0, 200)));
-page.on('requestfailed', (r) => problems.push('requestfailed: ' + r.url().slice(-80)));
+page.on('pageerror', (e) => { if (ENGINE === 'webkit' && /Failed to start the audio device|EncodingError|Decoding failed/i.test(e.message)) return;   // this sandbox has no sound card or codecs: an environment artefact, as iphone.mjs also treats it
+  problems.push('pageerror: ' + e.message.slice(0, 200)); });
+page.on('requestfailed', (r) => { if (!/ABORTED/i.test((r.failure() && r.failure().errorText) || '')) problems.push('requestfailed: ' + r.url().slice(-80)); });   // aborted = torn down mid-download at the end of the run
 
 const results = []; const log = (name, ok, note = '') => { results.push({ name, ok, note }); console.log((ok ? 'PASS ' : 'FAIL ') + name + (note ? '  ' + note : '')); };
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -145,7 +161,7 @@ try {
   log('building the bakery spends coins and puts it on the farm', built.bakery && built.coins < st.coins, `coins ${st.coins} -> ${built.coins}`);
 
   // ---- bake -------------------------------------------------------------------------------------------------------------------------
-  await tap(await atSite('bakery')); await page.waitForSelector('.sheet.on [data-act=startJob][data-r=bread]', { timeout: 8000 }); await wait(500); await shot('11-bakery-sheet');
+  await settle(); await tap(await atSite('bakery')); await page.waitForSelector('.sheet.on [data-act=startJob][data-r=bread]', { timeout: 8000 }); await wait(500); await shot('11-bakery-sheet');
   await page.click('.sheet.on [data-act=startJob][data-r=bread]'); await wait(900);
   const baking = await page.evaluate(() => __cf.farm.jobs('bakery').length);
   log('starting a recipe puts a batch in the oven', baking >= 1, `${baking} job(s)`);
@@ -163,7 +179,7 @@ try {
   const raw = await page.evaluate(() => localStorage.getItem('claireFarm.save'));
   const saved = raw ? JSON.parse(raw) : null;
   log('the save is in localStorage with a version number', !!saved && saved.v === 3 && saved.level === baked.level, saved ? `v${saved.v}, level ${saved.level}, ${Object.keys(saved.plots).length} plots` : 'no save');
-  await page.reload({ waitUntil: 'load' });
+  await page.goto(URL_, { waitUntil: 'load' });   // no ?fresh=1 here: that flag deliberately wipes the save
   await page.waitForSelector('#playBtn', { timeout: 120000 });
   const btnText = await page.$eval('#playBtn', (e) => e.textContent.trim());
   const after = await page.evaluate(() => { const S = __cf.farm.S; return { level: S.level, coins: S.coins, inv: { ...S.inv }, harvests: S.stats.harvests, bakery: !!(S.blds.bakery && S.blds.bakery.built), batches: S.stats.batches, chapter: S.story.i }; });

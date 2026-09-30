@@ -409,7 +409,7 @@ export class Game {
     ui.title.classList.remove('on'); ui.title.innerHTML = '';
     this.mode = 'play'; ui.show(true); this.rig.enabled = true; this.userMoved = false;
     this.rig.tgt.pitch = 42 * Math.PI / 180; this.rig.tgt.yaw = 28 * Math.PI / 180;
-    this.rig.focus(-1, 5, this.rig.aspect < 1 ? 16 : 17, 1.4, 0);
+    if (this.rig.aspect < 1) this.rig.focus(-5, 5.5, 17, 1.4, 0); else this.rig.focus(-1, 5, 17, 1.4, 0);
     this.sdkState('play');
     ui.updateHud(); this.updateGoal(); this.refreshBadges();
     this.audio.voice('claire_01', true);
@@ -604,7 +604,7 @@ export class Game {
       case 'more': return this.open('more');
       case 'settings': return this.open('settings');
       case 'stars': ui.toast('Gems come from orders, awards and daily gifts. Spend them on cosy things.', ''); return;
-      case 'camHome': A.sfx('tap'); this.rig.focus(-1, 5, this.rig.aspect < 1 ? 16 : 17, 0.8, 0); this.rig.tgt.pitch = 42 * Math.PI / 180; return;
+      case 'camHome': A.sfx('tap'); if (this.rig.aspect < 1) this.rig.focus(-5, 5.5, 17, 0.8, 0); else this.rig.focus(-1, 5, 17, 0.8, 0); this.rig.tgt.pitch = 42 * Math.PI / 180; return;
       case 'camRotL': this.rig.rotate(-30); return A.sfx('tap');
       case 'camRotR': this.rig.rotate(30); return A.sfx('tap');
       case 'camTiltUp': this.rig.tilt(8); return A.sfx('tap');
