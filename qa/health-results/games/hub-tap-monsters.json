@@ -1,0 +1,269 @@
+{
+ "id": "hub-tap-monsters",
+ "title": "Tap Monsters",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/tap-monsters.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 2935 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.8 -> about 1631 ms of JS; long-task API + timer heartbeat; longest frame 7260.7 ms:  TimerHandler:setTimeout 5 /  FrameRequestCallback 926 | 2 touch inputs not acknowledged within 4 s while the main thread was blocked",
+  "JANK": "p95 JS frame cost 389.67 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.8; raw p95 701.4, median 166.33, p99 612.94, max 628.8; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/hub-tap-monsters-1-title.jpg",
+  "2-mid": "shots/hub-tap-monsters-2-mid.jpg",
+  "3-end": "shots/hub-tap-monsters-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 18.03,
+  "cores": 4,
+  "load1End": 18.85,
+  "contention": 1.8,
+  "contentionSamples": [
+   1.76,
+   5.12,
+   1.33,
+   3.49,
+   3.94,
+   1.52,
+   1.8
+  ]
+ },
+ "loadMs": 893,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/tap-monsters.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/tap-monsters.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 114.8,
+  "bench1Ms": 42.9,
+  "effectiveSlowdown": 2.7
+ },
+ "start": {
+  "how": "#btnPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.8,
+  "loadMs": 779,
+  "playMs": 1631,
+  "loadRawMs": 1402,
+  "playRawMs": 2935,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 126,
+  "longTasks100Play": 123,
+  "tbtLoadMs": 2061,
+  "tbtPlayMs": 20213,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 67,
+  "slowestPollMs": 945,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 7260.7,
+   "blocking": 887.8,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     5
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     926
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1778.5,
+   "blocking": 945.1,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     993
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1211.2,
+   "blocking": 730.4,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     777
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 128,
+  "jsMedian": 166.33,
+  "jsP95": 389.67,
+  "jsP99": 612.94,
+  "jsMax": 628.8,
+  "jsP95Raw": 701.4,
+  "rawWithGlP95": 701.4,
+  "glP95": 0,
+  "gapP95": 849.9,
+  "gapMedian": 366.6,
+  "over100": 92,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.2,
+  "heap1MB": 2.5,
+  "heapGrowthPct": 10,
+  "heapMeasured": true,
+  "nodesStart": 270,
+  "nodesEnd": 271,
+  "nodesMax": 278,
+  "listeners0": 78,
+  "listeners1": 77,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 4,
+   "totalMB": 7.6,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 780,
+     "h": 580,
+     "mpx": 0.45,
+     "dom": true,
+     "css": [
+      390,
+      290
+     ]
+    },
+    {
+     "w": 780,
+     "h": 580,
+     "mpx": 0.45,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 269,
+     "h": 161,
+     "mpx": 0.04,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 95,
+  "scriptPct": 69,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 5,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    0,
+    0
+   ],
+   [
+    15,
+    0
+   ],
+   [
+    33,
+    0
+   ],
+   [
+    49,
+    0
+   ],
+   [
+    61,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 5,
+  "swipes": 2,
+  "holds": 1,
+  "keys": 0,
+  "buttonPresses": 4,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 2790,
+  "inputLatencyP95Ms": 4011,
+  "inputLatencyMaxMs": 4011,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 51.8,
+  "maxChangeFromStartPct": 19.2,
+  "samples": 8
+ },
+ "severity": 105.6,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [
+   "JANK"
+  ],
+  "evidence": null,
+  "blockPlayMs": 814,
+  "blockLoadMs": 455,
+  "load1": 18.94
+ }
+}
