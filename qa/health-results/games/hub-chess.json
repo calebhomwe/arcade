@@ -1,0 +1,253 @@
+{
+ "id": "hub-chess",
+ "title": "Chess",
+ "cat": "classic",
+ "genre": "board",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/chess.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 6230 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.2 -> about 5149 ms of JS; long-task API + timer heartbeat; longest frame 2724 ms: games/chess.html IMG[src=assets/pieces/w_king.png].onload 2383",
+  "JANK": "3 long tasks of 100 ms or more while playing (no rAF loop to measure)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/hub-chess-1-title.jpg",
+  "2-mid": "shots/hub-chess-2-mid.jpg",
+  "3-end": "shots/hub-chess-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.63,
+  "cores": 4,
+  "load1End": 17.29,
+  "contention": 1.21,
+  "contentionSamples": [
+   1.25,
+   1.25,
+   1.05,
+   1.04,
+   1.12,
+   3.32,
+   1.21
+  ]
+ },
+ "loadMs": 12353,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/chess.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/chess.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 59,
+  "bench1Ms": 32.2,
+  "effectiveSlowdown": 1.8
+ },
+ "start": {
+  "how": "#ssPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.21,
+  "loadMs": 5149,
+  "playMs": 212,
+  "loadRawMs": 6230,
+  "playRawMs": 256,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 8,
+  "longTasks100Play": 3,
+  "tbtLoadMs": 8541,
+  "tbtPlayMs": 369,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 6,
+  "slowestPollMs": 239,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 2724,
+   "blocking": 2334.1,
+   "scripts": [
+    [
+     "games/chess.html",
+     "IMG[src=assets/pieces/w_king.png].onload",
+     2383
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 993,
+   "blocking": 942.4,
+   "scripts": [
+    [
+     "games/chess.html",
+     "IMG[src=assets/pieces/b_queen.png].onload",
+     992
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 942.1,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     12
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 0,
+  "jsMedian": null,
+  "jsP95": null,
+  "jsP99": null,
+  "jsMax": null,
+  "jsP95Raw": null,
+  "rawWithGlP95": null,
+  "glP95": null,
+  "gapP95": null,
+  "gapMedian": null,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.4,
+  "heap1MB": 2.8,
+  "heapGrowthPct": 17,
+  "heapMeasured": true,
+  "nodesStart": 502,
+  "nodesEnd": 866,
+  "nodesMax": 866,
+  "listeners0": 197,
+  "listeners1": 197,
+  "audioContexts": 1,
+  "audioElements": 12,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 37,
+   "totalMB": 9.3,
+   "biggest": [
+    {
+     "w": 1092,
+     "h": 1092,
+     "mpx": 1.19,
+     "dom": true,
+     "css": [
+      364,
+      364
+     ]
+    },
+    {
+     "w": 245,
+     "h": 245,
+     "mpx": 0.06,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 245,
+     "h": 245,
+     "mpx": 0.06,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 245,
+     "h": 245,
+     "mpx": 0.06,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 13,
+  "scriptPct": 2,
+  "layoutPerSec": 3
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 53,
+  "swipes": 2,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 37,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 216,
+  "inputLatencyP95Ms": 758,
+  "inputLatencyMaxMs": 966,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 4.2,
+  "changeTitleToPlayPct": 72.3,
+  "maxChangeFromStartPct": 72.3,
+  "samples": 14
+ },
+ "severity": 109.1,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "main thread blocked 7265 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 5422 ms of JS; long-task API + timer heartbeat",
+  "blockPlayMs": 126,
+  "blockLoadMs": 5422,
+  "load1": 16.7
+ }
+}

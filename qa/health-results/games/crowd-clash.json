@@ -1,0 +1,276 @@
+{
+ "id": "crowd-clash",
+ "title": "Crowd Clash",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/playables/CrowdClash/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 17968 ms (during load), 5660 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 8316 ms of JS; long-task API + timer heartbeat; longest frame 17914.1 ms: CrowdClash/index.html https://calebhomwe.github.io/playables/CrowdClash/index.html 13062 /  FrameRequestCallback 4840",
+  "JANK": "p95 JS frame cost 26.08 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.5; raw p95 38.6, median 9.93, p99 84.66, max 84.7; time inside WebGL calls excluded, p95 of it 13.4)"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.5)"
+ ],
+ "shots": {
+  "1-title": "shots/crowd-clash-1-title.jpg",
+  "2-mid": "shots/crowd-clash-2-mid.jpg",
+  "3-end": "shots/crowd-clash-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.47,
+  "cores": 4,
+  "load1End": 17.89,
+  "contention": 1.48,
+  "contentionSamples": [
+   2.83,
+   2.02,
+   1.65,
+   1.48,
+   1.07,
+   1.29,
+   1.39
+  ]
+ },
+ "loadMs": 26272,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/playables/CrowdClash/index.html",
+ "startPath": "https://calebhomwe.github.io/playables/CrowdClash/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 109.4,
+  "bench1Ms": 55.1,
+  "effectiveSlowdown": 2
+ },
+ "start": {
+  "how": "#play",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.48,
+  "loadMs": 8316,
+  "playMs": 146,
+  "loadRawMs": 17968,
+  "playRawMs": 215,
+  "playGlMs": 0,
+  "loadGlMs": 5660,
+  "longTasksPlay": 6,
+  "longTasks100Play": 1,
+  "tbtLoadMs": 9805,
+  "tbtPlayMs": 108,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 5,
+  "slowestPollMs": 974,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.7,
+  "shaderCompileMaxCallMs": 0.3
+ },
+ "loafTop": [
+  {
+   "ms": 17914.1,
+   "blocking": 17863.2,
+   "scripts": [
+    [
+     "CrowdClash/index.html",
+     "https://calebhomwe.github.io/playables/CrowdClash/index.html",
+     13062
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     4840
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 7492.5,
+   "blocking": 5744.2,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     6
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     10
+    ],
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     8
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 7282.7,
+   "blocking": 7157.2,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Window.fetch.then",
+     197
+    ],
+    [
+     "CrowdClash/index.html",
+     "IMG[src=../lib3d/tex/paving.jpg].onload",
+     7037
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     21
+    ]
+   ],
+   "phase": "calib"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 57,
+  "jsMedian": 9.93,
+  "jsP95": 26.08,
+  "jsP99": 84.66,
+  "jsMax": 84.7,
+  "jsP95Raw": 38.6,
+  "rawWithGlP95": 125.4,
+  "glP95": 13.4,
+  "gapP95": 2166.5,
+  "gapMedian": 949.9,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 6.7,
+  "heap1MB": 7.1,
+  "heapGrowthPct": 6,
+  "heapMeasured": true,
+  "nodesStart": 212,
+  "nodesEnd": 228,
+  "nodesMax": 228,
+  "listeners0": 78,
+  "listeners1": 79,
+  "audioContexts": 1,
+  "audioElements": 1,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 19,
+   "totalMB": 10.6,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 512,
+     "h": 720,
+     "mpx": 0.37,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 390,
+     "h": 664,
+     "mpx": 0.26,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 18,
+  "scriptPct": 15,
+  "layoutPerSec": 0.6
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    50,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 6,
+  "swipes": 0,
+  "holds": 1,
+  "keys": 2,
+  "buttonPresses": 3,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1854,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4000,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 82.7,
+  "maxChangeFromStartPct": 44.3,
+  "samples": 6
+ },
+ "severity": 112.3,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 8427 ms (during load), 3548 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 3535 ms of JS; long-task API + timer heartbeat; longest frame 8724.2 ms: CrowdClash/index.html https://calebhomwe.github.io/playables/CrowdClash/index.html 5458 /  FrameRequestCallback 2974",
+  "blockPlayMs": 90,
+  "blockLoadMs": 3535,
+  "load1": 19.19
+ }
+}

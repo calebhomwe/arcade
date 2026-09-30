@@ -1,0 +1,266 @@
+{
+ "id": "bridge-rush",
+ "title": "Bridge Rush",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 10337 ms (during load), 4664 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 4331 ms of JS; long-task API + timer heartbeat; longest frame 10793.2 ms: BridgeRush/index.html https://calebhomwe.github.io/playables/BridgeRush/index.html 6754 /  FrameRequestCallback 3610",
+  "JANK": "p95 JS frame cost 34.58 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.3; raw p95 45.3, median 11.6, p99 88.63, max 88.6; time inside WebGL calls excluded, p95 of it 4)"
+ },
+ "notes": [
+  "software-GL artefact: over 40% of the longest block was inside synchronous WebGL calls (getProgramInfoLog, readPixels, draw...) waiting for this box's software GL; an iPhone GPU would not wait",
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.3)"
+ ],
+ "shots": {
+  "1-title": "shots/bridge-rush-1-title.jpg",
+  "2-mid": "shots/bridge-rush-2-mid.jpg",
+  "3-end": "shots/bridge-rush-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 18.15,
+  "cores": 4,
+  "load1End": 17.79,
+  "contention": 1.31,
+  "contentionSamples": [
+   1.09,
+   1.75,
+   1.76,
+   1.08,
+   1.31,
+   1.61,
+   1.26
+  ]
+ },
+ "loadMs": 11264,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
+ "startPath": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 112.8,
+  "bench1Ms": 50.3,
+  "effectiveSlowdown": 2.2
+ },
+ "start": {
+  "how": "#play",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.31,
+  "loadMs": 4331,
+  "playMs": 149,
+  "loadRawMs": 10337,
+  "playRawMs": 195,
+  "playGlMs": 0,
+  "loadGlMs": 4664,
+  "longTasksPlay": 10,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 1721,
+  "tbtPlayMs": 95,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 6,
+  "slowestPollMs": 194,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.2,
+  "shaderCompileMaxCallMs": 0.1
+ },
+ "loafTop": [
+  {
+   "ms": 10793.2,
+   "blocking": 10343.9,
+   "scripts": [
+    [
+     "BridgeRush/index.html",
+     "https://calebhomwe.github.io/playables/BridgeRush/index.html",
+     6754
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     3610
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 10104.4,
+   "blocking": 4914.2,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Response.arrayBuffer.then",
+     16
+    ],
+    [
+     "three/three.core.min.js",
+     "Response.arrayBuffer.then",
+     20
+    ],
+    [
+     "three/three.core.min.js",
+     "Response.arrayBuffer.then",
+     14
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3534.9,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     38
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 42,
+  "jsMedian": 11.6,
+  "jsP95": 34.58,
+  "jsP99": 88.63,
+  "jsMax": 88.6,
+  "jsP95Raw": 45.3,
+  "rawWithGlP95": 46.1,
+  "glP95": 4,
+  "gapP95": 2499.9,
+  "gapMedian": 1183.3,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.8,
+  "heap1MB": 6.2,
+  "heapGrowthPct": 8,
+  "heapMeasured": true,
+  "nodesStart": 214,
+  "nodesEnd": 228,
+  "nodesMax": 228,
+  "listeners0": 78,
+  "listeners1": 79,
+  "audioContexts": 1,
+  "audioElements": 1,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 5,
+   "totalMB": 5.3,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 390,
+     "h": 664,
+     "mpx": 0.26,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 64,
+     "mpx": 0.02,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 6,
+  "scriptPct": 2,
+  "layoutPerSec": 0.9
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    34,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 3,
+  "swipes": 1,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 2,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 3072,
+  "inputLatencyP95Ms": 4020,
+  "inputLatencyMaxMs": 4020,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 86.6,
+  "maxChangeFromStartPct": 53.1,
+  "samples": 5
+ },
+ "severity": 108.3,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "main thread blocked 10427 ms (during load), 2950 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 5796 ms of JS; long-task API + timer heartbeat; longest frame 10608.7 ms: BridgeRush/index.html https://calebhomwe.github.io/playables/BridgeRush/index.html 8106 /  FrameRequestCallback 2348",
+  "blockPlayMs": 221,
+  "blockLoadMs": 5796,
+  "load1": 19.37
+ }
+}

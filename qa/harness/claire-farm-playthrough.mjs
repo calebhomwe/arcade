@@ -61,7 +61,7 @@ async function dismiss() {
   for (let i = 0; i < 12; i++) {
     const b = await page.$('.dlg [data-act=claimDaily], .dlg [data-act=claimAway], .dlg [data-act=closeDialog], .dlg button.btn');
     if (!b) { await wait(500); if (!(await page.$('.dlg'))) return; continue; }
-    try { await b.click({ timeout: 3000 }); } catch (e) {}
+    try { await b.click({ timeout: 3000 }); } catch (e) { try { const bb = await b.boundingBox(); if (bb) await page.mouse.click(bb.x + bb.width / 2, bb.y + bb.height / 2); } catch (e2) {} }
     await wait(700);
   }
 }
