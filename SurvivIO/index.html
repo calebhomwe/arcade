@@ -65,7 +65,8 @@
     border:2px solid rgba(255,255,255,.75)}
   #touchBtns{position:fixed;right:14px;top:64px;display:none;flex-direction:column;
     gap:10px;z-index:6}
-  body.touch #touchBtns{display:flex}
+  body.touch.playing #touchBtns{display:flex}
+  body.touch #menuHelp .dk{display:none}
   #touchBtns button{width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,255,255,.4);
     background:rgba(20,38,24,.72);color:#eaf5ec;font-size:12px;font-weight:700;
     letter-spacing:.5px;line-height:1.1;cursor:pointer}
@@ -87,7 +88,7 @@
 <script src="kit/metakit.js"></script>
 <div id="menu" class="ovr">
   <h1>SURVIV ROYALE</h1>
-  <p>16 drop in. 1 walks out. WASD move &middot; mouse aim &middot; LMB fire &middot; R reload &middot; 3 bandage &middot; 4 medkit</p>
+  <p id="menuHelp" data-desk="16 drop in. 1 walks out. WASD move &middot; mouse aim &middot; LMB fire &middot; R reload &middot; 3 bandage &middot; 4 medkit">16 drop in. 1 walks out. WASD move &middot; mouse aim &middot; LMB fire &middot; R reload &middot; 3 bandage &middot; 4 medkit</p>
   <div class="stats">
     <div><b id="m-wins">0</b><span>WINS</span></div>
     <div><b id="m-kills">0</b><span>KILLS</span></div>
@@ -324,7 +325,7 @@ function newMatch(){
       skin:pick(["#c8a06a","#a8785a","#e0b589","#8a5f46","#d9a066"]),
     });
   }
-  phase = "playing";
+  phase = "playing"; document.body.classList.add("playing");
   HM.begin();
   showOverlay(null);
   // a match counts as played the moment you drop in (codes-on matches are never recorded)
@@ -336,7 +337,7 @@ function newMatch(){
 /* ------------------------------------------------ end of match */
 function endMatch(won){
   if (phase !== "playing") return;
-  phase = won ? "won" : "dead";
+  phase = won ? "won" : "dead"; document.body.classList.remove("playing");
   const place = won ? 1 : placement;
   if (!cheated()){          // a match with codes on never touches wins, kills, best place or the table
     meta.kills += player.kills;
@@ -513,7 +514,7 @@ function retarget(b){
   let best = null, bd = 500;
   const cands = [];
   if (peace || matchT < b.combatAfter) return;      // staggered aggression for pacing
-  const graceOver = matchT > 3;                     // spawn grace: bots ignore You early
+  const graceOver = matchT > 40;                    // spawn grace: bots ignore You for the first 40 s (time to find a gun)
   if (phase === "playing" && player.hp > 0 && graceOver) cands.push(player);
   for (const o of bots) if (o !== b && matchT >= o.combatAfter) cands.push(o);
   for (const c of cands){
@@ -955,7 +956,7 @@ function drawHUD(){
   // alive / kills in one pill, the gas timer in a second pill under it (they used to overlap on a phone)
   ctx.textAlign = "left"; ctx.font = "bold 16px system-ui"; ctx.fillStyle = "#fff";
   const aliveTxt = "ALIVE "+(bots.length + (player.hp>0?1:0))+"   KILLS "+player.kills, aw = ctx.measureText(aliveTxt).width + 26;
-  hudPill(HUD_PAD-4, 12, aw, 30); hudText(aliveTxt, HUD_PAD+9, 33);
+  hudPill(HUD_PAD-4, 12, aw, 30); ctx.fillStyle = "#fff"; hudText(aliveTxt, HUD_PAD+9, 33);
   const zone = "ZONE " + Math.min(gas.phase + 1, GAS_RADII.length) + "/" + GAS_RADII.length + "  ";   // the wave counter
   const gt = gas.phase >= GAS_RADII.length-1 && !gas.shrinking ? "FINAL CIRCLE"
            : zone + (gas.shrinking ? "GAS SHRINKING" : "GAS IN "+Math.ceil(gas.t)+"s");
@@ -968,8 +969,8 @@ function drawHUD(){
     ctx.fillStyle = "rgba(255,255,255,"+clamp(f.t/2,0,0.95)+")";
     hudText(f.text, HUD_PAD, 106 + i*22);
   });
-  // minimap (150px) bottom-left
-  const M = 150, mx = 20, my = VH - M - 20, k = M/WORLD;
+  // minimap (96px) top-right, clear of both thumbs
+  const M = 96, mx = VW - M - 12, my = 56, k = M/WORLD;
   ctx.fillStyle = "rgba(14,34,22,0.88)"; ctx.fillRect(mx, my, M, M);
   ctx.strokeStyle = "rgba(240,200,110,0.75)"; ctx.lineWidth = 2;
   ctx.strokeRect(mx, my, M, M);
@@ -1037,6 +1038,7 @@ cv.addEventListener("contextmenu", e=>e.preventDefault());
 /* ---- touch: left half drives movement, right half aims and fires ---- */
 if (window.matchMedia("(pointer: coarse)").matches){
   document.body.classList.add("touch");
+  try { document.getElementById("menuHelp").innerHTML = "16 drop in. 1 walks out. Left thumb moves, right thumb aims and fires."; } catch (e) {}
   const layer = document.getElementById("touchLayer");
   const live = {};          // pointerId -> stick
   const MAXR = 46, DEAD = 5;
@@ -1199,7 +1201,7 @@ function code(c){
   return {ok:true, message:CODES[c] + ". Codes on: this match is not recorded."};
 }
 
-function toMenu(){ phase = "menu"; tutHide(); showOverlay("menu"); try { HM.closeLayer(); if (HMBAR && HMBAR.refresh) HMBAR.refresh(); } catch (e) {} sdk("state", {scene:"title"}); }
+function toMenu(){ phase = "menu"; document.body.classList.remove("playing"); tutHide(); showOverlay("menu"); try { HM.closeLayer(); if (HMBAR && HMBAR.refresh) HMBAR.refresh(); } catch (e) {} sdk("state", {scene:"title"}); }
 if (window.ArcadeSDK) window.ArcadeSDK.init({
   pauseButton: "tr",           // touch buttons moved down to make room
   onRestart: () => newMatch(),

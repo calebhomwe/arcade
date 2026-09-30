@@ -421,6 +421,10 @@ background-repeat:no-repeat}
 .stat.funBounty:empty{display:none;border:none;padding:0;background:none;animation:none}
 @keyframes bountyPulse{0%,100%{box-shadow:0 0 0 rgba(251,191,36,0)}50%{box-shadow:0 0 16px rgba(251,191,36,.4)}}
 /* ==== UI-PATCH-RB end ==== */
+@media(pointer:coarse){.keys{display:none}}
+body[data-sw=ready] .dashBtn,body[data-sw=ready] .ultBtn,body[data-sw=ready] .swBuild,body[data-sw=over] .dashBtn,body[data-sw=over] .ultBtn,body[data-sw=over] .swBuild,body[data-sw=win] .swBuild{display:none!important}
+body[data-sw=play] .back{display:none}
+#start{padding-top:64px}
 </style>
 
 </head>
@@ -3236,7 +3240,7 @@ function directorTick(dt){
 
   if(!echoMode&&spawnT<=0&&enemies.length<300){
 
-    spawnT=Math.max(0.18,1.05-gameTime*0.011);
+    spawnT=Math.max(0.18,1.05-gameTime*0.011)*((best<800&&gameTime<75)?1.7:1);/*A1: gentler first minute for new players*/
 
     const count=Math.min(8,Math.round((1+Math.floor(difficulty*0.8))*(player.chSpawn||1)));
 
@@ -5190,6 +5194,7 @@ function hurtPlayer(dmg){
   /* DAILY-PATCH-R2 */if(dailyActive&&dailyMod&&dailyMod.dm)dmg*=dailyMod.dm;
 
   dmg*=1-(player.metaArmor||0);
+  if(best<800&&gameTime<60)dmg*=0.6;/*A1: gentler first minute for new players*/
 
   runStats.taken+=dmg;/*B041*/
   player.hp-=dmg;buzz(60);
@@ -12095,9 +12100,10 @@ function render(){
   /* B081: ambient title horde behind the main-menu logo */
   if(state==='ready'&&!settings.lowFx)drawTitleHorde(performance.now());
 
-  renderHUD();
+  if(window.__swS!==state){window.__swS=state;document.body.dataset.sw=state;}/*A1: CSS hides in-run controls off-run*/
+  if(state!=='ready')renderHUD();
 
-  if(state==='over'||state==='win')drawRunStatsPanel();/*B041 end-of-run stats panel*/
+  if(state==='win')drawRunStatsPanel();/*B041 end-of-run stats panel*/
 
 
 
@@ -12907,6 +12913,7 @@ function renderHUD(){
   ctx.textAlign='left';
 
   /* turret selection + mortar pills */
+  if(!(window.matchMedia&&matchMedia('(pointer:coarse)').matches)){/*A1: desktop-key hints hidden on touch*/
 
   const td2=TURRETS[selTurret];
 
@@ -12949,6 +12956,7 @@ function renderHUD(){
   ctx.fillStyle=mortarCd<=0?'#ff8f8f':'rgba(255,143,143,0.5)';
 
   ctx.fillText(mortarCd<=0?'Q:MORTAR 60g READY':'MORTAR '+Math.ceil(mortarCd)+'s',69,169.5);
+  }
 
   const ur2=player.ult||0;
 
@@ -15926,7 +15934,7 @@ function refreshBar(){
 const buildBtn=mkEl('button',{position:'fixed',right:'16px',bottom:'16px',zIndex:'60',cursor:'pointer',
   background:'linear-gradient(180deg,#1b2a4a,#101a30)',color:'#fbbf24',border:'2px solid #f59e0b',borderRadius:'12px',
   fontFamily:'inherit',fontSize:'13px',fontWeight:'bold',padding:'10px 14px',boxShadow:'0 4px 14px rgba(0,0,0,0.5)'});
-buildBtn.textContent='BUILD [T]';
+buildBtn.textContent='BUILD [T]';buildBtn.className='swBuild';
 buildBtn.onclick=ev=>{ev.stopPropagation();toggleBar();};
 const sellPop=mkEl('div',{position:'fixed',display:'none',zIndex:'61',background:'linear-gradient(180deg,#1b2a4a,#101a30)',
   border:'2px solid #f59e0b',borderRadius:'10px',padding:'10px',color:'#dbe6ff',fontSize:'12px',textAlign:'center',
@@ -17892,7 +17900,7 @@ startGame=function(){
 };
 setInterval(function(){
   try{
-    if(window.__verFoot||state!=='ready')return;
+    if(1)return;
     var f=document.createElement('div');
     f.textContent='KINGDOM SURVIVOR CLASH \u00b7 v1.1 \u00b7 70 iterations \u00b7 web build';
     f.style.cssText='position:fixed;bottom:6px;left:10px;font-size:12px;color:rgba(143,161,199,0.6);z-index:5;pointer-events:none';
