@@ -1,0 +1,233 @@
+{
+ "id": "sky-hole-eater",
+ "title": "Hole Eater",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 4403 ms (during load), 359 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 2952 ms of JS; long-task API + timer heartbeat; longest frame 4403.8 ms: skywalker-playables/hole-eater.html https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html 4388",
+  "JANK": "p95 JS frame cost 18.03 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.4; raw p95 24.7, median 4.09, p99 41.9, max 222.3; time inside WebGL calls excluded, p95 of it 4.4)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/sky-hole-eater-1-title.jpg",
+  "2-mid": "shots/sky-hole-eater-2-mid.jpg",
+  "3-end": "shots/sky-hole-eater-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.07,
+  "cores": 4,
+  "load1End": 19.15,
+  "contention": 1.37,
+  "contentionSamples": [
+   1.21,
+   1.05,
+   1.91,
+   1.37,
+   1.27,
+   3.91,
+   2.36
+  ]
+ },
+ "loadMs": 5239,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 64,
+  "bench1Ms": 29.8,
+  "effectiveSlowdown": 2.1
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.37,
+  "loadMs": 2952,
+  "playMs": 228,
+  "loadRawMs": 4403,
+  "playRawMs": 312,
+  "playGlMs": 0,
+  "loadGlMs": 359,
+  "longTasksPlay": 17,
+  "longTasks100Play": 4,
+  "tbtLoadMs": 3520,
+  "tbtPlayMs": 494,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 9,
+  "slowestPollMs": 119,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.6,
+  "shaderCompileMaxCallMs": 0.3
+ },
+ "loafTop": [
+  {
+   "ms": 4403.8,
+   "blocking": 4353.5,
+   "scripts": [
+    [
+     "skywalker-playables/hole-eater.html",
+     "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+     4388
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2438.2,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     7
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1207.1,
+   "blocking": 872.6,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     921
+    ]
+   ],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 402,
+  "jsMedian": 4.09,
+  "jsP95": 18.03,
+  "jsP99": 41.9,
+  "jsMax": 222.3,
+  "jsP95Raw": 24.7,
+  "rawWithGlP95": 28.1,
+  "glP95": 4.4,
+  "gapP95": 266.7,
+  "gapMedian": 100,
+  "over100": 3,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.1,
+  "heap1MB": 5.5,
+  "heapGrowthPct": 8,
+  "heapMeasured": true,
+  "nodesStart": 26,
+  "nodesEnd": 26,
+  "nodesMax": 26,
+  "listeners0": 57,
+  "listeners1": 57,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 7,
+   "totalMB": 6.2,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 17,
+  "scriptPct": 10,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 24,
+  "swipes": 7,
+  "holds": 2,
+  "keys": 2,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 281,
+  "inputLatencyP95Ms": 2466,
+  "inputLatencyMaxMs": 2979,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 99.2,
+  "maxChangeFromStartPct": 70.5,
+  "samples": 13
+ },
+ "severity": 107,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 5986 ms (during load), 508 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 4057 ms of JS; long-task API + timer heartbeat; longest frame 5987.1 ms: skywalker-playables/hole-eater.html https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html 5963",
+  "blockPlayMs": 496,
+  "blockLoadMs": 4057,
+  "load1": 21.55
+ }
+}
