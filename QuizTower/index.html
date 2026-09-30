@@ -1210,7 +1210,7 @@ function update(dt){
 }
 
 /* ─────────────────────────── fx (all bounded) ─────────────────────────── */
-function toast(msg,color){G.toasts.push({msg:msg,color:color||'#ffe7a0',t:2.6});if(G.toasts.length>3)G.toasts.shift();}
+function toast(msg,color){const l=G.toasts[G.toasts.length-1];if(l&&l.msg===msg){l.t=2.6;return;}G.toasts.push({msg:msg,color:color||'#ffe7a0',t:2.6});if(G.toasts.length>2)G.toasts.shift();}
 function floatText(x,y,msg,color){if(G.texts.length>14)G.texts.shift();G.texts.push({x:x,y:y,msg:msg,color:color,t:1.1});}
 function burstAt(x,y,color,n){for(let i=0;i<n&&G.particles.length<MAXP;i++){const a=Math.random()*TAU,s=30+Math.random()*100;
   G.particles.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.4+Math.random()*.5,color:color,r:1.8+Math.random()*2.6});}}
@@ -1710,11 +1710,11 @@ function drawQuestion(){
   if(G.phase==='playing'&&q&&G.waveActive){
     T(G.answered?(G.chosen===q.answerIndex?'Right! Towers overcharged':'Not quite. Here it is:'):'Answer to power the towers!',x+w/2,y+26,23,'#a03a10','center',700,'engrave');
     const zone=q.kind==='spell'||G.mode==='spell';
-    if(!zone)para(q.prompt,x+w/2,y+70,w-30,50,34,1,INK,'center','engrave');
-    else para(q.prompt,x+w/2,y+68,w-30,27,21,3,INK,'center','engrave');
-    const bw=(w-34)/2,bh=72,ax=x+12,ay=y+104;
+    if(!zone)para(q.prompt,x+w/2,y+62,w-30,44,34,1,INK,'center','engrave');
+    else para(q.prompt,x+w/2,y+58,w-30,25,20,3,INK,'center','engrave');
+    const bw=(w-34)/2,bh=68,ax=x+12,ay=y+90;
     for(let i=0;i<4;i++){
-      const bx=ax+(i%2)*(bw+10),by=ay+Math.floor(i/2)*(bh+8);
+      const bx=ax+(i%2)*(bw+10),by=ay+Math.floor(i/2)*(bh+6);
       const right=i===q.answerIndex;let tone='cream';
       if(G.answered)tone=right?'green':(i===G.chosen?'coral':'cream');
       const lab=String(q.options[i]);
