@@ -17,7 +17,7 @@ account, for the Godot edition of the game (`claires-big-life-adventure`), and a
 | `city.glb` | 21 skyline buildings across the bay | Kenney "City Kit (Commercial)" 2.1, CC0 1.0. Decimated to 100 to 900 triangles each. |
 | `claire.glb` | Claire (rigged, Idle, Walk, Wave) | Generated with Meshy and auto-rigged by Meshy on the owner's account, for the Godot edition. Clips merged with Blender. |
 | `milo.glb`, `june.glb`, `hazel.glb`, `theo.glb` | Milo (farmer), June, Hazel, Theo | Quaternius "Ultimate Modular Characters" and "Ultimate Modular Women", CC0 1.0. |
-| `pip.glb`, `pig.glb`, `llama.glb`, `horse.glb` | Pip the pug, pig, alpaca, horse | Quaternius animated farm-animal and character packs (https://quaternius.com, downloaded from the author's free Google Drive folders), CC0 1.0. |
+| `pip.glb`, `pig.glb`, `llama.glb` | Pip the pug, pig, alpaca | Quaternius animated farm-animal and character packs (https://quaternius.com, downloaded from the author's free Google Drive folders), CC0 1.0. |
 
 CC0 texts: https://creativecommons.org/publicdomain/zero/1.0/. Attribution is not required and is given with thanks.
 The Godot edition keeps the same files under `assets/meadow/` with its own `licenses/` folder.

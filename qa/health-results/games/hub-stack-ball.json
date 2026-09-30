@@ -1,0 +1,255 @@
+{
+ "id": "hub-stack-ball",
+ "title": "Stack Ball",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/stack-ball.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 11264 ms (during load), 4985 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 4721 ms of JS; long-task API + timer heartbeat; longest frame 11005.4 ms: games/stack-ball.html https://calebhomwe.github.io/arcade-hub/games/stack-ball.html 7001 /  FrameRequestCallback 3955",
+  "JANK": "p95 JS frame cost 25.94 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.3; raw p95 34.5, median 3.68, p99 400.23, max 441.7; time inside WebGL calls excluded, p95 of it 3.3)"
+ },
+ "notes": [
+  "software-GL artefact: over 40% of the longest block was inside synchronous WebGL calls (getProgramInfoLog, readPixels, draw...) waiting for this box's software GL; an iPhone GPU would not wait",
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.3)"
+ ],
+ "shots": {
+  "1-title": "shots/hub-stack-ball-1-title.jpg",
+  "2-mid": "shots/hub-stack-ball-2-mid.jpg",
+  "3-end": "shots/hub-stack-ball-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.08,
+  "cores": 4,
+  "load1End": 18,
+  "contention": 1.33,
+  "contentionSamples": [
+   1.33,
+   1.73,
+   1.06,
+   1.04,
+   1.18,
+   3.95,
+   2.07
+  ]
+ },
+ "loadMs": 13766,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/stack-ball.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/stack-ball.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 175.4,
+  "bench1Ms": 48.7,
+  "effectiveSlowdown": 3.6
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.33,
+  "loadMs": 4721,
+  "playMs": 443,
+  "loadRawMs": 11264,
+  "playRawMs": 593,
+  "playGlMs": 3,
+  "loadGlMs": 4985,
+  "longTasksPlay": 16,
+  "longTasks100Play": 4,
+  "tbtLoadMs": 1581,
+  "tbtPlayMs": 1324,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 9,
+  "slowestPollMs": 110,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 2.8,
+  "shaderCompileMaxCallMs": 1.2
+ },
+ "loafTop": [
+  {
+   "ms": 11005.4,
+   "blocking": 10952.2,
+   "scripts": [
+    [
+     "games/stack-ball.html",
+     "https://calebhomwe.github.io/arcade-hub/games/stack-ball.html",
+     7001
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     3955
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2518.4,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 1676.7,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     17
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 248,
+  "jsMedian": 3.68,
+  "jsP95": 25.94,
+  "jsP99": 400.23,
+  "jsMax": 441.7,
+  "jsP95Raw": 34.5,
+  "rawWithGlP95": 35.9,
+  "glP95": 3.3,
+  "gapP95": 600,
+  "gapMedian": 150,
+  "over100": 4,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.8,
+  "heap1MB": 6.2,
+  "heapGrowthPct": 7,
+  "heapMeasured": true,
+  "nodesStart": 206,
+  "nodesEnd": 285,
+  "nodesMax": 302,
+  "listeners0": 72,
+  "listeners1": 74,
+  "audioContexts": 1,
+  "audioElements": 12,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 3,
+   "totalMB": 0.3,
+   "biggest": [
+    {
+     "w": 195,
+     "h": 332,
+     "mpx": 0.06,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 128,
+     "h": 128,
+     "mpx": 0.02,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 16,
+  "scriptPct": 10,
+  "layoutPerSec": 2.6
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 3,
+  "restartsAfterOver": 3
+ },
+ "gameScore": {
+  "updates": 3,
+  "first": 5,
+  "last": 5,
+  "max": 19,
+  "trajectory": [
+   [
+    38,
+    5
+   ],
+   [
+    57,
+    19
+   ],
+   [
+    70,
+    5
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 25,
+  "swipes": 2,
+  "holds": 1,
+  "keys": 0,
+  "buttonPresses": 6,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 463,
+  "inputLatencyP95Ms": 3589,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 75.1,
+  "maxChangeFromStartPct": 40.9,
+  "samples": 11
+ },
+ "severity": 108.7,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 11720 ms (during load), 4205 ms of it inside WebGL calls (software GL), machine slowdown x1.8 -> about 4295 ms of JS; long-task API + timer heartbeat; longest frame 11526.9 ms: games/stack-ball.html https://calebhomwe.github.io/arcade-hub/games/stack-ball.html 8106 /  FrameRequestCallback 3395",
+  "blockPlayMs": 652,
+  "blockLoadMs": 4295,
+  "load1": 17.9
+ }
+}

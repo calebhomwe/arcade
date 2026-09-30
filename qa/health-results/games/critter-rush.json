@@ -1,0 +1,234 @@
+{
+ "id": "critter-rush",
+ "title": "Critter Rush 3D",
+ "cat": "arcade",
+ "genre": "racing",
+ "src": "CritterRush/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 19592 ms (during load), 7734 ms of it inside WebGL calls (software GL), machine slowdown x1.9 -> about 6144 ms of JS; long-task API + timer heartbeat; longest frame 19555.6 ms: CritterRush/index.html http://127.0.0.1:33351/CritterRush/index.html 19463 /  FrameRequestCallback 80",
+  "JANK": "p95 JS frame cost 70.78 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.9; raw p95 136.6, median 19.17, p99 111.24, max 111.2; time inside WebGL calls excluded, p95 of it 6.4)"
+ },
+ "notes": [
+  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.9)"
+ ],
+ "shots": {
+  "1-title": "shots/critter-rush-1-title.jpg",
+  "2-mid": "shots/critter-rush-2-mid.jpg",
+  "3-end": "shots/critter-rush-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.71,
+  "cores": 4,
+  "load1End": 19.09,
+  "contention": 1.93,
+  "contentionSamples": [
+   1.08,
+   2.24,
+   1.56,
+   5.85,
+   5.7,
+   1.93,
+   1.14
+  ]
+ },
+ "loadMs": 20496,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:33351/CritterRush/index.html",
+ "startPath": "http://127.0.0.1:33351/CritterRush/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 101.2,
+  "bench1Ms": 31.1,
+  "effectiveSlowdown": 3.3
+ },
+ "start": {
+  "how": "Play/Start button",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.93,
+  "loadMs": 6144,
+  "playMs": 268,
+  "loadRawMs": 19592,
+  "playRawMs": 518,
+  "playGlMs": 2,
+  "loadGlMs": 7734,
+  "longTasksPlay": 41,
+  "longTasks100Play": 2,
+  "tbtLoadMs": 6038,
+  "tbtPlayMs": 299,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 7,
+  "slowestPollMs": 367,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.8,
+  "shaderCompileMaxCallMs": 0.7
+ },
+ "loafTop": [
+  {
+   "ms": 19555.6,
+   "blocking": 19500.7,
+   "scripts": [
+    [
+     "CritterRush/index.html",
+     "http://127.0.0.1:33351/CritterRush/index.html",
+     19463
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     80
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3537.4,
+   "blocking": 91.9,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     91
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     11
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     41
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 3341.9,
+   "blocking": 106.7,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     131
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     24
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 77,
+  "jsMedian": 19.17,
+  "jsP95": 70.78,
+  "jsP99": 111.24,
+  "jsMax": 111.2,
+  "jsP95Raw": 136.6,
+  "rawWithGlP95": 137.1,
+  "glP95": 6.4,
+  "gapP95": 1550,
+  "gapMedian": 566.7,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 11.5,
+  "heap1MB": 11.9,
+  "heapGrowthPct": 3,
+  "heapMeasured": true,
+  "nodesStart": 100,
+  "nodesEnd": 101,
+  "nodesMax": 101,
+  "listeners0": 76,
+  "listeners1": 76,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 16,
+  "scriptPct": 9,
+  "layoutPerSec": 6.4
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 7,
+  "swipes": 3,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 4,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1587,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 94.9,
+  "maxChangeFromStartPct": 31.8,
+  "samples": 7
+ },
+ "severity": 110.1,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 21223 ms (during load), 9434 ms of it inside WebGL calls (software GL), machine slowdown x1.7 -> about 6854 ms of JS; long-task API + timer heartbeat; longest frame 21225.5 ms: CritterRush/index.html http://127.0.0.1:33351/CritterRush/index.html 21184 /  FrameRequestCallback 22",
+  "blockPlayMs": 229,
+  "blockLoadMs": 6854,
+  "load1": 18.84
+ }
+}

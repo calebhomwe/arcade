@@ -1,0 +1,237 @@
+{
+ "id": "hub-hole-swallow",
+ "title": "Hole Swallow",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 7182 ms (during load), 731 ms of it inside WebGL calls (software GL), machine slowdown x1.6 -> about 3910 ms of JS; long-task API + timer heartbeat; longest frame 7335.3 ms: games/hole-swallow.html https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html 9 / games/hole-swallow.html https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html 6970 /  FrameRequestCallback 31"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/hub-hole-swallow-1-title.jpg",
+  "2-mid": "shots/hub-hole-swallow-2-mid.jpg",
+  "3-end": "shots/hub-hole-swallow-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.1,
+  "cores": 4,
+  "load1End": 18.38,
+  "contention": 1.65,
+  "contentionSamples": [
+   1.03,
+   7.73,
+   4.21,
+   1.65,
+   1.57,
+   2.09,
+   1.13
+  ]
+ },
+ "loadMs": 14818,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 124.6,
+  "bench1Ms": 34.9,
+  "effectiveSlowdown": 3.6
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.65,
+  "loadMs": 3910,
+  "playMs": 247,
+  "loadRawMs": 7182,
+  "playRawMs": 417,
+  "playGlMs": 8,
+  "loadGlMs": 731,
+  "longTasksPlay": 15,
+  "longTasks100Play": 3,
+  "tbtLoadMs": 3747,
+  "tbtPlayMs": 368,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 4,
+  "slowestPollMs": 541,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.4,
+  "shaderCompileMaxCallMs": 0.1
+ },
+ "loafTop": [
+  {
+   "ms": 7335.3,
+   "blocking": 7000.7,
+   "scripts": [
+    [
+     "games/hole-swallow.html",
+     "https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html",
+     9
+    ],
+    [
+     "games/hole-swallow.html",
+     "https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html",
+     6970
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     31
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 6856.4,
+   "blocking": 6465,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Response.arrayBuffer.then",
+     70
+    ],
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     24
+    ],
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     18
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2124,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     9
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 426,
+  "jsMedian": 3.64,
+  "jsP95": 14.91,
+  "jsP99": 41.7,
+  "jsMax": 226.1,
+  "jsP95Raw": 24.6,
+  "rawWithGlP95": 27.1,
+  "glP95": 5.2,
+  "gapP95": 316.7,
+  "gapMedian": 83.4,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.6,
+  "heap1MB": 6.1,
+  "heapGrowthPct": 9,
+  "heapMeasured": true,
+  "nodesStart": 199,
+  "nodesEnd": 218,
+  "nodesMax": 221,
+  "listeners0": 80,
+  "listeners1": 80,
+  "audioContexts": 1,
+  "audioElements": 12,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 2,
+   "totalMB": 1.2,
+   "biggest": [
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 195,
+     "h": 332,
+     "mpx": 0.06,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 16,
+  "scriptPct": 9,
+  "layoutPerSec": 1.6
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 35,
+  "swipes": 2,
+  "holds": 2,
+  "keys": 3,
+  "buttonPresses": 10,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 196,
+  "inputLatencyP95Ms": 2484,
+  "inputLatencyMaxMs": 2934,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 75.2,
+  "maxChangeFromStartPct": 48.1,
+  "samples": 12
+ },
+ "severity": 105.9,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "main thread blocked 5376 ms (during load), 474 ms of it inside WebGL calls (software GL), machine slowdown x2 -> about 2451 ms of JS; long-task API + timer heartbeat; longest frame 5168.4 ms: games/hole-swallow.html https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html 5145 /  FrameRequestCallback 8",
+  "blockPlayMs": 290,
+  "blockLoadMs": 2451,
+  "load1": 19.02
+ }
+}
