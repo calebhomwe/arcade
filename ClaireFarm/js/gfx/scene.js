@@ -3,8 +3,9 @@
 import * as THREE from 'three';
 import { farmMaterial, SU, PATH_VERT, PATH_FRAG } from './shaders.js';
 import { CropSystem } from './plots.js';
+import { casts } from './shadow.js';
 import { fenceGeometry, lotGeometry, signGeometry, boardGeometry, troughGeometry, scarecrowGeometry, benchGeometry, picnicGeometry, hiveGeometry, dockGeometry, bunting, postGeometry } from './props.js';
-import { makeTreeGeometry, makeBushGeometry } from './flora.js';
+import { makeTreeGeometry, makeBushGeometry, makeRockGeometry } from './flora.js';
 import { heightAt, shoreX, WATER_Y } from './terrain.js';
 import { PATCHES, PENS, SITES, FIXED, PATHS, PLOT, GROUND } from '../layout.js';
 import { DECOR, ITEMS, BUILDINGS, ANIMALS, BOAT_AWAY_SEC } from '../data.js';
@@ -87,18 +88,18 @@ export class FarmScene {
     const wp = A.model('windpump', { height: 8.4, shell: true }); this.place(wp, F.windpump.x, F.windpump.z, -0.6); this.shadow(F.windpump.x, F.windpump.z, 1.5, 3, 0.3);
     if (wp.parts.blades) this.spinners.push({ mesh: wp.parts.blades, axis: 'z', speed: 1.2 });
     // order board
-    const board = new THREE.Mesh(boardGeometry(), farmMaterial({ vertexColors: true, rim: 0.2 })); board.position.set(F.board.x, 0, F.board.z); board.rotation.y = F.board.yaw; this.root.add(board);
+    const board = new THREE.Mesh(boardGeometry(), farmMaterial({ vertexColors: true, detail: 'wood' })); board.position.set(F.board.x, 0, F.board.z); board.rotation.y = F.board.yaw; this.root.add(board); casts(board);
     this.board = board; this.shadow(F.board.x, F.board.z, 1.4, 2, 0.35);
     this.addHit({ kind: 'board', id: 'board', box: this.boxOf(board), prio: 3 });
     // hay and crates near the barn and stall: the rich foreground
     const props = [['hay_bales', -6.2, -8, 0.4, { width: 2.1 }], ['hay_bales', -13.5, -5.4, 2.0, { width: 1.9 }], ['crate', -3, 1.6, 0.3, { width: 0.95 }], ['crate', -2.2, 1.9, 0.9, { width: 0.8 }], ['barrel', -5.8, 1.4, 0, { width: 0.9 }], ['crate_large', -13, -2.3, 0.2, { width: 1.2 }], ['barrel', -12.2, -2.1, 0, { width: 0.9 }], ['crate', 4.2, 3.2, 0.5, { width: 0.9 }], ['bucket', 5.8, 2.0, 0, { width: 0.6 }], ['signpost', -1.4, 3.4, 0.3, { height: 1.9 }]];
     for (const [id, x, z, yaw, o] of props) { if (!A.has(id)) continue; const m = A.model(id, Object.assign({ shell: !/crate|barrel|bucket|signpost/.test(id) }, o)); this.place(m, x, z, yaw); this.shadow(x, z, 0.9, 1.0, 0.32); }
     // ---- fences (one instanced mesh for every pen) -------------------------------------------------
-    this.fenceMat = farmMaterial({ vertexColors: true, rim: 0.2 });
-    this.fences = new THREE.InstancedMesh(fenceGeometry(), this.fenceMat, 460); this.fences.count = 0; this.fences.frustumCulled = false; this.root.add(this.fences);
-    this.posts = new THREE.InstancedMesh(postGeometry(), this.fenceMat, 120); this.posts.count = 0; this.posts.frustumCulled = false; this.root.add(this.posts);
+    this.fenceMat = farmMaterial({ vertexColors: true, detail: 'wood' });
+    this.fences = new THREE.InstancedMesh(fenceGeometry(), this.fenceMat, 460); this.fences.count = 0; this.fences.frustumCulled = false; this.root.add(this.fences); casts(this.fences);
+    this.posts = new THREE.InstancedMesh(postGeometry(), this.fenceMat, 120); this.posts.count = 0; this.posts.frustumCulled = false; this.root.add(this.posts); casts(this.posts);
     // lots and signs (all lots share geometry)
-    this.signGeo = signGeometry(); this.signMat = farmMaterial({ vertexColors: true, rim: 0.2 });
+    this.signGeo = signGeometry(); this.signMat = farmMaterial({ vertexColors: true, detail: 'wood' });
     // ---- pens, sites, patches ----------------------------------------------------------------------
     for (const p of PENS) this.buildPen(p);
     for (const s of SITES) this.buildSite(s);
@@ -106,6 +107,7 @@ export class FarmScene {
     this.syncFences();
     // dock and boat
     this.buildDock();
+    this.buildScenery();
     // decor
     this.syncDecor();
     this.crops.sync();
@@ -118,8 +120,10 @@ export class FarmScene {
     const old = this.patchObjs[p.id];
     if (old) { old.forEach((o) => { if (o.parent) o.parent.remove(o); }); this.hits = this.hits.filter((h) => !(h.kind === 'patch' && h.id === p.id)); this.labels.remove('patch_' + p.id); this.blobs.remove(old.blob); }
     const objs = [];
+    const soon = p.level <= this.farm.S.level + 5;   // far-future plots stay plain meadow until you are close
+    if (!owned && !soon) { this.patchObjs[p.id] = objs; return; }
     if (!owned) {
-      const sign = new THREE.Mesh(this.signGeo, this.signMat); sign.position.set(p.x - 3.2, 0, p.z + 3.1); sign.rotation.y = 0.5; this.root.add(sign); objs.push(sign);
+      const sign = new THREE.Mesh(this.signGeo, this.signMat); sign.position.set(p.x - 3.2, 0, p.z + 3.1); sign.rotation.y = 0.5; this.root.add(sign); casts(sign); objs.push(sign);
       const lot = new THREE.Mesh(lotGeometry(7.2, 4.7), this.signMat); lot.position.set(p.x, 0, p.z); this.root.add(lot); objs.push(lot);
       objs.blob = this.blobs.add({ x: p.x, z: p.z, sx: 7.4, sz: 5.0, kind: 2, strength: 0.16, y: 0.02 });
       const need = this.farm.S.level >= p.level;
@@ -139,7 +143,7 @@ export class FarmScene {
     const old = this.penObjs[p.id];
     if (old) { old.forEach((o) => { if (o.parent) o.parent.remove(o); }); this.hits = this.hits.filter((h) => !(h.kind === 'pen' && h.id === p.id)); this.labels.remove('pen_' + p.id); if (old.blob != null) this.blobs.remove(old.blob); }
     const objs = [];
-    objs.blob = this.blobs.add({ x: p.x, z: p.z, sx: p.w + 0.6, sz: p.d + 0.6, kind: 2, strength: built ? 0.22 : 0.12, y: 0.025 });
+    if (built || p.level <= this.farm.S.level + 5) objs.blob = this.blobs.add({ x: p.x, z: p.z, sx: p.w + 0.6, sz: p.d + 0.6, kind: 2, strength: built ? 0.22 : 0.12, y: 0.025 });
     if (built) {
       if (p.model && this.assets.has(p.model)) {
         const w = p.model === 'coop' ? 3.0 : 5.0;
@@ -149,11 +153,13 @@ export class FarmScene {
         this.shadow(mx, mz, w * 0.55, 3, 0.4);
         objs.model = m;
       }
-      const tr = new THREE.Mesh(troughGeometry(), farmMaterial({ vertexColors: true, rim: 0.2 })); tr.position.set(p.x + p.w / 2 - 1.6, 0, p.z + p.d / 2 - 1.5); tr.rotation.y = 0.2; this.root.add(tr); objs.push(tr);
-      if (p.id === 'bees') { const hv = new THREE.Mesh(hiveGeometry(), farmMaterial({ vertexColors: true, rim: 0.2 })); hv.position.set(p.x, 0, p.z - 0.5); this.root.add(hv); objs.push(hv); }
+      const tr = new THREE.Mesh(troughGeometry(), farmMaterial({ vertexColors: true, detail: 'wood' })); tr.position.set(p.x + p.w / 2 - 1.6, 0, p.z + p.d / 2 - 1.5); tr.rotation.y = 0.2; this.root.add(tr); casts(tr); objs.push(tr);
+      if (p.id === 'bees') { const hv = new THREE.Mesh(hiveGeometry(), farmMaterial({ vertexColors: true, detail: 'wood' })); hv.position.set(p.x, 0, p.z - 0.5); this.root.add(hv); casts(hv); objs.push(hv); }
       this.addHit({ kind: 'pen', id: p.id, box: new THREE.Box3(new V3(p.x - p.w / 2, 0, p.z - p.d / 2), new V3(p.x + p.w / 2, 1.6, p.z + p.d / 2)), prio: 1 });
+    } else if (p.level > this.farm.S.level + 5) {
+      /* far-future pen: plain meadow */
     } else {
-      const sign = new THREE.Mesh(this.signGeo, this.signMat); sign.position.set(p.x - p.w / 2 + 0.2, 0, p.z + p.d / 2 - 0.2); sign.rotation.y = 0.6; this.root.add(sign); objs.push(sign);
+      const sign = new THREE.Mesh(this.signGeo, this.signMat); sign.position.set(p.x - p.w / 2 + 0.2, 0, p.z + p.d / 2 - 0.2); sign.rotation.y = 0.6; this.root.add(sign); casts(sign); objs.push(sign);
       const lot = new THREE.Mesh(lotGeometry(p.w, p.d), this.signMat); lot.position.set(p.x, 0, p.z); this.root.add(lot); objs.push(lot);
       const ok = this.farm.S.level >= p.level;
       this.labels.add('pen_' + p.id, { x: p.x, y: 2.0, z: p.z, cls: 'lot ' + (ok ? '' : 'locked'), html: `${this.icon(ok ? p.animal === 'bee' ? 'bee' : p.animal : 'lock', 28)}<b>${p.name}</b><span>${ok ? this.coin() + ' ' + p.cost : 'Level ' + p.level}</span>`, onTap: () => this.onTapObject && this.onTapObject({ kind: 'pen', id: p.id }), label: 'Build ' + p.name });
@@ -190,8 +196,10 @@ export class FarmScene {
       this.addHit({ kind: 'site', id: s.id, box, prio: 4 });
       if (s.id === 'bakery' || s.id === 'kitchen' || s.id === 'jam') this.emitters.push({ site: s.id, x: s.x + s.width * 0.18, y: box.max.y * 0.95, z: s.z - s.width * 0.12, t: 0 });
       objs.model = m;
+    } else if (s.level > this.farm.S.level + 5) {
+      /* far-future workshop: plain meadow */
     } else {
-      const sign = new THREE.Mesh(this.signGeo, this.signMat); sign.position.set(s.x - 2.2, 0, s.z + 2.6); sign.rotation.y = 0.5; this.root.add(sign); objs.push(sign);
+      const sign = new THREE.Mesh(this.signGeo, this.signMat); sign.position.set(s.x - 2.2, 0, s.z + 2.6); sign.rotation.y = 0.5; this.root.add(sign); casts(sign); objs.push(sign);
       const lot = new THREE.Mesh(lotGeometry(4.6, 4.6), this.signMat); lot.position.set(s.x, 0, s.z); this.root.add(lot); objs.push(lot);
       objs.blob = this.blobs.add({ x: s.x, z: s.z, sx: 5.4, sz: 5.4, kind: 2, strength: 0.2, y: 0.025 });
       const ok = this.farm.S.level >= s.level;
@@ -204,8 +212,8 @@ export class FarmScene {
   // ---- dock, boat ------------------------------------------------------------------------------------------------
   buildDock() {
     const z = FIXED.dock.z, sx = shoreX(z);
-    const dock = new THREE.Mesh(dockGeometry(), farmMaterial({ vertexColors: true, rim: 0.2 }));
-    dock.position.set(sx - 1.5, 0.1, z); this.root.add(dock); this.dock = dock; this.dockX = sx - 1.5 + 11;
+    const dock = new THREE.Mesh(dockGeometry(), farmMaterial({ vertexColors: true, detail: 'wood' }));
+    dock.position.set(sx - 1.5, 0.1, z); this.root.add(dock); casts(dock); this.dock = dock; this.dockX = sx - 1.5 + 11;
     this.shadow(sx + 4, z, 4, 0.5, 0.25);
     if (this.assets.has('ship_cargo')) {
       const boat = this.assets.model('ship_cargo', { long: 7.2, shell: true });
@@ -217,14 +225,36 @@ export class FarmScene {
     this.addHit({ kind: 'dock', id: 'dock', box: new THREE.Box3(new V3(sx - 1.5, 0, z - 1.4), new V3(sx + 9.5, 1.2, z + 1.4)), prio: 2 });
   }
 
+
+  // ---- scenery beyond the farm: a hamlet across the stream, a lighthouse islet, boats on the bay ------------------
+  buildScenery() {
+    const A = this.assets, g = this.scenery = new THREE.Group(); this.root.add(g);
+    const stand = (id, x, z, yaw, w) => {
+      if (!A.has(id)) return null;
+      const m = A.model(id, { width: w });
+      let y = 1e9; for (const [dx, dz] of [[0, 0], [w / 2, 0], [-w / 2, 0], [0, w / 2], [0, -w / 2]]) y = Math.min(y, heightAt(x + dx, z + dz));
+      m.group.position.set(x, y - 0.25, z); m.group.rotation.y = yaw; g.add(m.group); return m;
+    };
+    const hamlet = [['house_yellow', -22, -43, 0.35, 5.0], ['house_brick', -13, -45, 0.05, 4.8], ['farmhouse', -3, -47, -0.15, 5.8], ['workshop', 8, -46, 0.1, 5.2], ['cafe', 18, -42, -0.35, 5.4], ['chapel', -32, -38, 0.6, 4.4], ['library', 27, -37, -0.7, 4.8], ['house_brick', 3, -55, 0.2, 4.6], ['house_yellow', -9, -56, -0.1, 4.6]];
+    for (const [id, x, z, yaw, w] of hamlet) stand(id, x, z, yaw, w);
+    // a lighthouse on a rocky islet in the bay
+    const rockGeo = makeRockGeometry(5), rockMat = farmMaterial({ vertexColors: true, spec: 0.08 });
+    const islet = (x, z, sc) => { for (let i = 0; i < 5; i++) { const m = new THREE.Mesh(rockGeo, rockMat); const a = i * 1.26; m.position.set(x + Math.cos(a) * sc * 1.1, WATER_Y - 0.25, z + Math.sin(a) * sc * 0.9); m.scale.set(sc * (1.1 + i % 2 * 0.4), sc * (0.9 + (i % 3) * 0.3), sc); m.rotation.y = i; g.add(m); casts(m); } const c = new THREE.Mesh(rockGeo, rockMat); c.position.set(x, WATER_Y - 0.3, z); c.scale.set(sc * 2.4, sc * 2.0, sc * 2.2); g.add(c); casts(c); };
+    islet(60, -8, 2.2);
+    if (A.has('lighthouse')) { const lh = A.model('lighthouse', { height: 11 }); lh.group.position.set(60, WATER_Y + 1.7, -8); g.add(lh.group); }
+    // boats drifting on the bay (they only bob; the cargo boat at the dock is the interactive one)
+    const boat = (id, x, z, yaw, len) => { if (!A.has(id)) return; const m = A.model(id, { long: len }); m.group.position.set(x, WATER_Y + 0.08, z); m.group.rotation.y = yaw; g.add(m.group); this.bobbers.push({ g: m.group, y: WATER_Y + 0.08, ph: Math.random() * 6, yaw, sway: 0.03 }); };
+    boat('tug', 62, 22, 1.2, 6.5); boat('rowboat', 46, -4, 0.4, 3.2); boat('rowboat', 44.5, 26, -0.7, 3.0);
+  }
+
   // ---- decorations (one instanced mesh per kind) --------------------------------------------------------------------
   decorGeometry(d) {
     const mdl = d.model;
     if (mdl.startsWith('tree:')) return { geo: makeTreeGeometry(mdl.slice(5), 11 + mdl.length, 1), mat: farmMaterial({ vertexColors: true, foliage: true, rim: 0.25 }), h: 4.4 };
     if (mdl === 'bush') return { geo: makeBushGeometry(6), mat: farmMaterial({ vertexColors: true, foliage: true, rim: 0.25 }), h: 1 };
-    if (mdl === 'scarecrow') return { geo: scarecrowGeometry(), mat: farmMaterial({ vertexColors: true, rim: 0.25 }), h: 2 };
-    if (mdl === 'bench') return { geo: benchGeometry(), mat: farmMaterial({ vertexColors: true, rim: 0.25 }), h: 1.1 };
-    if (mdl === 'picnic') return { geo: picnicGeometry(), mat: farmMaterial({ vertexColors: true, rim: 0.1 }), h: 0.2 };
+    if (mdl === 'scarecrow') return { geo: scarecrowGeometry(), mat: farmMaterial({ vertexColors: true, detail: 'wood' }), h: 2 };
+    if (mdl === 'bench') return { geo: benchGeometry(), mat: farmMaterial({ vertexColors: true, detail: 'wood' }), h: 1.1 };
+    if (mdl === 'picnic') return { geo: picnicGeometry(), mat: farmMaterial({ vertexColors: true, detail: 'wood' }), h: 0.2 };
     return null;
   }
   syncDecor() {
@@ -245,7 +275,7 @@ export class FarmScene {
         const proc = this.decorGeometry(def);
         if (proc) { mesh = new THREE.InstancedMesh(proc.geo, proc.mat, cap); mesh.userData.h = proc.h; mesh.userData.scale = def.model.startsWith('tree:') ? 1.35 : 1; }
         else { mesh = this.assets.instanced(def.model, { width: def.width, height: def.height, shell: true }, cap); mesh.userData.h = mesh.userData.size.y; mesh.userData.scale = 1; }
-        mesh.frustumCulled = false; mesh.userData.cap = cap; this.root.add(mesh); this.decorMeshes[type] = mesh;
+        mesh.frustumCulled = false; mesh.userData.cap = cap; this.root.add(mesh); casts(mesh); this.decorMeshes[type] = mesh;
       }
       mesh.count = list.length;
       list.forEach((d, i) => {
@@ -301,6 +331,7 @@ export class FarmScene {
   update(dt) {
     this.time += dt;
     for (const s of this.spinners) s.mesh.rotation[s.axis] += dt * s.speed;
+    for (const b of this.bobbers) { b.g.position.y = b.y + Math.sin(this.time * 1.3 + b.ph) * 0.06; b.g.rotation.z = Math.sin(this.time * 1.0 + b.ph) * b.sway; b.g.rotation.x = Math.sin(this.time * 0.8 + b.ph * 1.7) * b.sway * 0.6; }
     // smoke from chimneys
     for (const e of this.emitters) {
       e.t -= dt; if (e.t <= 0 && this.farm.readyJobs(e.site) + (this.farm.jobs(e.site).length) > 0) { e.t = 0.35 + Math.random() * 0.3; this.particles.emit({ x: e.x + (Math.random() - 0.5) * 0.2, y: e.y, z: e.z, vx: 0.25, vy: 0.9, vz: 0.05, life: 2.6, size: 0.7, size2: 2.2, color: [0.95, 0.95, 0.95], alpha: 0.55, alpha2: 0, wob: 0.25, kind: 1 }); }

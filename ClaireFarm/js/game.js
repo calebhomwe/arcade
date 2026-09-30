@@ -58,7 +58,6 @@ export class Game {
   resize() { const h = this.engine.h; this.particles.setViewport(h); this.glow.setViewport(h); this.ambient.setViewport(h); }
 
   qualityChanged(name, cfg, first) {
-    this.assets.setOutlines(cfg.outlines);
     if (this.grass) { this.grass.setDensity(cfg.grass / this.grass.total); this.flowers.setDensity(cfg.flowers / this.flowers.total); }
     if (this.forest) this.forest.setDensity(cfg.trees);
     this.particleScale = cfg.particles;
@@ -97,7 +96,7 @@ export class Game {
     f.on('built', (e) => { A.sfx('unlock'); A.sfx('place'); if (e.x !== undefined) { this.sparkle(e.x, 1.5, e.z, 30); this.puff(e.x, 0.6, e.z, [0.85, 0.8, 0.7], 16); } this.refreshBuilt(e); });
     f.on('animal', (e) => { A.sfx('pop'); this.life.syncHerd(e.pen); this.needsRefresh = true; });
     f.on('decor', () => { this.farmScene.syncDecor(); this.needsRefresh = true; });
-    f.on('levelup', (e) => { A.sfx('levelup'); A.voice('claire_09', true); this.life.claireWave(); ui.confettiBurst(80); this.queueDialog(() => this.levelDialog(e)); this.applyProgressUnlocks(e); });
+    f.on('levelup', (e) => { this.sdkState(this.mode === 'play' ? 'play' : this.mode); A.sfx('levelup'); A.voice('claire_09', true); this.life.claireWave(); ui.confettiBurst(80); this.queueDialog(() => this.levelDialog(e)); this.applyProgressUnlocks(e); });
     f.on('chapterready', (e) => { A.sfx('powerup'); ui.toast(`Goal done: ${e.ch.title}! Tap the goal bar.`, 'good', 3600); });
     f.on('chapter', (e) => { A.sfx('win'); this.queueDialog(() => this.chapterDialog(e)); });
     f.on('finale', () => { this.queue.push(() => this.finale()); });
@@ -120,6 +119,7 @@ export class Game {
     f.on('reset', () => location.reload());
   }
 
+  sdkState(scene) { if (!window.ArcadeSDK) return; try { const S = this.farm.S; ArcadeSDK.state({ scene, score: S.level * 1000 + Math.min(999, S.stats.harvests), level: S.level, stars: Math.min(3, Math.floor(this.farm.S.story.i / 4)) }); } catch (e) {} }
   toastOnce(key, text, kind) { if (this.seenTips.has(key)) return; this.seenTips.add(key); this.ui.toast(text, kind); }
   railPoint(which) { const b = this.ui.hud.querySelector('[data-act="barn"]'); if (b) { const r = b.getBoundingClientRect(); if (r.width) return [r.left + r.width / 2, r.top + r.height / 2]; } return [40, 300]; }
   puff(x, y, z, c, n) { if (this.particleScale === 0) return; this.particles.burst(Math.round(n * (this.particleScale || 1)), { x, y, z, life: 0.8, size: 0.6, size2: 1.4, speed: 1.3, up: 0.8, gravity: -0.2, drag: 1.5, color: c, alpha: 0.6, alpha2: 0, kind: 1 }); }
@@ -132,12 +132,14 @@ export class Game {
 
   // ---- input ---------------------------------------------------------------------------------------------------------
   brushTest(x, y) {
+    if (window.__cfDebug) console.log('brushTest', x | 0, y | 0, 'busy', this.ui.busy, 'mode', this.mode, 'ghost', !!this.ghost, 'brush', JSON.stringify(this.brush));
     if (this.ui.busy || this.mode !== 'play' || this.ghost) return false;
     const g = this.rig.ground(x, y), plot = this.farmScene.plotAt(g.x, g.z);
     if (this.brush && this.brush.mode === 'plant') return true;
     return !!(plot && this.farm.plotInfo(plot.id).state === 'ripe');
   }
   onBrush(phase, x, y) {
+    if (window.__cfDebug && phase !== 'move') console.log('onBrush', phase, x | 0, y | 0);
     if (phase === 'cancel' || phase === 'up') { if (phase === 'up' && this.brushStroke && this.brushStroke.n === 0 && this.brush && this.brush.mode === 'plant') { /* a tap on ground in plant mode: nothing */ } this.brushStroke = null; this.lastTapPos = [x, y]; return; }
     const g = this.rig.ground(x, y), plot = this.farmScene.plotAt(g.x, g.z);
     if (phase === 'down') { this.brushStroke = { n: 0, last: null, harvest: !(this.brush && this.brush.mode === 'plant') }; this.lastTapPos = [x, y]; }
@@ -151,7 +153,7 @@ export class Game {
       } else if (info.state === 'ripe' && phase === 'down') { if (this.farm.harvest(plot.id).ok) this.brushStroke.n++; }
     } else if (info.state === 'ripe') { if (this.farm.harvest(plot.id).ok) this.brushStroke.n++; }
   }
-  endBrush() { this.brush = null; this.ui.hideDock(); this.ui.brush(null); }
+  endBrush() { this.brush = null; this.rig.tOffsetY = 0; this.ui.hideDock(); this.ui.brush(null); }
 
   actorAt(x, y) {
     const rig = this.rig, v = new V3(); let best = null, bd = 1e9;
@@ -206,7 +208,7 @@ export class Game {
       case 'boat': case 'dock': return f.S.level >= 3 ? this.open('boat') : this.ui.toast("Marta's boat comes at level 3.", '');
       case 'patch': return this.confirmBuy('patch', o.id);
       case 'pen': { if (!f.penBuilt(o.id)) return this.confirmBuy('pen', o.id); return this.penQuick(o.id); }
-      case 'site': { if (!f.buildingBuilt(o.id)) return this.confirmBuy('site', o.id); if (f.readyJobs(o.id)) return f.collectJobs(o.id); return this.open('building', o.id); }
+      case 'site': { if (!f.buildingBuilt(o.id)) return this.confirmBuy('site', o.id); if (f.readyJobs(o.id)) return f.collectJobs(o.id); if (o.id === 'hall') { this.life.claireWave(); return this.open('more', 'event'); } return this.open('building', o.id); }
       case 'decor': return this.decorMenu(o.decor || o);
     }
   }
@@ -225,7 +227,9 @@ export class Game {
     this.ui.seedDock(html);
     this.ui.tip(null);
     this.pendingPlot = plotId;
-    const p = PLOT[plotId]; if (this.rig.tgt) { /* keep the field in view above the dock */ this.rig.tOffsetY = 0.14; }
+    // lift the picture only when the tapped field would sit behind the seed tray, and keep it lifted while planting so the fields never slide under your finger
+    const P = PLOT[plotId], sp = P ? this.rig.project(new V3(P.x, 0, P.z)) : null;
+    this.rig.tOffsetY = sp && sp.y > this.rig.h * 0.55 ? Math.min(0.22, (sp.y - this.rig.h * 0.45) / this.rig.h) : 0;
     this.audio.voice('claire_02');
   }
 
@@ -363,7 +367,7 @@ export class Game {
     this.sky.frozen = true; this.todTarget = 0.82;
     this.audio.sfx('bell'); setTimeout(() => this.audio.voice('claire_11', true), 800);
     this.audio.playMusic('night');
-    if (window.ArcadeSDK) ArcadeSDK.state({ scene: 'over', score: f.S.level });
+    this.sdkState('over');
     this.rig.focus(FIXED.fountain.x, FIXED.fountain.z, 14, 2.5, 0.05);
     ui.dark.classList.add('on'); ui.show(false);
     // lanterns rise one by one, then fireworks
@@ -379,7 +383,7 @@ export class Game {
   }
   finaleDone() {
     this.ui.closeDialog(true); this.finaleOn = false; this.sky.frozen = false; this.todTarget = null;
-    if (window.ArcadeSDK) ArcadeSDK.state({ scene: 'play', score: this.farm.S.level });
+    this.sdkState('play');
     this.audio.playMusic('day'); this.rig.focus(0, 3, 16, 1.5, 0);
     this.farm.claimAch('fair_finale');
   }
@@ -393,7 +397,7 @@ export class Game {
       <div class="menu"><button class="btn buy play" id="playBtn" data-act="play">${has ? 'Continue' : 'Play'}</button><div class="sm"><button class="btn blue small" data-act="howto">How to play</button><button class="btn grey small" data-act="titleSettings">Settings</button></div></div><div class="ver">3D edition &middot; runs great on phones</div>`;
     ui.title.classList.add('on'); this.ui.title.querySelectorAll('button').forEach((b) => (b.style.pointerEvents = 'auto'));
     this.rig.enabled = false; this.titleT = 0; this.sky.frozen = false;
-    if (window.ArcadeSDK) ArcadeSDK.state({ scene: 'title' });
+    this.sdkState('title');
     this.audio.playMusic('theme');
   }
   play() {
@@ -403,7 +407,7 @@ export class Game {
     this.mode = 'play'; ui.show(true); this.rig.enabled = true; this.userMoved = false;
     this.rig.tgt.pitch = 42 * Math.PI / 180; this.rig.tgt.yaw = 28 * Math.PI / 180;
     this.rig.focus(-1, 5, this.rig.aspect < 1 ? 16 : 17, 1.4, 0);
-    if (window.ArcadeSDK) ArcadeSDK.state({ scene: 'play', score: f.S.level });
+    this.sdkState('play');
     ui.updateHud(); this.updateGoal(); this.refreshBadges();
     this.audio.voice('claire_01', true);
     if (!f.S.story.intro) { f.S.story.intro = true; this.introDialog(); } else this.welcomeBack();
@@ -483,7 +487,7 @@ export class Game {
     if (s.tod === 'day') { this.sky.frozen = true; this.todTarget = 0.5; } else if (s.tod === 'gold') { this.sky.frozen = true; this.todTarget = 0.7; } else if (s.tod === 'night') { this.sky.frozen = true; this.todTarget = 0.02; } else if (!this.finaleOn) { this.sky.frozen = false; this.todTarget = null; }
     document.documentElement.classList.toggle('reduce', !!s.reduceMotion && s.reduceMotion !== 'false');
     document.documentElement.style.setProperty('--fs', 16 * (+s.textSize || 1) + 'px');
-    if (first) this.sky.phase = this.farm.S.phase || 0.36;
+    if (first) this.sky.phase = this.farm.S.phase || 0.68;
     this.applyBarnColor();
   }
   applyBarnColor() {
@@ -512,6 +516,7 @@ export class Game {
   update(dt) {
     this.blobs.update(); this.labels.update(); this.floaters.update(dt); this.particles.update(dt); this.glow.update(dt);
     this.farmScene.update(dt); this.life.update(dt);
+    this.lodAcc = (this.lodAcc || 0) + dt; if (this.lodAcc > 0.3 && this.forest) { this.lodAcc = 0; this.forest.update(this.rig.cur.x, this.rig.cur.z); }
     // sky / time of day
     if (this.todTarget != null) { let d = this.todTarget - this.sky.phase; if (d > 0.5) d -= 1; if (d < -0.5) d += 1; this.sky.phase = (this.sky.phase + d * Math.min(1, dt * 0.8) + 1) % 1; }
     this.sky.update(dt);
@@ -605,7 +610,6 @@ export class Game {
       case 'pickSeed': {
         const c = CROPS.find((q) => q.id === d.id); this.brush = { mode: 'plant', crop: d.id }; A.sfx('pop');
         ui.hideDock(); ui.brush(`${I(c.icon, 32)} Planting ${c.name} &middot; drag over the fields`);
-        this.rig.tOffsetY = 0;
         if (d.plot) { const r = f.plant(d.plot, d.id); if (!r.ok && r.reason === 'coins') { ui.toast('Not enough coins for that seed.', 'warn'); this.endBrush(); } }
         return;
       }
@@ -676,6 +680,10 @@ export class Game {
     if (Object.keys(S.plots).length < 6) return 'Tap an empty field, pick a seed and drag over more fields to plant them.';
     if (!c.done) return `Goal: ${c.ch.goal} (${c.have}/${c.target})`;
     return 'Plant something, then check the order board and the daily gift.';
+  }
+  setVolume(k, v) {
+    const s = this.farm.S.settings; s[k] = Math.max(0, Math.min(1, v)); this.audio.applyVolumes(); this.farm.save();
+    if (k === 'sfx' && !this._sfxT) { this._sfxT = setTimeout(() => { this._sfxT = 0; this.audio.sfx('tap'); }, 250); }
   }
   itemDialog(id) {
     const it = ITEMS[id], f = this.farm;

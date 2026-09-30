@@ -5,6 +5,8 @@ import { Sky } from './gfx/sky.js';
 import { buildTerrain, buildDepthTexture, buildWater, makePaintTexture } from './gfx/terrain.js';
 import { buildMountains, buildWaterfall, buildCity } from './gfx/backdrop.js';
 import { buildForest, GrassField } from './gfx/flora.js';
+import * as THREE from 'three';
+import { SU } from './gfx/shaders.js';
 import { Farm } from './state.js';
 import { GameAudio } from './audio.js';
 import { Game } from './game.js';
@@ -14,6 +16,7 @@ import { safeStore } from './util.js';
 const $ = (id) => document.getElementById(id);
 const splash = $('splash'), bar = $('spBar'), msg = $('spMsg');
 const qp = new URLSearchParams(location.search);
+if (qp.get('ui') === '0') { const st = document.createElement('style'); st.textContent = '#ui{display:none!important}'; document.head.appendChild(st); }
 let prog = 0;
 const setProg = (f, m) => { prog = Math.max(prog, Math.min(1, f)); bar.style.width = (prog * 100).toFixed(0) + '%'; if (m) msg.textContent = m; };
 const yieldFrame = () => new Promise((r) => setTimeout(r, 0));
@@ -38,19 +41,22 @@ async function boot() {
   const jobs = [
     ['models/core.glb', 0.9, (u, p) => assets.loadPack(u, p)],
     ['models/town.glb', 1.3, (u, p) => assets.loadPack(u, p)],
+    ['models/city.glb', 0.2, (u, p) => assets.loadPack(u, p)],
   ];
   for (const n of ['claire', 'pip', 'milo', 'june', 'hazel', 'theo', 'pig', 'llama']) jobs.push([`models/${n}.glb`, n === 'claire' ? 0.27 : n === 'pip' || n === 'pig' || n === 'llama' ? 0.06 : 0.2, (u, p) => assets.loadCharacter(n, u, p)]);
   const totalW = jobs.reduce((s, j) => s + j[1], 0), frac = jobs.map(() => 0);
   const report = () => setProg(0.05 + 0.6 * frac.reduce((s, f, i) => s + f * jobs[i][1], 0) / totalW);
   const icons = loadIcons('textures/icons.json');
-  await Promise.all([icons, ...jobs.map((j, i) => j[2](j[0], (got, tot) => { frac[i] = tot ? got / tot : 0; report(); }).then(() => { frac[i] = 1; report(); }))]);
+  const loadDetail = async (url) => { const t = await new THREE.TextureLoader().loadAsync(url); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.NoColorSpace; t.anisotropy = Math.min(4, engine.renderer.capabilities.getMaxAnisotropy()); t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.needsUpdate = true; return t; };
+  const details = Promise.all([loadDetail('textures/ground_a.jpg'), loadDetail('textures/ground_b.jpg'), loadDetail('textures/planks.jpg')]).then(([a, b, c]) => { SU.uGA.value = a; SU.uGB.value = b; SU.uPlanks.value = c; });
+  await Promise.all([icons, details, ...jobs.map((j, i) => j[2](j[0], (got, tot) => { frac[i] = tot ? got / tot : 0; report(); }).then(() => { frac[i] = 1; report(); }))]);
   setProg(0.68, 'Planting the meadow…'); await yieldFrame();
 
-  const scene = engine.scene, paint = makePaintTexture(256);
+  const scene = engine.scene, paint = makePaintTexture(256); SU.uPaint.value = paint;
   const sky = new Sky(scene);
   scene.add(buildTerrain(paint));
   scene.add(buildWater(buildDepthTexture(384), paint));
-  buildMountains(scene); buildWaterfall(scene); buildCity(scene);
+  buildMountains(scene); buildWaterfall(scene); buildCity(scene, assets);
   setProg(0.76, 'Growing the trees…'); await yieldFrame();
   const forest = buildForest(scene);
   const grass = new GrassField(scene, 'grass', engine.q.grass, { x0: -40, x1: 44, z0: -34, z1: 40 }, 5);
@@ -61,10 +67,10 @@ async function boot() {
   const game = new Game({ engine, assets, farm, audio, sky });
   Object.assign(game, { grass, flowers, forest });
   game.build(paint);
-  window.__cf.game = game; window.__cf.assets = assets;
+  window.__cf.game = game; window.__cf.assets = assets; window.__cf.scene = scene; window.__cf.sky = sky;
+  window.__cf.screenOf = (x, y, z) => game.rig.project(new THREE.Vector3(x, y, z));
   setProg(0.94, 'Almost ready…'); await yieldFrame();
 
-  if (qp.get('t')) sky.phase = +qp.get('t');
   engine.onLost = () => { const o = $('lost'); if (o) o.classList.add('on'); };
   engine.onRestored = () => { const o = $('lost'); if (o) o.classList.remove('on'); };
   const saveNow = () => { try { if (farm.S) { farm.S.phase = sky.phase; farm.save(true); } } catch (e) {} };
@@ -74,8 +80,9 @@ async function boot() {
   wireSdk(game, farm);
   engine.start();
   game.showTitle();
-  if (qp.get('cam')) { const [x, z, size, yaw, pitch] = qp.get('cam').split(',').map(Number); const c = engine.rig.cur, t = engine.rig.tgt; c.x = t.x = x; c.z = t.z = z; c.size = t.size = size; c.yaw = t.yaw = yaw * Math.PI / 180; c.pitch = t.pitch = pitch * Math.PI / 180; game.titleT = -1e9; game.freezeTitleCam = true; }
   if (qp.get('play')) game.play();
+  if (qp.get('cam')) { const [x, z, size, yaw, pitch] = qp.get('cam').split(',').map(Number); const rg = engine.rig; rg.cancelTween && rg.cancelTween(); const c = rg.cur, t = rg.tgt; c.x = t.x = x; c.z = t.z = z; c.size = t.size = size; c.yaw = t.yaw = yaw * Math.PI / 180; c.pitch = t.pitch = pitch * Math.PI / 180; game.titleT = -1e9; game.freezeTitleCam = true; if (!qp.get('play')) game.mode = 'title'; }
+  if (qp.get('t')) { sky.phase = +qp.get('t'); sky.frozen = true; game.todTarget = null; }
   setProg(1);
   splash.classList.add('gone');
   setTimeout(() => splash.remove(), 900);

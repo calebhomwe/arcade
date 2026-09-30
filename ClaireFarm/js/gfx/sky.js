@@ -30,10 +30,10 @@ function mixKeys(p) {
 
 // season palettes: grass A/B, foliage multiplier, snow
 export const SEASONS = {
-  spring: { a: C(0x66c43a), b: C(0x3fa83a), foliage: C(0xfff2f6), snow: 0, name: 'Spring' },
-  summer: { a: C(0x5cbf2c), b: C(0x2f9a2e), foliage: C(0xffffff), snow: 0, name: 'Summer' },
-  autumn: { a: C(0x9fb830), b: C(0xc48a2a), foliage: C(0xffb060), snow: 0, name: 'Autumn' },
-  winter: { a: C(0xb8d6c0), b: C(0x9cc0b0), foliage: C(0xcfe0e8), snow: 1, name: 'Winter' },
+  spring: { a: C(0x6aa03a), b: C(0x3f7a2e), foliage: C(0xfff4f6), snow: 0, name: 'Spring' },
+  summer: { a: C(0x74a238), b: C(0x3d7a2c), foliage: C(0xffffff), snow: 0, name: 'Summer' },
+  autumn: { a: C(0xa8a03a), b: C(0xb8782a), foliage: C(0xffb868), snow: 0, name: 'Autumn' },
+  winter: { a: C(0xb8c8c0), b: C(0x98b0a8), foliage: C(0xcfe0e8), snow: 1, name: 'Winter' },
 };
 
 function makeCloudTexture() {
@@ -68,7 +68,7 @@ export class Sky {
     const geo = new THREE.SphereGeometry(500, 24, 12);
     const uni = { uSkyTop: { value: new THREE.Color() }, uSkyMid: { value: new THREE.Color() }, uSkyHor: { value: new THREE.Color() }, uSunDir: SU.uSunDir, uSunCol: SU.uSunCol, uNight: SU.uNight, uTime: SU.uTime, uStars: { value: makeStarTexture() } };
     this.dome = new THREE.Mesh(geo, new THREE.ShaderMaterial({ vertexShader: SKY_VERT, fragmentShader: SKY_FRAG, uniforms: uni, side: THREE.BackSide, depthWrite: false, depthTest: false }));
-    this.dome.frustumCulled = false; this.dome.renderOrder = -100; scene.add(this.dome);
+    this.dome.name = 'skydome'; this.dome.frustumCulled = false; this.dome.renderOrder = -100; scene.add(this.dome);
     this.uni = uni;
     // clouds: instanced camera-facing quads
     const n = 12, quad = new THREE.PlaneGeometry(1, 0.5);
@@ -91,7 +91,7 @@ export class Sky {
           #include <colorspace_fragment>
         }`,
     });
-    this.clouds = new THREE.Mesh(ig, cmat); this.clouds.frustumCulled = false; this.clouds.renderOrder = -90; scene.add(this.clouds);
+    this.clouds = new THREE.Mesh(ig, cmat); this.clouds.name = 'clouds'; this.clouds.frustumCulled = false; this.clouds.renderOrder = -90; scene.add(this.clouds);
     this.setSeason('spring');
     this.update(0);
   }
@@ -104,7 +104,7 @@ export class Sky {
   setCover(v) { this.clouds.material.uniforms.uCover.value = v; }
 
   update(dt, camYaw = 0) {
-    if (!this.frozen) this.phase = (this.phase + dt * this.rate) % 1;
+    if (!this.frozen) this.phase = (this.phase + dt * this.rate * (1 + 1.4 * SU.uNight.value)) % 1;   // the night passes faster than the day
     const k = mixKeys(this.phase);
     this.uni.uSkyTop.value.copy(k.top); this.uni.uSkyMid.value.copy(k.mid); this.uni.uSkyHor.value.copy(k.hor);
     SU.uSunCol.value.copy(k.sun).multiplyScalar(k.sunI);
@@ -117,7 +117,6 @@ export class Sky {
     const az = isDay ? (90 + 180 * day) * Math.PI / 180 : (250 * Math.PI / 180);
     const el = isDay ? (12 + 52 * Math.sin(Math.PI * day)) * Math.PI / 180 : 48 * Math.PI / 180;
     SU.uSunDir.value.set(Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el)).normalize();
-    SU.uRimCol.value.copy(k.sun).lerp(new THREE.Color(1, 1, 1), 0.35);
     // clouds drift
     const d = this.cloudAttr.array;
     for (let i = 0; i < this.cloudData.length; i++) {

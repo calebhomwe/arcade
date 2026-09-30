@@ -1,0 +1,250 @@
+{
+ "id": "game-arcade-7",
+ "title": "Game Arcade — Bridge Race & Fashion Princess",
+ "cat": "arcade",
+ "genre": "arcade",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/neon-arcade.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "ERRORS"
+ ],
+ "evidence": {
+  "ERRORS": "2 uncaught page error(s): Cannot set properties of undefined (setting 'right')"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/game-arcade-7-1-title.jpg",
+  "2-mid": "shots/game-arcade-7-2-mid.jpg",
+  "3-end": "shots/game-arcade-7-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.35,
+  "cores": 4,
+  "load1End": 16.9,
+  "contention": 1.29,
+  "contentionSamples": [
+   1.22,
+   1.59,
+   1.02,
+   1.08,
+   1.29,
+   1.91,
+   3.71
+  ]
+ },
+ "loadMs": 269,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/neon-arcade.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/neon-arcade.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 139.3,
+  "bench1Ms": 42.4,
+  "effectiveSlowdown": 3.3
+ },
+ "start": {
+  "how": ".game-card .card-btn + Let's play",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.29,
+  "loadMs": 75,
+  "playMs": 227,
+  "loadRawMs": 97,
+  "playRawMs": 293,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 16,
+  "longTasks100Play": 6,
+  "tbtLoadMs": 25,
+  "tbtPlayMs": 530,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 8,
+  "slowestPollMs": 189,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 1253,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 1132.1,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     46
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 949,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 259,
+  "jsMedian": 2.17,
+  "jsP95": 8.37,
+  "jsP99": 47.21,
+  "jsMax": 110.5,
+  "jsP95Raw": 10.8,
+  "rawWithGlP95": 10.8,
+  "glP95": 0,
+  "gapP95": 383.3,
+  "gapMedian": 150,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [
+  "Cannot set properties of undefined (setting 'right')"
+ ],
+ "errorCount": 2,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.1,
+  "heap1MB": 2.3,
+  "heapGrowthPct": 14,
+  "heapMeasured": true,
+  "nodesStart": 304,
+  "nodesEnd": 307,
+  "nodesMax": 307,
+  "listeners0": 128,
+  "listeners1": 127,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 9,
+   "totalMB": 8.8,
+   "biggest": [
+    {
+     "w": 800,
+     "h": 500,
+     "mpx": 0.4,
+     "dom": true,
+     "css": [
+      312,
+      195
+     ]
+    },
+    {
+     "w": 800,
+     "h": 500,
+     "mpx": 0.4,
+     "dom": true,
+     "css": [
+      0,
+      0
+     ]
+    },
+    {
+     "w": 480,
+     "h": 600,
+     "mpx": 0.29,
+     "dom": true,
+     "css": [
+      0,
+      0
+     ]
+    },
+    {
+     "w": 480,
+     "h": 600,
+     "mpx": 0.29,
+     "dom": true,
+     "css": [
+      0,
+      0
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 10,
+  "scriptPct": 3,
+  "layoutPerSec": 5.8
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 4,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    10,
+    0
+   ],
+   [
+    15,
+    0
+   ],
+   [
+    39,
+    0
+   ],
+   [
+    56,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 18,
+  "swipes": 5,
+  "holds": 2,
+  "keys": 1,
+  "buttonPresses": 13,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 343,
+  "inputLatencyP95Ms": 3325,
+  "inputLatencyMaxMs": 3757,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 75.5,
+  "maxChangeFromStartPct": 6.4,
+  "samples": 12
+ },
+ "severity": 22.6
+}

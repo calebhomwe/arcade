@@ -60,6 +60,21 @@ Verdicts:
 
 A FREEZE is re-run once; the report says whether it reproduced. Memory risks that are not verdicts on their own (canvas memory over 224 MB, a canvas over 16.7 Mpx, many AudioContexts, many WebGL contexts) are listed as `risks`.
 
+
+## What is plainly an artefact of the loaded box (do not chase these)
+
+The box runs at load 15 to 20 on 4 cores while this is measured, and Chromium here renders WebGL in software. Rules of thumb, in the order to apply them:
+
+1. **A FREEZE or JANK row marked "NOT reproduced on re-run" is the box, not the game.** Every FREEZE is re-run once. Only rows marked "reproduced" are findings.
+2. **"N touch inputs not acknowledged within 4 s"** on a game whose main thread was otherwise fine is Playwright's input round trip queueing behind other agents' browsers. It is only counted when the game's own main thread was also blocked over 0.5 s while playing.
+3. **Frame gaps, fps, and "frames per second" numbers** in `games/<id>.json` (`gapMedian`, `gapP95`) mean nothing: they measure how long this machine took to get round to the browser. Judge `frames.jsP95` (JS cost per frame, divided by the machine slowdown measured at that time) and the long-task numbers.
+4. **Absolute milliseconds of a load-phase block on 3D and engine games** (Godot, Unity, three.js) are inflated by software WebGL and by CPU throttle x4 on a busy core. The ordering (which game blocks longer) and the reproduced flag are real; "11 s" does not mean 11 s on an iPhone. The WebKit run (unthrottled) is the fairer number for those.
+5. **`Unable to decode audio data`** in Chromium here: the Playwright Chromium build has no AAC/proprietary codecs, so `.m4a`/AAC files fail to decode. Check the file format before calling it a bug; iOS Safari decodes AAC.
+6. **`Failed to start the audio device`** (WebKit): the sandbox has no sound card. Ignored by the harness.
+7. **`start button not tappable`** used to be a false STALL: Playwright's `tap()` waits for the element to stop moving, and a pulsing Play button never does. The harness now taps the button's centre when `tap()` times out (same `fingerTap` idea as `iphone.mjs`); rows from before that change were re-run.
+8. **The bot's own look at the screen** (one `page.evaluate` per action) and the calibration benchmark are tagged inside the page and excluded from long-task and freeze numbers.
+9. WebKit here is Playwright's Linux build (WPE), not iOS Safari: same JavaScript engine and layout engine, different graphics, memory limits and audio unlock. A game that freezes in it deserves a look; a game that passes in it can still die on a phone through memory.
+
 ## Honest limits
 
 - Software WebGL (SwiftShader) makes the GPU part meaningless. Verdicts are on JS cost, long tasks and stalls, never fps. GPU-blocking GL call time is subtracted from the frame cost.

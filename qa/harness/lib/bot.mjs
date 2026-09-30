@@ -12,6 +12,7 @@ const KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'Enter
 
 // Runs in the page: what is on screen that a finger could press?
 const PROBE = () => {
+  const _t0 = window.__H ? window.__H.now() : 0;
   const vw = innerWidth, vh = innerHeight, items = [], seen = new Set();
   const txtOf = el => ((el.innerText || el.value || el.getAttribute('aria-label') || el.title || el.alt || '') + '').replace(/\s+/g, ' ').trim().slice(0, 48);
   const add = (el, kind) => {
@@ -41,6 +42,7 @@ const PROBE = () => {
   let canvas = null, best = 0;
   document.querySelectorAll('canvas').forEach(c => { const r = c.getBoundingClientRect(), a = Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0)) * Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0)); if (a > best) { best = a; canvas = { x: r.left, y: r.top, w: r.width, h: r.height, cover: a / (vw * vh) }; } });
   const sdk = window.ArcadeSDK, menu = document.querySelector('#arcade-sdk-root.on');
+  try { if (window.__H) window.__H.push('P', +_t0.toFixed(1), +(window.__H.now() - _t0).toFixed(1)); } catch (e) {}   // tell the health run this task was the bot's own look at the screen
   return { vw, vh, items: items.slice(0, 80), canvas, paused: !!(sdk && sdk.paused), menuOpen: !!menu, text: (document.body && document.body.innerText || '').replace(/\s+/g, ' ').slice(0, 1500), url: location.href };
 };
 

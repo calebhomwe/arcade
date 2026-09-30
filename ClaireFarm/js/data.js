@@ -110,7 +110,7 @@ export const BUILDINGS = {
     { id: 'lemonade', in: { watermelon: 2, sugar: 1 }, out: { lemonade: 2 }, sec: 600, xp: 96, level: 39 },
     { id: 'tropical', in: { pineapple: 2, smoothie: 1 }, out: { tropical: 2 }, sec: 720, xp: 130, level: 43 },
   ] },
-  hall: { name: 'Village hall', slots: 0, blurb: 'The heart of the village: fairs, feasts and festivals.', recipes: [] },
+  hall: { name: 'Village hall', slots: 0, blurb: 'The heart of the village: tap it for the season\'s festival baskets, and for feasts with the neighbours.', recipes: [] },
 };
 
 // build the item table and price the crafted goods from their inputs

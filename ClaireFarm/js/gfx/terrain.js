@@ -62,7 +62,7 @@ export function heightAt(x, z) {
 export function slopeAt(x, z) { const e = 0.6; return Math.hypot(heightAt(x + e, z) - heightAt(x - e, z), heightAt(x, z + e) - heightAt(x, z - e)) / (2 * e); }
 
 export function buildTerrain(paintTex) {
-  const N = 84;
+  const N = 68;
   const pos = [], col = [], idx = [];
   const a = 0.2;
   const map = (u) => EXTENT * Math.sign(u) * (a * Math.abs(u) + (1 - a) * Math.pow(Math.abs(u), 3));
@@ -85,7 +85,7 @@ export function buildTerrain(paintTex) {
     vertexShader: TERRAIN_VERT, fragmentShader: TERRAIN_FRAG, vertexColors: true,
     uniforms: Object.assign({}, SU, { uPaint: { value: paintTex } }),
   });
-  const mesh = new THREE.Mesh(g, mat); mesh.frustumCulled = false; mesh.renderOrder = -5;
+  const mesh = new THREE.Mesh(g, mat); mesh.name = 'terrain'; mesh.frustumCulled = false; mesh.renderOrder = -5;
   return mesh;
 }
 
@@ -108,7 +108,7 @@ export function buildWater(depth, paintTex) {
     vertexShader: WATER_VERT, fragmentShader: WATER_FRAG, transparent: true, depthWrite: false,
     uniforms: Object.assign({}, SU, { uDepth: { value: depth.tex }, uPaint: { value: paintTex }, uDepthRect: { value: new THREE.Vector4(-EXTENT, -EXTENT, EXTENT * 2, EXTENT * 2) }, uHRange: { value: depth.range }, uWaterY: { value: WATER_Y } }),
   });
-  const m = new THREE.Mesh(geo, mat); m.position.y = WATER_Y; m.frustumCulled = false; m.renderOrder = 2;
+  const m = new THREE.Mesh(geo, mat); m.name = 'water'; m.position.y = WATER_Y; m.frustumCulled = false; m.renderOrder = 2;
   // the shader compares WATER_Y with the ground; the mesh sits at WATER_Y but positions are world-space in the shader
   return m;
 }

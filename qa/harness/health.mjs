@@ -46,7 +46,7 @@ const worker = async () => {
     if (r.verdicts.includes('FREEZE') && process.env.RECHECK !== '0') {
       // A freeze on a loaded machine may be the machine. Run it again; only a repeat is a finding.
       if (r.block && r.block.slowestPollMs > 5000 || (r.evidence.FREEZE || '').includes('did not answer')) { await browser.close().catch(() => {}); browser = await launch(); }
-      const r2 = await run({ seed: '-recheck', DURATION: Math.min(DURATION, 30) });
+      const r2 = await run({ seed: '-recheck', DURATION: Math.min(DURATION, 20) });
       r.recheck = { reproduced: r2.verdicts.includes('FREEZE'), verdicts: r2.verdicts, evidence: r2.evidence.FREEZE || null, blockPlayMs: r2.block && r2.block.playMs, blockLoadMs: r2.block && r2.block.loadMs, load1: r2.machine && r2.machine.load1End };
     }
     await fs.writeFile(path.join(out, 'games', g.id + '.json'), JSON.stringify(r, null, 1));

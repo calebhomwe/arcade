@@ -7,7 +7,7 @@
  *    canvas, which is the main reason these builds are heavy on iPhone. On touch devices this file makes
  *    window.devicePixelRatio return a smaller number so the canvas stays inside a budget:
  *      phone   1.2 MP  (390x844 phone: DPR 1.91, canvas about 745x1612 max)
- *      tablet  2.6 MP  (short screen side >= 600 css px)
+ *      tablet  4.2 MP  (short screen side >= 600 css px; an iPad at DPR 2 is 3.5 to 4 MP, so it is left alone)
  *      desktop untouched (a mouse-and-keyboard machine at DPR 1, 1.5, 2, 3 ... gets exactly what the browser reports)
  *    The real value is read lazily on every call (the engine asks every frame). Reading it once at document start was tried
  *    and is wrong in WebKit (it once returned 1.19). The budget is worked out from the SCREEN size (the biggest the
@@ -58,7 +58,7 @@
   var KEY = 'arcade_gd_alive:' + safe(function () { return W.location.pathname; });
   var TIER_KEY = 'arcade_gd_tier';
   var TIER_MS = 24 * 3600 * 1000;
-  var BUDGETS = { phone: [1.2e6, 0.8e6, 0.5e6], tablet: [2.6e6, 1.6e6, 0.9e6] };
+  var BUDGETS = { phone: [1.2e6, 0.8e6, 0.5e6], tablet: [4.2e6, 2.4e6, 1.2e6] };
   function readTier() {
     var v = safe(function () { return JSON.parse(W.localStorage.getItem(TIER_KEY)); });
     if (v && typeof v.n === 'number' && Date.now() - v.t < TIER_MS) return Math.max(0, Math.min(2, v.n | 0));
@@ -138,8 +138,7 @@
     '#gd-shim,#gd-alert,#gd-toast{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#fff;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-user-select:none;user-select:none}',
     '#gd-shim{position:fixed;left:0;right:0;top:0;bottom:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;padding-bottom:max(24px,env(safe-area-inset-bottom));text-align:center;pointer-events:none;transition:opacity .35s}',
     '#gd-shim.gd-out{opacity:0}',
-    '#gd-shim .gd-title{font-size:26px;font-weight:700;line-height:1.2;letter-spacing:.01em;margin:0 0 6px;max-width:22em;text-shadow:0 2px 12px rgba(0,0,0,.5)}',
-    '#gd-shim .gd-sub{font-size:14px;line-height:1.4;opacity:.72;margin:0 0 26px}',
+    '#gd-shim .gd-title{font-size:26px;font-weight:700;line-height:1.2;letter-spacing:.01em;margin:0 0 28px;max-width:22em;text-shadow:0 2px 12px rgba(0,0,0,.5)}',
     '#gd-shim .gd-bar{width:min(320px,74vw);height:8px;border-radius:4px;background:rgba(255,255,255,.16);overflow:hidden}',
     '#gd-shim .gd-bar i{display:block;height:100%;width:0;border-radius:4px;background:#ffcf4d;transition:width .25s ease-out}',
     '#gd-shim .gd-bar.gd-ind i{width:38%;animation:gd-slide 1.3s ease-in-out infinite}',
@@ -161,11 +160,11 @@
     var st = D.createElement('style'); st.id = 'gd-shim-css'; st.textContent = CSS; (D.head || D.documentElement).appendChild(st);
     title = (D.title || 'Loading').replace(/\s+/g, ' ').trim();
     var box = D.createElement('div'); box.id = 'gd-shim'; box.setAttribute('role', 'status'); box.setAttribute('aria-live', 'polite');
-    box.innerHTML = '<p class="gd-title"></p><p class="gd-sub">Godot game</p><div class="gd-bar gd-ind"><i></i></div><p class="gd-msg">Getting ready</p><p class="gd-hint"></p><button type="button" class="gd-btn gd-reload" hidden>Reload</button>';
+    box.innerHTML = '<p class="gd-title"></p><div class="gd-bar gd-ind"><i></i></div><p class="gd-msg">Getting ready</p><p class="gd-hint"></p><button type="button" class="gd-btn gd-reload" hidden>Reload</button>';
     box.querySelector('.gd-title').textContent = title;
     D.body.appendChild(box);
     var st2 = D.createElement('style'); st2.id = 'gd-shim-css2'; st2.textContent = '#status-splash,#status-progress{display:none!important}'; (D.head || D.documentElement).appendChild(st2);   // hide the stock logo and bar only once ours is on screen
-    els.box = box; els.bar = box.querySelector('.gd-bar'); els.fill = box.querySelector('.gd-bar i'); els.msg = box.querySelector('.gd-msg'); els.hint = box.querySelector('.gd-hint'); els.reload = box.querySelector('.gd-reload'); els.reload.addEventListener('click', function () { safe(function () { W.location.reload(); }); }); els.sub = box.querySelector('.gd-sub');
+    els.box = box; els.bar = box.querySelector('.gd-bar'); els.fill = box.querySelector('.gd-bar i'); els.msg = box.querySelector('.gd-msg'); els.hint = box.querySelector('.gd-hint'); els.reload = box.querySelector('.gd-reload'); els.reload.addEventListener('click', function () { safe(function () { W.location.reload(); }); });
     if (S.capped()) D.documentElement.classList.add('gd-capped');
   }
   function setText(el, t) { if (el && el.textContent !== t) el.textContent = t; }
@@ -212,6 +211,7 @@
     }
     if (els.reload.hidden === stalled) els.reload.hidden = !stalled;
   }
+  function halt() { clearInterval(timer); if (els.box) els.box.style.display = 'none'; }   // a crash message replaces the loader
   function showAlert(head, body, btn) {
     if (!D.body) return;
     var a = D.getElementById('gd-alert');
@@ -238,7 +238,7 @@
     if (S.lost) return; S.lost = true; S.phase = 'context-lost';
     safe(function () { e.stopImmediatePropagation(); e.preventDefault(); });
     if (S.cls !== 'desktop') bumpTier();
-    ready(function () { showAlert('The graphics were reset', 'Your device took the game\'s graphics away, usually because it ran low on memory. Close other tabs or apps, then tap Reload. The game will use lighter graphics.', 'Reload'); });
+    ready(function () { halt(); showAlert('The graphics were reset', 'Your device took the game\'s graphics away, usually because it ran low on memory. Close other tabs or apps, then tap Reload.' + (S.cls !== 'desktop' ? ' The game will use lighter graphics.' : ''), 'Reload'); });
   }, true);
   // wasm runtime death (out of memory, abort): the canvas would just freeze.
   var FATAL = /RuntimeError|Aborted\(|out of memory|Cannot enlarge memory|memory access out of bounds/i;
@@ -246,7 +246,7 @@
     if (S.aborted || !FATAL.test(String(msg || ''))) return;
     S.aborted = true; S.phase = 'aborted';
     if (S.cls !== 'desktop') bumpTier();
-    ready(function () { showAlert('The game stopped', 'It ran into a problem, often low memory on a phone. Tap Reload to start again.', 'Reload'); });
+    ready(function () { halt(); showAlert('The game stopped', 'It ran into a problem, often low memory on a phone. Tap Reload to start again.', 'Reload'); });
   }
   W.addEventListener('error', function (e) { fatal(e && (e.message || (e.error && e.error.message))); });
   W.addEventListener('unhandledrejection', function (e) { fatal(e && e.reason && (e.reason.message || e.reason)); });

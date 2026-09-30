@@ -17,6 +17,8 @@ nothing leaves the device, no leaderboards or chat, no purchases, no loot boxes 
 punish, no notifications, no "streak lost" shaming. XP and stars only go up and only ever unlock **looks**
 (hats, frames, colours, themes, titles). After 30 and 60 minutes of play in a day the arcade suggests a stretch
 (a toast the child can wave away; taking it earns the "Well Rested" badge). Time-based XP stops after 15 minutes a day.
+The only "notification" is a small red dot on the profile chip while a newly earned badge has not been looked at; it
+never expires, never counts down, and goes away when the Trophy room is opened.
 Names are cleaned to letters, digits and a few marks (16 characters), and anything that looks like an address, a web
 link or a phone number is refused.
 

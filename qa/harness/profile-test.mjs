@@ -393,10 +393,13 @@ check('the SDK exposes ArcadeSDK.profile.award / achievement / quest / get', has
 const x0 = (await prof()).xp;
 await fr.evaluate(() => ArcadeSDK.profile.award({ xp: 12, reason: 'Test bonus' })); await page.waitForTimeout(400);
 check('a game award reaches the portal-owned profile', (await prof()).xp === x0 + 12, x0 + ' -> ' + (await prof()).xp);
+// sample the toast while it is alive: on a busy machine a screenshot can take longer than the toast lives
+await page.evaluate(() => { window.__toastMax = 0; clearInterval(window.__toastTimer); window.__toastTimer = setInterval(() => { const t = document.querySelector('#pf-toasts .pf-toast.in'); if (t) window.__toastMax = Math.max(window.__toastMax, +getComputedStyle(t).opacity); }, 60); });
 await fr.evaluate(() => ArcadeSDK.profile.achievement('hello', { title: 'Hello Badge', tier: 'silver' })); await page.waitForTimeout(400);
 check('a game badge reaches the profile', !!(await prof()).ach['g:tic-tac-toe:hello']);
-await settle(page, 1200);
-check('a badge toast slides in over the game (visible, not stuck at opacity 0)', await page.evaluate(() => { const t = document.querySelector('#pf-toasts .pf-toast.in'); return !!t && +getComputedStyle(t).opacity > 0.5; }));
+let toastSeen = 0; for (let i = 0; i < 14 && toastSeen <= 0.5; i++) { await settle(page, 300); toastSeen = await page.evaluate(() => window.__toastMax || 0); }
+await page.evaluate(() => clearInterval(window.__toastTimer));
+check('a badge toast slides in over the game (visible, not stuck at opacity 0)', toastSeen > 0.5, 'max opacity seen ' + toastSeen);
 await fr.evaluate(() => ArcadeSDK.profile.quest('demo', 0.5, { title: 'Halfway there' })); await page.waitForTimeout(300);
 check('a game goal is shown under the quests', (await prof()).today.gq['tic-tac-toe:demo'].p === 0.5);
 await fr.evaluate(() => { ArcadeSDK.state({ scene: 'play' }); });
@@ -413,15 +416,15 @@ if (code) {
   const p2 = await prof(); check('cheat codes on: no XP and no new best for the session', p2.xp === xp2 && p2.games['tic-tac-toe'].best === 7, `xp ${xp2} -> ${p2.xp}, best ${p2.games['tic-tac-toe'].best}`);
 } else check('cheat-code blocking (no code in meta for this game)', true, 'skipped');
 // the profile screens: chip -> sheet -> tabs, a bad name, a locked colour, the Trophy room, reduced motion
-await page.goto(BASE + 'index.html', { waitUntil: 'load' });
-await page.evaluate(() => { localStorage.setItem('ca_settings', JSON.stringify({ theme: 'dark', accent: 'ruby' })); });
-await page.reload({ waitUntil: 'load' }); await page.waitForFunction(() => window.ArcadeProfileUI);
-check('a colour that is not unlocked yet shows as the default (ruby needs level 21)', await page.evaluate(() => document.documentElement.dataset.accent) === 'lime');
+await page.goto(BASE + 'index.html', { waitUntil: 'load' }); await page.waitForFunction(() => window.ArcadeProfileUI);
 // the level-up from the game session above is waiting for us on the portal: it shows once, and closes with one tap
 await page.waitForTimeout(900);
 const celebrated = await page.locator('.pf-lvlup[open]').count();
 if (celebrated) { check('a level reached while playing is celebrated when the child is back on the portal', await page.locator('.pf-lvlup[open] .lu-card h2').count() === 1); await page.click('.pf-lvlup [data-a=close]'); }
-else check('a level reached while playing is celebrated when the child is back on the portal', (await prof()).xp < 40, 'no level reached in this run');
+else check('a level reached while playing is celebrated when the child is back on the portal', (await prof()).xp < Core.LEVEL_XP[2], 'no level reached in this run');
+await page.evaluate(() => { localStorage.setItem('ca_settings', JSON.stringify({ theme: 'dark', accent: 'ruby' })); });
+await page.reload({ waitUntil: 'load' }); await page.waitForFunction(() => window.ArcadeProfileUI);
+check('a colour that is not unlocked yet shows as the default (ruby needs level 21)', await page.evaluate(() => document.documentElement.dataset.accent) === 'lime');
 await page.click('#profile-btn'); await page.waitForSelector('#profile[open]'); await settle();
 check('the chip opens the profile sheet with Me, Style, Stats and Backup', await page.locator('#profile [data-tab]').count() === 4);
 await page.click('#profile [data-act=edit]'); await page.fill('#pf-name', 'me@mail.com'); await page.click('#profile form button[type=submit]');
@@ -438,8 +441,8 @@ await page.fill('#pf-code', code2); await page.click('#profile [data-act=use-cod
 check('...and takes a good code', /Welcome back/.test(await page.locator('#pf-bk-msg').innerText()));
 await page.keyboard.press('Escape');
 await page.goto(BASE + 'index.html?view=trophies', { waitUntil: 'load' }); await page.waitForSelector('.pf-bd');
-const nAch = await page.evaluate(() => ArcadeProfileCore.ACH.length);
-check('the Trophy room shows every badge (' + nAch + ')', await page.locator('.pf-bd').count() === nAch, await page.locator('.pf-bd').count());
+const nAch = await page.evaluate(() => ArcadeProfileCore.ACH.length + Object.keys(JSON.parse(localStorage.getItem('ca_profile')).ach).filter(k => k.startsWith('g:')).length);
+check('the Trophy room shows every arcade badge plus any a game gave (' + nAch + ')', await page.locator('.pf-bd').count() === nAch, await page.locator('.pf-bd').count());
 await page.click('.pf-bd >> nth=0'); await settle(page, 200); check('a badge opens its detail card', await page.locator('.pf-detail[open] h2').count() === 1); await page.keyboard.press('Escape');
 const rm = await browser.newContext({ ...pw.devices['iPhone 13'], serviceWorkers: 'block', reducedMotion: 'reduce' }); const rp = await rm.newPage();
 await rp.goto(BASE + 'index.html', { waitUntil: 'load' }); await rp.waitForFunction(() => window.ArcadeProfileUI);

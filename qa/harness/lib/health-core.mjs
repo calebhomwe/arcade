@@ -43,7 +43,7 @@ export async function checkHealth(g, browser, o) {
   }
 
   // ---- drained page data ----
-  const D = { L: [], A: [], B: [], R: [], r: [], F: [], X: [], V: [], E: [], S: [], N: [], M: [], polls: [], pollTimeouts: 0, last: null };
+  const D = { L: [], A: [], B: [], R: [], r: [], F: [], P: [], X: [], V: [], E: [], S: [], N: [], M: [], polls: [], pollTimeouts: 0, last: null };
   const drain = async () => {
     const t0 = Date.now();
     const d = await race(page.evaluate(() => window.__Hdrain && window.__Hdrain()).catch(() => null), 6000);
@@ -93,9 +93,11 @@ export async function checkHealth(g, browser, o) {
 
   // ---- calibration: how slow is this machine right now, and does the throttle bite? ----
   const bench = () => page.evaluate(() => { const now = window.__H ? window.__H.now : performance.now.bind(performance), res = []; for (let k = 0; k < 5; k++) { const t = now(); let x = 1; for (let i = 0; i < 2e6; i++) x = (x * 1.0000001 + i) % 1000003; res.push(now() - t); } res.sort((a, b) => a - b); return res[2]; }).catch(() => null);
+  await setPhase('calib');   // the benchmark is our own long task: keep it out of the load numbers
   const benchThrottled = await race(bench(), 20000);
   let bench1 = null;
   if (cdp && r.throttled) { await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 }).catch(() => {}); bench1 = await race(bench(), 20000); await cdp.send('Emulation.setCPUThrottlingRate', { rate: THROTTLE }).catch(() => {}); }
+  await setPhase('load');
   r.calibration = { benchMs: round(benchThrottled), bench1Ms: round(bench1), effectiveSlowdown: bench1 && typeof benchThrottled === 'number' ? round(benchThrottled / bench1) : null };
 
   // ---- title screen, then start ----
@@ -180,7 +182,9 @@ function summarise(r, D, R, sigs, X) {
   // at the time (wall time / CPU time of a spin in the harness), so a loaded machine does not read as a frozen game.
   const c = Math.min(4, Math.max(1, (r.machine && r.machine.contention) || 1));
   const lt = D.L.map(a => ({ t: a[0], d: a[1], ph: a[2], gl: a[3] || 0 })), bt = D.B.map(a => ({ t: a[0], d: a[1], ph: a[2], gl: a[3] || 0 }));
-  const ev = arr => arr.map(a => ({ ...a, js: Math.max(0, a.d - a.gl), norm: Math.max(0, a.d - a.gl) / c }));
+  const probes = (D.P || []).map(a => ({ t: a[0], d: a[1] }));   // the bot's own look at the screen (one evaluate): not the game's cost
+  const isProbe = (t, d) => probes.some(p => t + d >= p.t - 5 && t <= p.t + p.d + 60 && d <= p.d * 1.5 + 40);
+  const ev = arr => arr.filter(a => !(a.ph !== 'load' && (isProbe(a.t, a.d) || isProbe(a.t - a.d, a.d)))).map(a => ({ ...a, js: Math.max(0, a.d - a.gl), norm: Math.max(0, a.d - a.gl) / c }));
   const LT = ev(lt), BT = ev(bt);
   const worstOf = (arr, ph) => arr.filter(a => ph.includes(a.ph)).reduce((m, a) => (a.norm > (m ? m.norm : -1) ? a : m), null);
   const pick2 = ph => { const a = worstOf(LT, ph), b = worstOf(BT, ph); return !a ? b : !b ? a : (a.norm >= b.norm ? a : b); };

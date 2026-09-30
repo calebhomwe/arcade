@@ -2,12 +2,14 @@
 import * as THREE from 'three';
 import { CameraRig } from './camera.js';
 import { SU } from './shaders.js';
+import { ShadowMap } from './shadow.js';
 import { clamp } from '../util.js';
 
+// dpr is a ceiling: the engine also keeps the canvas near a pixel budget (about 1.3 MP on phones)
 export const QUALITY = {
-  high:   { dpr: 2,   grass: 6500, flowers: 900, trees: 1, outlines: true,  aa: true,  sprites: 1.0, particles: 1.0 },
-  medium: { dpr: 1.5, grass: 3200, flowers: 500, trees: 0.8, outlines: true, aa: true, sprites: 0.8, particles: 0.7 },
-  low:    { dpr: 1,   grass: 1200, flowers: 220, trees: 0.55, outlines: false, aa: false, sprites: 0.55, particles: 0.4 },
+  high:   { dpr: 2,   pix: 4.2e6, grass: 6500, flowers: 900, trees: 1,    shadow: 2048, aa: true,  particles: 1.0 },
+  medium: { dpr: 1.5, pix: 1.5e6, grass: 3200, flowers: 500, trees: 0.8,  shadow: 1024, aa: true,  particles: 0.7 },
+  low:    { dpr: 1,   pix: 0.9e6, grass: 1200, flowers: 220, trees: 0.55, shadow: 0,    aa: false, particles: 0.4 },
 };
 
 function detectSoftware(gl) {
@@ -33,10 +35,11 @@ export class Engine {
     const r = this.renderer;
     r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.NoToneMapping;
     r.setClearColor(0xcde7fb, 1);
-    r.info.autoReset = true;
+    r.info.autoReset = false;
+    this.shadow = new ShadowMap(r, null);
     const det = detectSoftware(r.getContext());
     this.software = det.software; this.gpuName = det.name;
-    this.scene = new THREE.Scene();
+    this.scene = new THREE.Scene(); this.shadow.scene = this.scene;
     this.camera = new THREE.PerspectiveCamera(32, 1, 0.5, 700);
     this.rig = new CameraRig(this.camera, canvas, { fov: 32 });
     this.clock = { t: 0, dt: 0, last: 0 };
@@ -57,6 +60,7 @@ export class Engine {
     if (name === 'auto') name = this.software ? 'low' : (this.phone ? 'medium' : 'high');
     this.quality = name; this.q = QUALITY[name];
     this.dpr = this.pickDpr();
+    this.shadow.setSize(this.q.shadow); SU.uBlobScale.value = this.q.shadow ? 0.5 : 1;
     if (!silent) { this.resize(true); this.onQuality.forEach((f) => f(name, this.q)); }
   }
 
@@ -69,12 +73,13 @@ export class Engine {
     if (!force && w === this.w && h === this.h && dpr === this.dpr) return;
     this.w = w; this.h = h; this.dpr = dpr;
     // iOS Safari has a hard canvas-area limit; stay well inside it
-    let pr = dpr; const maxPix = 4.2e6; if (w * h * pr * pr > maxPix) pr = Math.sqrt(maxPix / (w * h));
+    let pr = dpr; const maxPix = this.q.pix; if (w * h * pr * pr > maxPix) pr = Math.sqrt(maxPix / (w * h));
     this.renderer.setPixelRatio(pr); this.renderer.setSize(w, h, false);
     this.canvas.style.width = w + 'px'; this.canvas.style.height = h + 'px';
     this.rig.setViewport(w, h);
-    SU.uPxWorld.value = 2 * Math.tan((this.rig.fov * Math.PI / 180) / 2) / (h);
     this.stats.dpr = +pr.toFixed(2);
+    // setSize clears the canvas: draw again straight away so a resize never flashes an empty frame
+    if (this.running && !this.lost && this.rig.w) { try { this.rig.apply(); this.renderer.render(this.scene, this.camera); } catch (err) {} }
   }
 
   start() { if (this.running) return; this.running = true; this.clock.last = performance.now(); requestAnimationFrame(this._raf); }
@@ -92,8 +97,14 @@ export class Engine {
     this.rig.update(dt);
     SU.uCamPos.value.copy(this.camera.position);
     SU.uFogStart.value = this.rig.distFor(this.rig.cur.size) * 1.05;
-    this.renderer.render(this.scene, this.camera);
-    const info = this.renderer.info.render; this.stats.calls = info.calls; this.stats.tris = info.triangles;
+    const r = this.renderer; r.info.reset();
+    if (this.shadow.on) {
+      const c = this.rig.cur, a = this.rig.aspect, half = clamp(0.75 * c.size * Math.max(1, a, 1 / a) * 1.15 + 4, 18, 40);
+      const sunY = SU.uSunDir.value.y, k = clamp((sunY - 0.05) / 0.2, 0, 1) * (1 - SU.uNight.value * 0.55);
+      this.shadow.render(c.x, c.z, half, k * 0.92);
+    }
+    r.render(this.scene, this.camera);
+    const info = r.info.render; this.stats.calls = info.calls; this.stats.tris = info.triangles;
     this._adapt(dt);
   }
 

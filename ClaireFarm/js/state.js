@@ -40,7 +40,7 @@ function defaults(now) {
     ach: {}, album: {}, albumDone: {}, daily: { streak: 0, best: 0, last: 0, claimed: 0, grace: 0, graceWeek: 0 },
     quests: { day: 0, list: [], chest: false }, events: {}, cos: { own: { hat_none: true, pip_none: true, barn_red: true, flag_none: true }, wear: { hat: 'hat_none', pip: 'pip_none', barn: 'barn_red', flag: 'flag_none' } },
     settings: { music: 0.6, sfx: 0.9, voice: 0.9, quality: 'auto', season: 'auto', hemi: 'south', tod: 'cycle', weather: 'auto', reduceMotion: false, textSize: 1 },
-    tut: {}, phase: 0.36, seed: Math.floor(Math.random() * 1e9),
+    tut: {}, phase: 0.68, seed: Math.floor(Math.random() * 1e9),
   };
 }
 

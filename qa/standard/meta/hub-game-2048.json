@@ -1,22 +1,22 @@
 {
   "howto": [
-    "Pick a board (Easy 5x5, Normal 4x4, Hard 3x3) and Classic or the Daily board, then press Play.",
-    "Swipe, or press an arrow key, to slide every tile as far as it goes.",
-    "Two tiles with the same number merge into one: 2 + 2 makes 4.",
-    "Build a 2048 tile (512 on the 3x3 board) before the board fills up."
+    "Pick Trials (18 goals with stars), Classic (Easy 5x5, Normal 4x4 or Hard 3x3) or the Daily board.",
+    "Swipe anywhere on the screen, or press an arrow key, to slide every tile.",
+    "Two tiles with the same number merge into one: 2 + 2 makes 4. Each new tile value introduces a new critter friend.",
+    "Build a 2048 tile (512 on the 3x3 board), or hit the goal of the trial, before the board fills up."
   ],
   "tips": [
     "Keep your biggest tile in one corner and build towards it.",
     "Try not to swipe away from your corner: a stray 2 can get stuck there.",
-    "Hint looks two moves ahead and names the swipe that keeps the most space free.",
-    "Undo (or the Z key) takes back a move, even from the Game Over card.",
+    "Hint looks two moves ahead and shows the swipe that keeps the most space free.",
+    "Undo takes back a move (5 per Classic game, 3 per trial or daily board).",
     "Every 12 merges earns a hammer that smashes one tile."
   ],
   "controls": {
-    "keyboard": "Arrow keys slide the tiles, Z or U undoes. P or Esc pauses.",
-    "touch": "Swipe on the board. Undo, Hint, 50/50 and Hammer sit under it."
+    "keyboard": "Arrow keys or WASD slide the tiles, Z or U undoes, H hints. P or Esc pauses.",
+    "touch": "Swipe anywhere. Undo, Hint, Hammer and Menu sit under the board."
   },
-  "difficulty": "Board size is the difficulty: Easy is 5x5 (lots of room), Normal is the classic 4x4, Hard is 3x3 with a 512 goal.",
+  "difficulty": "Board size is the difficulty in Classic: Easy is 5x5, Normal is 4x4, Hard is 3x3 with a 512 goal. Trials rise from roomy 5x5 boards to crowded 4x4 and 3x3 starts, each with a move limit.",
   "cheats": [
     {
       "code": "HAMMERTIME",
@@ -32,15 +32,19 @@
     }
   ],
   "features": {
-    "hints": "Hint button under the board (and Pause > Hint): a two-move look-ahead names the best swipe and why",
-    "undo": "Undo button, the Z key, and Undo last move on the Game Over card",
-    "level-select-or-daily": "Board size (5x5, 4x4, 3x3) on the title, plus a Daily board where everyone gets the same tiles today",
-    "results": "Game Over card with score, best tile, best combo, 2048 wins, lifetime merges and club tier; a You Win card at the goal tile"
+    "hints": "Hint button (H key, Pause > Hint): a two-move look-ahead shows an arrow for the swipe that keeps the most space free and says why",
+    "undo": "Undo button (Z key): 5 per Classic game, 3 per trial or daily board; takes back the move and the tile it spawned",
+    "level-select-or-daily": "Trials: 3 worlds x 6 goals (reach a tile, a score or a merge count within a move limit) with 3 stars each; plus a Daily board that gives everyone the same tiles today",
+    "results": "A result card with score, best tile, merges, moves and XP earned; trials show the stars; a big-tile card introduces each new critter",
+    "tutorial": "First game: a guided board where you swipe, merge two 2s and learn undo and hint; skippable, replayed from How to play",
+    "progression": "18 trials x 3 stars (worlds open at 10 and 26 stars); XP levels unlock 6 tile looks (wood, critter faces, marble, night glass, ocean pearl, gold); a 12-critter album filled by reaching each tile; 3 daily goals and a weekly stamp chest"
   },
   "saves": [
     "best2048",
-    "bestTile2048"
+    "bestTile2048",
+    "g2048_trials",
+    "pz_g2048"
   ],
-  "start": "#playBtn",
-  "pauseButton": "br"
+  "start": "#mClassic",
+  "pauseButton": "tr"
 }

@@ -1,0 +1,217 @@
+{
+ "id": "critter-rush",
+ "title": "Critter Rush 3D",
+ "cat": "arcade",
+ "genre": "racing",
+ "src": "CritterRush/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 12409 ms (during load), 15 ms of it inside WebGL calls (software GL), machine slowdown x3.6 -> about 3482 ms of JS; long-task API + timer heartbeat; longest frame 12393 ms: CritterRush/index.html http://127.0.0.1:40633/CritterRush/index.html 12357 /  FrameRequestCallback 21"
+ },
+ "notes": [
+  "4 touch input(s) took over 4 s to be acknowledged (machine slowdown x3.6)"
+ ],
+ "shots": {
+  "1-title": "shots/critter-rush-1-title.jpg",
+  "2-mid": "shots/critter-rush-2-mid.jpg",
+  "3-end": "shots/critter-rush-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.22,
+  "cores": 4,
+  "load1End": 16.32,
+  "contention": 3.56,
+  "contentionSamples": [
+   10.49,
+   5.18,
+   6.31,
+   1.5,
+   1.31,
+   3.56,
+   1.31
+  ]
+ },
+ "loadMs": 12906,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:40633/CritterRush/index.html",
+ "startPath": "http://127.0.0.1:40633/CritterRush/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 222,
+  "bench1Ms": 36.5,
+  "effectiveSlowdown": 6.1
+ },
+ "start": {
+  "how": "Play/Start button",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 3.56,
+  "loadMs": 3482,
+  "playMs": 98,
+  "loadRawMs": 12409,
+  "playRawMs": 351,
+  "playGlMs": 1,
+  "loadGlMs": 15,
+  "longTasksPlay": 13,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 3420,
+  "tbtPlayMs": 63,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 1,
+  "slowestPollMs": 73,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 724.5,
+  "shaderCompileMaxCallMs": 421.4
+ },
+ "loafTop": [
+  {
+   "ms": 12393,
+   "blocking": 12342.9,
+   "scripts": [
+    [
+     "CritterRush/index.html",
+     "http://127.0.0.1:40633/CritterRush/index.html",
+     12357
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     21
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1356.7,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     40
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1232,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     16
+    ]
+   ],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 146,
+  "jsMedian": 4.94,
+  "jsP95": 14.94,
+  "jsP99": 24.27,
+  "jsMax": 97.4,
+  "jsP95Raw": 53.2,
+  "rawWithGlP95": 53.5,
+  "glP95": 3.7,
+  "gapP95": 700,
+  "gapMedian": 300,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 11.3,
+  "heap1MB": 11.7,
+  "heapGrowthPct": 4,
+  "heapMeasured": true,
+  "nodesStart": 100,
+  "nodesEnd": 105,
+  "nodesMax": 107,
+  "listeners0": 63,
+  "listeners1": 63,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 13,
+  "scriptPct": 8,
+  "layoutPerSec": 12.5
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 15,
+  "swipes": 4,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 7,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 592,
+  "inputLatencyP95Ms": 4017,
+  "inputLatencyMaxMs": 4017,
+  "inputTimeouts": 4
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 95.9,
+  "maxChangeFromStartPct": 38.1,
+  "samples": 9
+ },
+ "severity": 105.5,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 11711 ms (during load), 20 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 7953 ms of JS; long-task API + timer heartbeat; longest frame 11746.7 ms: CritterRush/index.html http://127.0.0.1:40633/CritterRush/index.html 11710 /  FrameRequestCallback 33",
+  "blockPlayMs": 172,
+  "blockLoadMs": 7953,
+  "load1": 16.56
+ }
+}

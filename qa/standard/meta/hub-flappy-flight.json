@@ -1,21 +1,22 @@
 {
   "howto": [
     "Press Play: the bird hovers until your first tap.",
-    "Tap, click or press Space to flap. Each flap lifts the bird.",
-    "Fly through the gaps between the pipes. Each pipe is 1 point, a star 2, a feather 3."
+    "Tap, click or press Space to flap. Short taps keep the bird level.",
+    "Fly through the gaps between the pipes: each pipe is 1 point. Golden feathers are coins.",
+    "Spend feathers on new birds in Skins, and finish the day's goals for more."
   ],
   "tips": [
     "Short, steady taps beat big panicky ones.",
-    "A feather gives you a shield that saves you from one crash.",
-    "Three close shaves in a row also earn a shield.",
-    "The pipes speed up as your score climbs, up to about 30 points.",
-    "Sprint mode ends after 20 pipes and pays a bonus for every close shave."
+    "Three close shaves in a row, or a blue bubble, give you a shield that saves you from one crash.",
+    "The pipes speed up and the gaps narrow slowly, and the sky changes from golden hour to dusk to night every 12 pipes.",
+    "Bronze, Silver, Gold and Platinum medals are at 10, 20, 35 and 60 pipes; Gold and Platinum unlock the Golden and Phoenix birds.",
+    "Sprint mode ends after 20 pipes; Gale mode makes every pipe sway."
   ],
   "controls": {
     "keyboard": "Space or Up arrow to flap. P or Esc pauses.",
     "touch": "Tap anywhere to flap"
   },
-  "difficulty": "An adaptive curve: the pipes scroll faster with every point until about 30. Gale mode makes every pipe sway up and down; Sprint mode is a 20-pipe dash.",
+  "difficulty": "An adaptive curve: the first pipes have wide gaps and a slow scroll, then the gaps narrow and the pipes speed up over about 25 pipes. Gale mode makes every pipe sway up and down; Sprint mode is a 20-pipe dash.",
   "cheats": [
     {
       "code": "GHOSTBIRD",
@@ -23,7 +24,7 @@
     },
     {
       "code": "WIDEGAP",
-      "effect": "Wide gaps: every pipe gap is 40% taller"
+      "effect": "Wide gaps: every pipe gap is 22% taller"
     },
     {
       "code": "SLOWMO",
@@ -33,13 +34,18 @@
   "features": {
     "one-tap-start": "Play, then one tap flaps and starts the run",
     "instant-restart": "Play Again, a tap on the results card or Space goes straight back to the hovering bird",
-    "best-score-badge": "BEST under the score at the top of the screen, and on the title",
-    "tutorial-card": "Get-ready card with a tapping finger; the first run explains stars, feathers and shields",
-    "results": "Game Over card with score, best, medal, feathers and rank"
+    "best-score-badge": "Best on the title and on the results card, with a medal target under the score while you play",
+    "tutorial-card": "Get-ready card with a tapping finger on the first run",
+    "results": "Result card with score, medal, best, top-5 scores, feathers earned, today's goals and the next bird to unlock",
+    "progression": "Nine birds (seven bought with feathers, two unlocked by medals), three daily goals plus a star challenge, a week of play stamps with a weekly gift, Bronze to Platinum medals, ranks",
+    "daily-goals": "Three goals and one star challenge a day, the same for everyone that day"
   },
   "saves": [
     "flappyBest",
-    "flappyPipes"
+    "flappyPipes",
+    "flappyFeathers",
+    "hm-flappy",
+    "flappyGale"
   ],
   "start": "#playBtn",
   "pauseButton": "br"

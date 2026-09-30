@@ -1,0 +1,198 @@
+{
+ "id": "sneaker-drop",
+ "title": "SneakerDrop — Hype Market Tycoon",
+ "cat": "sim",
+ "genre": "management",
+ "src": "SneakerDrop/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "2 touch inputs not acknowledged within 4 s while the main thread was blocked"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/sneaker-drop-1-title.jpg",
+  "2-mid": "shots/sneaker-drop-2-mid.jpg",
+  "3-end": "shots/sneaker-drop-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.36,
+  "cores": 4,
+  "load1End": 14.41,
+  "contention": 1.1,
+  "contentionSamples": [
+   1.08,
+   1,
+   1.11,
+   3.65,
+   1.94,
+   1,
+   1.1
+  ]
+ },
+ "loadMs": 191,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:43325/SneakerDrop/index.html",
+ "startPath": "http://127.0.0.1:43325/SneakerDrop/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 101.4,
+  "bench1Ms": 29.5,
+  "effectiveSlowdown": 3.4
+ },
+ "start": {
+  "how": "#startBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.1,
+  "loadMs": 0,
+  "playMs": 701,
+  "loadRawMs": 0,
+  "playRawMs": 772,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 1,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 17,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 2,
+  "slowestPollMs": 60,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 1922.5,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     8
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 1710.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 1659.3,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 95,
+  "jsMedian": 1.82,
+  "jsP95": 5.73,
+  "jsP99": 54.82,
+  "jsMax": 54.8,
+  "jsP95Raw": 6.3,
+  "rawWithGlP95": 6.3,
+  "glP95": 0,
+  "gapP95": 1483.4,
+  "gapMedian": 466.7,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.1,
+  "heap1MB": 2.3,
+  "heapGrowthPct": 10,
+  "heapMeasured": true,
+  "nodesStart": 35,
+  "nodesEnd": 35,
+  "nodesMax": 35,
+  "listeners0": 55,
+  "listeners1": 65,
+  "audioContexts": 0,
+  "audioElements": 7,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 1,
+   "totalMB": 6.2,
+   "biggest": [
+    {
+     "w": 975,
+     "h": 1660,
+     "mpx": 1.62,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 2,
+  "scriptPct": 1,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 10,
+  "swipes": 1,
+  "holds": 1,
+  "keys": 0,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1636,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4000,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 6.3,
+  "changeTitleToPlayPct": 35.5,
+  "maxChangeFromStartPct": 34,
+  "samples": 8
+ },
+ "severity": 102.7,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [
+   "JANK"
+  ],
+  "evidence": null,
+  "blockPlayMs": 47,
+  "blockLoadMs": 0,
+  "load1": 14.07
+ }
+}

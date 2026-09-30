@@ -251,7 +251,7 @@ export class Life {
   // ---- portraits (head shots rendered once and reused as images) ---------------------------------------------------------------------------
   renderPortraits() {
     const R = this.engine.renderer, size = 200;
-    const rt = new THREE.WebGLRenderTarget(size, size, { samples: 0 });
+    const rt = new THREE.WebGLRenderTarget(size, size, { samples: 0 }); rt.texture.colorSpace = THREE.SRGBColorSpace;
     const scn = new THREE.Scene(), cam = new THREE.PerspectiveCamera(24, 1, 0.1, 50);
     const jobs = { claire: this.claire && this.claire.c, pip: this.pip && this.pip.c };
     for (const [id, n] of Object.entries(this.npcs)) jobs[id] = n.c;

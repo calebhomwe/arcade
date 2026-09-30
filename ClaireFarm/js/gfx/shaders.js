@@ -25,23 +25,25 @@ export const SU = {
   uGrassB: { value: new THREE.Color(0.24, 0.5, 0.11) },
   uFoliage: { value: new THREE.Color(1, 1, 1) },
   uWet: { value: 0 },
+  uBlobScale: { value: 1 },
   uPaint: { value: WHITE },
   uGA: { value: WHITE },        // packed CC0 detail: R leafy grass, G sparse grass, B dirt
   uGB: { value: WHITE },        // packed CC0 detail: R sand, G rock, B tilled soil
+  uPlanks: { value: WHITE },    // CC0 plank grain, used as a brightness pattern on wooden props
   uShadowMap: { value: WHITE },
   uShadowMat: { value: new THREE.Matrix4() },
   uShadowInfo: { value: new THREE.Vector4(0, 1 / 2048, 0.0004, 0.9) },   // on, texel, bias, strength
 };
 
 const COMMON_FRAG = /* glsl */`
+#include <packing>
 uniform vec3 uSunDir; uniform vec3 uSunCol; uniform vec3 uAmbSky; uniform vec3 uAmbGround; uniform vec3 uFogCol; uniform vec3 uCamPos;
 uniform float uFogDensity; uniform float uFogStart; uniform float uNight; uniform float uSat; uniform float uExposure; uniform float uTime;
 uniform sampler2D uShadowMap; uniform mat4 uShadowMat; uniform vec4 uShadowInfo;
 vec3 satur(vec3 c, float s){ float l = dot(c, vec3(0.2126, 0.7152, 0.0722)); return mix(vec3(l), c, s); }
 float fogAmt(vec3 w){ float d = max(distance(uCamPos, w) - uFogStart, 0.0); float f = 1.0 - exp(-pow(d * uFogDensity, 1.55)); return clamp(f, 0.0, 0.94); }
 vec3 aces(vec3 x){ const float a = 2.51, b = 0.03, c = 2.43, d = 0.59, e = 0.14; return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0); }
-float unpackShadow(vec4 v){ return dot(v, vec4(1.0, 1.0 / 255.0, 1.0 / 65025.0, 1.0 / 16581375.0)); }
-float shadowTap(vec2 uv, float z){ return step(z, unpackShadow(texture2D(uShadowMap, uv))); }
+float shadowTap(vec2 uv, float z){ return step(z, unpackRGBAToDepth(texture2D(uShadowMap, uv))); }
 // soft PCF: 12 taps on two rings, fading out at the edge of the map and with the sun's height
 float shadowAt(vec3 wp, vec3 N){
   if (uShadowInfo.x < 0.5) return 1.0;
@@ -139,8 +141,8 @@ void main(){
 
 const FARM_FRAG = /* glsl */`
 ${COMMON_FRAG}
-uniform vec3 uTint; uniform vec3 uEmis; uniform float uHue; uniform float uRimAmt; uniform float uSpec; uniform float uRough;
-uniform vec3 uFoliage; uniform float uSnow; uniform sampler2D uPaint;
+uniform vec3 uTint; uniform vec3 uEmis; uniform float uHue; uniform float uSpec; uniform float uRough;
+uniform vec3 uFoliage; uniform float uSnow; uniform sampler2D uPaint; uniform sampler2D uGB; uniform sampler2D uPlanks;
 #ifdef USE_MAP
 uniform sampler2D map;
 #endif
@@ -148,7 +150,7 @@ varying vec3 vN; varying vec3 vW; varying vec2 vUv; varying vec3 vCol;
 void main(){
   vec4 base = vec4(1.0);
   #ifdef USE_MAP
-  base = texture2D(map, vUv);
+  base = texture2D(map, vUv, 0.3);
   #endif
   #ifdef ALPHATEST
   if (base.a < 0.5) discard;
@@ -172,10 +174,16 @@ void main(){
     albedo = mix(albedo, albedo * uFoliage, leafy);
     albedo *= 1.0 + dn * 0.7 + dn2 * 0.35;
     albedo = mix(albedo, vec3(0.86, 0.9, 0.95), uSnow * leafy * smoothstep(0.2, 0.9, N.y) * 0.8);
-    ao = mix(0.55, 1.0, smoothstep(0.1, 3.8, vW.y));
+    ao = mix(0.82, 1.0, smoothstep(0.1, 3.0, vW.y));
   }
   #else
   albedo *= 1.0 + dn * 0.26 + dn2 * 0.1;
+  #endif
+  #ifdef DETAIL_SOIL
+  { float d = mix(texture2D(uGB, vW.xz * 0.55).b, texture2D(uGB, vW.xz * 0.13 + 0.4).b, 0.4); albedo *= 0.45 + 1.3 * d; }
+  #endif
+  #ifdef DETAIL_WOOD
+  { vec3 an = abs(N); vec2 uvw = an.x > an.z ? (an.x > an.y ? vW.zy : vW.xz) : (an.z > an.y ? vW.xy : vW.xz); vec3 wt = texture2D(uPlanks, uvw * 0.3).rgb; albedo *= 0.5 + 1.1 * dot(wt, vec3(0.33)); }
   #endif
   float sh = shadowAt(vW, N);
   vec3 c = paintLight(albedo, N, V, sh, ao, uSpec, uRough);
@@ -191,11 +199,12 @@ export function farmMaterial(o = {}) {
   if (o.anim) defines.ANIM = '';
   if (o.alphaTest) defines.ALPHATEST = '';
   if (o.foliage) defines.FOLIAGE = '';
+  if (o.detail === 'soil') defines.DETAIL_SOIL = '';
+  if (o.detail === 'wood') defines.DETAIL_WOOD = '';
   const uniforms = Object.assign({}, SU, {
     uTint: { value: new THREE.Color(o.tint != null ? o.tint : 0xffffff) },
     uEmis: { value: new THREE.Color(0, 0, 0) },
     uHue: { value: 0 },
-    uRimAmt: { value: 0 },
     uSpec: { value: o.spec != null ? o.spec : (o.foliage ? 0.05 : 0.16) },
     uRough: { value: o.rough != null ? o.rough : 0.7 },
     map: { value: o.map || null },
@@ -348,7 +357,7 @@ attribute vec3 aCol; attribute float aY;
 uniform float uTime; uniform float uWind; uniform vec3 uCamPos;
 uniform sampler2D uShadowMap; uniform mat4 uShadowMat; uniform vec4 uShadowInfo; uniform vec3 uSunDir;
 varying vec2 vUv; varying vec3 vCol; varying vec3 vW; varying float vH; varying float vSh;
-float unpackShadow(vec4 v){ return dot(v, vec4(1.0, 1.0 / 255.0, 1.0 / 65025.0, 1.0 / 16581375.0)); }
+#include <packing>
 void main(){
   float c = cos(aData.z), s = sin(aData.z);
   vec3 p = position * aData.w;
@@ -363,11 +372,11 @@ void main(){
     vec3 sc = (uShadowMat * vec4(b, 1.0)).xyz * 0.5 + 0.5;
     if (sc.x > 0.0 && sc.x < 1.0 && sc.y > 0.0 && sc.y < 1.0 && sc.z < 1.0) {
       float z = sc.z - uShadowInfo.z * 3.0, t = uShadowInfo.y * 2.0, l = 0.0;
-      l += step(z, unpackShadow(texture2D(uShadowMap, sc.xy)));
-      l += step(z, unpackShadow(texture2D(uShadowMap, sc.xy + vec2(t, 0.0))));
-      l += step(z, unpackShadow(texture2D(uShadowMap, sc.xy - vec2(t, 0.0))));
-      l += step(z, unpackShadow(texture2D(uShadowMap, sc.xy + vec2(0.0, t))));
-      l += step(z, unpackShadow(texture2D(uShadowMap, sc.xy - vec2(0.0, t))));
+      l += step(z, unpackRGBAToDepth(texture2D(uShadowMap, sc.xy)));
+      l += step(z, unpackRGBAToDepth(texture2D(uShadowMap, sc.xy + vec2(t, 0.0))));
+      l += step(z, unpackRGBAToDepth(texture2D(uShadowMap, sc.xy - vec2(t, 0.0))));
+      l += step(z, unpackRGBAToDepth(texture2D(uShadowMap, sc.xy + vec2(0.0, t))));
+      l += step(z, unpackRGBAToDepth(texture2D(uShadowMap, sc.xy - vec2(0.0, t))));
       vec2 e = min(sc.xy, 1.0 - sc.xy); float edge = smoothstep(0.0, 0.1, min(e.x, e.y));
       vSh = mix(1.0, l / 5.0, edge * uShadowInfo.w);
     }

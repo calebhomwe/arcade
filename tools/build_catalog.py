@@ -138,6 +138,8 @@ for id,t,c,b,src,thumb,tags,feat in N:
 # ---------- more cabinets (this repo) ----------
 add('claire-pip',"Claire's Big Life",'sim',"Live · Play · Explore. Care for your pet, play fun activities, collect treasures, decorate your world, and dress Claire up in style!",'ClairePip/index.html','claire-pip.webp',tags=('pet','dress-up','kids','bible'),featured=True,frm='Cabinet',stage='tall',
     note='Pick an age band on the first screen and the activities adjust to it. Everything saves on this device.')
+add('claire-farm',"Claire's Farm",'sim',"Plant, harvest, bake and fill orders on a cosy 3D farm: fifty levels, a story that ends with the Lantern Fair, and a camera you can turn with two fingers. Built to run on a phone.",'ClaireFarm/index.html','claire-farm.webp',tags=('farm','3D','progression','cozy'),featured=True,new=True,frm='Cabinet',
+    note='Drag to look around, pinch to zoom, twist two fingers to turn the farm. Crops keep growing while you are away, and everything saves on this device. The desktop HD edition lives in the Godot build.')
 add('sneaker-drop','SneakerDrop — Hype Market Tycoon','sim','Bid on drops, snipe the resale market, cash out before the hype cools.','SneakerDrop/index.html','sneaker-drop.webp',tags=('tycoon','market'),frm='Cabinet')
 add('deepcut-mine','DEEPCUT','arcade','Dig down, dodge the lava, haul the rare ore back up before the shaft closes.','DeepcutMine/index.html','deepcut-mine.webp',tags=('mining','dig'),frm='Cabinet')
 add('cook-rush','Cook Rush','arcade','Day 1, opening shift. Tap the station each ticket needs, take food off the pan before it burns, then plate it.','CookRush/index.html','cook-rush.webp',tags=('cooking','time management'),frm='Cabinet')

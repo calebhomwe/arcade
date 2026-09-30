@@ -1,0 +1,234 @@
+{
+ "id": "dominion",
+ "title": "Dominion",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "Dominion/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 7357 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 5004 ms of JS; long-task API + timer heartbeat; longest frame 21563.8 ms:  TimerHandler:setTimeout 6 /  FrameRequestCallback 53",
+  "JANK": "p95 JS frame cost 28.3 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.5; raw p95 41.6, median 9.46, p99 80.68, max 80.7; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [
+  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.5)"
+ ],
+ "shots": {
+  "1-title": null,
+  "2-mid": "shots/dominion-2-mid.jpg",
+  "3-end": "shots/dominion-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.28,
+  "cores": 4,
+  "load1End": 16.15,
+  "contention": 1.47,
+  "contentionSamples": [
+   1.47,
+   2.53,
+   1.37,
+   1.81,
+   2.07,
+   1.1,
+   1.06
+  ]
+ },
+ "loadMs": 7658,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:42799/Dominion/index.html",
+ "startPath": "http://127.0.0.1:42799/Dominion/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 146.6,
+  "bench1Ms": 32.3,
+  "effectiveSlowdown": 4.5
+ },
+ "start": {
+  "how": "declared start button not tappable -> tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.47,
+  "loadMs": 5004,
+  "playMs": 434,
+  "loadRawMs": 7357,
+  "playRawMs": 638,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 5,
+  "longTasks100Play": 1,
+  "tbtLoadMs": 4801,
+  "tbtPlayMs": 57,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 5,
+  "slowestPollMs": 180,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 21563.8,
+   "blocking": 15.2,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     6
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     53
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 7317,
+   "blocking": 7150.1,
+   "scripts": [
+    [
+     "Dominion/index.html",
+     "http://127.0.0.1:42799/Dominion/index.html",
+     7086
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2709.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 53,
+  "jsMedian": 9.46,
+  "jsP95": 28.3,
+  "jsP99": 80.68,
+  "jsMax": 80.7,
+  "jsP95Raw": 41.6,
+  "rawWithGlP95": 41.6,
+  "glP95": 0,
+  "gapP95": 2483.3,
+  "gapMedian": 1000,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.9,
+  "heap1MB": 3,
+  "heapGrowthPct": 2,
+  "heapMeasured": true,
+  "nodesStart": 71,
+  "nodesEnd": 82,
+  "nodesMax": 82,
+  "listeners0": 76,
+  "listeners1": 76,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 63,
+   "totalMB": 33.7,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 1280,
+     "h": 720,
+     "mpx": 0.92,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1280,
+     "h": 510,
+     "mpx": 0.65,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1280,
+     "h": 510,
+     "mpx": 0.65,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 2
+ },
+ "cpu": {
+  "mainThreadBusyPct": 3,
+  "scriptPct": 1,
+  "layoutPerSec": 0.9
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 4,
+  "swipes": 2,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 3726,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": 79.2,
+  "samples": 6
+ },
+ "severity": 109,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "main thread blocked 6590 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 4741 ms of JS; long-task API + timer heartbeat; longest frame 11839.4 ms:  FrameRequestCallback 31",
+  "blockPlayMs": 146,
+  "blockLoadMs": 4741,
+  "load1": 15.45
+ }
+}

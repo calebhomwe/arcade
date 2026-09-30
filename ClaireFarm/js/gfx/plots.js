@@ -34,7 +34,7 @@ class MB {
     }
   }
   blob(cx, cy, cz, rx, ry, rz, color, part = 0, detail = 0, tint = 0.1, seed = 1) {
-    const g = new THREE.IcosahedronGeometry(1, detail).toNonIndexed(), p = g.attributes.position, r = rng(seed * 13 + 1);
+    const g = new THREE.IcosahedronGeometry(1, detail), p = g.attributes.position, r = rng(seed * 13 + 1);
     for (let i = 0; i < p.count; i += 3) {
       const j = 1 + (r() - 0.5) * tint * 2; const c = color.clone().multiplyScalar(j);
       const v = [0, 1, 2].map((k) => [cx + p.getX(i + k) * rx, cy + p.getY(i + k) * ry, cz + p.getZ(i + k) * rz]);
@@ -107,34 +107,24 @@ export function makeCropGeometry(id) {
 
 // soil bed with three ridges and a wooden frame, as one merged geometry
 export function makeBedGeometry() {
+  // One plot of tilled soil: three furrowed rows running along x, crests at z = -0.62, 0, +0.62. Neighbouring plots
+  // touch, so a patch reads as one continuous field with no picture frames around each square.
   const pos = [], col_ = [], idx = [];
-  const W = 1.86, ridges = 4, segs = 10;
-  const soilLo = col(0x4a2e18), soilHi = col(0x6a4426);
+  const W = 2.12, rows = 12, segs = 6, period = 0.62;
+  const soilLo = col(0x3a2412), soilHi = col(0x6d4726);
   const push = (x, y, z, c) => { pos.push(x, y, z); col_.push(c.r, c.g, c.b); return pos.length / 3 - 1; };
-  for (let j = 0; j <= ridges * 4; j++) for (let i = 0; i <= segs; i++) {
-    const x = (i / segs - 0.5) * W, z = (j / (ridges * 4) - 0.5) * W;
-    const ridge = Math.sin(j / 4 * Math.PI * 2) * 0.5 + 0.5;
-    const y = 0.08 + ridge * 0.07;
-    const c = soilLo.clone().lerp(soilHi, ridge).multiplyScalar(0.92 + 0.16 * Math.sin(i * 12.9 + j * 4.1));
+  for (let j = 0; j <= rows; j++) for (let i = 0; i <= segs; i++) {
+    const x = (i / segs - 0.5) * W, z = (j / rows - 0.5) * W;
+    const ridge = 0.5 + 0.5 * Math.cos(z / period * Math.PI * 2);
+    const y = 0.05 + ridge * 0.11;
+    const edge = Math.min(1, Math.min(Math.abs(x), Math.abs(z)) < W / 2 - 0.04 ? 1 : 0.6);
+    const c = soilLo.clone().lerp(soilHi, ridge * 0.9).multiplyScalar((0.9 + 0.2 * Math.sin(i * 12.9 + j * 4.1)) * edge);
     push(x, y, z, c);
   }
-  for (let j = 0; j < ridges * 4; j++) for (let i = 0; i < segs; i++) { const a = j * (segs + 1) + i, b = a + 1, c = a + segs + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
-  // frame planks
-  const plank = (x0, z0, x1, z1, h, c) => {
-    const y0 = 0, y1 = h, v = (x, y, z) => push(x, y, z, c);
-    const A = v(x0, y1, z0), B = v(x1, y1, z0), C = v(x1, y1, z1), D = v(x0, y1, z1), A2 = v(x0, y0, z0), B2 = v(x1, y0, z0), C2 = v(x1, y0, z1), D2 = v(x0, y0, z1);
-    const dark = c.clone().multiplyScalar(0.7);
-    const sA = push(x0, y1, z0, dark), sB = push(x1, y1, z0, dark), sC = push(x1, y1, z1, dark), sD = push(x0, y1, z1, dark);
-    idx.push(A, D, C, A, C, B);                 // top
-    idx.push(A2, B2, sB, A2, sB, sA, B2, C2, sC, B2, sC, sB, C2, D2, sD, C2, sD, sC, D2, A2, sA, D2, sA, sD);   // sides (darker)
-  };
-  const wood = col(0xb98546), t = 0.12, o = W / 2 + t / 2 + 0.02, hh = 0.17;
-  plank(-o - t / 2, -o - t / 2, o + t / 2, -o + t / 2 - 0.0, hh, wood); plank(-o - t / 2, o - t / 2, o + t / 2, o + t / 2, hh, wood.clone().multiplyScalar(0.95));
-  plank(-o - t / 2, -o + t / 2, -o + t / 2, o - t / 2, hh, wood.clone().multiplyScalar(1.04)); plank(o - t / 2, -o + t / 2, o + t / 2, o - t / 2, hh, wood.clone().multiplyScalar(1.04));
+  for (let j = 0; j < rows; j++) for (let i = 0; i < segs; i++) { const a = j * (segs + 1) + i, b = a + 1, c = a + segs + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col_, 3)); g.setIndex(idx);
-  const ng = g.toNonIndexed(); ng.computeVertexNormals();
-  // the soil should read smooth: recompute soil normals from the index geometry
-  return ng;
+  g.computeVertexNormals();
+  return g;   // indexed and smooth, so the furrows shade like soil
 }
 
 export class CropSystem {
@@ -143,7 +133,7 @@ export class CropSystem {
     this.group = new THREE.Group(); scene.add(this.group);
     const n = ALL_PLOTS.length;
     // beds
-    const bedMat = farmMaterial({ vertexColors: true, rim: 0.2 });
+    const bedMat = farmMaterial({ vertexColors: true, detail: 'soil', spec: 0.03, rough: 0.95 });
     this.beds = new THREE.InstancedMesh(makeBedGeometry(), bedMat, n);
     this.beds.frustumCulled = false; this.group.add(this.beds);
     this.plots = ALL_PLOTS;
@@ -175,8 +165,8 @@ export class CropSystem {
     let j = this.jit.get(key);
     if (!j) {
       const r = rng([...plotId].reduce((a, ch) => a * 31 + ch.charCodeAt(0), 7) + grid), arr = [];
-      const sp = 1.5 / grid;
-      for (let i = 0; i < grid; i++) for (let k = 0; k < grid; k++) arr.push({ x: (i - (grid - 1) / 2) * sp + (r() - 0.5) * 0.14, z: (k - (grid - 1) / 2) * sp + (r() - 0.5) * 0.14, rot: r() * 6.28, s: 0.86 + r() * 0.3, ph: r() });
+      const sz = grid >= 3 ? 0.62 : 1.24, sx = grid >= 3 ? 0.62 : 1.0;   // plants stand on the furrow crests
+      for (let i = 0; i < grid; i++) for (let k = 0; k < grid; k++) arr.push({ x: (i - (grid - 1) / 2) * sx + (r() - 0.5) * 0.12, z: (k - (grid - 1) / 2) * sz + (r() - 0.5) * 0.05, rot: r() * 6.28, s: 0.86 + r() * 0.3, ph: r() });
       j = arr; this.jit.set(key, j);
     }
     return j;
@@ -201,7 +191,7 @@ export class CropSystem {
       const mesh = this.cropMesh[info.crop], grid = mesh.userData.grid, jit = this.jitter(p.id, grid), pop = this.pops.get(p.id) || 0;
       for (const jt of jit) {
         const idx = counts[info.crop]++;
-        e.set(0, jt.rot, 0); q.setFromEuler(e); sc.setScalar(jt.s); pos.set(p.x + jt.x, 0.1, p.z + jt.z);
+        e.set(0, jt.rot, 0); q.setFromEuler(e); sc.setScalar(jt.s); pos.set(p.x + jt.x, 0.14, p.z + jt.z);
         m.compose(pos, q, sc); mesh.setMatrixAt(idx, m);
         mesh.instanceColor.setXYZ(idx, info.frac, jt.ph, pop);
       }

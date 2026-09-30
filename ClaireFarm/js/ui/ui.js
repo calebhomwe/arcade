@@ -5,14 +5,14 @@ import { fmt, el, clamp } from '../util.js';
 import { xpNeed, MAX_LEVEL } from '../data.js';
 
 const SVG = {
-  rotL: '<svg viewBox="0 0 24 24" fill="none" stroke="#5f3c1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a8 8 0 1 1 2.2 6.6"/><path d="M4 4v6h6"/></svg>',
-  rotR: '<svg viewBox="0 0 24 24" fill="none" stroke="#5f3c1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10a8 8 0 1 0-2.2 6.6"/><path d="M20 4v6h-6"/></svg>',
-  up: '<svg viewBox="0 0 24 24" fill="none" stroke="#5f3c1c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-7 7 7"/></svg>',
-  down: '<svg viewBox="0 0 24 24" fill="none" stroke="#5f3c1c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg>',
-  home: '<svg viewBox="0 0 24 24" fill="none" stroke="#5f3c1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M6 10v10h12V10"/></svg>',
-  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="#5f3c1c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>',
-  zoomIn: '<svg viewBox="0 0 24 24" fill="none" stroke="#5f3c1c" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
-  zoomOut: '<svg viewBox="0 0 24 24" fill="none" stroke="#5f3c1c" stroke-width="3" stroke-linecap="round"><path d="M5 12h14"/></svg>',
+  rotL: '<svg viewBox="0 0 24 24" fill="none" stroke="#f3e1a8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a8 8 0 1 1 2.2 6.6"/><path d="M4 4v6h6"/></svg>',
+  rotR: '<svg viewBox="0 0 24 24" fill="none" stroke="#f3e1a8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10a8 8 0 1 0-2.2 6.6"/><path d="M20 4v6h-6"/></svg>',
+  up: '<svg viewBox="0 0 24 24" fill="none" stroke="#f3e1a8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-7 7 7"/></svg>',
+  down: '<svg viewBox="0 0 24 24" fill="none" stroke="#f3e1a8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="#f3e1a8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M6 10v10h12V10"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="#f3e1a8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>',
+  zoomIn: '<svg viewBox="0 0 24 24" fill="none" stroke="#f3e1a8" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  zoomOut: '<svg viewBox="0 0 24 24" fill="none" stroke="#f3e1a8" stroke-width="3" stroke-linecap="round"><path d="M5 12h14"/></svg>',
 };
 export { SVG };
 
@@ -34,7 +34,7 @@ export class UI {
         <div class="lvl" id="lvlbox" role="img" aria-label="Level"><div class="badge" id="lvlnum">1</div><div class="xpbar"><i id="xpfill"></i><span id="xptext">0/30</span></div></div>
         <div class="spacer"></div>
         <button class="pill" id="coinpill" data-act="market" aria-label="Coins. Open the market">${icon('coin', 30)}<b id="coinnum">0</b><span class="plus">+</span></button>
-        <button class="pill" id="starpill" data-act="stars" aria-label="Stars">${icon('star', 30)}<b id="starnum">0</b></button>
+        <button class="pill" id="starpill" data-act="stars" aria-label="Gems">${icon('gem', 30)}<b id="starnum">0</b></button>
       </div>
       <div class="codes-tag" id="codestag">Codes on</div>
       <div class="rail" id="rail">
@@ -74,6 +74,12 @@ export class UI {
       if (t && r.contains(t)) { e.stopPropagation(); this.game.act(t.dataset.act, t.dataset, t, e); }
     });
     r.addEventListener('pointerdown', (e) => { if (e.target.closest && e.target.closest('button,.sheet,.dlg,.dock')) e.stopPropagation(); }, true);
+    r.addEventListener('input', (e) => { const t = e.target; if (t && t.dataset && t.dataset.slide) this.game.setVolume(t.dataset.slide, (+t.value) / 100); });
+    // a sheet that re-renders under your finger would swallow the tap: hold refreshes while a press is down and just after
+    this.holdUntil = 0;
+    r.addEventListener('pointerdown', (e) => { if (e.target.closest && e.target.closest('.sheet,.dlg')) this.holdUntil = performance.now() + 1e9; }, true);
+    const rel = () => { if (this.holdUntil > 1e8) this.holdUntil = performance.now() + 400; };
+    addEventListener('pointerup', rel, true); addEventListener('pointercancel', rel, true);
     this.veil.addEventListener('click', () => this.closeSheet());
     addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (this.dlgState) this.closeDialog(); else if (this.sheetState) this.closeSheet(); } });
     this.refs = {};
@@ -136,12 +142,16 @@ export class UI {
     const body = this.sheet.querySelector('.body'), sc = body ? body.scrollTop : 0, tabsEl = this.sheet.querySelector('.tabs'), tsc = tabsEl ? tabsEl.scrollLeft : 0;
     const tabs = s.tabs ? `<div class="tabs" role="tablist">${s.tabs.map((t) => `<button class="${t.id === s.tab ? 'on' : ''}" role="tab" aria-selected="${t.id === s.tab}" data-act="tab" data-id="${t.id}">${t.label}${t.dot ? `<span class="dot">${t.dot}</span>` : ''}</button>`).join('')}</div>` : '';
     const foot = s.foot ? s.foot(s.tab) : '';
+    const bodyHtml = s.render(s.tab);
+    const sig = `${s.title}|${s.tab}|${tabs}|${bodyHtml}|${foot}`;
+    if (!first && sig === this._sig) return;   // nothing changed: leave the DOM (and any press in progress) alone
+    this._sig = sig;
     this.sheet.className = 'sheet' + (s.tall ? ' tall' : '') + (this.sheet.classList.contains('on') ? ' on' : '');
-    this.sheet.innerHTML = `<div class="head">${s.icon ? icon(s.icon, 38) : ''}<h2>${s.title}</h2><button class="x" data-act="closeSheet" aria-label="Close">&times;</button></div>${tabs}<div class="body">${s.render(s.tab)}</div>${foot ? `<div class="foot">${foot}</div>` : ''}`;
+    this.sheet.innerHTML = `<div class="head">${s.icon ? icon(s.icon, 38) : ''}<h2>${s.title}</h2><button class="x" data-act="closeSheet" aria-label="Close">&times;</button></div>${tabs}<div class="body">${bodyHtml}</div>${foot ? `<div class="foot">${foot}</div>` : ''}`;
     if (!first) { const nb = this.sheet.querySelector('.body'); if (nb) nb.scrollTop = sc; const nt = this.sheet.querySelector('.tabs'); if (nt) nt.scrollLeft = tsc; }
   }
   setTab(id) { if (this.sheetState) { this.sheetState.tab = id; this.paintSheet(true); } }
-  refreshSheet() { if (this.sheetState) this.paintSheet(false); }
+  refreshSheet() { if (this.sheetState && performance.now() > this.holdUntil) this.paintSheet(false); }
   closeSheet(silent) {
     const s = this.sheetState; if (!s) return;
     this.sheetState = null; this.veil.classList.remove('on'); this.sheet.classList.remove('on');

@@ -57,7 +57,7 @@ export function buildMountains(scene) {
   ];
   for (const [x, z, r, h, s] of list) parts.push(mountain(x, z, r, h, s));
   const geo = mergeGeometries(parts);
-  const m = new THREE.Mesh(geo, farmMaterial({ vertexColors: true, rim: 0.15 }));
+  const m = new THREE.Mesh(geo, farmMaterial({ vertexColors: true, spec: 0.03 })); m.name = 'mountains';
   m.frustumCulled = false; m.renderOrder = -20;
   scene.add(m);
   return m;
@@ -92,28 +92,45 @@ export function buildWaterfall(scene) {
 }
 
 // a little city on the far shore
-export function buildCity(scene) {
+// The skyline across the bay: real Kenney City Kit buildings (CC0), packed into one GLB and merged here
+// into a single draw call. Tall ones stand at the back, small ones in front, and the haze does the rest.
+export function buildCity(scene, assets) {
   const r = rng(77);
-  const parts = [];
-  const base = [104, -74];
-  const tones = [0x9fb8d8, 0xb8c8de, 0x8aa3c4, 0xd8c8b0, 0xa0a8b8, 0xc4d4e8, 0x7f95b8];
-  for (let i = 0; i < 70; i++) {
-    const x = base[0] + (r() - 0.5) * 70, z = base[1] + (r() - 0.5) * 50;
-    const w = 3 + r() * 5, d = 3 + r() * 5, h = 5 + Math.pow(r(), 2.2) * 42;
-    const b = new THREE.BoxGeometry(w, h, d); b.translate(x, h / 2 - 0.5, z);
-    const c = col(tones[Math.floor(r() * tones.length)]);
-    const pos = b.attributes.position, colors = new Float32Array(pos.count * 3);
-    for (let k = 0; k < pos.count; k++) { const yy = (pos.getY(k) + 0.5) / h; const shade = 0.78 + 0.3 * yy; colors[k * 3] = c.r * shade; colors[k * 3 + 1] = c.g * shade; colors[k * 3 + 2] = c.b * shade * 1.03; }
-    b.setAttribute('color', new THREE.BufferAttribute(colors, 3)); b.deleteAttribute('uv');
-    parts.push(b);
+  const base = [108, -72];
+  const tall = ['city_skyscraper_a', 'city_skyscraper_b', 'city_skyscraper_c', 'city_skyscraper_d', 'city_skyscraper_e'];
+  const mid = ['city_a', 'city_b', 'city_c', 'city_d', 'city_e', 'city_f', 'city_g', 'city_h', 'city_i', 'city_k'];
+  const low = ['city_ld_a', 'city_ld_b', 'city_ld_c', 'city_ld_d', 'city_ld_e', 'city_ld_wide_a'];
+  const parts = []; let material = null;
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), p = new THREE.Vector3();
+  const cache = new Map();
+  const put = (id, x, z, h, yaw) => {
+    if (!assets.has(id)) return;
+    let b = cache.get(id + h);
+    if (!b) { b = assets.bakedGeometry(id, { height: h }); cache.set(id + h, b); if (!material) material = b.material; }
+    const g = b.geometry.clone();
+    e.set(0, yaw, 0); q.setFromEuler(e); p.set(x, -0.6, z); sc.set(1, 1, 1); m4.compose(p, q, sc); g.applyMatrix4(m4);
+    for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(k)) g.deleteAttribute(k);
+    parts.push(g);
+  };
+  // rows from the back (north-east) to the shoreline, so tall towers stand behind low ones
+  for (let row = 0; row < 5; row++) for (let i = 0; i < 8; i++) {
+    const x = base[0] - 14 + row * 9.5 + (r() - 0.5) * 3, z = base[1] - 38 + i * 10.4 + (r() - 0.5) * 3;
+    const yaw = Math.floor(r() * 4) * Math.PI / 2;
+    const dist = Math.hypot(x - base[0] - 10, z - base[1]);
+    const pick = r();
+    if (row <= 1 && dist < 34 && pick < 0.75) put(tall[Math.floor(r() * tall.length)], x, z, 34 + r() * 26 - row * 6, yaw);
+    else if (row <= 3 && pick < 0.65) put(mid[Math.floor(r() * mid.length)], x, z, 12 + r() * 12, yaw);
+    else put(low[Math.floor(r() * low.length)], x, z, 6 + r() * 4, yaw);
   }
   // land under the city
   const land = new THREE.CylinderGeometry(52, 60, 3, 16); land.translate(base[0], -1.6, base[1]);
-  const lc = new Float32Array(land.attributes.position.count * 3); for (let i = 0; i < lc.length; i += 3) { lc[i] = 0.42; lc[i + 1] = 0.6; lc[i + 2] = 0.34; }
+  const lc = new Float32Array(land.attributes.position.count * 3); for (let i = 0; i < lc.length; i += 3) { lc[i] = 0.3; lc[i + 1] = 0.44; lc[i + 2] = 0.22; }
   land.setAttribute('color', new THREE.BufferAttribute(lc, 3)); land.deleteAttribute('uv');
-  parts.push(land);
-  const geo = mergeGeometries(parts.map((p) => (p.index ? p.toNonIndexed() : p)));
-  const m = new THREE.Mesh(geo, farmMaterial({ vertexColors: true, rim: 0.1 }));
+  const landMesh = new THREE.Mesh(land, farmMaterial({ vertexColors: true, spec: 0.02 })); landMesh.frustumCulled = false; landMesh.renderOrder = -20; scene.add(landMesh);
+  if (!parts.length) return landMesh;
+  const geo = mergeGeometries(parts.map((g) => (g.index ? g.toNonIndexed() : g)), false);
+  const mat = farmMaterial({ map: material && material.uniforms && material.uniforms.map.value, spec: 0.12, rough: 0.35 });
+  const m = new THREE.Mesh(geo, mat); m.name = 'city';
   m.frustumCulled = false; m.renderOrder = -19;
   scene.add(m);
   return m;
