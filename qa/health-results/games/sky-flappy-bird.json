@@ -1,0 +1,230 @@
+{
+ "id": "sky-flappy-bird",
+ "title": "Flap & Fly",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/flappy-bird.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [],
+ "shots": {
+  "1-title": "shots/sky-flappy-bird-1-title.jpg",
+  "2-mid": "shots/sky-flappy-bird-2-mid.jpg",
+  "3-end": "shots/sky-flappy-bird-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.71,
+  "cores": 4,
+  "load1End": 17.91,
+  "contention": 1.51,
+  "contentionSamples": [
+   1.29,
+   1.51,
+   1.7,
+   1.44,
+   1.23,
+   2.41,
+   5.31
+  ]
+ },
+ "loadMs": 313,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/flappy-bird.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/flappy-bird.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 157.6,
+  "bench1Ms": 39.4,
+  "effectiveSlowdown": 4
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.51,
+  "loadMs": 113,
+  "playMs": 115,
+  "loadRawMs": 170,
+  "playRawMs": 174,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 3,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 8,
+  "tbtPlayMs": 22,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 3,
+  "slowestPollMs": 161,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 1999.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 1782.2,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     19
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     5
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1271.8,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 117,
+  "jsMedian": 2.38,
+  "jsP95": 11.72,
+  "jsP99": 23.38,
+  "jsMax": 66.9,
+  "jsP95Raw": 17.7,
+  "rawWithGlP95": 17.7,
+  "glP95": 0,
+  "gapP95": 950,
+  "gapMedian": 416.8,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2.2,
+  "heapGrowthPct": 13,
+  "heapMeasured": true,
+  "nodesStart": 21,
+  "nodesEnd": 21,
+  "nodesMax": 21,
+  "listeners0": 48,
+  "listeners1": 48,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 64,
+   "totalMB": 4.6,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 6,
+  "scriptPct": 2,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "title",
+   "play",
+   "over",
+   "title"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 2,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 2,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    19,
+    0
+   ],
+   [
+    57,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 22,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 13,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 770,
+  "inputLatencyP95Ms": 2096,
+  "inputLatencyMaxMs": 2475,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 24.4,
+  "maxChangeFromStartPct": 24.1,
+  "samples": 10
+ },
+ "severity": 0.1
+}
