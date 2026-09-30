@@ -13,7 +13,7 @@
   "FREEZE"
  ],
  "evidence": {
-  "FREEZE": "main thread blocked 4103 ms (during load), 1049 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 2937 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
+  "FREEZE": "main thread blocked 5528 ms (during load), 1398 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 3755 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
  },
  "notes": [
   "WebKit has no CPU throttle: numbers are unthrottled on this machine"
@@ -23,25 +23,25 @@
   "3-end": null
  },
  "machine": {
-  "load1Start": 13.93,
+  "load1Start": 14.86,
   "cores": 4,
-  "load1End": 12.93,
-  "contention": 1.04,
+  "load1End": 14.38,
+  "contention": 1.1,
   "contentionSamples": [
-   1.04,
-   1.13,
-   1,
-   1.03,
-   1.07
+   1.1,
+   1.12,
+   1.26,
+   1.02,
+   1.02
   ]
  },
- "loadMs": 4691,
+ "loadMs": 6547,
  "loaded": true,
  "startUrl": "https://calebhomwe.github.io/playables/CrowdClash/index.html",
  "startPath": "https://calebhomwe.github.io/playables/CrowdClash/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 77,
+  "benchMs": 61,
   "bench1Ms": null,
   "effectiveSlowdown": null
  },
@@ -52,37 +52,37 @@
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.04,
-  "loadMs": 2937,
-  "playMs": 527,
-  "loadRawMs": 4103,
-  "playRawMs": 2030,
-  "playGlMs": 1482,
-  "loadGlMs": 1049,
+  "c": 1.1,
+  "loadMs": 3755,
+  "playMs": 956,
+  "loadRawMs": 5528,
+  "playRawMs": 2756,
+  "playGlMs": 1704,
+  "loadGlMs": 1398,
   "longTasksPlay": 0,
   "longTasks100Play": 0,
   "tbtLoadMs": 0,
   "tbtPlayMs": 0,
   "longtaskApi": false,
-  "heartbeatOver100Play": 7,
-  "slowestPollMs": 1701,
+  "heartbeatOver100Play": 4,
+  "slowestPollMs": 2398,
   "pollTimeouts": 0,
-  "shaderCompileMs": 217,
-  "shaderCompileMaxCallMs": 34
+  "shaderCompileMs": 285,
+  "shaderCompileMaxCallMs": 121
  },
  "loafTop": [],
  "rafStalls": [],
  "frames": {
-  "n": 7,
-  "jsMedian": 28.85,
-  "jsP95": 101.92,
-  "jsP99": 101.92,
-  "jsMax": 101.9,
-  "jsP95Raw": 106,
-  "rawWithGlP95": 1588,
-  "glP95": 1482,
-  "gapP95": 2664,
-  "gapMedian": 597,
+  "n": 5,
+  "jsMedian": 74.55,
+  "jsP95": 210,
+  "jsP99": 210,
+  "jsMax": 210,
+  "jsP95Raw": 231,
+  "rawWithGlP95": 1794,
+  "glP95": 1704,
+  "gapP95": 870,
+  "gapMedian": 870,
   "over100": 1,
   "limit": 33
  },
@@ -124,7 +124,7 @@
   "max": 0,
   "trajectory": [
    [
-    16,
+    20,
     0
    ]
   ]
@@ -148,15 +148,15 @@
   "maxChangeFromStartPct": null,
   "samples": 0
  },
- "severity": 104.9,
+ "severity": 105.8,
  "recheck": {
   "reproduced": true,
   "verdicts": [
    "FREEZE"
   ],
-  "evidence": "main thread blocked 3468 ms (during load), 728 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 2610 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
-  "blockPlayMs": 910,
-  "blockLoadMs": 2610,
-  "load1": 12.84
+  "evidence": "main thread blocked 6212 ms (during load), 1539 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 4537 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
+  "blockPlayMs": 169,
+  "blockLoadMs": 4537,
+  "load1": 13.16
  }
 }

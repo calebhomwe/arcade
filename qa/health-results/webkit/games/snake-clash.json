@@ -18,7 +18,7 @@
   "STALL": "game never reported play after the start attempts (start: #play + tap on game); scenes seen: title"
  },
  "notes": [
-  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1)",
+  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.1)",
   "WebKit has no CPU throttle: numbers are unthrottled on this machine"
  ],
  "shots": {
@@ -26,25 +26,25 @@
   "3-end": null
  },
  "machine": {
-  "load1Start": 10.48,
+  "load1Start": 11.55,
   "cores": 4,
-  "load1End": 9.83,
-  "contention": 1.03,
+  "load1End": 10.98,
+  "contention": 1.06,
   "contentionSamples": [
+   1.15,
+   1.06,
    1.03,
-   1.21,
-   1.27,
-   1.02,
-   1.03
+   1.14,
+   1.04
   ]
  },
- "loadMs": 869,
+ "loadMs": 1223,
  "loaded": true,
  "startUrl": "https://calebhomwe.github.io/playables/SnakeClash/index.html",
  "startPath": "https://calebhomwe.github.io/playables/SnakeClash/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 100,
+  "benchMs": 54,
   "bench1Ms": null,
   "effectiveSlowdown": null
  },
@@ -55,11 +55,11 @@
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.03,
-  "loadMs": 576,
-  "playMs": 0,
-  "loadRawMs": 593,
-  "playRawMs": 0,
+  "c": 1.06,
+  "loadMs": 874,
+  "playMs": 77,
+  "loadRawMs": 926,
+  "playRawMs": 82,
   "playGlMs": 0,
   "loadGlMs": 0,
   "longTasksPlay": 0,
@@ -68,7 +68,7 @@
   "tbtPlayMs": 0,
   "longtaskApi": false,
   "heartbeatOver100Play": 1,
-  "slowestPollMs": 246,
+  "slowestPollMs": 133,
   "pollTimeouts": 0,
   "shaderCompileMs": 0,
   "shaderCompileMaxCallMs": 0
@@ -76,16 +76,16 @@
  "loafTop": [],
  "rafStalls": [],
  "frames": {
-  "n": 6,
-  "jsMedian": 9.71,
-  "jsP95": 18.45,
-  "jsP99": 18.45,
-  "jsMax": 18.4,
-  "jsP95Raw": 19,
-  "rawWithGlP95": 19,
+  "n": 3,
+  "jsMedian": 8.49,
+  "jsP95": 18.87,
+  "jsP99": 18.87,
+  "jsMax": 18.9,
+  "jsP95Raw": 20,
+  "rawWithGlP95": 20,
   "glP95": 0,
-  "gapP95": 2465,
-  "gapMedian": 248,
+  "gapP95": 2267,
+  "gapMedian": 2267,
   "over100": 0,
   "limit": 33
  },
@@ -128,8 +128,8 @@
   "resumes": 0,
   "touchApi": null,
   "inputLatencyMedianMs": 4000,
-  "inputLatencyP95Ms": 4000,
-  "inputLatencyMaxMs": 4000,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
   "inputTimeouts": 2
  },
  "screen": {
@@ -138,15 +138,15 @@
   "maxChangeFromStartPct": null,
   "samples": 0
  },
- "severity": 104.6,
+ "severity": 104.9,
  "recheck": {
   "reproduced": true,
   "verdicts": [
    "FREEZE"
   ],
   "evidence": "page crashed (renderer process died)",
-  "blockPlayMs": 1103,
-  "blockLoadMs": 1122,
-  "load1": 10
+  "blockPlayMs": 317,
+  "blockLoadMs": 687,
+  "load1": 11.66
  }
 }

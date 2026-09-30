@@ -14,10 +14,11 @@
   "STALL"
  ],
  "evidence": {
-  "FREEZE": "2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+  "FREEZE": "page crashed (renderer process died)",
   "STALL": "game never reported play after the start attempts (start: #play + tap on game); scenes seen: title"
  },
  "notes": [
+  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1)",
   "WebKit has no CPU throttle: numbers are unthrottled on this machine"
  ],
  "shots": {
@@ -25,25 +26,25 @@
   "3-end": null
  },
  "machine": {
-  "load1Start": 12.84,
+  "load1Start": 13.16,
   "cores": 4,
-  "load1End": 10.98,
-  "contention": 1.07,
+  "load1End": 10.09,
+  "contention": 1.01,
   "contentionSamples": [
-   1.05,
-   1.07,
-   1.02,
-   1.14,
-   1.1
+   1,
+   1.15,
+   1.01,
+   1.01,
+   1.01
   ]
  },
- "loadMs": 816,
+ "loadMs": 563,
  "loaded": true,
  "startUrl": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
  "startPath": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 81,
+  "benchMs": 49,
   "bench1Ms": null,
   "effectiveSlowdown": null
  },
@@ -54,37 +55,37 @@
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.07,
-  "loadMs": 302,
-  "playMs": 503,
-  "loadRawMs": 324,
-  "playRawMs": 638,
-  "playGlMs": 100,
-  "loadGlMs": 1,
+  "c": 1.01,
+  "loadMs": 250,
+  "playMs": 0,
+  "loadRawMs": 410,
+  "playRawMs": 0,
+  "playGlMs": 0,
+  "loadGlMs": 157,
   "longTasksPlay": 0,
   "longTasks100Play": 0,
   "tbtLoadMs": 0,
   "tbtPlayMs": 0,
   "longtaskApi": false,
-  "heartbeatOver100Play": 3,
-  "slowestPollMs": 418,
+  "heartbeatOver100Play": 0,
+  "slowestPollMs": 17,
   "pollTimeouts": 0,
-  "shaderCompileMs": 241,
-  "shaderCompileMaxCallMs": 50
+  "shaderCompileMs": 135,
+  "shaderCompileMaxCallMs": 12
  },
  "loafTop": [],
  "rafStalls": [],
  "frames": {
-  "n": 5,
-  "jsMedian": 32.71,
-  "jsP95": 63.55,
-  "jsP99": 63.55,
-  "jsMax": 63.6,
-  "jsP95Raw": 68,
-  "rawWithGlP95": 964,
-  "glP95": 896,
-  "gapP95": 2017,
-  "gapMedian": 762,
+  "n": 4,
+  "jsMedian": 19.8,
+  "jsP95": 56.44,
+  "jsP99": 56.44,
+  "jsMax": 56.4,
+  "jsP95Raw": 57,
+  "rawWithGlP95": 214,
+  "glP95": 157,
+  "gapP95": 786,
+  "gapMedian": 320,
   "over100": 0,
   "limit": 33
  },
@@ -127,8 +128,8 @@
   "resumes": 0,
   "touchApi": null,
   "inputLatencyMedianMs": 4000,
-  "inputLatencyP95Ms": 4001,
-  "inputLatencyMaxMs": 4001,
+  "inputLatencyP95Ms": 4012,
+  "inputLatencyMaxMs": 4012,
   "inputTimeouts": 2
  },
  "screen": {
@@ -137,15 +138,15 @@
   "maxChangeFromStartPct": null,
   "samples": 0
  },
- "severity": 104.5,
+ "severity": 104.3,
  "recheck": {
   "reproduced": true,
   "verdicts": [
    "FREEZE"
   ],
   "evidence": "page crashed (renderer process died)",
-  "blockPlayMs": 956,
-  "blockLoadMs": 711,
-  "load1": 10.9
+  "blockPlayMs": 691,
+  "blockLoadMs": 598,
+  "load1": 9.69
  }
 }

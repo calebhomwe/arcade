@@ -1,8 +1,172 @@
 {
- "generated": "2026-09-30T09:10:15.857Z",
+ "generated": "2026-09-30T10:01:15.307Z",
  "engine": "webkit",
  "count": 54,
  "results": [
+  {
+   "id": "claire-farm",
+   "title": "Claire's Farm",
+   "cat": "sim",
+   "genre": "life-sim",
+   "src": "ClaireFarm/index.html",
+   "engine": "webkit",
+   "throttle": 1,
+   "throttled": false,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "STALL"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 9096 ms (while playing), 1498 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 7168 ms of JS; timer heartbeat (no long-task API in this engine) | page did not answer the harness for 6 s (1 poll timeout(s)) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+    "STALL": "game never reported play after the start attempts (start: #playBtn + tap on game); scenes seen: title"
+   },
+   "notes": [
+    "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+   ],
+   "shots": {
+    "1-title": "shots/claire-farm-wk-1-title.jpg",
+    "3-end": null
+   },
+   "machine": {
+    "load1Start": 12.44,
+    "cores": 4,
+    "load1End": 12.33,
+    "contention": 1.06,
+    "contentionSamples": [
+     1.05,
+     1.07,
+     1.06,
+     1.05,
+     1.12
+    ]
+   },
+   "loadMs": 1316,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:42451/ClaireFarm/index.html",
+   "startPath": "http://127.0.0.1:42451/ClaireFarm/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 117,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#playBtn + tap on game",
+    "viaKey": false,
+    "detectedBy": null,
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1.06,
+    "loadMs": 3815,
+    "playMs": 7168,
+    "loadRawMs": 4428,
+    "playRawMs": 9096,
+    "playGlMs": 1498,
+    "loadGlMs": 384,
+    "longTasksPlay": 0,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 0,
+    "longtaskApi": false,
+    "heartbeatOver100Play": 3,
+    "slowestPollMs": 6001,
+    "pollTimeouts": 1,
+    "shaderCompileMs": 235,
+    "shaderCompileMaxCallMs": 16
+   },
+   "loafTop": [],
+   "rafStalls": [],
+   "frames": {
+    "n": 6,
+    "jsMedian": 50,
+    "jsP95": 83.96,
+    "jsP99": 83.96,
+    "jsMax": 84,
+    "jsP95Raw": 89,
+    "rawWithGlP95": 709,
+    "glP95": 622,
+    "gapP95": 2614,
+    "gapMedian": 2572,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": null,
+    "heap1MB": null,
+    "heapGrowthPct": null,
+    "heapMeasured": false,
+    "nodesStart": 38,
+    "nodesEnd": 177,
+    "nodesMax": 177,
+    "listeners0": null,
+    "listeners1": null,
+    "audioContexts": 0,
+    "audioElements": 0,
+    "webglContexts": 1,
+    "canvases": null,
+    "sdkTimers": null
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title"
+    ],
+    "reachedPlay": false,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 1,
+    "first": 1000,
+    "last": 1000,
+    "max": 1000,
+    "trajectory": [
+     [
+      5,
+      1000
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 1,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 2,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 4001,
+    "inputLatencyP95Ms": 4002,
+    "inputLatencyMaxMs": 4002,
+    "inputTimeouts": 2
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": null,
+    "maxChangeFromStartPct": null,
+    "samples": 0
+   },
+   "severity": 111.2,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE",
+     "STALL"
+    ],
+    "evidence": "main thread blocked 9979 ms (while playing), 1771 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 8047 ms of JS; timer heartbeat (no long-task API in this engine) | page did not answer the harness for 6 s (4 poll timeout(s)) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+    "blockPlayMs": 8047,
+    "blockLoadMs": 4215,
+    "load1": 11.75
+   }
+  },
   {
    "id": "bloxburg-town",
    "title": "Bloxburg Town",
@@ -381,92 +545,90 @@
    }
   },
   {
-   "id": "claire-farm",
-   "title": "Claire's Farm",
-   "cat": "sim",
-   "genre": "life-sim",
-   "src": "ClaireFarm/index.html",
+   "id": "chili-firm",
+   "title": "Chili Firm 2: Replanted",
+   "cat": "idle",
+   "genre": "idle",
+   "src": "ChiliFirm/index.html",
    "engine": "webkit",
    "throttle": 1,
    "throttled": false,
    "durationS": 45,
    "orientation": "portrait",
    "verdicts": [
-    "FREEZE",
-    "STALL"
+    "FREEZE"
    ],
    "evidence": {
-    "FREEZE": "main thread blocked 5408 ms (while playing), 971 ms of it inside WebGL calls (software GL), machine slowdown x1.2 -> about 3698 ms of JS; timer heartbeat (no long-task API in this engine) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
-    "STALL": "game never reported play after the start attempts (start: #playBtn + tap on game); scenes seen: title"
+    "FREEZE": "main thread blocked 7853 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 7012 ms of JS; timer heartbeat (no long-task API in this engine) | page did not answer the harness for 6 s (2 poll timeout(s)) | page crashed (renderer process died)"
    },
    "notes": [
     "WebKit has no CPU throttle: numbers are unthrottled on this machine"
    ],
    "shots": {
-    "1-title": "shots/claire-farm-wk-1-title.jpg",
+    "1-title": "shots/chili-firm-wk-1-title.jpg",
     "3-end": null
    },
    "machine": {
-    "load1Start": 13.73,
+    "load1Start": 16.04,
     "cores": 4,
-    "load1End": 13.06,
-    "contention": 1.2,
+    "load1End": 18.48,
+    "contention": 1.12,
     "contentionSamples": [
-     3.35,
-     1.2,
-     1.04,
-     1.07,
-     1.28
+     1.12,
+     1.11,
+     1.13,
+     1.26,
+     1.11
     ]
    },
-   "loadMs": 1872,
+   "loadMs": 2426,
    "loaded": true,
-   "startUrl": "http://127.0.0.1:33021/ClaireFarm/index.html",
-   "startPath": "http://127.0.0.1:33021/ClaireFarm/index.html",
+   "startUrl": "http://127.0.0.1:39905/ChiliFirm/index.html",
+   "startPath": "http://127.0.0.1:39905/ChiliFirm/index.html",
    "sdk": true,
    "calibration": {
-    "benchMs": 92,
+    "benchMs": 105,
     "bench1Ms": null,
     "effectiveSlowdown": null
    },
    "start": {
-    "how": "#playBtn + tap on game",
+    "how": ".playbtn",
     "viaKey": false,
-    "detectedBy": null,
+    "detectedBy": "sdk",
     "buttonStillVisible": false
    },
    "block": {
-    "c": 1.2,
-    "loadMs": 2923,
-    "playMs": 3698,
-    "loadRawMs": 4008,
-    "playRawMs": 5408,
-    "playGlMs": 971,
-    "loadGlMs": 501,
+    "c": 1.12,
+    "loadMs": 7012,
+    "playMs": 6769,
+    "loadRawMs": 7853,
+    "playRawMs": 7581,
+    "playGlMs": 0,
+    "loadGlMs": 0,
     "longTasksPlay": 0,
     "longTasks100Play": 0,
     "tbtLoadMs": 0,
     "tbtPlayMs": 0,
     "longtaskApi": false,
-    "heartbeatOver100Play": 6,
-    "slowestPollMs": 4990,
-    "pollTimeouts": 0,
-    "shaderCompileMs": 221,
-    "shaderCompileMaxCallMs": 25
+    "heartbeatOver100Play": 3,
+    "slowestPollMs": 6007,
+    "pollTimeouts": 2,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
    },
    "loafTop": [],
    "rafStalls": [],
    "frames": {
-    "n": 7,
-    "jsMedian": 45,
-    "jsP95": 84.17,
-    "jsP99": 84.17,
-    "jsMax": 84.2,
-    "jsP95Raw": 101,
-    "rawWithGlP95": 732,
-    "glP95": 631,
-    "gapP95": 2741,
-    "gapMedian": 2741,
+    "n": 2,
+    "jsMedian": 5.36,
+    "jsP95": 5.36,
+    "jsP99": 5.36,
+    "jsMax": 5.4,
+    "jsP95Raw": 6,
+    "rawWithGlP95": 6,
+    "glP95": 0,
+    "gapP95": null,
+    "gapMedian": null,
     "over100": 0,
     "limit": 33
    },
@@ -479,14 +641,14 @@
     "heap1MB": null,
     "heapGrowthPct": null,
     "heapMeasured": false,
-    "nodesStart": 38,
-    "nodesEnd": 177,
-    "nodesMax": 185,
+    "nodesStart": 1190,
+    "nodesEnd": 1151,
+    "nodesMax": 1190,
     "listeners0": null,
     "listeners1": null,
-    "audioContexts": 0,
-    "audioElements": 0,
-    "webglContexts": 1,
+    "audioContexts": 1,
+    "audioElements": 1,
+    "webglContexts": 0,
     "canvases": null,
     "sdkTimers": null
    },
@@ -494,36 +656,25 @@
    "sdkDeclared": true,
    "scenes": {
     "sequence": [
-     "title"
+     "title",
+     "play"
     ],
-    "reachedPlay": false,
+    "reachedPlay": true,
     "gameOvers": 0,
     "restartsAfterOver": 0
    },
-   "gameScore": {
-    "updates": 1,
-    "first": 1000,
-    "last": 1000,
-    "max": 1000,
-    "trajectory": [
-     [
-      7,
-      1000
-     ]
-    ]
-   },
    "bot": {
-    "taps": 1,
+    "taps": 0,
     "swipes": 0,
     "holds": 0,
-    "keys": 2,
+    "keys": 0,
     "buttonPresses": 0,
     "resumes": 0,
     "touchApi": null,
-    "inputLatencyMedianMs": 4001,
-    "inputLatencyP95Ms": 4005,
-    "inputLatencyMaxMs": 4005,
-    "inputTimeouts": 2
+    "inputLatencyMedianMs": null,
+    "inputLatencyP95Ms": null,
+    "inputLatencyMaxMs": null,
+    "inputTimeouts": 0
    },
    "screen": {
     "longestStaticS": 0,
@@ -531,16 +682,17 @@
     "maxChangeFromStartPct": null,
     "samples": 0
    },
-   "severity": 107.7,
+   "severity": 109,
    "recheck": {
     "reproduced": true,
     "verdicts": [
-     "FREEZE"
+     "FREEZE",
+     "STALL"
     ],
-    "evidence": "main thread blocked 8229 ms (while playing), 1393 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 6330 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
-    "blockPlayMs": 6330,
-    "blockLoadMs": 3394,
-    "load1": 13.55
+    "evidence": "main thread blocked 8027 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x2 -> about 3935 ms of JS; timer heartbeat (no long-task API in this engine) | page did not answer the harness for 6 s (3 poll timeout(s)) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+    "blockPlayMs": 3935,
+    "blockLoadMs": 1214,
+    "load1": 19.21
    }
   },
   {
@@ -949,11 +1101,11 @@
    }
   },
   {
-   "id": "chili-firm",
-   "title": "Chili Firm 2: Replanted",
-   "cat": "idle",
-   "genre": "idle",
-   "src": "ChiliFirm/index.html",
+   "id": "clean-house",
+   "title": "Clean House",
+   "cat": "sim",
+   "genre": "management",
+   "src": "CleanHouse/index.html",
    "engine": "webkit",
    "throttle": 1,
    "throttled": false,
@@ -964,78 +1116,79 @@
     "STALL"
    ],
    "evidence": {
-    "FREEZE": "main thread blocked 2690 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 2587 ms of JS; timer heartbeat (no long-task API in this engine) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
-    "STALL": "game never reported play after the start attempts (start: .playbtn + tap on game); scenes seen: title"
+    "FREEZE": "main thread blocked 3485 ms (during load), 547 ms of it inside WebGL calls (software GL), machine slowdown x1.2 -> about 2389 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
+    "STALL": "game never reported play after the start attempts (start: #btnPlay + tap on game); scenes seen: title"
    },
    "notes": [
+    "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.2)",
     "WebKit has no CPU throttle: numbers are unthrottled on this machine"
    ],
    "shots": {
-    "1-title": "shots/chili-firm-wk-1-title.jpg",
+    "1-title": "shots/clean-house-wk-1-title.jpg",
     "3-end": null
    },
    "machine": {
-    "load1Start": 12.58,
+    "load1Start": 12.34,
     "cores": 4,
-    "load1End": 11.21,
-    "contention": 1.04,
+    "load1End": 15.8,
+    "contention": 1.23,
     "contentionSamples": [
-     1.06,
-     1,
+     3.08,
+     1.14,
      1.04,
-     1.04,
-     1.05
+     1.23,
+     1.41
     ]
    },
-   "loadMs": 1194,
+   "loadMs": 2847,
    "loaded": true,
-   "startUrl": "http://127.0.0.1:46207/ChiliFirm/index.html",
-   "startPath": "http://127.0.0.1:46207/ChiliFirm/index.html",
+   "startUrl": "http://127.0.0.1:39905/CleanHouse/index.html",
+   "startPath": "http://127.0.0.1:39905/CleanHouse/index.html",
    "sdk": true,
    "calibration": {
-    "benchMs": 36,
+    "benchMs": 157,
     "bench1Ms": null,
     "effectiveSlowdown": null
    },
    "start": {
-    "how": ".playbtn + tap on game",
+    "how": "#btnPlay + tap on game",
     "viaKey": false,
     "detectedBy": null,
     "buttonStillVisible": false
    },
    "block": {
-    "c": 1.04,
-    "loadMs": 1167,
-    "playMs": 2587,
-    "loadRawMs": 1214,
-    "playRawMs": 2690,
+    "c": 1.23,
+    "loadMs": 2389,
+    "playMs": 85,
+    "loadRawMs": 3485,
+    "playRawMs": 105,
     "playGlMs": 0,
-    "loadGlMs": 0,
+    "loadGlMs": 547,
     "longTasksPlay": 0,
     "longTasks100Play": 0,
     "tbtLoadMs": 0,
     "tbtPlayMs": 0,
     "longtaskApi": false,
-    "heartbeatOver100Play": 2,
-    "slowestPollMs": 2353,
+    "heartbeatOver100Play": 1,
+    "slowestPollMs": 437,
     "pollTimeouts": 0,
-    "shaderCompileMs": 0,
-    "shaderCompileMaxCallMs": 0
+    "shaderCompileMs": 83,
+    "shaderCompileMaxCallMs": 19
    },
    "loafTop": [],
    "rafStalls": [],
    "frames": {
-    "n": 1,
-    "jsMedian": 1.92,
-    "jsP95": 1.92,
-    "jsP99": 1.92,
-    "jsMax": 1.9,
-    "jsP95Raw": 2,
-    "rawWithGlP95": 2,
-    "glP95": 0,
+    "n": 2,
+    "jsMedian": 142.28,
+    "jsP95": 142.28,
+    "jsP99": 142.28,
+    "jsMax": 142.3,
+    "jsP95Raw": 175,
+    "rawWithGlP95": 722,
+    "glP95": 547,
     "gapP95": null,
     "gapMedian": null,
-    "over100": 0,
+    "over100": 1,
     "limit": 33
    },
    "errors": [],
@@ -1047,14 +1200,14 @@
     "heap1MB": null,
     "heapGrowthPct": null,
     "heapMeasured": false,
-    "nodesStart": 1190,
-    "nodesEnd": 1151,
-    "nodesMax": 1190,
+    "nodesStart": 281,
+    "nodesEnd": 281,
+    "nodesMax": 281,
     "listeners0": null,
     "listeners1": null,
     "audioContexts": 0,
     "audioElements": 0,
-    "webglContexts": 0,
+    "webglContexts": 1,
     "canvases": null,
     "sdkTimers": null
    },
@@ -1077,8 +1230,8 @@
     "resumes": 0,
     "touchApi": null,
     "inputLatencyMedianMs": 4000,
-    "inputLatencyP95Ms": 4001,
-    "inputLatencyMaxMs": 4001,
+    "inputLatencyP95Ms": 4000,
+    "inputLatencyMaxMs": 4000,
     "inputTimeouts": 2
    },
    "screen": {
@@ -1087,17 +1240,17 @@
     "maxChangeFromStartPct": null,
     "samples": 0
    },
-   "severity": 106.6,
+   "severity": 106.4,
    "recheck": {
     "reproduced": true,
     "verdicts": [
      "FREEZE",
      "STALL"
     ],
-    "evidence": "main thread blocked 7897 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 7380 ms of JS; timer heartbeat (no long-task API in this engine) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
-    "blockPlayMs": 3298,
-    "blockLoadMs": 7380,
-    "load1": 11.03
+    "evidence": "page crashed (renderer process died)",
+    "blockPlayMs": 123,
+    "blockLoadMs": 737,
+    "load1": 16.04
    }
   },
   {
@@ -1274,7 +1427,7 @@
     "FREEZE"
    ],
    "evidence": {
-    "FREEZE": "main thread blocked 4103 ms (during load), 1049 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 2937 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
+    "FREEZE": "main thread blocked 5528 ms (during load), 1398 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 3755 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
    },
    "notes": [
     "WebKit has no CPU throttle: numbers are unthrottled on this machine"
@@ -1284,25 +1437,25 @@
     "3-end": null
    },
    "machine": {
-    "load1Start": 13.93,
+    "load1Start": 14.86,
     "cores": 4,
-    "load1End": 12.93,
-    "contention": 1.04,
+    "load1End": 14.38,
+    "contention": 1.1,
     "contentionSamples": [
-     1.04,
-     1.13,
-     1,
-     1.03,
-     1.07
+     1.1,
+     1.12,
+     1.26,
+     1.02,
+     1.02
     ]
    },
-   "loadMs": 4691,
+   "loadMs": 6547,
    "loaded": true,
    "startUrl": "https://calebhomwe.github.io/playables/CrowdClash/index.html",
    "startPath": "https://calebhomwe.github.io/playables/CrowdClash/index.html",
    "sdk": true,
    "calibration": {
-    "benchMs": 77,
+    "benchMs": 61,
     "bench1Ms": null,
     "effectiveSlowdown": null
    },
@@ -1313,37 +1466,37 @@
     "buttonStillVisible": false
    },
    "block": {
-    "c": 1.04,
-    "loadMs": 2937,
-    "playMs": 527,
-    "loadRawMs": 4103,
-    "playRawMs": 2030,
-    "playGlMs": 1482,
-    "loadGlMs": 1049,
+    "c": 1.1,
+    "loadMs": 3755,
+    "playMs": 956,
+    "loadRawMs": 5528,
+    "playRawMs": 2756,
+    "playGlMs": 1704,
+    "loadGlMs": 1398,
     "longTasksPlay": 0,
     "longTasks100Play": 0,
     "tbtLoadMs": 0,
     "tbtPlayMs": 0,
     "longtaskApi": false,
-    "heartbeatOver100Play": 7,
-    "slowestPollMs": 1701,
+    "heartbeatOver100Play": 4,
+    "slowestPollMs": 2398,
     "pollTimeouts": 0,
-    "shaderCompileMs": 217,
-    "shaderCompileMaxCallMs": 34
+    "shaderCompileMs": 285,
+    "shaderCompileMaxCallMs": 121
    },
    "loafTop": [],
    "rafStalls": [],
    "frames": {
-    "n": 7,
-    "jsMedian": 28.85,
-    "jsP95": 101.92,
-    "jsP99": 101.92,
-    "jsMax": 101.9,
-    "jsP95Raw": 106,
-    "rawWithGlP95": 1588,
-    "glP95": 1482,
-    "gapP95": 2664,
-    "gapMedian": 597,
+    "n": 5,
+    "jsMedian": 74.55,
+    "jsP95": 210,
+    "jsP99": 210,
+    "jsMax": 210,
+    "jsP95Raw": 231,
+    "rawWithGlP95": 1794,
+    "glP95": 1704,
+    "gapP95": 870,
+    "gapMedian": 870,
     "over100": 1,
     "limit": 33
    },
@@ -1385,7 +1538,7 @@
     "max": 0,
     "trajectory": [
      [
-      16,
+      20,
       0
      ]
     ]
@@ -1409,16 +1562,330 @@
     "maxChangeFromStartPct": null,
     "samples": 0
    },
+   "severity": 105.8,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE"
+    ],
+    "evidence": "main thread blocked 6212 ms (during load), 1539 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 4537 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
+    "blockPlayMs": 169,
+    "blockLoadMs": 4537,
+    "load1": 13.16
+   }
+  },
+  {
+   "id": "bridge-rush",
+   "title": "Bridge Rush",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
+   "engine": "webkit",
+   "throttle": 1,
+   "throttled": false,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 5584 ms (during load), 1542 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 3675 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
+   },
+   "notes": [
+    "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+   ],
+   "shots": {
+    "1-title": "shots/bridge-rush-wk-1-title.jpg",
+    "3-end": null
+   },
+   "machine": {
+    "load1Start": 13.38,
+    "cores": 4,
+    "load1End": 13.48,
+    "contention": 1.1,
+    "contentionSamples": [
+     1.39,
+     1.05,
+     1.11,
+     1.04,
+     1.1
+    ]
+   },
+   "loadMs": 2130,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
+   "startPath": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 156,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#play",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1.1,
+    "loadMs": 3675,
+    "playMs": 581,
+    "loadRawMs": 5584,
+    "playRawMs": 697,
+    "playGlMs": 58,
+    "loadGlMs": 1542,
+    "longTasksPlay": 0,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 0,
+    "longtaskApi": false,
+    "heartbeatOver100Play": 6,
+    "slowestPollMs": 1362,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 203,
+    "shaderCompileMaxCallMs": 46
+   },
+   "loafTop": [],
+   "rafStalls": [],
+   "frames": {
+    "n": 8,
+    "jsMedian": 25.45,
+    "jsP95": 189.09,
+    "jsP99": 189.09,
+    "jsMax": 189.1,
+    "jsP95Raw": 208,
+    "rawWithGlP95": 1496,
+    "glP95": 1288,
+    "gapP95": 1730,
+    "gapMedian": 1031,
+    "over100": 1,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": null,
+    "heap1MB": null,
+    "heapGrowthPct": null,
+    "heapMeasured": false,
+    "nodesStart": 214,
+    "nodesEnd": 214,
+    "nodesMax": 214,
+    "listeners0": null,
+    "listeners1": null,
+    "audioContexts": 1,
+    "audioElements": 1,
+    "webglContexts": 1,
+    "canvases": null,
+    "sdkTimers": null
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 1,
+    "first": 0,
+    "last": 0,
+    "max": 0,
+    "trajectory": [
+     [
+      21,
+      0
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 0,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 0,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": null,
+    "inputLatencyP95Ms": null,
+    "inputLatencyMaxMs": null,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": null,
+    "maxChangeFromStartPct": null,
+    "samples": 0
+   },
+   "severity": 105.7,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE"
+    ],
+    "evidence": "main thread blocked 4069 ms (during load), 36 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 3878 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
+    "blockPlayMs": 847,
+    "blockLoadMs": 3878,
+    "load1": 14.86
+   }
+  },
+  {
+   "id": "snake-clash",
+   "title": "Snake Clash",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/playables/SnakeClash/index.html",
+   "engine": "webkit",
+   "throttle": 1,
+   "throttled": false,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "STALL"
+   ],
+   "evidence": {
+    "FREEZE": "page crashed (renderer process died)",
+    "STALL": "game never reported play after the start attempts (start: #play + tap on game); scenes seen: title"
+   },
+   "notes": [
+    "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.1)",
+    "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+   ],
+   "shots": {
+    "1-title": "shots/snake-clash-wk-1-title.jpg",
+    "3-end": null
+   },
+   "machine": {
+    "load1Start": 11.55,
+    "cores": 4,
+    "load1End": 10.98,
+    "contention": 1.06,
+    "contentionSamples": [
+     1.15,
+     1.06,
+     1.03,
+     1.14,
+     1.04
+    ]
+   },
+   "loadMs": 1223,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/playables/SnakeClash/index.html",
+   "startPath": "https://calebhomwe.github.io/playables/SnakeClash/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 54,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#play + tap on game",
+    "viaKey": false,
+    "detectedBy": null,
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1.06,
+    "loadMs": 874,
+    "playMs": 77,
+    "loadRawMs": 926,
+    "playRawMs": 82,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 0,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 0,
+    "longtaskApi": false,
+    "heartbeatOver100Play": 1,
+    "slowestPollMs": 133,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [],
+   "rafStalls": [],
+   "frames": {
+    "n": 3,
+    "jsMedian": 8.49,
+    "jsP95": 18.87,
+    "jsP99": 18.87,
+    "jsMax": 18.9,
+    "jsP95Raw": 20,
+    "rawWithGlP95": 20,
+    "glP95": 0,
+    "gapP95": 2267,
+    "gapMedian": 2267,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": null,
+    "heap1MB": null,
+    "heapGrowthPct": null,
+    "heapMeasured": false,
+    "nodesStart": 82,
+    "nodesEnd": 82,
+    "nodesMax": 82,
+    "listeners0": null,
+    "listeners1": null,
+    "audioContexts": 0,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": null,
+    "sdkTimers": null
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title"
+    ],
+    "reachedPlay": false,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 1,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 2,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 4000,
+    "inputLatencyP95Ms": 4001,
+    "inputLatencyMaxMs": 4001,
+    "inputTimeouts": 2
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": null,
+    "maxChangeFromStartPct": null,
+    "samples": 0
+   },
    "severity": 104.9,
    "recheck": {
     "reproduced": true,
     "verdicts": [
      "FREEZE"
     ],
-    "evidence": "main thread blocked 3468 ms (during load), 728 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 2610 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
-    "blockPlayMs": 910,
-    "blockLoadMs": 2610,
-    "load1": 12.84
+    "evidence": "page crashed (renderer process died)",
+    "blockPlayMs": 317,
+    "blockLoadMs": 687,
+    "load1": 11.66
    }
   },
   {
@@ -1441,7 +1908,7 @@
     "STALL": "game never reported play after the start attempts (start: tap centre + TAP TO COOK + tap on game); scenes seen: title"
    },
    "notes": [
-    "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.1)",
+    "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1)",
     "WebKit has no CPU throttle: numbers are unthrottled on this machine"
    ],
    "shots": {
@@ -1449,25 +1916,25 @@
     "3-end": null
    },
    "machine": {
-    "load1Start": 10.85,
+    "load1Start": 11.19,
     "cores": 4,
-    "load1End": 10.94,
-    "contention": 1.05,
+    "load1End": 10.73,
+    "contention": 1.03,
     "contentionSamples": [
-     1,
-     1.36,
-     1.05,
-     1.06,
+     1.04,
+     1.08,
+     1.03,
+     1.01,
      1
     ]
    },
-   "loadMs": 424,
+   "loadMs": 283,
    "loaded": true,
-   "startUrl": "http://127.0.0.1:36275/CookRush/index.html",
-   "startPath": "http://127.0.0.1:36275/CookRush/index.html",
+   "startUrl": "http://127.0.0.1:41459/CookRush/index.html",
+   "startPath": "http://127.0.0.1:41459/CookRush/index.html",
    "sdk": true,
    "calibration": {
-    "benchMs": 87,
+    "benchMs": 44,
     "bench1Ms": null,
     "effectiveSlowdown": null
    },
@@ -1477,11 +1944,11 @@
     "detectedBy": null
    },
    "block": {
-    "c": 1.05,
-    "loadMs": 691,
-    "playMs": 110,
-    "loadRawMs": 726,
-    "playRawMs": 115,
+    "c": 1.03,
+    "loadMs": 679,
+    "playMs": 195,
+    "loadRawMs": 699,
+    "playRawMs": 201,
     "playGlMs": 0,
     "loadGlMs": 0,
     "longTasksPlay": 0,
@@ -1489,8 +1956,8 @@
     "tbtLoadMs": 0,
     "tbtPlayMs": 0,
     "longtaskApi": false,
-    "heartbeatOver100Play": 4,
-    "slowestPollMs": 240,
+    "heartbeatOver100Play": 3,
+    "slowestPollMs": 78,
     "pollTimeouts": 0,
     "shaderCompileMs": 0,
     "shaderCompileMaxCallMs": 0
@@ -1498,16 +1965,16 @@
    "loafTop": [],
    "rafStalls": [],
    "frames": {
-    "n": 20,
-    "jsMedian": 2.86,
-    "jsP95": 12.38,
-    "jsP99": 12.38,
-    "jsMax": 12.4,
-    "jsP95Raw": 13,
-    "rawWithGlP95": 13,
+    "n": 19,
+    "jsMedian": 2.91,
+    "jsP95": 37.86,
+    "jsP99": 37.86,
+    "jsMax": 37.9,
+    "jsP95Raw": 39,
+    "rawWithGlP95": 39,
     "glP95": 0,
-    "gapP95": 413,
-    "gapMedian": 257,
+    "gapP95": 443,
+    "gapMedian": 260,
     "over100": 0,
     "limit": 33
    },
@@ -1549,7 +2016,7 @@
     "buttonPresses": 0,
     "resumes": 0,
     "touchApi": null,
-    "inputLatencyMedianMs": 42,
+    "inputLatencyMedianMs": 86,
     "inputLatencyP95Ms": 4000,
     "inputLatencyMaxMs": 4000,
     "inputTimeouts": 2
@@ -1568,9 +2035,9 @@
      "STALL"
     ],
     "evidence": "page crashed (renderer process died)",
-    "blockPlayMs": 92,
-    "blockLoadMs": 581,
-    "load1": 10.35
+    "blockPlayMs": 57,
+    "blockLoadMs": 571,
+    "load1": 8.54
    }
   },
   {
@@ -1601,25 +2068,25 @@
     "3-end": null
    },
    "machine": {
-    "load1Start": 13.55,
+    "load1Start": 11.75,
     "cores": 4,
-    "load1End": 11.93,
-    "contention": 1.05,
+    "load1End": 11.71,
+    "contention": 1.13,
     "contentionSamples": [
-     1.34,
      1.05,
-     1.14,
-     1.05,
-     1.02
+     1.06,
+     1.15,
+     1.2,
+     1.13
     ]
    },
-   "loadMs": 192,
+   "loadMs": 185,
    "loaded": true,
-   "startUrl": "http://127.0.0.1:36275/SneakerDrop/index.html",
-   "startPath": "http://127.0.0.1:36275/SneakerDrop/index.html",
+   "startUrl": "http://127.0.0.1:41459/SneakerDrop/index.html",
+   "startPath": "http://127.0.0.1:41459/SneakerDrop/index.html",
    "sdk": true,
    "calibration": {
-    "benchMs": 97,
+    "benchMs": 90,
     "bench1Ms": null,
     "effectiveSlowdown": null
    },
@@ -1630,11 +2097,11 @@
     "buttonStillVisible": false
    },
    "block": {
-    "c": 1.05,
-    "loadMs": 730,
-    "playMs": 198,
-    "loadRawMs": 767,
-    "playRawMs": 208,
+    "c": 1.13,
+    "loadMs": 360,
+    "playMs": 57,
+    "loadRawMs": 407,
+    "playRawMs": 64,
     "playGlMs": 0,
     "loadGlMs": 0,
     "longTasksPlay": 0,
@@ -1643,7 +2110,7 @@
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 1,
-    "slowestPollMs": 183,
+    "slowestPollMs": 447,
     "pollTimeouts": 0,
     "shaderCompileMs": 0,
     "shaderCompileMaxCallMs": 0
@@ -1651,16 +2118,16 @@
    "loafTop": [],
    "rafStalls": [],
    "frames": {
-    "n": 6,
-    "jsMedian": 5.71,
-    "jsP95": 8.57,
-    "jsP99": 8.57,
-    "jsMax": 8.6,
-    "jsP95Raw": 9,
-    "rawWithGlP95": 9,
+    "n": 7,
+    "jsMedian": 0.88,
+    "jsP95": 17.7,
+    "jsP99": 17.7,
+    "jsMax": 17.7,
+    "jsP95Raw": 20,
+    "rawWithGlP95": 20,
     "glP95": 0,
-    "gapP95": 528,
-    "gapMedian": 412,
+    "gapP95": 374,
+    "gapMedian": 324,
     "over100": 0,
     "limit": 33
    },
@@ -1713,331 +2180,17 @@
     "maxChangeFromStartPct": null,
     "samples": 0
    },
-   "severity": 104.7,
+   "severity": 104.4,
    "recheck": {
     "reproduced": true,
     "verdicts": [
      "FREEZE",
      "STALL"
     ],
-    "evidence": "page crashed (renderer process died)",
-    "blockPlayMs": 0,
-    "blockLoadMs": 581,
-    "load1": 10.85
-   }
-  },
-  {
-   "id": "snake-clash",
-   "title": "Snake Clash",
-   "cat": "hyper",
-   "genre": "hyper-casual",
-   "src": "https://calebhomwe.github.io/playables/SnakeClash/index.html",
-   "engine": "webkit",
-   "throttle": 1,
-   "throttled": false,
-   "durationS": 45,
-   "orientation": "portrait",
-   "verdicts": [
-    "FREEZE",
-    "STALL"
-   ],
-   "evidence": {
-    "FREEZE": "page crashed (renderer process died)",
-    "STALL": "game never reported play after the start attempts (start: #play + tap on game); scenes seen: title"
-   },
-   "notes": [
-    "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1)",
-    "WebKit has no CPU throttle: numbers are unthrottled on this machine"
-   ],
-   "shots": {
-    "1-title": "shots/snake-clash-wk-1-title.jpg",
-    "3-end": null
-   },
-   "machine": {
-    "load1Start": 10.48,
-    "cores": 4,
-    "load1End": 9.83,
-    "contention": 1.03,
-    "contentionSamples": [
-     1.03,
-     1.21,
-     1.27,
-     1.02,
-     1.03
-    ]
-   },
-   "loadMs": 869,
-   "loaded": true,
-   "startUrl": "https://calebhomwe.github.io/playables/SnakeClash/index.html",
-   "startPath": "https://calebhomwe.github.io/playables/SnakeClash/index.html",
-   "sdk": true,
-   "calibration": {
-    "benchMs": 100,
-    "bench1Ms": null,
-    "effectiveSlowdown": null
-   },
-   "start": {
-    "how": "#play + tap on game",
-    "viaKey": false,
-    "detectedBy": null,
-    "buttonStillVisible": false
-   },
-   "block": {
-    "c": 1.03,
-    "loadMs": 576,
-    "playMs": 0,
-    "loadRawMs": 593,
-    "playRawMs": 0,
-    "playGlMs": 0,
-    "loadGlMs": 0,
-    "longTasksPlay": 0,
-    "longTasks100Play": 0,
-    "tbtLoadMs": 0,
-    "tbtPlayMs": 0,
-    "longtaskApi": false,
-    "heartbeatOver100Play": 1,
-    "slowestPollMs": 246,
-    "pollTimeouts": 0,
-    "shaderCompileMs": 0,
-    "shaderCompileMaxCallMs": 0
-   },
-   "loafTop": [],
-   "rafStalls": [],
-   "frames": {
-    "n": 6,
-    "jsMedian": 9.71,
-    "jsP95": 18.45,
-    "jsP99": 18.45,
-    "jsMax": 18.4,
-    "jsP95Raw": 19,
-    "rawWithGlP95": 19,
-    "glP95": 0,
-    "gapP95": 2465,
-    "gapMedian": 248,
-    "over100": 0,
-    "limit": 33
-   },
-   "errors": [],
-   "errorCount": 0,
-   "consoleErrors": [],
-   "failed": [],
-   "resources": {
-    "heap0MB": null,
-    "heap1MB": null,
-    "heapGrowthPct": null,
-    "heapMeasured": false,
-    "nodesStart": 82,
-    "nodesEnd": 82,
-    "nodesMax": 82,
-    "listeners0": null,
-    "listeners1": null,
-    "audioContexts": 0,
-    "audioElements": 0,
-    "webglContexts": 0,
-    "canvases": null,
-    "sdkTimers": null
-   },
-   "risks": [],
-   "sdkDeclared": true,
-   "scenes": {
-    "sequence": [
-     "title"
-    ],
-    "reachedPlay": false,
-    "gameOvers": 0,
-    "restartsAfterOver": 0
-   },
-   "bot": {
-    "taps": 1,
-    "swipes": 0,
-    "holds": 0,
-    "keys": 2,
-    "buttonPresses": 0,
-    "resumes": 0,
-    "touchApi": null,
-    "inputLatencyMedianMs": 4000,
-    "inputLatencyP95Ms": 4000,
-    "inputLatencyMaxMs": 4000,
-    "inputTimeouts": 2
-   },
-   "screen": {
-    "longestStaticS": 0,
-    "changeTitleToPlayPct": null,
-    "maxChangeFromStartPct": null,
-    "samples": 0
-   },
-   "severity": 104.6,
-   "recheck": {
-    "reproduced": true,
-    "verdicts": [
-     "FREEZE"
-    ],
-    "evidence": "page crashed (renderer process died)",
-    "blockPlayMs": 1103,
-    "blockLoadMs": 1122,
-    "load1": 10
-   }
-  },
-  {
-   "id": "bridge-rush",
-   "title": "Bridge Rush",
-   "cat": "hyper",
-   "genre": "hyper-casual",
-   "src": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
-   "engine": "webkit",
-   "throttle": 1,
-   "throttled": false,
-   "durationS": 45,
-   "orientation": "portrait",
-   "verdicts": [
-    "FREEZE"
-   ],
-   "evidence": {
-    "FREEZE": "main thread blocked 2631 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 2459 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
-   },
-   "notes": [
-    "WebKit has no CPU throttle: numbers are unthrottled on this machine"
-   ],
-   "shots": {
-    "1-title": "shots/bridge-rush-wk-1-title.jpg",
-    "3-end": null
-   },
-   "machine": {
-    "load1Start": 13.95,
-    "cores": 4,
-    "load1End": 14.95,
-    "contention": 1.07,
-    "contentionSamples": [
-     1.07,
-     2.95,
-     1.11,
-     1.03,
-     1.03
-    ]
-   },
-   "loadMs": 1803,
-   "loaded": true,
-   "startUrl": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
-   "startPath": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
-   "sdk": true,
-   "calibration": {
-    "benchMs": 106,
-    "bench1Ms": null,
-    "effectiveSlowdown": null
-   },
-   "start": {
-    "how": "#play",
-    "viaKey": false,
-    "detectedBy": "sdk",
-    "buttonStillVisible": false
-   },
-   "block": {
-    "c": 1.07,
-    "loadMs": 2459,
-    "playMs": 944,
-    "loadRawMs": 2631,
-    "playRawMs": 2601,
-    "playGlMs": 1591,
-    "loadGlMs": 0,
-    "longTasksPlay": 0,
-    "longTasks100Play": 0,
-    "tbtLoadMs": 0,
-    "tbtPlayMs": 0,
-    "longtaskApi": false,
-    "heartbeatOver100Play": 5,
-    "slowestPollMs": 2210,
-    "pollTimeouts": 0,
-    "shaderCompileMs": 301,
-    "shaderCompileMaxCallMs": 53
-   },
-   "loafTop": [],
-   "rafStalls": [],
-   "frames": {
-    "n": 6,
-    "jsMedian": 26.17,
-    "jsP95": 213.08,
-    "jsP99": 213.08,
-    "jsMax": 213.1,
-    "jsP95Raw": 228,
-    "rawWithGlP95": 1819,
-    "glP95": 1591,
-    "gapP95": 945,
-    "gapMedian": 560,
-    "over100": 1,
-    "limit": 33
-   },
-   "errors": [],
-   "errorCount": 0,
-   "consoleErrors": [],
-   "failed": [],
-   "resources": {
-    "heap0MB": null,
-    "heap1MB": null,
-    "heapGrowthPct": null,
-    "heapMeasured": false,
-    "nodesStart": 214,
-    "nodesEnd": 214,
-    "nodesMax": 214,
-    "listeners0": null,
-    "listeners1": null,
-    "audioContexts": 1,
-    "audioElements": 1,
-    "webglContexts": 1,
-    "canvases": null,
-    "sdkTimers": null
-   },
-   "risks": [],
-   "sdkDeclared": true,
-   "scenes": {
-    "sequence": [
-     "title",
-     "play"
-    ],
-    "reachedPlay": true,
-    "gameOvers": 0,
-    "restartsAfterOver": 0
-   },
-   "gameScore": {
-    "updates": 1,
-    "first": 0,
-    "last": 0,
-    "max": 0,
-    "trajectory": [
-     [
-      20,
-      0
-     ]
-    ]
-   },
-   "bot": {
-    "taps": 0,
-    "swipes": 0,
-    "holds": 0,
-    "keys": 0,
-    "buttonPresses": 0,
-    "resumes": 0,
-    "touchApi": null,
-    "inputLatencyMedianMs": null,
-    "inputLatencyP95Ms": null,
-    "inputLatencyMaxMs": null,
-    "inputTimeouts": 0
-   },
-   "screen": {
-    "longestStaticS": 0,
-    "changeTitleToPlayPct": null,
-    "maxChangeFromStartPct": null,
-    "samples": 0
-   },
-   "severity": 104.5,
-   "recheck": {
-    "reproduced": true,
-    "verdicts": [
-     "FREEZE"
-    ],
-    "evidence": "main thread blocked 3698 ms (during load), 24 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 3466 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
-    "blockPlayMs": 332,
-    "blockLoadMs": 3466,
-    "load1": 14.44
+    "evidence": "2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+    "blockPlayMs": 542,
+    "blockLoadMs": 888,
+    "load1": 11.19
    }
   },
   {
@@ -2056,10 +2209,11 @@
     "STALL"
    ],
    "evidence": {
-    "FREEZE": "2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+    "FREEZE": "page crashed (renderer process died)",
     "STALL": "game never reported play after the start attempts (start: #play + tap on game); scenes seen: title"
    },
    "notes": [
+    "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1)",
     "WebKit has no CPU throttle: numbers are unthrottled on this machine"
    ],
    "shots": {
@@ -2067,25 +2221,25 @@
     "3-end": null
    },
    "machine": {
-    "load1Start": 12.84,
+    "load1Start": 13.16,
     "cores": 4,
-    "load1End": 10.98,
-    "contention": 1.07,
+    "load1End": 10.09,
+    "contention": 1.01,
     "contentionSamples": [
-     1.05,
-     1.07,
-     1.02,
-     1.14,
-     1.1
+     1,
+     1.15,
+     1.01,
+     1.01,
+     1.01
     ]
    },
-   "loadMs": 816,
+   "loadMs": 563,
    "loaded": true,
    "startUrl": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
    "startPath": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
    "sdk": true,
    "calibration": {
-    "benchMs": 81,
+    "benchMs": 49,
     "bench1Ms": null,
     "effectiveSlowdown": null
    },
@@ -2096,37 +2250,37 @@
     "buttonStillVisible": false
    },
    "block": {
-    "c": 1.07,
-    "loadMs": 302,
-    "playMs": 503,
-    "loadRawMs": 324,
-    "playRawMs": 638,
-    "playGlMs": 100,
-    "loadGlMs": 1,
+    "c": 1.01,
+    "loadMs": 250,
+    "playMs": 0,
+    "loadRawMs": 410,
+    "playRawMs": 0,
+    "playGlMs": 0,
+    "loadGlMs": 157,
     "longTasksPlay": 0,
     "longTasks100Play": 0,
     "tbtLoadMs": 0,
     "tbtPlayMs": 0,
     "longtaskApi": false,
-    "heartbeatOver100Play": 3,
-    "slowestPollMs": 418,
+    "heartbeatOver100Play": 0,
+    "slowestPollMs": 17,
     "pollTimeouts": 0,
-    "shaderCompileMs": 241,
-    "shaderCompileMaxCallMs": 50
+    "shaderCompileMs": 135,
+    "shaderCompileMaxCallMs": 12
    },
    "loafTop": [],
    "rafStalls": [],
    "frames": {
-    "n": 5,
-    "jsMedian": 32.71,
-    "jsP95": 63.55,
-    "jsP99": 63.55,
-    "jsMax": 63.6,
-    "jsP95Raw": 68,
-    "rawWithGlP95": 964,
-    "glP95": 896,
-    "gapP95": 2017,
-    "gapMedian": 762,
+    "n": 4,
+    "jsMedian": 19.8,
+    "jsP95": 56.44,
+    "jsP99": 56.44,
+    "jsMax": 56.4,
+    "jsP95Raw": 57,
+    "rawWithGlP95": 214,
+    "glP95": 157,
+    "gapP95": 786,
+    "gapMedian": 320,
     "over100": 0,
     "limit": 33
    },
@@ -2169,8 +2323,8 @@
     "resumes": 0,
     "touchApi": null,
     "inputLatencyMedianMs": 4000,
-    "inputLatencyP95Ms": 4001,
-    "inputLatencyMaxMs": 4001,
+    "inputLatencyP95Ms": 4012,
+    "inputLatencyMaxMs": 4012,
     "inputTimeouts": 2
    },
    "screen": {
@@ -2179,167 +2333,16 @@
     "maxChangeFromStartPct": null,
     "samples": 0
    },
-   "severity": 104.5,
+   "severity": 104.3,
    "recheck": {
     "reproduced": true,
     "verdicts": [
      "FREEZE"
     ],
     "evidence": "page crashed (renderer process died)",
-    "blockPlayMs": 956,
-    "blockLoadMs": 711,
-    "load1": 10.9
-   }
-  },
-  {
-   "id": "clean-house",
-   "title": "Clean House",
-   "cat": "sim",
-   "genre": "management",
-   "src": "CleanHouse/index.html",
-   "engine": "webkit",
-   "throttle": 1,
-   "throttled": false,
-   "durationS": 45,
-   "orientation": "portrait",
-   "verdicts": [
-    "FREEZE"
-   ],
-   "evidence": {
-    "FREEZE": "main thread blocked 3077 ms (during load), 766 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 2010 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
-   },
-   "notes": [
-    "WebKit has no CPU throttle: numbers are unthrottled on this machine"
-   ],
-   "shots": {
-    "1-title": "shots/clean-house-wk-1-title.jpg",
-    "3-end": null
-   },
-   "machine": {
-    "load1Start": 10.35,
-    "cores": 4,
-    "load1End": 10.22,
-    "contention": 1.15,
-    "contentionSamples": [
-     1.26,
-     1.34,
-     1.11,
-     1.15,
-     1.07
-    ]
-   },
-   "loadMs": 1929,
-   "loaded": true,
-   "startUrl": "http://127.0.0.1:37797/CleanHouse/index.html",
-   "startPath": "http://127.0.0.1:37797/CleanHouse/index.html",
-   "sdk": true,
-   "calibration": {
-    "benchMs": 113,
-    "bench1Ms": null,
-    "effectiveSlowdown": null
-   },
-   "start": {
-    "how": "declared start button not tappable -> tap centre",
-    "viaKey": false,
-    "detectedBy": "sdk",
-    "buttonStillVisible": false
-   },
-   "block": {
-    "c": 1.15,
-    "loadMs": 2010,
-    "playMs": 136,
-    "loadRawMs": 3077,
-    "playRawMs": 156,
-    "playGlMs": 0,
-    "loadGlMs": 766,
-    "longTasksPlay": 0,
-    "longTasks100Play": 0,
-    "tbtLoadMs": 0,
-    "tbtPlayMs": 0,
-    "longtaskApi": false,
-    "heartbeatOver100Play": 2,
-    "slowestPollMs": 182,
-    "pollTimeouts": 0,
-    "shaderCompileMs": 155,
-    "shaderCompileMaxCallMs": 35
-   },
-   "loafTop": [],
-   "rafStalls": [],
-   "frames": {
-    "n": 5,
-    "jsMedian": 0,
-    "jsP95": 220,
-    "jsP99": 220,
-    "jsMax": 220,
-    "jsP95Raw": 253,
-    "rawWithGlP95": 1019,
-    "glP95": 766,
-    "gapP95": 2134,
-    "gapMedian": 21,
-    "over100": 1,
-    "limit": 33
-   },
-   "errors": [],
-   "errorCount": 0,
-   "consoleErrors": [],
-   "failed": [],
-   "resources": {
-    "heap0MB": null,
-    "heap1MB": null,
-    "heapGrowthPct": null,
-    "heapMeasured": false,
-    "nodesStart": 281,
-    "nodesEnd": 281,
-    "nodesMax": 281,
-    "listeners0": null,
-    "listeners1": null,
-    "audioContexts": 0,
-    "audioElements": 3,
-    "webglContexts": 1,
-    "canvases": null,
-    "sdkTimers": null
-   },
-   "risks": [],
-   "sdkDeclared": true,
-   "scenes": {
-    "sequence": [
-     "title",
-     "play"
-    ],
-    "reachedPlay": true,
-    "gameOvers": 0,
-    "restartsAfterOver": 0
-   },
-   "bot": {
-    "taps": 1,
-    "swipes": 0,
-    "holds": 0,
-    "keys": 0,
-    "buttonPresses": 0,
-    "resumes": 0,
-    "touchApi": null,
-    "inputLatencyMedianMs": 4,
-    "inputLatencyP95Ms": 4,
-    "inputLatencyMaxMs": 4,
-    "inputTimeouts": 0
-   },
-   "screen": {
-    "longestStaticS": 0,
-    "changeTitleToPlayPct": null,
-    "maxChangeFromStartPct": null,
-    "samples": 0
-   },
-   "severity": 104,
-   "recheck": {
-    "reproduced": true,
-    "verdicts": [
-     "FREEZE",
-     "STALL"
-    ],
-    "evidence": "page crashed (renderer process died)",
-    "blockPlayMs": 0,
-    "blockLoadMs": 981,
-    "load1": 10.17
+    "blockPlayMs": 691,
+    "blockLoadMs": 598,
+    "load1": 9.69
    }
   },
   {
@@ -2365,10 +2368,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 9.92,
+    "load1Start": 11.66,
     "cores": 4
    },
-   "loadMs": 2370,
+   "loadMs": 1720,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/chess.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/chess.html",
@@ -2446,10 +2449,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 11.47,
+    "load1Start": 11.85,
     "cores": 4
    },
-   "loadMs": 959,
+   "loadMs": 1359,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/hangman.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/hangman.html",
@@ -2467,7 +2470,7 @@
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 0,
-    "slowestPollMs": 7,
+    "slowestPollMs": 3,
     "pollTimeouts": 0,
     "shaderCompileMs": null,
     "shaderCompileMaxCallMs": null
@@ -2527,10 +2530,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 13.04,
+    "load1Start": 12.91,
     "cores": 4
    },
-   "loadMs": 1728,
+   "loadMs": 6423,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/helix-smash.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/helix-smash.html",
@@ -2608,10 +2611,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 12.18,
+    "load1Start": 12.9,
     "cores": 4
    },
-   "loadMs": 1658,
+   "loadMs": 5257,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/hole-swallow.html",
@@ -2629,7 +2632,7 @@
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 0,
-    "slowestPollMs": 4,
+    "slowestPollMs": 3,
     "pollTimeouts": 0,
     "shaderCompileMs": null,
     "shaderCompileMaxCallMs": null
@@ -2689,10 +2692,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 11.15,
+    "load1Start": 12.89,
     "cores": 4
    },
-   "loadMs": 868,
+   "loadMs": 1317,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/math-battle.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/math-battle.html",
@@ -2770,10 +2773,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 11.25,
+    "load1Start": 11.83,
     "cores": 4
    },
-   "loadMs": 814,
+   "loadMs": 633,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/math-blast.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/math-blast.html",
@@ -2791,7 +2794,7 @@
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 0,
-    "slowestPollMs": 3,
+    "slowestPollMs": 2,
     "pollTimeouts": 0,
     "shaderCompileMs": null,
     "shaderCompileMaxCallMs": null
@@ -2851,10 +2854,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 11.25,
+    "load1Start": 11.85,
     "cores": 4
    },
-   "loadMs": 699,
+   "loadMs": 830,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/math-run.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/math-run.html",
@@ -2872,7 +2875,7 @@
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 0,
-    "slowestPollMs": 10,
+    "slowestPollMs": 1,
     "pollTimeouts": 0,
     "shaderCompileMs": null,
     "shaderCompileMaxCallMs": null
@@ -2932,10 +2935,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 11.15,
+    "load1Start": 12.1,
     "cores": 4
    },
-   "loadMs": 582,
+   "loadMs": 678,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/math-snake.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/math-snake.html",
@@ -2953,7 +2956,7 @@
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 0,
-    "slowestPollMs": 2,
+    "slowestPollMs": 3,
     "pollTimeouts": 0,
     "shaderCompileMs": null,
     "shaderCompileMaxCallMs": null
@@ -3013,10 +3016,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 11.47,
+    "load1Start": 11.78,
     "cores": 4
    },
-   "loadMs": 433,
+   "loadMs": 649,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/missing-letter.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/missing-letter.html",
@@ -3034,7 +3037,7 @@
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 0,
-    "slowestPollMs": 1,
+    "slowestPollMs": 2,
     "pollTimeouts": 0,
     "shaderCompileMs": null,
     "shaderCompileMaxCallMs": null
@@ -3094,10 +3097,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 11.88,
+    "load1Start": 11.83,
     "cores": 4
    },
-   "loadMs": 591,
+   "loadMs": 693,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/rhyme-time.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/rhyme-time.html",
@@ -3175,10 +3178,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 11.35,
+    "load1Start": 11.56,
     "cores": 4
    },
-   "loadMs": 2111,
+   "loadMs": 1959,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/spell-and-say.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/spell-and-say.html",
@@ -3196,7 +3199,7 @@
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 0,
-    "slowestPollMs": 5,
+    "slowestPollMs": 4,
     "pollTimeouts": 0,
     "shaderCompileMs": null,
     "shaderCompileMaxCallMs": null
@@ -3256,10 +3259,10 @@
    "notes": [],
    "shots": {},
    "machine": {
-    "load1Start": 12.8,
+    "load1Start": 12.2,
     "cores": 4
    },
-   "loadMs": 3638,
+   "loadMs": 6454,
    "loaded": false,
    "startUrl": "https://calebhomwe.github.io/arcade-hub/games/stack-ball.html",
    "startPath": "https://calebhomwe.github.io/arcade-hub/games/stack-ball.html",
@@ -3277,7 +3280,7 @@
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 0,
-    "slowestPollMs": 11,
+    "slowestPollMs": 3,
     "pollTimeouts": 0,
     "shaderCompileMs": null,
     "shaderCompileMaxCallMs": null
@@ -3548,25 +3551,25 @@
     "3-end": null
    },
    "machine": {
-    "load1Start": 10.9,
+    "load1Start": 9.69,
     "cores": 4,
-    "load1End": 11.07,
-    "contention": 1.09,
+    "load1End": 10.91,
+    "contention": 1.04,
     "contentionSamples": [
+     1.05,
+     1.15,
+     1.03,
      1.04,
-     1.09,
-     1.09,
-     1.04,
-     1.09
+     1.03
     ]
    },
-   "loadMs": 1085,
+   "loadMs": 1466,
    "loaded": true,
    "startUrl": "https://calebhomwe.github.io/playables/RungRunner/index.html",
    "startPath": "https://calebhomwe.github.io/playables/RungRunner/index.html",
    "sdk": true,
    "calibration": {
-    "benchMs": 44,
+    "benchMs": 48,
     "bench1Ms": null,
     "effectiveSlowdown": null
    },
@@ -3577,37 +3580,37 @@
     "buttonStillVisible": false
    },
    "block": {
-    "c": 1.09,
-    "loadMs": 582,
-    "playMs": 583,
-    "loadRawMs": 634,
-    "playRawMs": 946,
-    "playGlMs": 310,
-    "loadGlMs": 0,
+    "c": 1.04,
+    "loadMs": 845,
+    "playMs": 570,
+    "loadRawMs": 1089,
+    "playRawMs": 824,
+    "playGlMs": 231,
+    "loadGlMs": 210,
     "longTasksPlay": 0,
     "longTasks100Play": 0,
     "tbtLoadMs": 0,
     "tbtPlayMs": 0,
     "longtaskApi": false,
     "heartbeatOver100Play": 4,
-    "slowestPollMs": 808,
+    "slowestPollMs": 548,
     "pollTimeouts": 0,
-    "shaderCompileMs": 305,
-    "shaderCompileMaxCallMs": 65
+    "shaderCompileMs": 283,
+    "shaderCompileMaxCallMs": 70
    },
    "loafTop": [],
    "rafStalls": [],
    "frames": {
-    "n": 6,
-    "jsMedian": 56.88,
-    "jsP95": 88.07,
-    "jsP99": 88.07,
-    "jsMax": 88.1,
-    "jsP95Raw": 96,
-    "rawWithGlP95": 873,
-    "glP95": 777,
-    "gapP95": 2035,
-    "gapMedian": 806,
+    "n": 5,
+    "jsMedian": 30.77,
+    "jsP95": 91.35,
+    "jsP99": 91.35,
+    "jsMax": 91.3,
+    "jsP95Raw": 95,
+    "rawWithGlP95": 416,
+    "glP95": 321,
+    "gapP95": 2140,
+    "gapMedian": 1281,
     "over100": 0,
     "limit": 33
    },
@@ -3626,7 +3629,7 @@
     "listeners0": null,
     "listeners1": null,
     "audioContexts": 1,
-    "audioElements": 1,
+    "audioElements": 0,
     "webglContexts": 1,
     "canvases": null,
     "sdkTimers": null
@@ -3649,7 +3652,7 @@
     "max": 0,
     "trajectory": [
      [
-      8,
+      9,
       0
      ]
     ]
@@ -3673,17 +3676,16 @@
     "maxChangeFromStartPct": null,
     "samples": 0
    },
-   "severity": 102.6,
+   "severity": 102.8,
    "recheck": {
     "reproduced": true,
     "verdicts": [
-     "FREEZE",
-     "STALL"
+     "FREEZE"
     ],
-    "evidence": "2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
-    "blockPlayMs": 692,
-    "blockLoadMs": 825,
-    "load1": 10.48
+    "evidence": "page crashed (renderer process died)",
+    "blockPlayMs": 438,
+    "blockLoadMs": 805,
+    "load1": 11.25
    }
   },
   {

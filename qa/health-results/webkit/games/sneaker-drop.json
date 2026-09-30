@@ -26,25 +26,25 @@
   "3-end": null
  },
  "machine": {
-  "load1Start": 13.55,
+  "load1Start": 11.75,
   "cores": 4,
-  "load1End": 11.93,
-  "contention": 1.05,
+  "load1End": 11.71,
+  "contention": 1.13,
   "contentionSamples": [
-   1.34,
    1.05,
-   1.14,
-   1.05,
-   1.02
+   1.06,
+   1.15,
+   1.2,
+   1.13
   ]
  },
- "loadMs": 192,
+ "loadMs": 185,
  "loaded": true,
- "startUrl": "http://127.0.0.1:36275/SneakerDrop/index.html",
- "startPath": "http://127.0.0.1:36275/SneakerDrop/index.html",
+ "startUrl": "http://127.0.0.1:41459/SneakerDrop/index.html",
+ "startPath": "http://127.0.0.1:41459/SneakerDrop/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 97,
+  "benchMs": 90,
   "bench1Ms": null,
   "effectiveSlowdown": null
  },
@@ -55,11 +55,11 @@
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.05,
-  "loadMs": 730,
-  "playMs": 198,
-  "loadRawMs": 767,
-  "playRawMs": 208,
+  "c": 1.13,
+  "loadMs": 360,
+  "playMs": 57,
+  "loadRawMs": 407,
+  "playRawMs": 64,
   "playGlMs": 0,
   "loadGlMs": 0,
   "longTasksPlay": 0,
@@ -68,7 +68,7 @@
   "tbtPlayMs": 0,
   "longtaskApi": false,
   "heartbeatOver100Play": 1,
-  "slowestPollMs": 183,
+  "slowestPollMs": 447,
   "pollTimeouts": 0,
   "shaderCompileMs": 0,
   "shaderCompileMaxCallMs": 0
@@ -76,16 +76,16 @@
  "loafTop": [],
  "rafStalls": [],
  "frames": {
-  "n": 6,
-  "jsMedian": 5.71,
-  "jsP95": 8.57,
-  "jsP99": 8.57,
-  "jsMax": 8.6,
-  "jsP95Raw": 9,
-  "rawWithGlP95": 9,
+  "n": 7,
+  "jsMedian": 0.88,
+  "jsP95": 17.7,
+  "jsP99": 17.7,
+  "jsMax": 17.7,
+  "jsP95Raw": 20,
+  "rawWithGlP95": 20,
   "glP95": 0,
-  "gapP95": 528,
-  "gapMedian": 412,
+  "gapP95": 374,
+  "gapMedian": 324,
   "over100": 0,
   "limit": 33
  },
@@ -138,16 +138,16 @@
   "maxChangeFromStartPct": null,
   "samples": 0
  },
- "severity": 104.7,
+ "severity": 104.4,
  "recheck": {
   "reproduced": true,
   "verdicts": [
    "FREEZE",
    "STALL"
   ],
-  "evidence": "page crashed (renderer process died)",
-  "blockPlayMs": 0,
-  "blockLoadMs": 581,
-  "load1": 10.85
+  "evidence": "2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+  "blockPlayMs": 542,
+  "blockLoadMs": 888,
+  "load1": 11.19
  }
 }

@@ -23,25 +23,25 @@
   "3-end": null
  },
  "machine": {
-  "load1Start": 10.9,
+  "load1Start": 9.69,
   "cores": 4,
-  "load1End": 11.07,
-  "contention": 1.09,
+  "load1End": 10.91,
+  "contention": 1.04,
   "contentionSamples": [
+   1.05,
+   1.15,
+   1.03,
    1.04,
-   1.09,
-   1.09,
-   1.04,
-   1.09
+   1.03
   ]
  },
- "loadMs": 1085,
+ "loadMs": 1466,
  "loaded": true,
  "startUrl": "https://calebhomwe.github.io/playables/RungRunner/index.html",
  "startPath": "https://calebhomwe.github.io/playables/RungRunner/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 44,
+  "benchMs": 48,
   "bench1Ms": null,
   "effectiveSlowdown": null
  },
@@ -52,37 +52,37 @@
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.09,
-  "loadMs": 582,
-  "playMs": 583,
-  "loadRawMs": 634,
-  "playRawMs": 946,
-  "playGlMs": 310,
-  "loadGlMs": 0,
+  "c": 1.04,
+  "loadMs": 845,
+  "playMs": 570,
+  "loadRawMs": 1089,
+  "playRawMs": 824,
+  "playGlMs": 231,
+  "loadGlMs": 210,
   "longTasksPlay": 0,
   "longTasks100Play": 0,
   "tbtLoadMs": 0,
   "tbtPlayMs": 0,
   "longtaskApi": false,
   "heartbeatOver100Play": 4,
-  "slowestPollMs": 808,
+  "slowestPollMs": 548,
   "pollTimeouts": 0,
-  "shaderCompileMs": 305,
-  "shaderCompileMaxCallMs": 65
+  "shaderCompileMs": 283,
+  "shaderCompileMaxCallMs": 70
  },
  "loafTop": [],
  "rafStalls": [],
  "frames": {
-  "n": 6,
-  "jsMedian": 56.88,
-  "jsP95": 88.07,
-  "jsP99": 88.07,
-  "jsMax": 88.1,
-  "jsP95Raw": 96,
-  "rawWithGlP95": 873,
-  "glP95": 777,
-  "gapP95": 2035,
-  "gapMedian": 806,
+  "n": 5,
+  "jsMedian": 30.77,
+  "jsP95": 91.35,
+  "jsP99": 91.35,
+  "jsMax": 91.3,
+  "jsP95Raw": 95,
+  "rawWithGlP95": 416,
+  "glP95": 321,
+  "gapP95": 2140,
+  "gapMedian": 1281,
   "over100": 0,
   "limit": 33
  },
@@ -101,7 +101,7 @@
   "listeners0": null,
   "listeners1": null,
   "audioContexts": 1,
-  "audioElements": 1,
+  "audioElements": 0,
   "webglContexts": 1,
   "canvases": null,
   "sdkTimers": null
@@ -124,7 +124,7 @@
   "max": 0,
   "trajectory": [
    [
-    8,
+    9,
     0
    ]
   ]
@@ -148,16 +148,15 @@
   "maxChangeFromStartPct": null,
   "samples": 0
  },
- "severity": 102.6,
+ "severity": 102.8,
  "recheck": {
   "reproduced": true,
   "verdicts": [
-   "FREEZE",
-   "STALL"
+   "FREEZE"
   ],
-  "evidence": "2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
-  "blockPlayMs": 692,
-  "blockLoadMs": 825,
-  "load1": 10.48
+  "evidence": "page crashed (renderer process died)",
+  "blockPlayMs": 438,
+  "blockLoadMs": 805,
+  "load1": 11.25
  }
 }

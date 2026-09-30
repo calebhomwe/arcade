@@ -12,7 +12,7 @@ Static files. `ClaireFarm/index.html`. URL flags: `?q=low|medium|high`, `?fresh=
 - Assets: see LICENSES.md (CC0 Poly Haven textures, Kenney, Quaternius; Meshy models previously generated). Models ~4.2 MB total.
 
 ## Known issues / next
-- Look is ~3/10 vs ref_03: flat green meadow, sparse foliage, empty-looking furrowed fields. Needs crop meshes, denser foliage, more dressing.
+- Look is ~4.5/10 vs ref_03 after round 2. `js/gfx/dress.js` adds scenic crop fields, unowned lots that show as crops until bought, hedgerows, tree clusters and props. Still missing: a dense town, boats/harbour life, richer water and haze, and the Meshy buildings look lumpy.
 - Tri/draw budget: measured on SwiftShader high tier 171-257 calls / 229-388k tris incl. shadow pass; Low ~82 calls / 120k. Over budget on High; Low/Medium are the iPhone targets.
 - Real iPhone perf never measured.
 - Catalog: entry in `tools/build_catalog.py`, meta in `qa/standard/meta/claire-farm.json`; thumbnails are temporary crops.

@@ -10,12 +10,10 @@
  "durationS": 45,
  "orientation": "portrait",
  "verdicts": [
-  "FREEZE",
-  "STALL"
+  "FREEZE"
  ],
  "evidence": {
-  "FREEZE": "main thread blocked 2690 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 2587 ms of JS; timer heartbeat (no long-task API in this engine) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
-  "STALL": "game never reported play after the start attempts (start: .playbtn + tap on game); scenes seen: title"
+  "FREEZE": "main thread blocked 7853 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 7012 ms of JS; timer heartbeat (no long-task API in this engine) | page did not answer the harness for 6 s (2 poll timeout(s)) | page crashed (renderer process died)"
  },
  "notes": [
   "WebKit has no CPU throttle: numbers are unthrottled on this machine"
@@ -25,40 +23,40 @@
   "3-end": null
  },
  "machine": {
-  "load1Start": 12.58,
+  "load1Start": 16.04,
   "cores": 4,
-  "load1End": 11.21,
-  "contention": 1.04,
+  "load1End": 18.48,
+  "contention": 1.12,
   "contentionSamples": [
-   1.06,
-   1,
-   1.04,
-   1.04,
-   1.05
+   1.12,
+   1.11,
+   1.13,
+   1.26,
+   1.11
   ]
  },
- "loadMs": 1194,
+ "loadMs": 2426,
  "loaded": true,
- "startUrl": "http://127.0.0.1:46207/ChiliFirm/index.html",
- "startPath": "http://127.0.0.1:46207/ChiliFirm/index.html",
+ "startUrl": "http://127.0.0.1:39905/ChiliFirm/index.html",
+ "startPath": "http://127.0.0.1:39905/ChiliFirm/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 36,
+  "benchMs": 105,
   "bench1Ms": null,
   "effectiveSlowdown": null
  },
  "start": {
-  "how": ".playbtn + tap on game",
+  "how": ".playbtn",
   "viaKey": false,
-  "detectedBy": null,
+  "detectedBy": "sdk",
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.04,
-  "loadMs": 1167,
-  "playMs": 2587,
-  "loadRawMs": 1214,
-  "playRawMs": 2690,
+  "c": 1.12,
+  "loadMs": 7012,
+  "playMs": 6769,
+  "loadRawMs": 7853,
+  "playRawMs": 7581,
   "playGlMs": 0,
   "loadGlMs": 0,
   "longTasksPlay": 0,
@@ -66,22 +64,22 @@
   "tbtLoadMs": 0,
   "tbtPlayMs": 0,
   "longtaskApi": false,
-  "heartbeatOver100Play": 2,
-  "slowestPollMs": 2353,
-  "pollTimeouts": 0,
+  "heartbeatOver100Play": 3,
+  "slowestPollMs": 6007,
+  "pollTimeouts": 2,
   "shaderCompileMs": 0,
   "shaderCompileMaxCallMs": 0
  },
  "loafTop": [],
  "rafStalls": [],
  "frames": {
-  "n": 1,
-  "jsMedian": 1.92,
-  "jsP95": 1.92,
-  "jsP99": 1.92,
-  "jsMax": 1.9,
-  "jsP95Raw": 2,
-  "rawWithGlP95": 2,
+  "n": 2,
+  "jsMedian": 5.36,
+  "jsP95": 5.36,
+  "jsP99": 5.36,
+  "jsMax": 5.4,
+  "jsP95Raw": 6,
+  "rawWithGlP95": 6,
   "glP95": 0,
   "gapP95": null,
   "gapMedian": null,
@@ -102,8 +100,8 @@
   "nodesMax": 1190,
   "listeners0": null,
   "listeners1": null,
-  "audioContexts": 0,
-  "audioElements": 0,
+  "audioContexts": 1,
+  "audioElements": 1,
   "webglContexts": 0,
   "canvases": null,
   "sdkTimers": null
@@ -112,24 +110,25 @@
  "sdkDeclared": true,
  "scenes": {
   "sequence": [
-   "title"
+   "title",
+   "play"
   ],
-  "reachedPlay": false,
+  "reachedPlay": true,
   "gameOvers": 0,
   "restartsAfterOver": 0
  },
  "bot": {
-  "taps": 1,
+  "taps": 0,
   "swipes": 0,
   "holds": 0,
-  "keys": 2,
+  "keys": 0,
   "buttonPresses": 0,
   "resumes": 0,
   "touchApi": null,
-  "inputLatencyMedianMs": 4000,
-  "inputLatencyP95Ms": 4001,
-  "inputLatencyMaxMs": 4001,
-  "inputTimeouts": 2
+  "inputLatencyMedianMs": null,
+  "inputLatencyP95Ms": null,
+  "inputLatencyMaxMs": null,
+  "inputTimeouts": 0
  },
  "screen": {
   "longestStaticS": 0,
@@ -137,16 +136,16 @@
   "maxChangeFromStartPct": null,
   "samples": 0
  },
- "severity": 106.6,
+ "severity": 109,
  "recheck": {
   "reproduced": true,
   "verdicts": [
    "FREEZE",
    "STALL"
   ],
-  "evidence": "main thread blocked 7897 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 7380 ms of JS; timer heartbeat (no long-task API in this engine) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
-  "blockPlayMs": 3298,
-  "blockLoadMs": 7380,
-  "load1": 11.03
+  "evidence": "main thread blocked 8027 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x2 -> about 3935 ms of JS; timer heartbeat (no long-task API in this engine) | page did not answer the harness for 6 s (3 poll timeout(s)) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+  "blockPlayMs": 3935,
+  "blockLoadMs": 1214,
+  "load1": 19.21
  }
 }

@@ -14,7 +14,7 @@
   "STALL"
  ],
  "evidence": {
-  "FREEZE": "main thread blocked 5408 ms (while playing), 971 ms of it inside WebGL calls (software GL), machine slowdown x1.2 -> about 3698 ms of JS; timer heartbeat (no long-task API in this engine) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+  "FREEZE": "main thread blocked 9096 ms (while playing), 1498 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 7168 ms of JS; timer heartbeat (no long-task API in this engine) | page did not answer the harness for 6 s (1 poll timeout(s)) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
   "STALL": "game never reported play after the start attempts (start: #playBtn + tap on game); scenes seen: title"
  },
  "notes": [
@@ -25,25 +25,25 @@
   "3-end": null
  },
  "machine": {
-  "load1Start": 13.73,
+  "load1Start": 12.44,
   "cores": 4,
-  "load1End": 13.06,
-  "contention": 1.2,
+  "load1End": 12.33,
+  "contention": 1.06,
   "contentionSamples": [
-   3.35,
-   1.2,
-   1.04,
+   1.05,
    1.07,
-   1.28
+   1.06,
+   1.05,
+   1.12
   ]
  },
- "loadMs": 1872,
+ "loadMs": 1316,
  "loaded": true,
- "startUrl": "http://127.0.0.1:33021/ClaireFarm/index.html",
- "startPath": "http://127.0.0.1:33021/ClaireFarm/index.html",
+ "startUrl": "http://127.0.0.1:42451/ClaireFarm/index.html",
+ "startPath": "http://127.0.0.1:42451/ClaireFarm/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 92,
+  "benchMs": 117,
   "bench1Ms": null,
   "effectiveSlowdown": null
  },
@@ -54,37 +54,37 @@
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.2,
-  "loadMs": 2923,
-  "playMs": 3698,
-  "loadRawMs": 4008,
-  "playRawMs": 5408,
-  "playGlMs": 971,
-  "loadGlMs": 501,
+  "c": 1.06,
+  "loadMs": 3815,
+  "playMs": 7168,
+  "loadRawMs": 4428,
+  "playRawMs": 9096,
+  "playGlMs": 1498,
+  "loadGlMs": 384,
   "longTasksPlay": 0,
   "longTasks100Play": 0,
   "tbtLoadMs": 0,
   "tbtPlayMs": 0,
   "longtaskApi": false,
-  "heartbeatOver100Play": 6,
-  "slowestPollMs": 4990,
-  "pollTimeouts": 0,
-  "shaderCompileMs": 221,
-  "shaderCompileMaxCallMs": 25
+  "heartbeatOver100Play": 3,
+  "slowestPollMs": 6001,
+  "pollTimeouts": 1,
+  "shaderCompileMs": 235,
+  "shaderCompileMaxCallMs": 16
  },
  "loafTop": [],
  "rafStalls": [],
  "frames": {
-  "n": 7,
-  "jsMedian": 45,
-  "jsP95": 84.17,
-  "jsP99": 84.17,
-  "jsMax": 84.2,
-  "jsP95Raw": 101,
-  "rawWithGlP95": 732,
-  "glP95": 631,
-  "gapP95": 2741,
-  "gapMedian": 2741,
+  "n": 6,
+  "jsMedian": 50,
+  "jsP95": 83.96,
+  "jsP99": 83.96,
+  "jsMax": 84,
+  "jsP95Raw": 89,
+  "rawWithGlP95": 709,
+  "glP95": 622,
+  "gapP95": 2614,
+  "gapMedian": 2572,
   "over100": 0,
   "limit": 33
  },
@@ -99,7 +99,7 @@
   "heapMeasured": false,
   "nodesStart": 38,
   "nodesEnd": 177,
-  "nodesMax": 185,
+  "nodesMax": 177,
   "listeners0": null,
   "listeners1": null,
   "audioContexts": 0,
@@ -125,7 +125,7 @@
   "max": 1000,
   "trajectory": [
    [
-    7,
+    5,
     1000
    ]
   ]
@@ -139,8 +139,8 @@
   "resumes": 0,
   "touchApi": null,
   "inputLatencyMedianMs": 4001,
-  "inputLatencyP95Ms": 4005,
-  "inputLatencyMaxMs": 4005,
+  "inputLatencyP95Ms": 4002,
+  "inputLatencyMaxMs": 4002,
   "inputTimeouts": 2
  },
  "screen": {
@@ -149,15 +149,16 @@
   "maxChangeFromStartPct": null,
   "samples": 0
  },
- "severity": 107.7,
+ "severity": 111.2,
  "recheck": {
   "reproduced": true,
   "verdicts": [
-   "FREEZE"
+   "FREEZE",
+   "STALL"
   ],
-  "evidence": "main thread blocked 8229 ms (while playing), 1393 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 6330 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
-  "blockPlayMs": 6330,
-  "blockLoadMs": 3394,
-  "load1": 13.55
+  "evidence": "main thread blocked 9979 ms (while playing), 1771 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 8047 ms of JS; timer heartbeat (no long-task API in this engine) | page did not answer the harness for 6 s (4 poll timeout(s)) | 2 touch inputs not acknowledged within 4 s while the main thread was blocked | page crashed (renderer process died)",
+  "blockPlayMs": 8047,
+  "blockLoadMs": 4215,
+  "load1": 11.75
  }
 }

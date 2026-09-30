@@ -13,7 +13,7 @@
   "FREEZE"
  ],
  "evidence": {
-  "FREEZE": "main thread blocked 2631 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 2459 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
+  "FREEZE": "main thread blocked 5584 ms (during load), 1542 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 3675 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)"
  },
  "notes": [
   "WebKit has no CPU throttle: numbers are unthrottled on this machine"
@@ -23,25 +23,25 @@
   "3-end": null
  },
  "machine": {
-  "load1Start": 13.95,
+  "load1Start": 13.38,
   "cores": 4,
-  "load1End": 14.95,
-  "contention": 1.07,
+  "load1End": 13.48,
+  "contention": 1.1,
   "contentionSamples": [
-   1.07,
-   2.95,
+   1.39,
+   1.05,
    1.11,
-   1.03,
-   1.03
+   1.04,
+   1.1
   ]
  },
- "loadMs": 1803,
+ "loadMs": 2130,
  "loaded": true,
  "startUrl": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
  "startPath": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 106,
+  "benchMs": 156,
   "bench1Ms": null,
   "effectiveSlowdown": null
  },
@@ -52,37 +52,37 @@
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.07,
-  "loadMs": 2459,
-  "playMs": 944,
-  "loadRawMs": 2631,
-  "playRawMs": 2601,
-  "playGlMs": 1591,
-  "loadGlMs": 0,
+  "c": 1.1,
+  "loadMs": 3675,
+  "playMs": 581,
+  "loadRawMs": 5584,
+  "playRawMs": 697,
+  "playGlMs": 58,
+  "loadGlMs": 1542,
   "longTasksPlay": 0,
   "longTasks100Play": 0,
   "tbtLoadMs": 0,
   "tbtPlayMs": 0,
   "longtaskApi": false,
-  "heartbeatOver100Play": 5,
-  "slowestPollMs": 2210,
+  "heartbeatOver100Play": 6,
+  "slowestPollMs": 1362,
   "pollTimeouts": 0,
-  "shaderCompileMs": 301,
-  "shaderCompileMaxCallMs": 53
+  "shaderCompileMs": 203,
+  "shaderCompileMaxCallMs": 46
  },
  "loafTop": [],
  "rafStalls": [],
  "frames": {
-  "n": 6,
-  "jsMedian": 26.17,
-  "jsP95": 213.08,
-  "jsP99": 213.08,
-  "jsMax": 213.1,
-  "jsP95Raw": 228,
-  "rawWithGlP95": 1819,
-  "glP95": 1591,
-  "gapP95": 945,
-  "gapMedian": 560,
+  "n": 8,
+  "jsMedian": 25.45,
+  "jsP95": 189.09,
+  "jsP99": 189.09,
+  "jsMax": 189.1,
+  "jsP95Raw": 208,
+  "rawWithGlP95": 1496,
+  "glP95": 1288,
+  "gapP95": 1730,
+  "gapMedian": 1031,
   "over100": 1,
   "limit": 33
  },
@@ -124,7 +124,7 @@
   "max": 0,
   "trajectory": [
    [
-    20,
+    21,
     0
    ]
   ]
@@ -148,15 +148,15 @@
   "maxChangeFromStartPct": null,
   "samples": 0
  },
- "severity": 104.5,
+ "severity": 105.7,
  "recheck": {
   "reproduced": true,
   "verdicts": [
    "FREEZE"
   ],
-  "evidence": "main thread blocked 3698 ms (during load), 24 ms of it inside WebGL calls (software GL), machine slowdown x1.1 -> about 3466 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
-  "blockPlayMs": 332,
-  "blockLoadMs": 3466,
-  "load1": 14.44
+  "evidence": "main thread blocked 4069 ms (during load), 36 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 3878 ms of JS; timer heartbeat (no long-task API in this engine) | page crashed (renderer process died)",
+  "blockPlayMs": 847,
+  "blockLoadMs": 3878,
+  "load1": 14.86
  }
 }

@@ -1,6 +1,6 @@
 # Progression check
 
-Generated 2026-09-30T09:24:35.452Z. 104 games. **P0 5, P1 53, P2 27, P3 19.**
+Generated 2026-09-30T09:49:29.197Z. 107 games. **P0 8, P1 53, P2 27, P3 19.**
 
 P0 = nothing that counts as progress persists (no save, or only settings). P1 = a best score (or unclassified state) persists but no unlock / upgrade / goal / level system was seen. P2 = progress persists and at least one progression system was seen. P3 = a sink (upgrade, unlock, cosmetic) fed by two or more sources (levels, stars, goals, achievements, daily, currency), persisted.
 
@@ -10,108 +10,111 @@ P0 = nothing that counts as progress persists (no save, or only settings). P1 = 
 |--:|---|---|---|---|---|---|---|
 | 1 | City Builder 2000 (`godot-city-builder`) | **P0** | nothing | - | none | levels, goals | goals, unlocks, cosmetics, achievements, daily |
 | 2 | Heat Firm (`godot-heat-firm`) | **P0** | nothing | - | none | levels, unlocks, upgrades, goals, cosmetics | upgrades, unlocks, achievements, daily, goals |
-| 3 | TIDEBREAK (`godot-tidebreak`) | **P0** (?) | nothing | - | none | levels, unlocks, stars, goals | levels, unlocks, stars, cosmetics, achievements |
-| 4 | Tic Tac Toe — Beat the Bot (`tic-tac-toe`) | **P0** | settings/other | starts from saved state | none | - | levels, stars, achievements, unlocks |
-| 5 | Claire's Farm (`claire-farm`) | **P0** | nothing | - | levels(D), unlocks(D), goals(D), achievements(D), daily(D), cosmetics(D) | upgrades, stars | - |
-| 6 | Bridge Race (`bridge-race-classic`) | **P1** | settings/other | saved, but not visibly used | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 7 | Critter Rush 3D (`critter-rush`) | **P1** | settings/other | starts from saved state | none | levels | levels, unlocks, stars, cosmetics, achievements |
-| 8 | Critter Rush 2D (`critter-rush-2d`) | **P1** | settings/other | starts from saved state | none | levels, achievements | levels, unlocks, stars, cosmetics, achievements |
-| 9 | Color Switch (`hub-color-switch`) | **P1** | best score | starts from saved state (title shows it) | none | daily | unlocks, cosmetics, daily, achievements, goals |
-| 10 | Tower Stack (`hub-tower-stack`) | **P1** | best score | starts from saved state (title shows it) | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 11 | Balance Tile (`sky-balance-tile`) | **P1** | best score, currency | starts from saved state | none | levels | unlocks, cosmetics, daily, achievements, goals |
-| 12 | Brick Breaker (`sky-breakout`) | **P1** | settings/other | starts from saved state | none | upgrades | unlocks, cosmetics, daily, achievements, goals |
-| 13 | Color Match (`sky-color-match`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 14 | Flap & Fly (`sky-flappy-bird`) | **P1** | best score | starts from saved state | none | goals | unlocks, cosmetics, daily, achievements, goals |
-| 15 | Grow or Shrink (`sky-grow-shrink`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 16 | Hole Eater (`sky-hole-eater`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 17 | Lane Switcher (`sky-lane-switcher`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 18 | Match Swipe (`sky-match-swipe`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 19 | Parking Puzzle (`sky-parking-puzzle`) | **P1** | settings/other | starts from saved state | none | levels, stars | levels, stars, daily, goals, unlocks |
-| 20 | Rope Swing (`sky-rope-swing`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 21 | Slide Runner (`sky-slide-runner`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 22 | Slingshot (`sky-slingshot`) | **P1** | settings/other | starts from saved state | none | goals | unlocks, cosmetics, daily, achievements, goals |
-| 23 | Snake (`sky-snake`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 24 | Sniper Shot (`sky-sniper-shot`) | **P1** | settings/other | starts from saved state | none | goals | unlocks, cosmetics, daily, achievements, goals |
-| 25 | Spike Jump (`sky-spike-jump`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 26 | Stack Tower (`sky-stack-tower`) | **P1** | best score | starts from saved state | none | stars, daily | unlocks, cosmetics, daily, achievements, goals |
-| 27 | Swim Dodge (`sky-swim-dodge`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 28 | Traffic Run (`sky-traffic-run`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 29 | Turret Defense (`sky-turret-defense`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
-| 30 | SneakerDrop — Hype Market Tycoon (`sneaker-drop`) | **P1** | save data | starts from saved state | none | levels, upgrades, stars, goals, daily | goals, upgrades, unlocks, stars, levels |
-| 31 | Summit Line (`summit-line`) | **P1** | settings/other | saved, but not visibly used | none | stars, goals | levels, unlocks, stars, cosmetics, achievements |
-| 32 | Bloxburg Town (`bloxburg-town`) | **P1** | IndexedDB | saved, but not visibly used | upgrades(D) | levels, unlocks, daily | goals, unlocks, cosmetics, achievements, daily |
-| 33 | Game Arcade — Bridge Race & Fashion Princess (`game-arcade-7`) | **P1** | settings/other | starts from saved state (title shows it) | cosmetics(D) | levels | levels, upgrades, unlocks, achievements, daily |
-| 34 | Helix Drop (`helix-drop`) | **P1** | settings/other | starts from saved state | levels(D) | unlocks | unlocks, cosmetics, daily, achievements, goals |
-| 35 | High Nest (`high-nest`) | **P1** | best score | starts from saved state | levels(D) | - | unlocks, cosmetics, daily, achievements, goals |
-| 36 | Isle of Bells (`hub-isle-of-bells`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D) | upgrades, stars, goals | goals, unlocks, cosmetics, achievements, daily |
-| 37 | Merge Blocks (`hub-merge-blocks`) | **P1** | best score | starts from saved state (title shows it) | daily(D) | stars | levels, stars, goals, unlocks |
-| 38 | Sudoku (`hub-sudoku`) | **P1** | settings/other | starts from saved state | daily(D) | achievements | levels, stars, goals, unlocks |
-| 39 | Neon Dash (`neon-dash`) | **P1** | settings/other | saved, but not visibly used | levels(D) | - | upgrades, unlocks, achievements, daily |
-| 40 | Volt Dash (`volt-dash`) | **P1** | settings/other | starts from saved state | stars(D) | - | unlocks, cosmetics, daily, achievements, goals |
-| 41 | Field Station (`field-station`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), daily(D) | goals | stars, achievements, goals |
-| 42 | Farm Idle Tycoon (`hub-farm-idle`) | **P1** | settings/other | starts from saved state | levels(D), unlocks(D) | upgrades, goals, achievements, daily | upgrades, achievements, daily, goals |
-| 43 | Market Merge (`market-merge`) | **P1** | settings/other | saved, but not visibly used | goals(D), daily(D) | - | levels, stars, unlocks |
-| 44 | Rung Runner (`rung-runner`) | **P1** | best score | starts from saved state (title shows it) | levels(D), stars(D) | - | unlocks, cosmetics, daily, achievements, goals |
-| 45 | Idle Empire (`hub-idle-empire`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D) | goals, achievements, daily | achievements, daily, goals |
-| 46 | Tap Monsters (`hub-tap-monsters`) | **P1** | settings/other | starts from saved state | levels(D), unlocks(D), goals(D) | upgrades, achievements, daily | upgrades, achievements, daily |
-| 47 | Mini Life Sim (`mini-life-sim`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), goals(D), achievements(D) | upgrades, daily | cosmetics, daily |
-| 48 | Rap Academy (`rap-academy`) | **P1** | settings/other | starts from saved state | levels(SD), goals(D), achievements(SD), daily(D) | - | stars |
-| 49 | Chili Firm 2: Replanted (`chili-firm`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D), goals(D), achievements(D) | cosmetics | daily |
-| 50 | Brick Breaker (`hub-brick-breaker`) | **P1** | settings/other | starts from saved state (title shows it) | levels(SD), unlocks(S), stars(SD), goals(D), cosmetics(SD) | daily | upgrades, achievements, daily |
-| 51 | Dino Dash (`hub-dino-dash`) | **P1** | settings/other | starts from saved state (title shows it) | levels(S), unlocks(S), stars(S), goals(D), cosmetics(SD) | upgrades, daily | daily, achievements |
-| 52 | Farm Harvest (`hub-farm-harvest`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D), goals(D), daily(D) | - | cosmetics, achievements |
-| 53 | Kingdom Defense (`kingdom-defense`) | **P1** | settings/other | starts from saved state | levels(D), unlocks(D), upgrades(D), stars(D), goals(D) | - | achievements |
-| 54 | Surviv Royale (`surviv-royale`) | **P1** | best score | starts from saved state (title shows it) | levels(S), unlocks(S), stars(S), goals(D), cosmetics(SD) | upgrades, daily | upgrades, achievements, daily |
-| 55 | Bridge Rush (`bridge-rush`) | **P1** | settings/other | starts from saved state | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(S) | upgrades | achievements |
-| 56 | Crowd Clash (`crowd-clash`) | **P1** | settings/other | starts from saved state | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(S) | upgrades | achievements |
-| 57 | Hole Swallow (`hub-hole-swallow`) | **P1** | best score | starts from saved state | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(S) | upgrades | achievements |
-| 58 | Claire's Big Life (`claire-pip`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D), stars(D), achievements(D), daily(D), cosmetics(D) | goals | goals |
-| 59 | DEEPCUT (`deepcut-mine`) | **P2** | best score, currency | starts from saved state | upgrades(D) | daily | levels, unlocks, achievements, daily |
-| 60 | Chess (`hub-chess`) | **P2** | save data | starts from saved state (title shows it) | cosmetics(S) | goals | levels, stars, achievements, unlocks |
-| 61 | Dominion: Living World (`living-world`) | **P2** | levels, currency | starts from saved state (title shows it) | levels(SD) | - | goals, unlocks, cosmetics, achievements, daily |
-| 62 | The Long Way Home (`long-way-home`) | **P2** | save data | starts from saved state | goals(D) | - | levels, stars, achievements, daily |
-| 63 | Maths Kart GP (`maths-kart`) | **P2** | save data | starts from saved state | daily(D) | stars, goals | levels, stars, achievements, goals |
-| 64 | Quiz Tower Defense (`quiz-tower`) | **P2** | best score, daily, save data | starts from saved state | daily(S) | upgrades, stars | levels, stars, achievements, goals |
-| 65 | Cut the Rope (`sky-cut-rope`) | **P2** | stars | starts from saved state | stars(S) | levels, unlocks, goals | levels, daily, goals, unlocks |
-| 66 | Pull the Pin (`sky-key-unlock`) | **P2** | unlocks | starts from saved state | unlocks(S) | levels, stars, goals | levels, stars, daily, goals |
-| 67 | Maze Runner (`sky-maze-runner`) | **P2** | stars | starts from saved state | stars(S) | levels, unlocks | levels, daily, goals, unlocks |
-| 68 | TYPHOON MINE (`typhoon-mine`) | **P2** | best score, currency | starts from saved state (title shows it) | upgrades(D) | - | levels, unlocks, achievements, daily |
-| 69 | Balloon Bust (`balloon-bust`) | **P2** | best score, levels, daily | starts from saved state | levels(S), daily(S) | stars, achievements | unlocks, cosmetics, achievements, goals |
-| 70 | Dominion (`dominion`) | **P2** | levels | starts from saved state (title shows it) | levels(SD), stars(D) | - | goals, unlocks, cosmetics, achievements, daily |
-| 71 | Bubble Pop (`hub-bubble-pop`) | **P2** | levels, daily | starts from saved state (title shows it) | levels(SD), daily(S) | stars, goals | unlocks, cosmetics, achievements, goals |
-| 72 | Memory Match (`hub-memory-match`) | **P2** | best score, levels, daily | starts from saved state (title shows it) | levels(SD), daily(S) | unlocks, stars, goals | stars, goals, unlocks |
-| 73 | Rhyme Time (`hub-rhyme-time`) | **P2** | levels | starts from saved state | levels(SD), stars(D) | - | achievements, daily, goals |
-| 74 | Whack-a-Mole (`hub-whack-a-mole`) | **P2** | levels, daily | starts from saved state (title shows it) | levels(SD), daily(S) | unlocks, stars, goals, cosmetics | unlocks, cosmetics, achievements, goals |
-| 75 | Word Scramble (`hub-word-scramble`) | **P2** | levels, daily | starts from saved state (title shows it) | levels(SD), daily(S) | stars, goals | stars, achievements, goals |
-| 76 | Word Dungeon (`word-dungeon`) | **P2** | best score, stars, daily, save data | starts from saved state | stars(S), daily(S) | unlocks, upgrades, goals | levels, achievements, goals |
-| 77 | Math Blast (`hub-math-blast`) | **P2** | levels | starts from saved state (title shows it) | levels(S), unlocks(D), daily(D) | - | stars, achievements, goals |
-| 78 | Math Run (`hub-math-run`) | **P2** | levels | starts from saved state | levels(S), unlocks(D), daily(D) | upgrades, stars | stars, achievements, goals |
-| 79 | Simon Says (`hub-simon-says`) | **P2** | levels, daily | starts from saved state (title shows it) | levels(SD), achievements(D), daily(S) | stars, goals | stars, goals, unlocks |
-| 80 | Cook Rush (`cook-rush`) | **P2** | best score, levels, stars, currency, daily | starts from saved state | levels(SD), stars(SD), goals(D), daily(S) | upgrades | upgrades, unlocks |
-| 81 | Fishing for Words (`fishing-for-words`) | **P2** | save data | starts from saved state | upgrades(D), stars(D), goals(D), daily(D) | achievements | levels, achievements |
-| 82 | Hangman (`hub-hangman`) | **P2** | best score, levels, currency, save data | starts from saved state (title shows it) | levels(S), stars(D), achievements(D), daily(D) | - | goals |
-| 83 | Clean House (`clean-house`) | **P2** | best score, currency | starts from saved state (title shows it) | unlocks(D), upgrades(D), stars(D), goals(D), daily(D) | - | levels |
-| 84 | Spell & Say (`hub-spell-and-say`) | **P2** | levels | starts from saved state (title shows it) | levels(SD), unlocks(D), stars(D), achievements(D), daily(D) | - | goals |
-| 85 | Survivor Wave (`survivor-wave`) | **P2** | best score, goals | starts from saved state (title shows it) | levels(D), stars(D), goals(SD), daily(SD), cosmetics(D) | upgrades | upgrades, unlocks, achievements |
-| 86 | Snake Clash (`snake-clash`) | **P3** | levels, cosmetics | starts from saved state | levels(S), goals(D), cosmetics(S) | unlocks, stars, achievements, daily | unlocks, daily, achievements |
-| 87 | Idle Miner (`hub-idle-miner`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(SD), stars(S), cosmetics(S) | upgrades, goals, achievements, daily | upgrades, achievements, daily, goals |
-| 88 | Math Battle (`hub-math-battle`) | **P3** | levels, currency | starts from saved state (title shows it) | levels(SD), unlocks(D), upgrades(D), stars(D) | daily | achievements, daily, goals |
-| 89 | QuickStop Mini Mart (`mini-mart`) | **P3** | best score, levels, upgrades, save data | starts from saved state (title shows it) | levels(SD), upgrades(SD), goals(D), cosmetics(D) | unlocks, daily | unlocks, stars |
-| 90 | Block Blast (`hub-block-blast`) | **P3** | best score, levels, cosmetics | starts from saved state | levels(SD), stars(D), goals(D), daily(D), cosmetics(S) | unlocks, achievements | unlocks |
-| 91 | Connect Four (`hub-connect-four`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state | levels(SD), unlocks(SD), stars(SD), goals(D), cosmetics(S) | daily | achievements |
-| 92 | Flappy Flight (`hub-flappy-flight`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state (title shows it) | levels(S), unlocks(S), stars(SD), goals(D), cosmetics(SD) | upgrades, daily | daily, achievements |
-| 93 | Knife Hit (`hub-knife-hit`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(S), stars(SD), goals(D), cosmetics(SD) | upgrades, daily | daily, achievements |
-| 94 | Tic Tac Toe (`hub-tic-tac-toe`) | **P3** | levels, cosmetics | starts from saved state | levels(SD), unlocks(D), stars(D), goals(D), cosmetics(S) | daily | achievements |
-| 95 | Snap Jigsaw — Daily Puzzle Challenge (`snap-jigsaw`) | **P3** | best score, levels, daily, cosmetics | starts from saved state (title shows it) | levels(SD), stars(D), goals(D), daily(SD), cosmetics(S) | unlocks | unlocks |
-| 96 | 2048 (`hub-game-2048`) | **P3** | levels, cosmetics | starts from saved state | levels(SD), unlocks(D), stars(D), goals(D), daily(D), cosmetics(S) | - | - |
-| 97 | Helix Smash (`hub-helix-smash`) | **P3** | best score, levels, stars, currency, unlocks, goals, daily, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(SD) | upgrades, achievements | achievements |
-| 98 | Minesweeper (`hub-minesweeper`) | **P3** | levels, cosmetics | starts from saved state | levels(SD), unlocks(D), stars(D), goals(D), daily(D), cosmetics(S) | - | - |
-| 99 | Missing Letter (`hub-missing-letter`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state | levels(S), unlocks(S), stars(SD), goals(D), daily(D), cosmetics(SD) | - | achievements |
-| 100 | Snake (`hub-snake`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state (title shows it) | levels(S), unlocks(S), stars(SD), goals(D), daily(D), cosmetics(SD) | upgrades | upgrades, achievements |
-| 101 | Stack Ball (`hub-stack-ball`) | **P3** | best score, levels, stars, currency, unlocks, goals, daily, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(SD) | upgrades | achievements |
-| 102 | Hole Grind (`hole-grind`) | **P3** | best score, levels, stars, currency, unlocks | starts from saved state | levels(S), unlocks(S), upgrades(D), stars(S), goals(SD), daily(SD), cosmetics(S) | - | achievements |
-| 103 | Math Snake (`hub-math-snake`) | **P3** | levels, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(D), stars(D), goals(D), achievements(D), daily(D), cosmetics(S) | - | - |
-| 104 | Math Miner (`math-miner`) | **P3** | best score, stars, currency, daily, cosmetics, save data | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D), stars(SD), goals(D), daily(SD), cosmetics(SD) | - | achievements |
+| 3 | LA City (`godot-la-city`) | **P0** (?) | nothing | - | none | upgrades, goals | levels, unlocks, stars, cosmetics, achievements |
+| 4 | SwellRider (`godot-swellrider`) | **P0** (?) | nothing | - | none | unlocks, stars, goals | levels, unlocks, stars, cosmetics, achievements |
+| 5 | TIDEBREAK (`godot-tidebreak`) | **P0** (?) | nothing | - | none | levels, unlocks, stars, goals | levels, unlocks, stars, cosmetics, achievements |
+| 6 | Tic Tac Toe — Beat the Bot (`tic-tac-toe`) | **P0** | settings/other | starts from saved state | none | - | levels, stars, achievements, unlocks |
+| 7 | TIDEBREAK World Tour (`godot-tidebreak-world-tour`) | **P0** (?) | nothing | - | levels(S) | unlocks, stars, goals | unlocks, stars, cosmetics, achievements |
+| 8 | Claire's Farm (`claire-farm`) | **P0** | nothing | - | levels(D), unlocks(D), goals(D), achievements(D), daily(D), cosmetics(D) | upgrades, stars | - |
+| 9 | Bridge Race (`bridge-race-classic`) | **P1** | settings/other | saved, but not visibly used | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 10 | Critter Rush 3D (`critter-rush`) | **P1** | settings/other | starts from saved state | none | levels | levels, unlocks, stars, cosmetics, achievements |
+| 11 | Critter Rush 2D (`critter-rush-2d`) | **P1** | settings/other | starts from saved state | none | levels, achievements | levels, unlocks, stars, cosmetics, achievements |
+| 12 | Color Switch (`hub-color-switch`) | **P1** | best score | starts from saved state (title shows it) | none | daily | unlocks, cosmetics, daily, achievements, goals |
+| 13 | Tower Stack (`hub-tower-stack`) | **P1** | best score | starts from saved state (title shows it) | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 14 | Balance Tile (`sky-balance-tile`) | **P1** | best score, currency | starts from saved state | none | levels | unlocks, cosmetics, daily, achievements, goals |
+| 15 | Brick Breaker (`sky-breakout`) | **P1** | settings/other | starts from saved state | none | upgrades | unlocks, cosmetics, daily, achievements, goals |
+| 16 | Color Match (`sky-color-match`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 17 | Flap & Fly (`sky-flappy-bird`) | **P1** | best score | starts from saved state | none | goals | unlocks, cosmetics, daily, achievements, goals |
+| 18 | Grow or Shrink (`sky-grow-shrink`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 19 | Hole Eater (`sky-hole-eater`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 20 | Lane Switcher (`sky-lane-switcher`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 21 | Match Swipe (`sky-match-swipe`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 22 | Parking Puzzle (`sky-parking-puzzle`) | **P1** | settings/other | starts from saved state | none | levels, stars | levels, stars, daily, goals, unlocks |
+| 23 | Rope Swing (`sky-rope-swing`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 24 | Slide Runner (`sky-slide-runner`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 25 | Slingshot (`sky-slingshot`) | **P1** | settings/other | starts from saved state | none | goals | unlocks, cosmetics, daily, achievements, goals |
+| 26 | Snake (`sky-snake`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 27 | Sniper Shot (`sky-sniper-shot`) | **P1** | settings/other | starts from saved state | none | goals | unlocks, cosmetics, daily, achievements, goals |
+| 28 | Spike Jump (`sky-spike-jump`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 29 | Stack Tower (`sky-stack-tower`) | **P1** | best score | starts from saved state | none | stars, daily | unlocks, cosmetics, daily, achievements, goals |
+| 30 | Swim Dodge (`sky-swim-dodge`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 31 | Traffic Run (`sky-traffic-run`) | **P1** | best score | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 32 | Turret Defense (`sky-turret-defense`) | **P1** | settings/other | starts from saved state | none | - | unlocks, cosmetics, daily, achievements, goals |
+| 33 | SneakerDrop — Hype Market Tycoon (`sneaker-drop`) | **P1** | save data | starts from saved state | none | levels, upgrades, stars, goals, daily | goals, upgrades, unlocks, stars, levels |
+| 34 | Summit Line (`summit-line`) | **P1** | settings/other | saved, but not visibly used | none | stars, goals | levels, unlocks, stars, cosmetics, achievements |
+| 35 | Bloxburg Town (`bloxburg-town`) | **P1** | IndexedDB | saved, but not visibly used | upgrades(D) | levels, unlocks, daily | goals, unlocks, cosmetics, achievements, daily |
+| 36 | Game Arcade — Bridge Race & Fashion Princess (`game-arcade-7`) | **P1** | settings/other | starts from saved state (title shows it) | cosmetics(D) | levels | levels, upgrades, unlocks, achievements, daily |
+| 37 | Helix Drop (`helix-drop`) | **P1** | settings/other | starts from saved state | levels(D) | unlocks | unlocks, cosmetics, daily, achievements, goals |
+| 38 | High Nest (`high-nest`) | **P1** | best score | starts from saved state | levels(D) | - | unlocks, cosmetics, daily, achievements, goals |
+| 39 | Isle of Bells (`hub-isle-of-bells`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D) | upgrades, stars, goals | goals, unlocks, cosmetics, achievements, daily |
+| 40 | Merge Blocks (`hub-merge-blocks`) | **P1** | best score | starts from saved state (title shows it) | daily(D) | stars | levels, stars, goals, unlocks |
+| 41 | Sudoku (`hub-sudoku`) | **P1** | settings/other | starts from saved state | daily(D) | achievements | levels, stars, goals, unlocks |
+| 42 | Neon Dash (`neon-dash`) | **P1** | settings/other | saved, but not visibly used | levels(D) | - | upgrades, unlocks, achievements, daily |
+| 43 | Volt Dash (`volt-dash`) | **P1** | settings/other | starts from saved state | stars(D) | - | unlocks, cosmetics, daily, achievements, goals |
+| 44 | Field Station (`field-station`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), daily(D) | goals | stars, achievements, goals |
+| 45 | Farm Idle Tycoon (`hub-farm-idle`) | **P1** | settings/other | starts from saved state | levels(D), unlocks(D) | upgrades, goals, achievements, daily | upgrades, achievements, daily, goals |
+| 46 | Market Merge (`market-merge`) | **P1** | settings/other | saved, but not visibly used | goals(D), daily(D) | - | levels, stars, unlocks |
+| 47 | Rung Runner (`rung-runner`) | **P1** | best score | starts from saved state (title shows it) | levels(D), stars(D) | - | unlocks, cosmetics, daily, achievements, goals |
+| 48 | Idle Empire (`hub-idle-empire`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D) | goals, achievements, daily | achievements, daily, goals |
+| 49 | Tap Monsters (`hub-tap-monsters`) | **P1** | settings/other | starts from saved state | levels(D), unlocks(D), goals(D) | upgrades, achievements, daily | upgrades, achievements, daily |
+| 50 | Mini Life Sim (`mini-life-sim`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), goals(D), achievements(D) | upgrades, daily | cosmetics, daily |
+| 51 | Rap Academy (`rap-academy`) | **P1** | settings/other | starts from saved state | levels(SD), goals(D), achievements(SD), daily(D) | - | stars |
+| 52 | Chili Firm 2: Replanted (`chili-firm`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D), goals(D), achievements(D) | cosmetics | daily |
+| 53 | Brick Breaker (`hub-brick-breaker`) | **P1** | settings/other | starts from saved state (title shows it) | levels(SD), unlocks(S), stars(SD), goals(D), cosmetics(SD) | daily | upgrades, achievements, daily |
+| 54 | Dino Dash (`hub-dino-dash`) | **P1** | settings/other | starts from saved state (title shows it) | levels(S), unlocks(S), stars(S), goals(D), cosmetics(SD) | upgrades, daily | daily, achievements |
+| 55 | Farm Harvest (`hub-farm-harvest`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D), goals(D), daily(D) | - | cosmetics, achievements |
+| 56 | Kingdom Defense (`kingdom-defense`) | **P1** | settings/other | starts from saved state | levels(D), unlocks(D), upgrades(D), stars(D), goals(D) | - | achievements |
+| 57 | Surviv Royale (`surviv-royale`) | **P1** | best score | starts from saved state (title shows it) | levels(S), unlocks(S), stars(S), goals(D), cosmetics(SD) | upgrades, daily | upgrades, achievements, daily |
+| 58 | Bridge Rush (`bridge-rush`) | **P1** | settings/other | starts from saved state | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(S) | upgrades | achievements |
+| 59 | Crowd Clash (`crowd-clash`) | **P1** | settings/other | starts from saved state | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(S) | upgrades | achievements |
+| 60 | Hole Swallow (`hub-hole-swallow`) | **P1** | best score | starts from saved state | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(S) | upgrades | achievements |
+| 61 | Claire's Big Life (`claire-pip`) | **P1** | settings/other | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D), stars(D), achievements(D), daily(D), cosmetics(D) | goals | goals |
+| 62 | DEEPCUT (`deepcut-mine`) | **P2** | best score, currency | starts from saved state | upgrades(D) | daily | levels, unlocks, achievements, daily |
+| 63 | Chess (`hub-chess`) | **P2** | save data | starts from saved state (title shows it) | cosmetics(S) | goals | levels, stars, achievements, unlocks |
+| 64 | Dominion: Living World (`living-world`) | **P2** | levels, currency | starts from saved state (title shows it) | levels(SD) | - | goals, unlocks, cosmetics, achievements, daily |
+| 65 | The Long Way Home (`long-way-home`) | **P2** | save data | starts from saved state | goals(D) | - | levels, stars, achievements, daily |
+| 66 | Maths Kart GP (`maths-kart`) | **P2** | save data | starts from saved state | daily(D) | stars, goals | levels, stars, achievements, goals |
+| 67 | Quiz Tower Defense (`quiz-tower`) | **P2** | best score, daily, save data | starts from saved state | daily(S) | upgrades, stars | levels, stars, achievements, goals |
+| 68 | Cut the Rope (`sky-cut-rope`) | **P2** | stars | starts from saved state | stars(S) | levels, unlocks, goals | levels, daily, goals, unlocks |
+| 69 | Pull the Pin (`sky-key-unlock`) | **P2** | unlocks | starts from saved state | unlocks(S) | levels, stars, goals | levels, stars, daily, goals |
+| 70 | Maze Runner (`sky-maze-runner`) | **P2** | stars | starts from saved state | stars(S) | levels, unlocks | levels, daily, goals, unlocks |
+| 71 | TYPHOON MINE (`typhoon-mine`) | **P2** | best score, currency | starts from saved state (title shows it) | upgrades(D) | - | levels, unlocks, achievements, daily |
+| 72 | Balloon Bust (`balloon-bust`) | **P2** | best score, levels, daily | starts from saved state | levels(S), daily(S) | stars, achievements | unlocks, cosmetics, achievements, goals |
+| 73 | Dominion (`dominion`) | **P2** | levels | starts from saved state (title shows it) | levels(SD), stars(D) | - | goals, unlocks, cosmetics, achievements, daily |
+| 74 | Bubble Pop (`hub-bubble-pop`) | **P2** | levels, daily | starts from saved state (title shows it) | levels(SD), daily(S) | stars, goals | unlocks, cosmetics, achievements, goals |
+| 75 | Memory Match (`hub-memory-match`) | **P2** | best score, levels, daily | starts from saved state (title shows it) | levels(SD), daily(S) | unlocks, stars, goals | stars, goals, unlocks |
+| 76 | Rhyme Time (`hub-rhyme-time`) | **P2** | levels | starts from saved state | levels(SD), stars(D) | - | achievements, daily, goals |
+| 77 | Whack-a-Mole (`hub-whack-a-mole`) | **P2** | levels, daily | starts from saved state (title shows it) | levels(SD), daily(S) | unlocks, stars, goals, cosmetics | unlocks, cosmetics, achievements, goals |
+| 78 | Word Scramble (`hub-word-scramble`) | **P2** | levels, daily | starts from saved state (title shows it) | levels(SD), daily(S) | stars, goals | stars, achievements, goals |
+| 79 | Word Dungeon (`word-dungeon`) | **P2** | best score, stars, daily, save data | starts from saved state | stars(S), daily(S) | unlocks, upgrades, goals | levels, achievements, goals |
+| 80 | Math Blast (`hub-math-blast`) | **P2** | levels | starts from saved state (title shows it) | levels(S), unlocks(D), daily(D) | - | stars, achievements, goals |
+| 81 | Math Run (`hub-math-run`) | **P2** | levels | starts from saved state | levels(S), unlocks(D), daily(D) | upgrades, stars | stars, achievements, goals |
+| 82 | Simon Says (`hub-simon-says`) | **P2** | levels, daily | starts from saved state (title shows it) | levels(SD), achievements(D), daily(S) | stars, goals | stars, goals, unlocks |
+| 83 | Cook Rush (`cook-rush`) | **P2** | best score, levels, stars, currency, daily | starts from saved state | levels(SD), stars(SD), goals(D), daily(S) | upgrades | upgrades, unlocks |
+| 84 | Fishing for Words (`fishing-for-words`) | **P2** | save data | starts from saved state | upgrades(D), stars(D), goals(D), daily(D) | achievements | levels, achievements |
+| 85 | Hangman (`hub-hangman`) | **P2** | best score, levels, currency, save data | starts from saved state (title shows it) | levels(S), stars(D), achievements(D), daily(D) | - | goals |
+| 86 | Clean House (`clean-house`) | **P2** | best score, currency | starts from saved state (title shows it) | unlocks(D), upgrades(D), stars(D), goals(D), daily(D) | - | levels |
+| 87 | Spell & Say (`hub-spell-and-say`) | **P2** | levels | starts from saved state (title shows it) | levels(SD), unlocks(D), stars(D), achievements(D), daily(D) | - | goals |
+| 88 | Survivor Wave (`survivor-wave`) | **P2** | best score, goals | starts from saved state (title shows it) | levels(D), stars(D), goals(SD), daily(SD), cosmetics(D) | upgrades | upgrades, unlocks, achievements |
+| 89 | Snake Clash (`snake-clash`) | **P3** | levels, cosmetics | starts from saved state | levels(S), goals(D), cosmetics(S) | unlocks, stars, achievements, daily | unlocks, daily, achievements |
+| 90 | Idle Miner (`hub-idle-miner`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(SD), stars(S), cosmetics(S) | upgrades, goals, achievements, daily | upgrades, achievements, daily, goals |
+| 91 | Math Battle (`hub-math-battle`) | **P3** | levels, currency | starts from saved state (title shows it) | levels(SD), unlocks(D), upgrades(D), stars(D) | daily | achievements, daily, goals |
+| 92 | QuickStop Mini Mart (`mini-mart`) | **P3** | best score, levels, upgrades, save data | starts from saved state (title shows it) | levels(SD), upgrades(SD), goals(D), cosmetics(D) | unlocks, daily | unlocks, stars |
+| 93 | Block Blast (`hub-block-blast`) | **P3** | best score, levels, cosmetics | starts from saved state | levels(SD), stars(D), goals(D), daily(D), cosmetics(S) | unlocks, achievements | unlocks |
+| 94 | Connect Four (`hub-connect-four`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state | levels(SD), unlocks(SD), stars(SD), goals(D), cosmetics(S) | daily | achievements |
+| 95 | Flappy Flight (`hub-flappy-flight`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state (title shows it) | levels(S), unlocks(S), stars(SD), goals(D), cosmetics(SD) | upgrades, daily | daily, achievements |
+| 96 | Knife Hit (`hub-knife-hit`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(S), stars(SD), goals(D), cosmetics(SD) | upgrades, daily | daily, achievements |
+| 97 | Tic Tac Toe (`hub-tic-tac-toe`) | **P3** | levels, cosmetics | starts from saved state | levels(SD), unlocks(D), stars(D), goals(D), cosmetics(S) | daily | achievements |
+| 98 | Snap Jigsaw — Daily Puzzle Challenge (`snap-jigsaw`) | **P3** | best score, levels, daily, cosmetics | starts from saved state (title shows it) | levels(SD), stars(D), goals(D), daily(SD), cosmetics(S) | unlocks | unlocks |
+| 99 | 2048 (`hub-game-2048`) | **P3** | levels, cosmetics | starts from saved state | levels(SD), unlocks(D), stars(D), goals(D), daily(D), cosmetics(S) | - | - |
+| 100 | Helix Smash (`hub-helix-smash`) | **P3** | best score, levels, stars, currency, unlocks, goals, daily, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(SD) | upgrades, achievements | achievements |
+| 101 | Minesweeper (`hub-minesweeper`) | **P3** | levels, cosmetics | starts from saved state | levels(SD), unlocks(D), stars(D), goals(D), daily(D), cosmetics(S) | - | - |
+| 102 | Missing Letter (`hub-missing-letter`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state | levels(S), unlocks(S), stars(SD), goals(D), daily(D), cosmetics(SD) | - | achievements |
+| 103 | Snake (`hub-snake`) | **P3** | best score, levels, stars, currency, unlocks, cosmetics | starts from saved state (title shows it) | levels(S), unlocks(S), stars(SD), goals(D), daily(D), cosmetics(SD) | upgrades | upgrades, achievements |
+| 104 | Stack Ball (`hub-stack-ball`) | **P3** | best score, levels, stars, currency, unlocks, goals, daily, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(S), stars(S), goals(SD), daily(SD), cosmetics(SD) | upgrades | achievements |
+| 105 | Hole Grind (`hole-grind`) | **P3** | best score, levels, stars, currency, unlocks | starts from saved state | levels(S), unlocks(S), upgrades(D), stars(S), goals(SD), daily(SD), cosmetics(S) | - | achievements |
+| 106 | Math Snake (`hub-math-snake`) | **P3** | levels, cosmetics | starts from saved state (title shows it) | levels(SD), unlocks(D), stars(D), goals(D), achievements(D), daily(D), cosmetics(S) | - | - |
+| 107 | Math Miner (`math-miner`) | **P3** | best score, stars, currency, daily, cosmetics, save data | starts from saved state (title shows it) | levels(D), unlocks(D), upgrades(D), stars(SD), goals(D), daily(SD), cosmetics(SD) | - | achievements |
 
 (?) = the bot did not reach play, so persistence after real play was not measured.
 
@@ -133,6 +136,24 @@ P0 = nothing that counts as progress persists (no save, or only settings). P1 = 
 - Session 1: start tap centre + tap on game + KEY Enter; reached play: true; game overs 0; no score reported
 - Title, session 1: "" | session 2: ""
 
+### LA City (`godot-la-city`): P0
+
+- Why: nothing that counts as progress was saved (no localStorage, IndexedDB or cookie change)
+- localStorage keys: 0; written this session: none; IndexedDB: none; cookies: 0
+- Declared save keys (qa meta): idb:/userfs
+- Session 1: start tap centre + tap on game; reached play: false; game overs 0; no score reported
+- Title, session 1: "LA City Downloading 97% This is a big game, so the first load takes a while." | session 2: "LA City Downloading 93% This is a big game, so the first load takes a while."
+- Notes: the bot never reached play: what persists after real play was not measured
+
+### SwellRider (`godot-swellrider`): P0
+
+- Why: nothing that counts as progress was saved (no localStorage, IndexedDB or cookie change)
+- localStorage keys: 0; written this session: none; IndexedDB: none; cookies: 0
+- Declared save keys (qa meta): idb:/userfs
+- Session 1: start tap centre + tap on game; reached play: false; game overs 0; no score reported
+- Title, session 1: "" | session 2: "SwellRider Downloading 97% This is a big game, so the first load takes a while."
+- Notes: the bot never reached play: what persists after real play was not measured
+
 ### TIDEBREAK (`godot-tidebreak`): P0
 
 - Why: nothing that counts as progress was saved (no localStorage, IndexedDB or cookie change)
@@ -149,6 +170,15 @@ P0 = nothing that counts as progress persists (no save, or only settings). P1 = 
 - Declared save keys (qa meta): ttt_scores
 - Session 1: start Play/Start button; reached play: true; game overs 0; no score reported
 - Title, session 1: "TIC TAC TOE Beat the bot. You are X. YOU 0 DRAWS 0 BOT 0 YOUR TURN New game Undo Hint EASY HARD TIC TAC TOE X X O O X You are X. Tap an empt" | session 2: "TIC TAC TOE Beat the bot. You are X. YOU 0 DRAWS 0 BOT 0 YOUR TURN New game Undo Hint EASY HARD TIC TAC TOE X X O O X You are X. Tap an empt"
+
+### TIDEBREAK World Tour (`godot-tidebreak-world-tour`): P0
+
+- Why: nothing that counts as progress was saved (no localStorage, IndexedDB or cookie change)
+- localStorage keys: 0; written this session: none; IndexedDB: /userfs(FILE_DATA 33); cookies: 0
+- Declared save keys (qa meta): idb:/userfs
+- Session 1: start tap centre + tap on game; reached play: false; game overs 0; no score reported
+- Title, session 1: "" | session 2: ""
+- Notes: the bot never reached play: what persists after real play was not measured
 
 ### Claire's Farm (`claire-farm`): P0
 
