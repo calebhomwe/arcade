@@ -1,0 +1,227 @@
+{
+ "id": "godot-heat-firm",
+ "title": "Heat Firm",
+ "cat": "sim",
+ "genre": "idle",
+ "src": "Godot/heat-firm/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK",
+  "STALL"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 9126 ms (during load), 2359 ms of it inside WebGL calls (software GL), machine slowdown x2.1 -> about 3285 ms of JS; long-task API + timer heartbeat; longest frame 7094.5 ms: _engine/godot.js IDBOpenDBRequest.onupgradeneeded 5 / _engine/godot.js IDBOpenDBRequest.onsuccess 7 / _engine/godot.js IDBRequest.onsuccess 7029",
+  "JANK": "p95 JS frame cost 24.81 ms over 16 ms (CPU throttled x4, divided by machine slowdown x2.1; raw p95 51.1, median 5.19, p99 57.18, max 143; time inside WebGL calls excluded, p95 of it 924.2)",
+  "STALL": "started only with a keyboard key (tap centre + tap on game + KEY Enter); a phone has no keyboard | nothing on screen changed for 29 s while the bot kept tapping"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x2.1)"
+ ],
+ "shots": {
+  "1-title": "shots/godot-heat-firm-1-title.jpg",
+  "2-mid": "shots/godot-heat-firm-2-mid.jpg",
+  "3-end": "shots/godot-heat-firm-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 15.99,
+  "cores": 4,
+  "load1End": 22.16,
+  "contention": 2.06,
+  "contentionSamples": [
+   1.12,
+   2.93,
+   2.06,
+   2.7,
+   1.21,
+   2.47,
+   1.28
+  ]
+ },
+ "loadMs": 473,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:34837/Godot/heat-firm/index.html",
+ "startPath": "http://127.0.0.1:34837/Godot/heat-firm/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 110.6,
+  "bench1Ms": 33.4,
+  "effectiveSlowdown": 3.3
+ },
+ "start": {
+  "how": "tap centre + tap on game + KEY Enter",
+  "viaKey": true,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 2.06,
+  "loadMs": 3285,
+  "playMs": 240,
+  "loadRawMs": 9126,
+  "playRawMs": 499,
+  "playGlMs": 4,
+  "loadGlMs": 2359,
+  "longTasksPlay": 125,
+  "longTasks100Play": 2,
+  "tbtLoadMs": 2229,
+  "tbtPlayMs": 102,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 3,
+  "slowestPollMs": 2003,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.6,
+  "shaderCompileMaxCallMs": 0.5
+ },
+ "loafTop": [
+  {
+   "ms": 7094.5,
+   "blocking": 7017,
+   "scripts": [
+    [
+     "_engine/godot.js",
+     "IDBOpenDBRequest.onupgradeneeded",
+     5
+    ],
+    [
+     "_engine/godot.js",
+     "IDBOpenDBRequest.onsuccess",
+     7
+    ],
+    [
+     "_engine/godot.js",
+     "IDBRequest.onsuccess",
+     7029
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2070.5,
+   "blocking": 2012.7,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     1803
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1965.5,
+   "blocking": 1911.6,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     1958
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 130,
+  "jsMedian": 5.19,
+  "jsP95": 24.81,
+  "jsP99": 57.18,
+  "jsMax": 143,
+  "jsP95Raw": 51.1,
+  "rawWithGlP95": 964.9,
+  "glP95": 924.2,
+  "gapP95": 1100,
+  "gapMedian": 416.5,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 8.8,
+  "heap1MB": 8.9,
+  "heapGrowthPct": 1,
+  "heapMeasured": true,
+  "nodesStart": 33,
+  "nodesEnd": 23,
+  "nodesMax": 33,
+  "listeners0": 80,
+  "listeners1": 78,
+  "audioContexts": 2,
+  "audioElements": 0,
+  "webglContexts": 3,
+  "canvases": {
+   "n": 1,
+   "totalMB": 3.6,
+   "biggest": [
+    {
+     "w": 741,
+     "h": 1261,
+     "mpx": 0.93,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 1.9
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 92,
+  "scriptPct": 89,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 8,
+  "swipes": 1,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1159,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4000,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 29.4,
+  "changeTitleToPlayPct": 59.7,
+  "maxChangeFromStartPct": 1.4,
+  "samples": 7
+ },
+ "severity": 109.3,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK",
+   "STALL"
+  ],
+  "evidence": "main thread blocked 8974 ms (during load), 2584 ms of it inside WebGL calls (software GL), machine slowdown x1.9 -> about 3363 ms of JS; long-task API + timer heartbeat; longest frame 6654.7 ms: _engine/godot.js IDBRequest.onsuccess 6625 /  FrameRequestCallback 23",
+  "blockPlayMs": 264,
+  "blockLoadMs": 3363,
+  "load1": 24.72
+ }
+}

@@ -1,7 +1,7 @@
 {
- "generated": "2026-09-30T06:12:58.337Z",
+ "generated": "2026-09-30T06:18:39.567Z",
  "engine": "chromium",
- "count": 96,
+ "count": 100,
  "results": [
   {
    "id": "clean-house",
@@ -778,6 +778,233 @@
     "blockPlayMs": 193,
     "blockLoadMs": 4021,
     "load1": 19.73
+   }
+  },
+  {
+   "id": "godot-heat-firm",
+   "title": "Heat Firm",
+   "cat": "sim",
+   "genre": "idle",
+   "src": "Godot/heat-firm/index.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "JANK",
+    "STALL"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 9126 ms (during load), 2359 ms of it inside WebGL calls (software GL), machine slowdown x2.1 -> about 3285 ms of JS; long-task API + timer heartbeat; longest frame 7094.5 ms: _engine/godot.js IDBOpenDBRequest.onupgradeneeded 5 / _engine/godot.js IDBOpenDBRequest.onsuccess 7 / _engine/godot.js IDBRequest.onsuccess 7029",
+    "JANK": "p95 JS frame cost 24.81 ms over 16 ms (CPU throttled x4, divided by machine slowdown x2.1; raw p95 51.1, median 5.19, p99 57.18, max 143; time inside WebGL calls excluded, p95 of it 924.2)",
+    "STALL": "started only with a keyboard key (tap centre + tap on game + KEY Enter); a phone has no keyboard | nothing on screen changed for 29 s while the bot kept tapping"
+   },
+   "notes": [
+    "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x2.1)"
+   ],
+   "shots": {
+    "1-title": "shots/godot-heat-firm-1-title.jpg",
+    "2-mid": "shots/godot-heat-firm-2-mid.jpg",
+    "3-end": "shots/godot-heat-firm-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 15.99,
+    "cores": 4,
+    "load1End": 22.16,
+    "contention": 2.06,
+    "contentionSamples": [
+     1.12,
+     2.93,
+     2.06,
+     2.7,
+     1.21,
+     2.47,
+     1.28
+    ]
+   },
+   "loadMs": 473,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:34837/Godot/heat-firm/index.html",
+   "startPath": "http://127.0.0.1:34837/Godot/heat-firm/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 110.6,
+    "bench1Ms": 33.4,
+    "effectiveSlowdown": 3.3
+   },
+   "start": {
+    "how": "tap centre + tap on game + KEY Enter",
+    "viaKey": true,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 2.06,
+    "loadMs": 3285,
+    "playMs": 240,
+    "loadRawMs": 9126,
+    "playRawMs": 499,
+    "playGlMs": 4,
+    "loadGlMs": 2359,
+    "longTasksPlay": 125,
+    "longTasks100Play": 2,
+    "tbtLoadMs": 2229,
+    "tbtPlayMs": 102,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 3,
+    "slowestPollMs": 2003,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0.6,
+    "shaderCompileMaxCallMs": 0.5
+   },
+   "loafTop": [
+    {
+     "ms": 7094.5,
+     "blocking": 7017,
+     "scripts": [
+      [
+       "_engine/godot.js",
+       "IDBOpenDBRequest.onupgradeneeded",
+       5
+      ],
+      [
+       "_engine/godot.js",
+       "IDBOpenDBRequest.onsuccess",
+       7
+      ],
+      [
+       "_engine/godot.js",
+       "IDBRequest.onsuccess",
+       7029
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 2070.5,
+     "blocking": 2012.7,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       1803
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 1965.5,
+     "blocking": 1911.6,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       1958
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 130,
+    "jsMedian": 5.19,
+    "jsP95": 24.81,
+    "jsP99": 57.18,
+    "jsMax": 143,
+    "jsP95Raw": 51.1,
+    "rawWithGlP95": 964.9,
+    "glP95": 924.2,
+    "gapP95": 1100,
+    "gapMedian": 416.5,
+    "over100": 1,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 8.8,
+    "heap1MB": 8.9,
+    "heapGrowthPct": 1,
+    "heapMeasured": true,
+    "nodesStart": 33,
+    "nodesEnd": 23,
+    "nodesMax": 33,
+    "listeners0": 80,
+    "listeners1": 78,
+    "audioContexts": 2,
+    "audioElements": 0,
+    "webglContexts": 3,
+    "canvases": {
+     "n": 1,
+     "totalMB": 3.6,
+     "biggest": [
+      {
+       "w": 741,
+       "h": 1261,
+       "mpx": 0.93,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 1.9
+    },
+    "sdkTimers": 1
+   },
+   "cpu": {
+    "mainThreadBusyPct": 92,
+    "scriptPct": 89,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 8,
+    "swipes": 1,
+    "holds": 0,
+    "keys": 1,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 1159,
+    "inputLatencyP95Ms": 4000,
+    "inputLatencyMaxMs": 4000,
+    "inputTimeouts": 1
+   },
+   "screen": {
+    "longestStaticS": 29.4,
+    "changeTitleToPlayPct": 59.7,
+    "maxChangeFromStartPct": 1.4,
+    "samples": 7
+   },
+   "severity": 109.3,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE",
+     "JANK",
+     "STALL"
+    ],
+    "evidence": "main thread blocked 8974 ms (during load), 2584 ms of it inside WebGL calls (software GL), machine slowdown x1.9 -> about 3363 ms of JS; long-task API + timer heartbeat; longest frame 6654.7 ms: _engine/godot.js IDBRequest.onsuccess 6625 /  FrameRequestCallback 23",
+    "blockPlayMs": 264,
+    "blockLoadMs": 3363,
+    "load1": 24.72
    }
   },
   {
@@ -7585,6 +7812,225 @@
     "changeTitleToPlayPct": 91.2,
     "maxChangeFromStartPct": 1.4,
     "samples": 10
+   },
+   "severity": 82.3
+  },
+  {
+   "id": "sky-traffic-run",
+   "title": "Traffic Run",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/traffic-run.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [
+    "STALL"
+   ],
+   "evidence": {
+    "STALL": "game over screen reached 1x and the game never got back to play (bot pressed buttons for 22 s)"
+   },
+   "notes": [
+    "4 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.5)"
+   ],
+   "shots": {
+    "1-title": "shots/sky-traffic-run-1-title.jpg",
+    "2-mid": "shots/sky-traffic-run-2-mid.jpg",
+    "3-end": "shots/sky-traffic-run-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 16.78,
+    "cores": 4,
+    "load1End": 17.93,
+    "contention": 1.47,
+    "contentionSamples": [
+     2.7,
+     1.47,
+     1.62,
+     1.42,
+     1.17,
+     2.17,
+     1.2
+    ]
+   },
+   "loadMs": 589,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/traffic-run.html",
+   "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/traffic-run.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 124.8,
+    "bench1Ms": 39.6,
+    "effectiveSlowdown": 3.2
+   },
+   "start": {
+    "how": "tap centre",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1.47,
+    "loadMs": 93,
+    "playMs": 299,
+    "loadRawMs": 137,
+    "playRawMs": 440,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 2,
+    "longTasks100Play": 1,
+    "tbtLoadMs": 47,
+    "tbtPlayMs": 138,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 6,
+    "slowestPollMs": 80,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 1259.1,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    },
+    {
+     "ms": 1043.6,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    },
+    {
+     "ms": 1030.1,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 167,
+    "jsMedian": 1.02,
+    "jsP95": 7.82,
+    "jsP99": 33.06,
+    "jsMax": 178.5,
+    "jsP95Raw": 11.5,
+    "rawWithGlP95": 11.5,
+    "glP95": 0,
+    "gapP95": 766.6,
+    "gapMedian": 266.6,
+    "over100": 1,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 1.9,
+    "heap1MB": 2,
+    "heapGrowthPct": 8,
+    "heapMeasured": true,
+    "nodesStart": 21,
+    "nodesEnd": 21,
+    "nodesMax": 21,
+    "listeners0": 48,
+    "listeners1": 48,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 8,
+     "totalMB": 3.7,
+     "biggest": [
+      {
+       "w": 740,
+       "h": 1288,
+       "mpx": 0.95,
+       "dom": true,
+       "css": [
+        370,
+        644
+       ]
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 6,
+    "scriptPct": 2,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play",
+     "over",
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 1,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 1,
+    "first": 85,
+    "last": 85,
+    "max": 85,
+    "trajectory": [
+     [
+      31,
+      85
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 16,
+    "swipes": 1,
+    "holds": 3,
+    "keys": 1,
+    "buttonPresses": 1,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 600,
+    "inputLatencyP95Ms": 4001,
+    "inputLatencyMaxMs": 4001,
+    "inputTimeouts": 4
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 91.9,
+    "maxChangeFromStartPct": 88.9,
+    "samples": 9
    },
    "severity": 82.3
   },
@@ -16219,6 +16665,218 @@
    "severity": 0.3
   },
   {
+   "id": "sky-turret-defense",
+   "title": "Turret Defense",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/turret-defense.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "4 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.4)"
+   ],
+   "shots": {
+    "1-title": "shots/sky-turret-defense-1-title.jpg",
+    "2-mid": "shots/sky-turret-defense-2-mid.jpg",
+    "3-end": "shots/sky-turret-defense-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 17.93,
+    "cores": 4,
+    "load1End": 15.99,
+    "contention": 1.38,
+    "contentionSamples": [
+     2.08,
+     1.75,
+     2.23,
+     1.25,
+     1.38,
+     1.28,
+     1.37
+    ]
+   },
+   "loadMs": 722,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/turret-defense.html",
+   "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/turret-defense.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 109.4,
+    "bench1Ms": 31.8,
+    "effectiveSlowdown": 3.4
+   },
+   "start": {
+    "how": "tap centre",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1.38,
+    "loadMs": 211,
+    "playMs": 324,
+    "loadRawMs": 291,
+    "playRawMs": 447,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 6,
+    "longTasks100Play": 1,
+    "tbtLoadMs": 133,
+    "tbtPlayMs": 229,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 4,
+    "slowestPollMs": 206,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 2666.9,
+     "blocking": 0,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       15
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 1253.5,
+     "blocking": 0,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       13
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 918.5,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 166,
+    "jsMedian": 2.61,
+    "jsP95": 12.68,
+    "jsP99": 55.07,
+    "jsMax": 235.1,
+    "jsP95Raw": 17.5,
+    "rawWithGlP95": 17.5,
+    "glP95": 0,
+    "gapP95": 600,
+    "gapMedian": 266.7,
+    "over100": 1,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2,
+    "heap1MB": 2.1,
+    "heapGrowthPct": 9,
+    "heapMeasured": true,
+    "nodesStart": 21,
+    "nodesEnd": 21,
+    "nodesMax": 21,
+    "listeners0": 50,
+    "listeners1": 50,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 9,
+     "totalMB": 3.8,
+     "biggest": [
+      {
+       "w": 740,
+       "h": 1288,
+       "mpx": 0.95,
+       "dom": true,
+       "css": [
+        370,
+        644
+       ]
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 6,
+    "scriptPct": 2,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 16,
+    "swipes": 3,
+    "holds": 2,
+    "keys": 0,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 627,
+    "inputLatencyP95Ms": 4000,
+    "inputLatencyMaxMs": 4004,
+    "inputTimeouts": 4
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 14.4,
+    "maxChangeFromStartPct": 12.6,
+    "samples": 9
+   },
+   "severity": 0.3
+  },
+  {
    "id": "surviv-royale",
    "title": "Surviv Royale",
    "cat": "arcade",
@@ -20600,6 +21258,217 @@
     "longestStaticS": 5.1,
     "changeTitleToPlayPct": 52.7,
     "maxChangeFromStartPct": 2.6,
+    "samples": 10
+   },
+   "severity": 0.1
+  },
+  {
+   "id": "sky-swim-dodge",
+   "title": "Swim Dodge",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+   "engine": "chromium",
+   "throttle": 4,
+   "throttled": true,
+   "durationS": 45,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.7)"
+   ],
+   "shots": {
+    "1-title": "shots/sky-swim-dodge-1-title.jpg",
+    "2-mid": "shots/sky-swim-dodge-2-mid.jpg",
+    "3-end": "shots/sky-swim-dodge-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 14.6,
+    "cores": 4,
+    "load1End": 16.78,
+    "contention": 1.68,
+    "contentionSamples": [
+     1.39,
+     1.68,
+     1.51,
+     1.4,
+     2.34,
+     2.07,
+     3.68
+    ]
+   },
+   "loadMs": 494,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+   "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 107.7,
+    "bench1Ms": 49.3,
+    "effectiveSlowdown": 2.2
+   },
+   "start": {
+    "how": "tap centre",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1.68,
+    "loadMs": 94,
+    "playMs": 142,
+    "loadRawMs": 158,
+    "playRawMs": 239,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 3,
+    "longTasks100Play": 1,
+    "tbtLoadMs": 44,
+    "tbtPlayMs": 123,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 5,
+    "slowestPollMs": 254,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 2805.7,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    },
+    {
+     "ms": 1270.3,
+     "blocking": 0,
+     "scripts": [
+      [
+       "",
+       "TimerHandler:setTimeout",
+       5
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       7
+      ]
+     ],
+     "phase": "start"
+    },
+    {
+     "ms": 1174.7,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 118,
+    "jsMedian": 1.37,
+    "jsP95": 7.74,
+    "jsP99": 19.76,
+    "jsMax": 138.8,
+    "jsP95Raw": 13,
+    "rawWithGlP95": 13,
+    "glP95": 0,
+    "gapP95": 1066.6,
+    "gapMedian": 399.9,
+    "over100": 1,
+    "limit": 16
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 1.9,
+    "heap1MB": 2,
+    "heapGrowthPct": 10,
+    "heapMeasured": true,
+    "nodesStart": 21,
+    "nodesEnd": 21,
+    "nodesMax": 21,
+    "listeners0": 50,
+    "listeners1": 50,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 12,
+     "totalMB": 3.8,
+     "biggest": [
+      {
+       "w": 740,
+       "h": 1288,
+       "mpx": 0.95,
+       "dom": true,
+       "css": [
+        370,
+        644
+       ]
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 4,
+    "scriptPct": 1,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 16,
+    "swipes": 2,
+    "holds": 0,
+    "keys": 2,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 825,
+    "inputLatencyP95Ms": 4001,
+    "inputLatencyMaxMs": 4001,
+    "inputTimeouts": 2
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 82.2,
+    "maxChangeFromStartPct": 7.8,
     "samples": 10
    },
    "severity": 0.1
