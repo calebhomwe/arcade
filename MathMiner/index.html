@@ -976,6 +976,20 @@ function makeQuestion(mode,dep){
 }
 
 
+/* ═══ spelling variants: an Australian/British spelling is shown, the common US spelling is accepted too ═══
+   spellAdv(word, idx, ch) tells how many letters of the word a tapped letter completes: 0 = wrong, 1 = right,
+   2 = right, and it is the US spelling that leaves out the "u" of -our (neighbour: n-e-i-g-h-b-o-r).
+   A letter swap such as grey/gray is accepted the same way. */
+const OUR_WORDS=/^(neighbour|colour|favourite|honour|humour|labour|harbour|flavour|behaviour|rumour|savour|vapour)$/;
+const US_SUB={grey:{2:'a'},greyhound:{2:'a'}};
+function spellAdv(word,idx,ch){
+  word=String(word).toLowerCase();ch=String(ch).toLowerCase();
+  if(word[idx]===ch)return 1;
+  if(OUR_WORDS.test(word)&&word[idx]==='u'&&word[idx-1]==='o'&&word[idx+1]===ch)return 2;
+  const s=US_SUB[word];if(s&&s[idx]===ch)return 1;
+  return 0;
+}
+
 /* ═══════════ the mine: five layers, each with its own rock, light and gems ═══════════ */
 const BIOMES=[
   {id:'top', name:'Topsoil',       at:0,  dirt:['#96633a','#6d4526'], hard:['#8a7a68','#5e5244'], back:'#2a1a10', amb:'#ffcf90', gems:['quartz','citrine'],  emoji:'🌱'},
@@ -1315,8 +1329,9 @@ function submitMath(v,btn){
 function submitLetter(i,btn){
   if(!G.curQ||G.curQ.kind!=='spell') return;
   const q=G.curQ, btns=document.getElementById('gems').children;
-  if(q.letters[i]===q.word[G.spellIdx]){
-    G.spellIdx++; kitSfx('correct',{volume:.6}); SFX.ore();
+  const adv=spellAdv(q.word,G.spellIdx,q.letters[i]);
+  if(adv>0){
+    G.spellIdx+=adv; kitSfx('correct',{volume:.6}); SFX.ore();
     document.getElementById('pzClue').innerHTML=
       `&ldquo;${clueSentence({t:q.word,h:q.clue},G.spellIdx)}&rdquo;`;
     if(btns[i]) btns[i].style.visibility='hidden';

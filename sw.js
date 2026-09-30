@@ -4,8 +4,8 @@
    GETs are cache-first with a background refresh. Games on the other live
    sites are cross-origin and are left to the network (their own sites cache
    them if they choose to). */
-const VERSION = 'arcade-v12-progress2';
-const SHELL = ['./', 'index.html', 'play.html', 'catalog.js', 'assets/site.css?v=prog-1', 'assets/playroom.css?v=prog-1', 'assets/profile.css?v=prog-1', 'assets/feature-kingdom.webp', 'assets/profile-core.js?v=prog-1', 'assets/profile-art.js?v=prog-1', 'assets/profile-ui.js?v=prog-1', 'assets/site.js?v=prog-1', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'assets/fonts/fredoka.woff2', 'assets/fonts/nunito.woff2'];
+const VERSION = 'arcade-v12-progress3';
+const SHELL = ['./', 'index.html', 'play.html', 'catalog.js', 'assets/site.css?v=prog-2', 'assets/playroom.css?v=prog-2', 'assets/profile.css?v=prog-2', 'assets/feature-kingdom.webp', 'assets/profile-core.js?v=prog-2', 'assets/profile-art.js?v=prog-2', 'assets/profile-ui.js?v=prog-2', 'assets/site.js?v=prog-2', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'assets/fonts/fredoka.woff2', 'assets/fonts/nunito.woff2'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });

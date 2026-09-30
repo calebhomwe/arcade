@@ -859,6 +859,20 @@ function qQuick(d){
 }
 
 
+/* ═══ spelling variants: an Australian/British spelling is shown, the common US spelling is accepted too ═══
+   spellAdv(word, idx, ch) tells how many letters of the word a tapped letter completes: 0 = wrong, 1 = right,
+   2 = right, and it is the US spelling that leaves out the "u" of -our (neighbour: n-e-i-g-h-b-o-r).
+   A letter swap such as grey/gray is accepted the same way. */
+const OUR_WORDS=/^(neighbour|colour|favourite|honour|humour|labour|harbour|flavour|behaviour|rumour|savour|vapour)$/;
+const US_SUB={grey:{2:'a'},greyhound:{2:'a'}};
+function spellAdv(word,idx,ch){
+  word=String(word).toLowerCase();ch=String(ch).toLowerCase();
+  if(word[idx]===ch)return 1;
+  if(OUR_WORDS.test(word)&&word[idx]==='u'&&word[idx-1]==='o'&&word[idx+1]===ch)return 2;
+  const s=US_SUB[word];if(s&&s[idx]===ch)return 1;
+  return 0;
+}
+
 /* ═══════════ data: pictures for words, waters and their fish, hats ═══════════ */
 const EMOJI = {cat:'🐱',dog:'🐶',sun:'☀️',hat:'🎩',bus:'🚌',fish:'🐟',frog:'🐸',bird:'🐦',cake:'🎂',star:'⭐',moon:'🌙',tree:'🌳',duck:'🦆',ship:'🚢',
   milk:'🥛',book:'📖',door:'🚪',foot:'🦶',hand:'✋',king:'🤴',ring:'💍',road:'🛣️',snow:'❄️',bear:'🐻',rain:'🌧️',boat:'⛵',farm:'🚜',goat:'🐐',lamp:'💡',leaf:'🍃',sock:'🧦',
@@ -1296,7 +1310,7 @@ function hookFish(perfect){
   if (dbgForce){ f.label = dbgForce; dbgForce = null; }
   if (dbgRarity){ f.rarity = dbgRarity; dbgRarity = null; }
   const sp = PONDS[f.pi].fish[f.sp];
-  hookedFish = { label:String(f.label), rarity:f.rarity, species:f.sp, pi:f.pi, name:(rarityTag(f.rarity)+" "+sp[0]).trim(), correct:String(f.label)===String(needNow()), size:f.size, fromX:hook.x, fromY:hook.y, perfect:!!perfect, ref:f };
+  hookedFish = { label:String(f.label), rarity:f.rarity, species:f.sp, pi:f.pi, name:(rarityTag(f.rarity)+" "+sp[0]).trim(), correct:mode==="spell"?spellAdv(word.t,wordIdx,f.label)>0:String(f.label)===String(needNow()), adv:mode==="spell"?spellAdv(word.t,wordIdx,f.label):1, size:f.size, fromX:hook.x, fromY:hook.y, perfect:!!perfect, ref:f };
   f.state = "hooked"; phase = "hooked"; hookT = 0; target = null; shake = RM.matches?0:4;
   splash(hook.x, WL+8*U, 18); ripple(hook.x, WL+6*U); kit('collect',{volume:.7}); buzz(30);
 }
@@ -1320,7 +1334,7 @@ function decideKeep(keepIt){
       if (b.n===0) dayNew.push({pi:f.pi, si:f.species, rar:f.rarity}); b.n++; if (f.rarity==="legendary") b.gold = 1;
       if (f.rarity==="legendary") meta.trophies.push({name:f.name, label:f.label, day, mode}), meta.trophies = meta.trophies.slice(-30);
       if (mode==="spell"){
-        tilePop[wordIdx] = 1; wordIdx++;
+        tilePop[wordIdx] = 1; wordIdx += (f.adv||1);
         if (wordIdx >= word.t.length){
           wordsDone++; meta.words++; const bonus = 10*wordTier; dayEarnings += bonus; celebrate = 2.6; celebrateT = 2.6;
           setToast(word.t.toUpperCase()+"!  +"+bonus+" coins", 2.4, "#ffe7a0"); say(word.t+". "+word.t.split('').join(', ')+". "+word.t+"!");

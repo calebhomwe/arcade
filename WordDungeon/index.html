@@ -736,6 +736,20 @@ function makeQuestion(mode,level){
 }
 
 
+/* ═══ spelling variants: an Australian/British spelling is shown, the common US spelling is accepted too ═══
+   spellAdv(word, idx, ch) tells how many letters of the word a tapped letter completes: 0 = wrong, 1 = right,
+   2 = right, and it is the US spelling that leaves out the "u" of -our (neighbour: n-e-i-g-h-b-o-r).
+   A letter swap such as grey/gray is accepted the same way. */
+const OUR_WORDS=/^(neighbour|colour|favourite|honour|humour|labour|harbour|flavour|behaviour|rumour|savour|vapour)$/;
+const US_SUB={grey:{2:'a'},greyhound:{2:'a'}};
+function spellAdv(word,idx,ch){
+  word=String(word).toLowerCase();ch=String(ch).toLowerCase();
+  if(word[idx]===ch)return 1;
+  if(OUR_WORDS.test(word)&&word[idx]==='u'&&word[idx-1]==='o'&&word[idx+1]===ch)return 2;
+  const s=US_SUB[word];if(s&&s[idx]===ch)return 1;
+  return 0;
+}
+
 /* ═══════════ audio (WebAudio, synthesized) + the arcade's shared sound kit ═══════════ */
 const AU={ctx:null,on:true,
   init(){if(!this.ctx){try{this.ctx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
@@ -923,8 +937,9 @@ function onRune(owner,rune){
   if(solved)return;
   const need=owner.q.answer[owner.idx];
   if(need===undefined)return;
-  if(rune.ch===need){
-    rune.used=true;rune.glow=1;owner.idx++;AU.good();
+  const adv=owner.q.kind==='spell'?spellAdv(owner.q.answer,owner.idx,rune.ch):(rune.ch===need?1:0);
+  if(adv>0){
+    rune.used=true;rune.glow=1;owner.idx+=adv;AU.good();
     for(let i=0;i<8;i++)G.particles.push({x:rune.x+rune.w/2,y:rune.y,vx:(Math.random()-.5)*180,vy:-Math.random()*200,t:.6,c:'#ffe88a',s:3});
     if(owner.idx>=owner.q.answer.length){noteAnswer(owner.q,true);runeComplete(owner);}
     else if(owner.q.kind==='spell')owner.q.prompt=clueSentence(owner.q.word,owner.idx);
