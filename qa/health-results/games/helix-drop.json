@@ -1,0 +1,244 @@
+{
+ "id": "helix-drop",
+ "title": "Helix Drop",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 9583 ms (during load), 5948 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 2713 ms of JS; long-task API + timer heartbeat; longest frame 9634.6 ms: HelixDrop/index.html https://calebhomwe.github.io/playables/HelixDrop/index.html 4093 /  FrameRequestCallback 5534",
+  "JANK": "p95 JS frame cost 27.46 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.3; raw p95 36.8, median 5.97, p99 38.73, max 38.7; time inside WebGL calls excluded, p95 of it 5.4)"
+ },
+ "notes": [
+  "software-GL artefact: over 40% of the longest block was inside synchronous WebGL calls (getProgramInfoLog, readPixels, draw...) waiting for this box's software GL; an iPhone GPU would not wait",
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.3)"
+ ],
+ "shots": {
+  "1-title": "shots/helix-drop-1-title.jpg",
+  "2-mid": "shots/helix-drop-2-mid.jpg",
+  "3-end": "shots/helix-drop-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 19.19,
+  "cores": 4,
+  "load1End": 17.42,
+  "contention": 1.34,
+  "contentionSamples": [
+   1.34,
+   1.39,
+   1.13,
+   1.47,
+   1.21,
+   2.85,
+   1.12
+  ]
+ },
+ "loadMs": 10436,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
+ "startPath": "https://calebhomwe.github.io/playables/HelixDrop/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 116.1,
+  "bench1Ms": 30.4,
+  "effectiveSlowdown": 3.8
+ },
+ "start": {
+  "how": "#play",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.34,
+  "loadMs": 2713,
+  "playMs": 312,
+  "loadRawMs": 9583,
+  "playRawMs": 418,
+  "playGlMs": 0,
+  "loadGlMs": 5948,
+  "longTasksPlay": 6,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 57,
+  "tbtPlayMs": 1,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 7,
+  "slowestPollMs": 197,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 1.3,
+  "shaderCompileMaxCallMs": 0.9
+ },
+ "loafTop": [
+  {
+   "ms": 9634.6,
+   "blocking": 9578.7,
+   "scripts": [
+    [
+     "HelixDrop/index.html",
+     "https://calebhomwe.github.io/playables/HelixDrop/index.html",
+     4093
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     5534
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2908.3,
+   "blocking": 2092.8,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     2140
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 2460.1,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 69,
+  "jsMedian": 5.97,
+  "jsP95": 27.46,
+  "jsP99": 38.73,
+  "jsMax": 38.7,
+  "jsP95Raw": 36.8,
+  "rawWithGlP95": 49.3,
+  "glP95": 5.4,
+  "gapP95": 1900,
+  "gapMedian": 733.3,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 4.7,
+  "heap1MB": 5,
+  "heapGrowthPct": 7,
+  "heapMeasured": true,
+  "nodesStart": 93,
+  "nodesEnd": 95,
+  "nodesMax": 95,
+  "listeners0": 62,
+  "listeners1": 62,
+  "audioContexts": 1,
+  "audioElements": 1,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 3,
+   "totalMB": 5,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 390,
+     "h": 664,
+     "mpx": 0.26,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 128,
+     "h": 128,
+     "mpx": 0.02,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 9,
+  "scriptPct": 7,
+  "layoutPerSec": 0.2
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    25,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 8,
+  "swipes": 1,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 5,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1766,
+  "inputLatencyP95Ms": 4002,
+  "inputLatencyMaxMs": 4002,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 90.9,
+  "maxChangeFromStartPct": 21.8,
+  "samples": 7
+ },
+ "severity": 106.7,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 9649 ms (during load), 5153 ms of it inside WebGL calls (software GL), machine slowdown x1.7 -> about 2599 ms of JS; long-task API + timer heartbeat; longest frame 9674 ms: HelixDrop/index.html https://calebhomwe.github.io/playables/HelixDrop/index.html 4614 /  FrameRequestCallback 5052",
+  "blockPlayMs": 342,
+  "blockLoadMs": 2599,
+  "load1": 18.87
+ }
+}

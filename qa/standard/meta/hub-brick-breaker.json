@@ -1,22 +1,22 @@
 {
   "howto": [
-    "Pick Easy, Normal or Hard, then press Play.",
-    "Drag anywhere, or use the arrow keys, to move the paddle.",
-    "Tap or press Space to launch the ball, and keep it bouncing into the bricks.",
-    "Clear every brick to reach the next level. Lose every ball and the run ends."
+    "Press Play to start at your next level, or Choose level for the map of 20 levels in 4 worlds.",
+    "Drag anywhere to slide the paddle, and tap to launch the ball.",
+    "Break every brick; catch the falling capsules for multi-ball, wide paddle, laser, slow ball, fireball or an extra life.",
+    "Keep all three balls for three stars, and spend gems on new ball and paddle sets."
   ],
   "tips": [
     "Where the ball hits the paddle sets its angle: the edges send it sideways.",
-    "Bricks with a white chevron take two hits (three on the top row from level 6).",
-    "Breaking bricks without touching the paddle builds a combo worth extra points.",
-    "A shield power-up saves one ball that would have been lost.",
-    "Catch Slow ball when things get hectic: the ball moves at 62% speed for 8 seconds."
+    "Silver rims take two hits, gold rims three, steel never breaks, and a bomb brick hurts its neighbours.",
+    "Breaking bricks without touching the paddle builds a combo worth up to 8x points.",
+    "Fireball smashes straight through bricks; lasers hit anything above the paddle.",
+    "If a level beats you twice the paddle gets wider and the ball slower to help."
   ],
   "controls": {
     "keyboard": "Left and Right (or A and D) move the paddle, Space or Enter launches. P or Esc pauses.",
-    "touch": "Drag anywhere to move the paddle, tap to launch"
+    "touch": "Drag anywhere to slide the paddle, tap to launch"
   },
-  "difficulty": "Easy, Normal and Hard on the title: Easy has a wider paddle, a 15% slower ball and 5 lives; Hard has a narrow paddle and a 15% faster ball. Every level adds a row of bricks and a little ball speed.",
+  "difficulty": "An adaptive curve: 20 hand-made levels get harder step by step, the ball speeds up a little each level, and failing the same level twice makes the paddle wider and the ball slower. Three stars for clearing a level without losing a ball.",
   "cheats": [
     {
       "code": "FLOORSHIELD",
@@ -32,16 +32,20 @@
     }
   ],
   "features": {
-    "difficulty": "Easy, Normal and Hard buttons on the title (remembered)",
-    "power-up-list": "The title lists the four power-ups with their badges: 3x Multi-ball, W Wide paddle, S Slow ball, star Shield",
-    "wave-or-level-counter": "LV in the top bar; LEVEL n pops up on every clear",
-    "high-score-table": "Top 5 scores with level and difficulty on the Game Over card (runs with codes on are left out)",
-    "results": "Game Over card with score, best, level, bricks, best combo, power-ups and the top-5 table"
+    "difficulty": "Adaptive: harder levels and ball speed, with a helping hand after two fails; stars measure skill",
+    "power-up-list": "Six power-up capsules: 3 multi-ball, W wide, L laser, S slow, F fire, heart extra life; the how-to lists them",
+    "wave-or-level-counter": "LEVEL n and the world name at the top, plus a map of 20 levels with stars",
+    "high-score-table": "Top 5 runs on the result card and a star count per level on the map",
+    "results": "Result card with stars, points, top-5 runs, gems earned, today's goals and the next set to unlock",
+    "progression": "20 levels in 4 worlds with 3 stars each, eight ball and paddle sets, daily goals with a star challenge, week stamps with a weekly gift",
+    "daily-goals": "Three goals and one star challenge a day"
   },
   "saves": [
     "brickBest",
-    "brickTop"
+    "brick-stars",
+    "hm-brick"
   ],
   "start": "#playBtn",
-  "pauseButton": "br"
+  "pauseButton": "br",
+  "pauseKeys": "p+esc"
 }

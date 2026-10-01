@@ -1,0 +1,273 @@
+{
+ "id": "hub-idle-empire",
+ "title": "Idle Empire",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 6202 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 4845 ms of JS; long-task API + timer heartbeat; longest frame 8135.2 ms:  TimerHandler:setTimeout 8 /  FrameRequestCallback 6189",
+  "JANK": "p95 JS frame cost 769.3 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.3; raw p95 984.7, median 450.94, p99 974.92, max 974.9; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.3)"
+ ],
+ "shots": {
+  "1-title": "shots/hub-idle-empire-1-title.jpg",
+  "2-mid": "shots/hub-idle-empire-2-mid.jpg",
+  "3-end": "shots/hub-idle-empire-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.5,
+  "cores": 4,
+  "load1End": 16.65,
+  "contention": 1.28,
+  "contentionSamples": [
+   1.2,
+   1.65,
+   1.12,
+   1.11,
+   1.28,
+   8.46,
+   2.48
+  ]
+ },
+ "loadMs": 1136,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 84.2,
+  "bench1Ms": 41.2,
+  "effectiveSlowdown": 2
+ },
+ "start": {
+  "how": "#btnPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.28,
+  "loadMs": 4845,
+  "playMs": 2100,
+  "loadRawMs": 6202,
+  "playRawMs": 2689,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 97,
+  "longTasks100Play": 96,
+  "tbtLoadMs": 11413,
+  "tbtPlayMs": 43298,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 63,
+  "slowestPollMs": 1704,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 8135.2,
+   "blocking": 6157.7,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     8
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     6189
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3050.9,
+   "blocking": 1644.4,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     1690
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2148.9,
+   "blocking": 1034.9,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     8
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     1075
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 97,
+  "jsMedian": 450.94,
+  "jsP95": 769.3,
+  "jsP99": 974.92,
+  "jsMax": 974.9,
+  "jsP95Raw": 984.7,
+  "rawWithGlP95": 984.7,
+  "glP95": 0,
+  "gapP95": 1166.7,
+  "gapMedian": 683.3,
+  "over100": 91,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.7,
+  "heap1MB": 3,
+  "heapGrowthPct": 8,
+  "heapMeasured": true,
+  "nodesStart": 298,
+  "nodesEnd": 298,
+  "nodesMax": 306,
+  "listeners0": 93,
+  "listeners1": 92,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 13,
+   "totalMB": 12,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 780,
+     "h": 580,
+     "mpx": 0.45,
+     "dom": true,
+     "css": [
+      390,
+      290
+     ]
+    },
+    {
+     "w": 780,
+     "h": 580,
+     "mpx": 0.45,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 588,
+     "h": 734,
+     "mpx": 0.43,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 93,
+  "scriptPct": 77,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 4,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    1,
+    0
+   ],
+   [
+    34,
+    0
+   ],
+   [
+    54,
+    0
+   ],
+   [
+    80,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 6,
+  "swipes": 1,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 4,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1943,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 55.4,
+  "maxChangeFromStartPct": 16.4,
+  "samples": 7
+ },
+ "severity": 108.8,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 2362 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 1596 ms of JS; long-task API + timer heartbeat; longest frame 2450.3 ms:  FrameRequestCallback 2360",
+  "blockPlayMs": 1508,
+  "blockLoadMs": 1596,
+  "load1": 17.6
+ }
+}

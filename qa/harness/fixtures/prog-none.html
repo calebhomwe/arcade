@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Fixture: prog-none</title>
+<script src="../../../assets/arcade-sdk.js"></script>
+<style>html,body{margin:0;height:100%;background:#0b1024;color:#fff;font:600 18px system-ui;overflow:hidden;touch-action:none}
+canvas{position:fixed;inset:0;width:100%;height:100%}
+.ov{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(5,10,30,.55);text-align:center}
+button{font:700 22px system-ui;padding:16px 32px;border:0;border-radius:14px;background:#ffb703;color:#111}
+#hud{position:fixed;top:12px;left:12px;font-size:16px}#junk{display:none}</style></head>
+<body><canvas id="c"></canvas><div id="hud"></div><div id="junk"></div>
+<div class="ov" id="title"><h1>Fixture: prog-none</h1><div id="sub"></div><div id="hint">Tap Play</div><button id="play">Play</button><button id="shop" style="display:none;font-size:16px">Shop: buy the gold theme (20 coins)</button></div>
+<div class="ov" id="over"><h1>Game over</h1><button id="again">Play again</button></div>
+<script>window.FIX={"mode": "pass", "persist": "none"};</script><script src="fixture-base.js"></script></body></html>

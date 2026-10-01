@@ -2,33 +2,50 @@
   "howto": [
     "Press Play, then tap anywhere (or press Space) to throw a knife into the spinning log.",
     "Never hit a knife that is already stuck in the log.",
-    "Land every knife to split the log and move to a faster level. Golden apples are worth +5."
+    "Stick every knife to split the log and reach the next stage; every fifth stage is a boss.",
+    "Slice apples for coins and spend them on new knives."
   ],
   "tips": [
     "Watch the bottom of the log: throw just after a stuck knife passes.",
-    "The log can change direction between levels, so check which way it spins.",
-    "A level cleared without slicing an apple counts as a Perfect Level.",
-    "Throwing quickly in a row builds a Flow streak.",
-    "Reach levels 3, 6, 9 and 12 to collect emblems."
+    "Stages 1 to 4 are a warm-up; from stage 2 some knives are already stuck in the log.",
+    "Beat the boss on stage 5, 10 and 15 for the Bark Splitter, Frost Fang and Ember Edge knives, and to save a checkpoint.",
+    "Golden apples are worth 3.",
+    "Throwing quickly in a row builds a Flow streak."
   ],
   "controls": {
     "keyboard": "Space or Up arrow throws. P or Esc pauses.",
     "touch": "Tap anywhere to throw"
   },
-  "difficulty": "An adaptive curve: each level the log spins faster, has more sections and may reverse direction.",
+  "difficulty": "An adaptive curve: stages 1 to 4 have a slow log and few stuck knives, then the log spins faster, may reverse or pulse, and more knives are stuck in it. Every fifth stage is a boss with its own spin pattern. Beaten bosses save a checkpoint you can start from.",
   "cheats": [
-    {"code": "SLOWLOG", "effect": "Slow log: every log spins at half speed"},
-    {"code": "GHOSTBLADE", "effect": "Ghost blade: knives slip past stuck knives"},
-    {"code": "APPLERAIN", "effect": "Apple rain: a new golden apple after every slice"}
+    {
+      "code": "SLOWLOG",
+      "effect": "Slow log: every log spins at half speed"
+    },
+    {
+      "code": "GHOSTBLADE",
+      "effect": "Ghost blade: knives slip past knives already in the log"
+    },
+    {
+      "code": "APPLERAIN",
+      "effect": "Apple rain: a new apple keeps growing on the log"
+    }
   ],
   "features": {
     "one-tap-start": "Play, then the first tap throws and starts the run",
     "instant-restart": "Play Again on the Clash card starts a new run at once",
-    "best-score-badge": "Best pill in the top bar during play, and on the Clash card",
-    "tutorial-card": "Get-ready card with a tapping finger; the first run also explains stuck knives and apples",
-    "results": "Clash card with score, best and emblems"
+    "best-score-badge": "Best stage on the title and on the results card",
+    "tutorial-card": "Get-ready card with a tapping finger on the first run",
+    "results": "Result card with stage reached, medal, best, top-5 runs, apples earned, today's goals and the next knife to unlock",
+    "progression": "Nine knives (six bought with apples, three won from the bosses), boss checkpoints at stages 6, 11 and 16, three daily goals plus a star challenge, week stamps with a weekly gift",
+    "daily-goals": "Three goals and one star challenge a day"
   },
-  "saves": ["knife-hit-best", "knife-hit-apples"],
+  "saves": [
+    "knife-hit-best",
+    "knife-hit-apples",
+    "knife-hit-ckpt",
+    "hm-knife"
+  ],
   "start": "#playBtn",
-  "pauseButton": "bl"
+  "pauseButton": "br"
 }

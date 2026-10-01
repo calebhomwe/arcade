@@ -25,7 +25,7 @@ CATS = [  # order = nav order: (id, name, icon, one-line description). Colours l
 ]
 # "Popular": the owner's ranked picks (no analytics on this site). Rank 1 is the most popular.
 # The portal blends this with the visitor's own play counts.
-POPULAR = ['kingdom-defense','bloxburg-town','godot-claire-big-life','neon-dash','survivor-wave','crowd-clash','high-nest',
+POPULAR = ['kingdom-defense','bloxburg-town','neon-dash','survivor-wave','crowd-clash','high-nest',
   'hub-chess','critter-rush-2d','bridge-rush','hub-isle-of-bells','nistar','hole-grind','hub-block-blast','godot-swellrider',
   'hub-game-2048','cook-rush','claire-pip','rung-runner','helix-drop','clean-house','snake-clash','market-merge','hub-flappy-flight']
 
@@ -138,6 +138,9 @@ for id,t,c,b,src,thumb,tags,feat in N:
 # ---------- more cabinets (this repo) ----------
 add('claire-pip',"Claire's Big Life",'sim',"Live · Play · Explore. Care for your pet, play fun activities, collect treasures, decorate your world, and dress Claire up in style!",'ClairePip/index.html','claire-pip.webp',tags=('pet','dress-up','kids','bible'),featured=True,frm='Cabinet',stage='tall',
     note='Pick an age band on the first screen and the activities adjust to it. Everything saves on this device.')
+# UNLISTED until the look is closer to the Caleb's Farm art (self-scored 4.5/10): re-enable with the line below.
+# add('claire-farm',"Claire's Farm",'sim',"Plant, harvest, bake and fill orders on a cosy 3D farm: fifty levels, a story that ends with the Lantern Fair, and a camera you can turn with two fingers. Built to run on a phone.",'ClaireFarm/index.html','claire-farm.webp',tags=('farm','3D','progression','cozy'),featured=True,new=True,frm='Cabinet',
+#     note='Drag to look around, pinch to zoom, twist two fingers to turn the farm. Crops keep growing while you are away, and everything saves on this device. The desktop HD edition lives in the Godot build.')
 add('sneaker-drop','SneakerDrop — Hype Market Tycoon','sim','Bid on drops, snipe the resale market, cash out before the hype cools.','SneakerDrop/index.html','sneaker-drop.webp',tags=('tycoon','market'),frm='Cabinet')
 add('deepcut-mine','DEEPCUT','arcade','Dig down, dodge the lava, haul the rare ore back up before the shaft closes.','DeepcutMine/index.html','deepcut-mine.webp',tags=('mining','dig'),frm='Cabinet')
 add('cook-rush','Cook Rush','arcade','Day 1, opening shift. Tap the station each ticket needs, take food off the pan before it burns, then plate it.','CookRush/index.html','cook-rush.webp',tags=('cooking','time management'),frm='Cabinet')
@@ -154,7 +157,6 @@ add('rap-academy','Rap Academy','learning','Learn to rap by rapping: sixteen sho
 # ---------- Godot 4 web builds (this repo, one shared engine in Godot/_engine) ----------
 GODOT_NOTE='Godot web build: the first game you open downloads the shared 38 MB engine once, then every Godot game starts fast. Desktop browsers are happiest; Chrome or Safari on a phone also work.'
 GD = [
- ('godot-claire-big-life',"Claire's Big Life Adventure",'sim',"Claire's farm story: grow wheat and sunflowers, raise chickens, cows and sheep, bake, fill orders and the harbour boat, make friends and bring back the Lantern Fair across twelve chapters.",'claire-big-life',('farm','life sim','kids','township'),True,'WASD or arrows to walk, E to interact, tap or click anything that glows.'),
  ('godot-heat-firm','Heat Firm','sim','Cozy business idle: grow a single greenhouse from a leaky shed to a five-branch empire, switching between chilli, coffee, flowers, potions and lollies at will. Your staff keep working while you are away.','heat-firm',('idle','tycoon','greenhouse'),False,'Water: W · Harvest: E · Select plots: 1-6.'),
  ('godot-city-builder','City Builder 2000','sim','Place roads, houses, trees and cars on a grid, rotate objects, and watch citizen cars drive around your town.','city-builder',('city','builder','grid'),False,'1 Road · 2 House · 3 Tree · 4 Car · ? for help.'),
  ('godot-tidebreak','TIDEBREAK','arcade','Asset-free 3D arcade surfing: carve the face, pump for speed, land tricks in the barrel.','tidebreak',('surf','3d','tricks'),False,''),

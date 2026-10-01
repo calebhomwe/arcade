@@ -1,0 +1,159 @@
+{
+ "id": "critter-rush-2d",
+ "title": "Critter Rush 2D",
+ "cat": "arcade",
+ "genre": "racing",
+ "src": "CritterRush2D/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "STALL"
+ ],
+ "evidence": {
+  "STALL": "started only with a keyboard key (tap centre + EASY + EASY + EASY + tap on game + KEY Enter); a phone has no keyboard"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/critter-rush-2d-wk-1-title.jpg",
+  "2-mid": "shots/critter-rush-2d-wk-2-mid.jpg",
+  "3-end": "shots/critter-rush-2d-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 12.95,
+  "cores": 4,
+  "load1End": 13.57,
+  "contention": 1.21,
+  "contentionSamples": [
+   1.12,
+   1.3,
+   1.21,
+   1.29,
+   1.19,
+   1.09,
+   2.08
+  ]
+ },
+ "loadMs": 573,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:35033/CritterRush2D/index.html",
+ "startPath": "http://127.0.0.1:35033/CritterRush2D/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 66,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre + EASY + EASY + EASY + tap on game + KEY Enter",
+  "viaKey": true,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.21,
+  "loadMs": 1026,
+  "playMs": 272,
+  "loadRawMs": 1241,
+  "playRawMs": 329,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 34,
+  "slowestPollMs": 237,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 202,
+  "jsMedian": 1.65,
+  "jsP95": 11.57,
+  "jsP99": 36.36,
+  "jsMax": 127.3,
+  "jsP95Raw": 14,
+  "rawWithGlP95": 14,
+  "glP95": 0,
+  "gapP95": 992,
+  "gapMedian": 241,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 64,
+  "nodesEnd": 69,
+  "nodesMax": 70,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 70,
+  "swipes": 8,
+  "holds": 4,
+  "keys": 9,
+  "buttonPresses": 30,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 13,
+  "inputLatencyP95Ms": 752,
+  "inputLatencyMaxMs": 1138,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 91.8,
+  "maxChangeFromStartPct": 46.9,
+  "samples": 16
+ },
+ "severity": 83
+}

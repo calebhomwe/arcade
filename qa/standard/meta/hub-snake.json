@@ -1,47 +1,50 @@
 {
   "howto": [
-    "Pick Easy, Normal or Hard speed and press Play.",
+    "Pick Garden, Portals or Rocks and press Play.",
     "The snake waits until your first swipe or arrow key.",
-    "Steer to the apples: each one makes you longer and a little faster.",
-    "Don't hit the walls, your own tail or the rocks that appear as you grow."
+    "Swipe anywhere to steer to the fruit: each one makes you longer and the snake a little faster.",
+    "Don't hit the hedge, your own tail or a rock. Spend apples on new snakes."
   ],
   "tips": [
-    "Grab ⭐ gold before it fades: +5, and it blasts a rock away.",
-    "A 👻 orb lets you slide through rocks for 5 seconds.",
-    "Eat apples quickly one after another to build an eat streak.",
-    "Every 5 apples is a new level; the snake speeds up a little with every apple.",
+    "Golden apples are worth 5 but vanish after about 6 seconds.",
+    "A ghost orb lets you slide through your tail and rocks for 6 seconds; a snail orb slows the snake.",
+    "Eat fruit quickly one after another to build a chain.",
+    "Every 6 points the snake speeds up a little.",
     "When you get long, run along the edges so your tail can't box you in."
   ],
   "controls": {
     "keyboard": "Arrow keys or WASD steer; Space starts. P or Esc pauses.",
-    "touch": "Swipe on the board to steer"
+    "touch": "Swipe anywhere to steer (you can swipe again without lifting your finger)"
   },
-  "difficulty": "Easy, Normal and Hard set the starting speed; on every level the snake gets faster, up to more than twice its starting speed.",
+  "difficulty": "An adaptive curve: a gentle first 30 seconds, then the snake speeds up with your score. Portals wraps the edges; Rocks adds a rock every fourth fruit.",
   "cheats": [
     {
       "code": "NOWALLS",
-      "effect": "No walls: the snake wraps round to the other side"
+      "effect": "No walls: the snake wraps around the edges"
     },
     {
       "code": "SLOWSNAKE",
-      "effect": "Slow snake: 60% speed"
+      "effect": "Slow snake: the snake moves at two thirds speed"
     },
     {
       "code": "GOLDRUSH",
-      "effect": "Gold rush: a gold star appears after every apple"
+      "effect": "Gold rush: golden apples keep appearing"
     }
   ],
   "features": {
-    "difficulty": "Easy, Normal and Hard speed on the title (remembered)",
-    "power-up-list": "The title card lists the pick-ups: apples grow you, gold stars (+5) blast a rock, ghost orbs let you pass rocks for 5 s",
-    "wave-or-level-counter": "LV in the top bar goes up every 5 apples, as the snake speeds up",
-    "high-score-table": "Top 5 scores (with the speed) on the Game Over card; runs with codes on are left out",
-    "results": "Game Over card with score, best, medal, gold, streak, level, rank and the top 5"
+    "difficulty": "Adaptive speed: a slow start that speeds up with your score, plus Garden, Portals and Rocks modes on the title",
+    "power-up-list": "Golden apple (+5), ghost orb (pass through your tail and rocks for 6 s) and snail orb (slow snake), all drawn on the board",
+    "wave-or-level-counter": "Score with a medal target under it, and the snake's length in the top corner",
+    "high-score-table": "Top 5 runs on the result card",
+    "results": "Result card with score, medal, best, top-5 runs, apples earned, today's goals and the next snake to unlock",
+    "progression": "Nine snakes (seven bought with apples, two unlocked by score), three modes, daily goals with a star challenge, week stamps with a weekly gift",
+    "daily-goals": "Three goals and one star challenge a day"
   },
   "saves": [
     "snakeBest",
-    "snakeTop"
+    "snakeTotal",
+    "hm-snake"
   ],
   "start": "#playBtn",
-  "pauseButton": "tr"
+  "pauseButton": "br"
 }

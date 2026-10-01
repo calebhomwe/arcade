@@ -1,0 +1,181 @@
+{
+ "id": "hub-idle-miner",
+ "title": "Idle Miner",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/idle-miner.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "im_state"
+ ],
+ "session1": {
+  "start": "#btnPlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 17,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "im_state"
+  ],
+  "savedKeysWrittenInSession1": 5,
+  "titleTextChanged": true,
+  "title1": "1 Level 0/8 XP 0 0/s Build your first Copper Seam 15 coins · tap the rock to earn +XP ×1 ×10 ×25 MAX Copper Seam ×0 Dig copper ore. Dig ×1 1",
+  "title2": "1 Level 0/8 XP 0 0/s Build your first Copper Seam 15 coins · tap the rock to earn +XP ×1 ×10 ×25 MAX Copper Seam ×0 Dig copper ore. Dig ×10 ",
+  "keysUpdatedAgain": [
+   "im_state"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 5,
+  "added": [
+   "ik_coach_idle-miner",
+   "dinoMute",
+   "dinoTut",
+   "im_state",
+   "hm-dino"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "ik_coach_idle-miner": "1",
+   "dinoMute": "1",
+   "dinoTut": "1",
+   "im_state": "{\"v\":2,\"coins\":0,\"lifetime\":0,\"alltime\":0,\"owned\":[0,0,0,0,0,0,0,0],\"u",
+   "hm-dino": "{\"v\":1,\"coins\":0,\"life\":0,\"owned\":{\"rexy\":1},\"skin\":\"rexy\",\"runs\":0,\"b"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "settings",
+   "currency",
+   "unlocks",
+   "cosmetics",
+   "score",
+   "levels",
+   "stars"
+  ],
+  "categoriesPresent": [
+   "other",
+   "settings",
+   "currency",
+   "unlocks",
+   "cosmetics",
+   "score",
+   "levels",
+   "stars"
+  ],
+  "writesDuringPlay": {
+   "hm-dino": "1x",
+   "dinoTut": "1x",
+   "dinoMute": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "upgrades",
+  "goals",
+  "achievements",
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "unlocks",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, unlocks, cosmetics); systems seen: levels, unlocks, stars, cosmetics; sinks unlocks/cosmetics fed by levels/stars/currency",
+ "expected": [
+  "upgrades",
+  "unlocks",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "lacks": [
+  "upgrades",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "pageErrors": []
+}

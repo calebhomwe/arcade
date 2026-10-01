@@ -1,0 +1,183 @@
+{
+ "id": "bloxburg-town",
+ "title": "Bloxburg Town",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "https://calebhomwe.github.io/bloxburg-town/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK",
+  "ERRORS",
+  "STALL"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 2801 ms (while playing), 13 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 2065 ms of JS; timer heartbeat (no long-task API in this engine)",
+  "JANK": "p95 JS frame cost 34.07 ms over 33 ms (unthrottled, divided by machine slowdown x1.4; raw p95 46, median 0, p99 61.48, max 460.7; time inside WebGL calls excluded, p95 of it 662)",
+  "ERRORS": "2 uncaught page error(s): EncodingError: Decoding failed",
+  "STALL": "nothing on screen changed for 43 s while the bot kept tapping"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/bloxburg-town-wk-1-title.jpg",
+  "2-mid": "shots/bloxburg-town-wk-2-mid.jpg",
+  "3-end": "shots/bloxburg-town-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 12.36,
+  "cores": 4,
+  "load1End": 13.15,
+  "contention": 1.35,
+  "contentionSamples": [
+   1.14,
+   1.32,
+   1.05,
+   1.35,
+   1.78,
+   1.45,
+   1.48
+  ]
+ },
+ "loadMs": 424,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/bloxburg-town/index.html",
+ "startPath": "https://calebhomwe.github.io/bloxburg-town/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 106,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#bt-play",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.35,
+  "loadMs": 365,
+  "playMs": 2065,
+  "loadRawMs": 493,
+  "playRawMs": 2801,
+  "playGlMs": 13,
+  "loadGlMs": 0,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 12,
+  "slowestPollMs": 3545,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 283,
+  "shaderCompileMaxCallMs": 62
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 118,
+  "jsMedian": 0,
+  "jsP95": 34.07,
+  "jsP99": 61.48,
+  "jsMax": 460.7,
+  "jsP95Raw": 46,
+  "rawWithGlP95": 694,
+  "glP95": 662,
+  "gapP95": 1449,
+  "gapMedian": 137,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [
+  "EncodingError: Decoding failed"
+ ],
+ "errorCount": 2,
+ "consoleErrors": [
+  "Loading FSB failed for audio clip \"ambience_day\".\n",
+  "Loading FSB failed for audio clip \"ambience_night\".\n"
+ ],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 50,
+  "nodesEnd": 52,
+  "nodesMax": 52,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 20,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 2
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 14,
+  "swipes": 4,
+  "holds": 2,
+  "keys": 0,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 719,
+  "inputLatencyP95Ms": 3905,
+  "inputLatencyMaxMs": 3905,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 43.1,
+  "changeTitleToPlayPct": 94.5,
+  "maxChangeFromStartPct": 59.2,
+  "samples": 11
+ },
+ "severity": 110.5,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK",
+   "ERRORS"
+  ],
+  "evidence": "main thread blocked 2342 ms (while playing), 12 ms of it inside WebGL calls (software GL), machine slowdown x1.2 -> about 1942 ms of JS; timer heartbeat (no long-task API in this engine)",
+  "blockPlayMs": 1942,
+  "blockLoadMs": 307,
+  "load1": 14.56
+ }
+}

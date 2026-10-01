@@ -11,18 +11,18 @@
          back to system-ui / monospace, which are always available. -->
     <style>
         :root {
-            --primary: #0f172a;
-            --primary-light: #1e293b;
-            --accent: #f59e0b;
-            --accent-hover: #d97706;
+            --primary: #0b1a33;
+            --primary-light: #17325e;
+            --accent: #e8b94d;
+            --accent-hover: #c99a2e;
             --success: #10b981;
             --danger: #ef4444;
             --info: #3b82f6;
-            --surface: #ffffff;
-            --surface-2: #f8fafc;
-            --surface-3: #e2e8f0;
-            --text: #0f172a;
-            --text-secondary: #64748b;
+            --surface: #f8edd3;
+            --surface-2: #efe0bb;
+            --surface-3: #d9c28e;
+            --text: #47331a;
+            --text-secondary: #7b6437;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             --radius: 12px;
@@ -1024,7 +1024,7 @@
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <a href="#" class="logo" onclick="app.navigate('shop')">
+            <a href="#" role="button" aria-label="QuickStop home" class="logo" onclick="event.preventDefault();app.navigate('shop')">
                 <div class="logo-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px;"><path d="M4 11v8a1 1 0 001 1h14a1 1 0 001-1v-8"/><path d="M3 10l1.5-5h15L21 10"/><path d="M3 10a3 3 0 006 0 3 3 0 006 0 3 3 0 006 0"/><path d="M9 20v-6h6v6"/></svg>
                 </div>
@@ -2627,7 +2627,7 @@
                 const profit = this.takings - overheads;
                 const c = this.career;
 
-                c.bank += profit;
+                c.bank = Math.max(0, c.bank + profit);      // the bank never goes below zero: a bad day costs the day's profit, not a debt
                 c.lifetimeTakings += this.takings;
                 const codes = cheated();            // a day played with codes on never sets a best
                 if (this.takings > c.bestTakings && !codes) c.bestTakings = this.takings;

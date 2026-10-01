@@ -581,12 +581,12 @@
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "tr",
    "howto": [
     "Sixteen players drop in; you start in the middle with an M9 pistol.",
@@ -600,7 +600,8 @@
     "Heal behind cover: a bandage (3) takes 2 s, a medkit (4) takes 4 s.",
     "When a dashed white ring appears, that is the next circle: get inside it before the gas arrives.",
     "Bushes hide you: bots do not spot you in one from far away.",
-    "Reload (R) between fights, not in the middle of one."
+    "Reload (R) between fights, not in the middle of one.",
+    "Match score is 10 per kill plus 5 for every place above last, and a win adds 40. Bronze, Silver, Gold and Platinum medals are at 50, 100, 150 and 220."
    ],
    "controls": {
     "keyboard": "WASD to move, mouse to aim, left button to fire, R reload, 3 bandage, 4 medkit. P or Esc pauses.",
@@ -631,12 +632,15 @@
     "power-up-list": "LOOT GUIDE on the menu: every gun with damage, fire rate and magazine, plus ammo, bandage, medkit and crates",
     "wave-or-level-counter": "The HUD shows ZONE n/6 with the gas timer, and ALIVE players left",
     "high-score-table": "BEST MATCHES on the menu: your top five finishes by place, with kills, time and date, beside wins, kills and best place",
-    "results": "ELIMINATED or VICTORY card with place, kills, damage and time survived, and Play again",
+    "results": "Result card with match score, medal, best, top-5 matches, coins earned, today's goals and the next outfit to unlock (the ELIMINATED and VICTORY overlays remain as the fallback), and Play again",
     "tutorial": "First match: four prompts (move, aim and fire, loot, stay in the circle), each cleared by doing it; Skip, and Replay tutorial in How to play",
-    "hints": "Hint reads the gas, the next circle, your health, ammo and the nearest bot's direction"
+    "hints": "Hint reads the gas, the next circle, your health, ammo and the nearest bot's direction",
+    "progression": "Nine outfits (seven bought with coins, Champion for a first win, Frost for 25 kills), three daily goals plus a star challenge, week stamps with a weekly gift, four medals",
+    "daily-goals": "Three goals and one star challenge a day"
    },
    "saves": [
-    "surviv_meta_v1"
+    "surviv_meta_v1",
+    "hm-surviv"
    ],
    "start": "#btn-play",
    "authored": [
@@ -687,16 +691,15 @@
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [
-    "Steer the hole around the city and swallow anything smaller than it.",
-    "Every bite makes the hole wider, so coins, cones, benches, trees, cars, trucks, houses and towers become food in turn.",
-    "A rival hole that grows bigger than you swallows you. When the clock runs out your score is banked as coins for upgrades and new districts."
+    "Pick a district and press DROP IN. Drag anywhere to steer the hole; it swallows things smaller than itself.",
+    "Fill the quota bar before the clock runs out. Stars sit at half the quota, the quota and 1.8 times the quota.",
+    "Bigger hole, bigger things: the size panel shows what you can swallow next.",
+    "Spend coins on UPGRADES (wide mouth, slipstream, overtime, gravity well, greed) and on new HOLES (rim colours)."
    ],
    "tips": [
-    "Watch NEXT in the top-left panel: it says how big you must be to swallow the next kind of prop.",
-    "Early on, sweep up coins and cones; they add up fast.",
-    "GRAVITY WELL drags nearby food into you, a strong first buy.",
-    "Beat a district's quota to clear it; later districts pay up to x3.20 per bite.",
-    "Cars and trucks drive along the roads: meet them head on."
+    "Bigger things are worth more: the size panel shows what you can swallow next.",
+    "Each district has its own payout multiplier and rivals; districts unlock with coins.",
+    "A daily goal pays coins once a day; the week stamps light on consecutive days."
    ],
    "controls": {
     "keyboard": "WASD or the arrow keys steer, or hold the mouse button and the hole rolls toward the pointer. P or Esc pauses.",
@@ -727,14 +730,19 @@
     "instant-restart": "RUN AGAIN on the results card, and Restart in the pause menu",
     "best-score-badge": "BEST RUN tile in the hub, and a ★ BEST mark on the results score",
     "tutorial-card": "First run: an animated STEER THE HOLE card; the clock waits until you have swallowed 3 things, then a GROW card follows. Skippable, and replayed from How to play",
-    "results": "TIME UP or SWALLOWED card with score, coins, XP, props swallowed, final size and quota progress"
+    "results": "Result card with stars, score, coins earned, rank and goals",
+    "levels": "Districts unlock with coins and show their star rating on the title",
+    "stars": "Up to three stars per district run (half quota, quota, 1.8x quota)",
+    "unlocks": "Upgrades with ten levels each and nine hole rims unlocked by stars, coins, level or day streak",
+    "daily-goal": "One seeded daily goal (score, eat, runs or cars) with a coin reward, week stamps and a day streak"
    },
    "settings": {
     "quality": "Hub > GRAPHICS: HIGH / LOW (Low renders at 1x resolution with no shadows, a shorter draw distance, no skyline or street lamps and fewer particles)"
    },
    "start": "#btnPlay",
    "saves": [
-    "holegrind.save.v2"
+    "holegrind.save.v2",
+    "holegrind-prog-v1"
    ],
    "render": "three-3d",
    "authored": [
@@ -781,12 +789,12 @@
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "tr",
    "howto": [
     "Pick Math Pop (sums within 20) or Word Pop (first words), and a speed. Tapping the sky starts the highlighted (pink) mode.",
@@ -1116,12 +1124,12 @@
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "tr",
    "howto": [
     "Pick your age band, then Math or Spelling.",
@@ -1203,7 +1211,7 @@
     "sdkInit": true
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseButton": "tr",
    "howto": [
     "Pick your age band, then Play: Spelling or Play: Maths.",
     "Tap (or Space) to start the power meter, tap again to cast.",
@@ -1213,7 +1221,7 @@
    ],
    "tips": [
     "HINT teaches the next step: the first letter and length of the word, the next sound, or a number-line nudge for the sum.",
-    "Keeping a wrong fish muddies the bucket and costs 2 coins; releasing it is free.",
+    "Keeping a wrong fish costs nothing: you just try again, and a hint appears.",
     "A better rod widens the strike window; a better lure brings silver and golden fish.",
     "Golden fish are worth five times as much and go on your trophy shelf.",
     "Every two days the words and sums step up inside your age band."
@@ -1234,7 +1242,8 @@
    },
    "saves": [
     "wordfishing_meta_v1",
-    "wf_learn"
+    "wf_learn",
+    "wf_tut"
    ],
    "start": "#btn-spell",
    "authored": [
@@ -1271,16 +1280,16 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
-    "touch": false,
+    "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "tr",
    "howto": [
     "Pick your age band, a mode (Math or Spelling) and a map, then Defend the Castle.",
@@ -1636,16 +1645,14 @@
    "pauseKeys": "p",
    "pauseButton": "br",
    "howto": [
-    "You run on your own toward the finish flag, racing a rival builder on the next span.",
-    "Snatch the floating planks: each one is material.",
-    "At a gap, hold (or Down) to lay planks across it; tap (or Space) hops the orange cones.",
-    "Run out of planks at a gap and you fall. Reach the flag first for the big bonus."
+    "Pick RACES or CLASSIC and press Start. You auto-run: snatch floating material and hold (or Down) to lay planks over each gap.",
+    "Tap or press Space to hop cones. The rival builder races you to the flag.",
+    "Stars: reach the flag, finish ahead of the rival, win by a margin. Coins buy bridge styles."
    ],
    "tips": [
-    "Every gap auto-builds slowly; holding builds faster and saves your lead.",
-    "Cones knock 1 to 3 planks loose, so hop them even when you are in a hurry.",
-    "Keep a few planks spare before each wide gap: later legs have longer gaps and less ground.",
-    "Finishing first is worth 500 points, second 200: the rival matters more than distance."
+    "Keep a few planks spare: every cone you run into knocks material loose.",
+    "Races get longer and the rival lays planks faster; every five races a new world begins.",
+    "A daily goal pays coins once a day; the week stamps light on consecutive days."
    ],
    "controls": {
     "keyboard": "Space, W or Up to hop; hold S, Down or J to build; M mutes; P or Esc pauses",
@@ -1666,15 +1673,21 @@
      "effect": "Cones cost no material and never trip you"
     }
    ],
-   "difficulty": "An adaptive curve: speed climbs from 10 to 22 over the first 520 m, gaps widen from 3 to 6 planks, the ground between them shrinks, and cones cost up to 3 planks in the later legs.",
+   "difficulty": "Race N is 220+55(N-1) m (up to the classic 620 m); the rival lays faster each race and the winning margin for three stars grows. Classic is the original 620 m race.",
    "features": {
     "one-tap-start": "Tap anywhere on the title (or Space) to start",
     "instant-restart": "Race again on the results screen, Space, or Restart in the pause menu",
     "best-score-badge": "Best on the title card and a live Best cell in the HUD (starred when you pass it)",
     "tutorial-card": "A skippable coach card at the first gap on the first run; Replay tutorial in How to play",
-    "results": "Results screen with placing, score, distance, planks, gaps and all-time best"
+    "results": "Result card with stars, score, coins, material and place",
+    "levels": "RACES mode with a race picker and stars per race; CLASSIC keeps the original race",
+    "stars": "Three stars per race (reach the flag, beat the rival, win by a margin)",
+    "worlds": "Five worlds that retint the sea and the sky legs",
+    "unlocks": "Nine bridge styles: free, stars, coins, level or day-streak unlocks",
+    "daily-goal": "One seeded daily goal with a coin reward, week stamps and a day streak"
    },
    "saves": [
+    "bridge-rush-prog-v1",
     "br_rec"
    ],
    "start": "#play",
@@ -1731,16 +1744,15 @@
    "pauseKeys": "p",
    "pauseButton": "br",
    "howto": [
-    "Your crowd runs forward on its own. Steer left and right.",
-    "Run through the green half of each gate (x2, +10) to grow the crowd; the red half shrinks it.",
-    "Dodge the swinging maces and bars, and keep off the gate's centre post.",
-    "Reach the boss gate with 45 or more runners to burst it and win."
+    "Pick LEVELS or MARATHON and press Play. Steer your crowd left and right (A / D, arrow keys or drag on touch).",
+    "Run through the gates that grow you (x2, +7) and dodge the ones that shrink you (÷3, −12).",
+    "Avoid the bars and the maces: they knock people out. At the end, the boss gate needs enough of a crowd to burst.",
+    "Stars: burst the gate, then bigger crowds at the gate for two and three stars. Coins buy crowd looks."
    ],
    "tips": [
-    "A x2 gate early is worth more than a +10 gate late.",
-    "The centre post of every gate costs 3 runners: commit to one side.",
-    "A bar knocks out 6 and a mace 5, so dodging beats gambling on a bad gate.",
-    "A single bad gate can never wipe you out: it always leaves at least one runner."
+    "Steer early: gates and hazards come faster as the run goes on.",
+    "Every level is a longer track with a tougher boss gate; every five levels a new world (light and ground) begins.",
+    "A daily goal pays coins once a day; the week stamps light on consecutive days."
    ],
    "controls": {
     "keyboard": "Left / Right or A / D to steer; Space or Enter starts; M mutes; P or Esc pauses",
@@ -1761,15 +1773,21 @@
      "effect": "The track runs at 60% speed"
     }
    ],
-   "difficulty": "An adaptive curve: speed climbs from 12.5 to 24 on the way to the boss gate at 920 m, and gates and hazards come closer together (gates every 32 m at the start, every 19 m near the end).",
+   "difficulty": "Level N has a 300+80(N-1) m track (up to the classic 920 m) and a boss gate of 22+3.3(N-1) people, rising to 45+ from level 8. Marathon is the original 920 m run to a 45-person boss gate.",
    "features": {
     "one-tap-start": "Tap anywhere on the title (or Space) to start",
     "instant-restart": "Run again on the results screen, Space, or Restart in the pause menu",
     "best-score-badge": "Best on the title card and a live Best cell in the HUD",
     "tutorial-card": "A skippable coach card before the first gate on the first run; Replay tutorial in How to play",
-    "results": "Gate burst / Crowd wiped out screen with peak crowd, distance, gates, score and best"
+    "results": "Result card with stars, score, coins, peak crowd, distance and knocked out",
+    "levels": "LEVELS mode with a level picker and stars per level; MARATHON keeps the original run",
+    "stars": "Three stars per level from the size of the crowd at the boss gate",
+    "worlds": "Five worlds that retint the sky, light and ground",
+    "unlocks": "Nine crowd looks: free, stars, coins, level or day-streak unlocks",
+    "daily-goal": "One seeded daily goal with a coin reward, week stamps and a day streak"
    },
    "saves": [
+    "crowd-clash-prog-v1",
     "cc_rec"
    ],
    "start": "#play",
@@ -2017,15 +2035,16 @@
    "pauseButton": "br",
    "howto": [
     "Your snake always moves: steer it with the mouse, a finger or Left / Right.",
-    "Eat the glowing orbs to grow longer.",
-    "Cut across a rival so its head hits your body: it bursts into orbs for you.",
+    "Eat the fruit to grow longer and score; bright clusters are worth a detour.",
+    "Cut across a rival so its head hits your body: it bursts into fruit for you.",
     "Touch a rival's body or the wall and you burst instead."
    ],
    "tips": [
     "Grow before you fight: a longer snake wins head-on meetings.",
     "Boost (Shift or Space) to cut a rival off, but it burns length.",
-    "Burst rivals leave a trail of orbs: sweep it straight away.",
-    "More rivals join as you grow, so keep away from the arena edge when it gets busy."
+    "A burst rival leaves a trail of fruit: sweep it straight away.",
+    "More rivals join as you grow, so keep away from the arena edge when it gets busy.",
+    "Every run earns XP: level 2 opens Coral Dunes, level 4 Frost Fang."
    ],
    "controls": {
     "keyboard": "Mouse to aim, or Left / Right (A / D) to turn; hold Shift or Space to boost; M mutes; P or Esc pauses",
@@ -2052,10 +2071,12 @@
     "instant-restart": "Play again on the results screen, Space, or Restart in the pause menu",
     "best-score-badge": "Best length on the title card",
     "tutorial-card": "Two skippable coach cards on the first run (steer, then boost); Replay tutorial in How to play",
-    "results": "Burst! screen with length, score, orbs, rivals burst, time and best length"
+    "results": "Burst! result card: length, score, fruit eaten, rivals burst, time, best; 1-3 stars (score 60 / 180 / 400) and the XP earned",
+    "progression": "XP levels unlock 6 looks (a snake skin plus a matching textured arena); 3 daily goals; a weekly stamp card with a chest; trophies. Saved in pz_snakeclash"
    },
    "saves": [
-    "sc_rec"
+    "sc_rec",
+    "pz_snakeclash"
    ],
    "start": "#play",
    "authored": [
@@ -2183,28 +2204,29 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
-    "usesP": true,
+    "usesP": false,
     "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "",
+   "pauseKeys": "p",
    "pauseButton": "br",
    "howto": [
     "Press Play: the bird hovers until your first tap.",
-    "Tap, click or press Space to flap. Each flap lifts the bird.",
-    "Fly through the gaps between the pipes. Each pipe is 1 point, a star 2, a feather 3."
+    "Tap, click or press Space to flap. Short taps keep the bird level.",
+    "Fly through the gaps between the pipes: each pipe is 1 point. Golden feathers are coins.",
+    "Spend feathers on new birds in Skins, and finish the day's goals for more."
    ],
    "tips": [
     "Short, steady taps beat big panicky ones.",
-    "A feather gives you a shield that saves you from one crash.",
-    "Three close shaves in a row also earn a shield.",
-    "The pipes speed up as your score climbs, up to about 30 points.",
-    "Sprint mode ends after 20 pipes and pays a bonus for every close shave."
+    "Three close shaves in a row, or a blue bubble, give you a shield that saves you from one crash.",
+    "The pipes speed up and the gaps narrow slowly, and the sky changes from golden hour to dusk to night every 12 pipes.",
+    "Bronze, Silver, Gold and Platinum medals are at 10, 20, 35 and 60 pipes; Gold and Platinum unlock the Golden and Phoenix birds.",
+    "Sprint mode ends after 20 pipes; Gale mode makes every pipe sway."
    ],
    "controls": {
     "keyboard": "Space or Up arrow to flap. P or Esc pauses.",
@@ -2218,24 +2240,29 @@
     },
     {
      "code": "WIDEGAP",
-     "effect": "Wide gaps: every pipe gap is 40% taller"
+     "effect": "Wide gaps: every pipe gap is 22% taller"
     },
     {
      "code": "SLOWMO",
      "effect": "Slow motion: the whole sky runs at 60% speed"
     }
    ],
-   "difficulty": "An adaptive curve: the pipes scroll faster with every point until about 30. Gale mode makes every pipe sway up and down; Sprint mode is a 20-pipe dash.",
+   "difficulty": "An adaptive curve: the first pipes have wide gaps and a slow scroll, then the gaps narrow and the pipes speed up over about 25 pipes. Gale mode makes every pipe sway up and down; Sprint mode is a 20-pipe dash.",
    "features": {
     "one-tap-start": "Play, then one tap flaps and starts the run",
     "instant-restart": "Play Again, a tap on the results card or Space goes straight back to the hovering bird",
-    "best-score-badge": "BEST under the score at the top of the screen, and on the title",
-    "tutorial-card": "Get-ready card with a tapping finger; the first run explains stars, feathers and shields",
-    "results": "Game Over card with score, best, medal, feathers and rank"
+    "best-score-badge": "Best on the title and on the results card, with a medal target under the score while you play",
+    "tutorial-card": "Get-ready card with a tapping finger on the first run",
+    "results": "Result card with score, medal, best, top-5 scores, feathers earned, today's goals and the next bird to unlock",
+    "progression": "Nine birds (seven bought with feathers, two unlocked by medals), three daily goals plus a star challenge, a week of play stamps with a weekly gift, Bronze to Platinum medals, ranks",
+    "daily-goals": "Three goals and one star challenge a day, the same for everyone that day"
    },
    "saves": [
     "flappyBest",
-    "flappyPipes"
+    "flappyPipes",
+    "flappyFeathers",
+    "hm-flappy",
+    "flappyGale"
    ],
    "start": "#playBtn",
    "authored": [
@@ -2274,33 +2301,33 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
-    "usesP": true,
+    "usesP": false,
     "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "",
+   "pauseKeys": "p",
    "pauseButton": "br",
    "howto": [
     "Press Play: the dino jogs on the spot until your first jump.",
-    "Tap or press Space to jump; tap again in the air for a double jump.",
-    "Swipe down or press the Down arrow to duck under low birds.",
-    "Run as far as you can: distance is your score."
+    "Tap anywhere to jump; tap again in the air for a double jump.",
+    "Hold the DUCK button (or swipe down) to slip under low pterodactyls.",
+    "Run as far as you can: metres are your score, bones are coins for new dinos."
    ],
    "tips": [
-    "High birds fly over your head: just keep running.",
-    "A feather gives you a shield that takes one hit.",
-    "The magnet pulls bones to you and each one counts double while it lasts.",
-    "Clear a cactus by a whisker for a +10 close bonus.",
-    "Every 500 m earns a medal; the sky turns to night every 400 m."
+    "High pterodactyls fly over your head: just keep running underneath.",
+    "An amber gem is a shield that takes one hit; the magnet pulls bones to you.",
+    "Clear an obstacle by a whisker for a +8 close bonus.",
+    "Bronze, Silver, Gold and Platinum medals are at 200, 500, 900 and 1,500 m; run 1,000 m for the Golden dino and 1,500 m for the Crystal dino.",
+    "The sky goes from golden hour to dusk to night every 250 m."
    ],
    "controls": {
-    "keyboard": "Space or Up to jump, Down to duck. P or Esc pauses.",
-    "touch": "Tap to jump, tap again for a double jump, swipe down to duck"
+    "keyboard": "Space, Up or W to jump, Down or S to duck. P or Esc pauses.",
+    "touch": "Tap anywhere to jump, tap again for a double jump, hold the DUCK button or swipe down to duck"
    },
    "tricks": [],
    "cheats": [
@@ -2322,12 +2349,18 @@
     "one-tap-start": "Play, then one tap jumps and starts the run",
     "instant-restart": "Play Again or Space on the results card goes straight back to the start line",
     "best-score-badge": "BEST under the distance, top right of the game",
-    "tutorial-card": "Get-ready card with a tapping finger; the first run explains double jump, ducking and pick-ups",
-    "results": "Game Over card with distance, obstacles cleared, bones, medals, lifetime totals and best"
+    "tutorial-card": "Get-ready card with a tapping finger on the first run",
+    "results": "Result card with metres, medal, best, top-5 runs, bones earned, today's goals and the next dino to unlock",
+    "progression": "Nine dinos (seven bought with bones, two unlocked by distance), three daily goals plus a star challenge, week stamps with a weekly gift, four medals",
+    "daily-goals": "Three goals and one star challenge a day"
    },
    "saves": [
     "dinoBest",
-    "dinoYards"
+    "dinoYards",
+    "dinoBones",
+    "hm-dino",
+    "dinoRuns",
+    "dinoMedals"
    ],
    "start": "#playBtn",
    "authored": [
@@ -2457,11 +2490,11 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
@@ -2469,21 +2502,21 @@
    "pauseKeys": "p+esc",
    "pauseButton": "br",
    "howto": [
-    "Pick Easy, Normal or Hard, then press Play.",
-    "Drag anywhere, or use the arrow keys, to move the paddle.",
-    "Tap or press Space to launch the ball, and keep it bouncing into the bricks.",
-    "Clear every brick to reach the next level. Lose every ball and the run ends."
+    "Press Play to start at your next level, or Choose level for the map of 20 levels in 4 worlds.",
+    "Drag anywhere to slide the paddle, and tap to launch the ball.",
+    "Break every brick; catch the falling capsules for multi-ball, wide paddle, laser, slow ball, fireball or an extra life.",
+    "Keep all three balls for three stars, and spend gems on new ball and paddle sets."
    ],
    "tips": [
     "Where the ball hits the paddle sets its angle: the edges send it sideways.",
-    "Bricks with a white chevron take two hits (three on the top row from level 6).",
-    "Breaking bricks without touching the paddle builds a combo worth extra points.",
-    "A shield power-up saves one ball that would have been lost.",
-    "Catch Slow ball when things get hectic: the ball moves at 62% speed for 8 seconds."
+    "Silver rims take two hits, gold rims three, steel never breaks, and a bomb brick hurts its neighbours.",
+    "Breaking bricks without touching the paddle builds a combo worth up to 8x points.",
+    "Fireball smashes straight through bricks; lasers hit anything above the paddle.",
+    "If a level beats you twice the paddle gets wider and the ball slower to help."
    ],
    "controls": {
     "keyboard": "Left and Right (or A and D) move the paddle, Space or Enter launches. P or Esc pauses.",
-    "touch": "Drag anywhere to move the paddle, tap to launch"
+    "touch": "Drag anywhere to slide the paddle, tap to launch"
    },
    "tricks": [],
    "cheats": [
@@ -2500,17 +2533,20 @@
      "effect": "Multi-ball: every serve launches three balls"
     }
    ],
-   "difficulty": "Easy, Normal and Hard on the title: Easy has a wider paddle, a 15% slower ball and 5 lives; Hard has a narrow paddle and a 15% faster ball. Every level adds a row of bricks and a little ball speed.",
+   "difficulty": "An adaptive curve: 20 hand-made levels get harder step by step, the ball speeds up a little each level, and failing the same level twice makes the paddle wider and the ball slower. Three stars for clearing a level without losing a ball.",
    "features": {
-    "difficulty": "Easy, Normal and Hard buttons on the title (remembered)",
-    "power-up-list": "The title lists the four power-ups with their badges: 3x Multi-ball, W Wide paddle, S Slow ball, star Shield",
-    "wave-or-level-counter": "LV in the top bar; LEVEL n pops up on every clear",
-    "high-score-table": "Top 5 scores with level and difficulty on the Game Over card (runs with codes on are left out)",
-    "results": "Game Over card with score, best, level, bricks, best combo, power-ups and the top-5 table"
+    "difficulty": "Adaptive: harder levels and ball speed, with a helping hand after two fails; stars measure skill",
+    "power-up-list": "Six power-up capsules: 3 multi-ball, W wide, L laser, S slow, F fire, heart extra life; the how-to lists them",
+    "wave-or-level-counter": "LEVEL n and the world name at the top, plus a map of 20 levels with stars",
+    "high-score-table": "Top 5 runs on the result card and a star count per level on the map",
+    "results": "Result card with stars, points, top-5 runs, gems earned, today's goals and the next set to unlock",
+    "progression": "20 levels in 4 worlds with 3 stars each, eight ball and paddle sets, daily goals with a star challenge, week stamps with a weekly gift",
+    "daily-goals": "Three goals and one star challenge a day"
    },
    "saves": [
     "brickBest",
-    "brickTop"
+    "brick-stars",
+    "hm-brick"
    ],
    "start": "#playBtn",
    "authored": [
@@ -2520,6 +2556,7 @@
     "features",
     "howto",
     "pauseButton",
+    "pauseKeys",
     "saves",
     "start",
     "tips"
@@ -2544,37 +2581,37 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/game-2048.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseKeys": "p",
+   "pauseButton": "tr",
    "howto": [
-    "Pick a board (Easy 5x5, Normal 4x4, Hard 3x3) and Classic or the Daily board, then press Play.",
-    "Swipe, or press an arrow key, to slide every tile as far as it goes.",
-    "Two tiles with the same number merge into one: 2 + 2 makes 4.",
-    "Build a 2048 tile (512 on the 3x3 board) before the board fills up."
+    "Pick Trials (18 goals with stars), Classic (Easy 5x5, Normal 4x4 or Hard 3x3) or the Daily board.",
+    "Swipe anywhere on the screen, or press an arrow key, to slide every tile.",
+    "Two tiles with the same number merge into one: 2 + 2 makes 4. Each new tile value introduces a new critter friend.",
+    "Build a 2048 tile (512 on the 3x3 board), or hit the goal of the trial, before the board fills up."
    ],
    "tips": [
     "Keep your biggest tile in one corner and build towards it.",
     "Try not to swipe away from your corner: a stray 2 can get stuck there.",
-    "Hint looks two moves ahead and names the swipe that keeps the most space free.",
-    "Undo (or the Z key) takes back a move, even from the Game Over card.",
+    "Hint looks two moves ahead and shows the swipe that keeps the most space free.",
+    "Undo takes back a move (5 per Classic game, 3 per trial or daily board).",
     "Every 12 merges earns a hammer that smashes one tile."
    ],
    "controls": {
-    "keyboard": "Arrow keys slide the tiles, Z or U undoes. P or Esc pauses.",
-    "touch": "Swipe on the board. Undo, Hint, 50/50 and Hammer sit under it."
+    "keyboard": "Arrow keys or WASD slide the tiles, Z or U undoes, H hints. P or Esc pauses.",
+    "touch": "Swipe anywhere. Undo, Hint, Hammer and Menu sit under the board."
    },
    "tricks": [],
    "cheats": [
@@ -2591,18 +2628,22 @@
      "effect": "Big tile: a 256 drops into an empty square"
     }
    ],
-   "difficulty": "Board size is the difficulty: Easy is 5x5 (lots of room), Normal is the classic 4x4, Hard is 3x3 with a 512 goal.",
+   "difficulty": "Board size is the difficulty in Classic: Easy is 5x5, Normal is 4x4, Hard is 3x3 with a 512 goal. Trials rise from roomy 5x5 boards to crowded 4x4 and 3x3 starts, each with a move limit.",
    "features": {
-    "hints": "Hint button under the board (and Pause > Hint): a two-move look-ahead names the best swipe and why",
-    "undo": "Undo button, the Z key, and Undo last move on the Game Over card",
-    "level-select-or-daily": "Board size (5x5, 4x4, 3x3) on the title, plus a Daily board where everyone gets the same tiles today",
-    "results": "Game Over card with score, best tile, best combo, 2048 wins, lifetime merges and club tier; a You Win card at the goal tile"
+    "hints": "Hint button (H key, Pause > Hint): a two-move look-ahead shows an arrow for the swipe that keeps the most space free and says why",
+    "undo": "Undo button (Z key): 5 per Classic game, 3 per trial or daily board; takes back the move and the tile it spawned",
+    "level-select-or-daily": "Trials: 3 worlds x 6 goals (reach a tile, a score or a merge count within a move limit) with 3 stars each; plus a Daily board that gives everyone the same tiles today",
+    "results": "A result card with score, best tile, merges, moves and XP earned; trials show the stars; a big-tile card introduces each new critter",
+    "tutorial": "First game: a guided board where you swipe, merge two 2s and learn undo and hint; skippable, replayed from How to play",
+    "progression": "18 trials x 3 stars (worlds open at 10 and 26 stars); XP levels unlock 6 tile looks (wood, critter faces, marble, night glass, ocean pearl, gold); a 12-critter album filled by reaching each tile; 3 daily goals and a weekly stamp chest"
    },
    "saves": [
     "best2048",
-    "bestTile2048"
+    "bestTile2048",
+    "g2048_trials",
+    "pz_g2048"
    ],
-   "start": "#playBtn",
+   "start": "#mClassic",
    "authored": [
     "cheats",
     "controls",
@@ -2634,8 +2675,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/memory-match.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -2648,23 +2689,21 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseButton": "tr",
    "howto": [
-    "Pick Easy (6 pairs), Normal (8) or Hard (10) and press Play.",
-    "Tap a card to flip it, then tap a second card.",
-    "Two matching cards stay face up; two different cards flip back.",
-    "Find every pair in as few moves as you can: fewer moves earn more stars."
+    "Press Play. Tap a card to flip it.",
+    "Tap a second card to find its twin.",
+    "Match all pairs in few tries for 3 stars."
    ],
    "tips": [
-    "Flip a new card first, then think: have you seen its twin already?",
-    "Three matches in a row earn a Peek, which shows every card for a moment.",
-    "A game with no misses is Flawless and adds a bonus star to your bank.",
-    "Shuffle mode reshuffles the face-down cards after every miss: pure short-term memory.",
-    "Hint only uses cards you have already seen."
+    "Every third match in a row earns a peek.",
+    "The magnifier shows a twin you have already seen.",
+    "Find every animal to fill your album.",
+    "Win stars to unlock new card backs."
    ],
    "controls": {
     "keyboard": "Tab or the arrow keys pick a card, Enter or Space flips it. P or Esc pauses.",
-    "touch": "Tap a card to flip it. Hint, Peek and Shuffle sit above the cards."
+    "touch": "Tap a card to flip it. Hint and Peek sit at the top."
    },
    "tricks": [],
    "cheats": [
@@ -2681,16 +2720,17 @@
      "effect": "Slow flip: a wrong pair stays face up for 3 seconds"
     }
    ],
-   "difficulty": "Three levels on the title: Easy has 6 pairs, Normal 8 and Hard 10; the star targets grow with the deck.",
+   "difficulty": "15 levels in five worlds (farm, ocean, jungle, sweets, space): from 2 up to 10 pairs, with a shorter look at the cards each time.",
    "features": {
-    "hints": "The bulb button (and Pause > Hint) points at a twin you have already seen, or at a card you have not tried yet, and makes it glow",
-    "undo": "Not offered: a flipped card cannot be un-seen, so Hint and Peek help instead",
-    "level-select-or-daily": "Easy, Normal and Hard decks on the title, each with its own best",
-    "results": "You Win card with stars, moves, time, new-best badge, star bank and flawless streak"
+    "hints": "The magnifier (and Pause > Hint) makes a twin you have already seen glow; an idle hint appears after 12 seconds",
+    "undo": "Not offered: peeks and hints help instead",
+    "level-select-or-daily": "Level map with stars, plus a daily goal of 3 wins",
+    "results": "Stars card with tries, new album friends and prizes"
    },
    "saves": [
     "memBest",
-    "memStars"
+    "memStars",
+    "memory_kk"
    ],
    "start": "#playBtn",
    "authored": [
@@ -2824,29 +2864,29 @@
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "tr",
    "howto": [
-    "Choose Classic or the Daily blocks and press Play.",
-    "Tap one of the three blocks under the grid to pick it up.",
-    "Tap the grid: the block lands with its top-left corner on that square.",
-    "Fill a whole row or column to blast it. The game ends when none of your blocks fits."
+    "Pick Adventure (24 levels with stars), Classic (play as long as you can) or Daily blocks.",
+    "Drag one of the three blocks from the tray onto the board. It floats above your finger so you can see where it lands.",
+    "Fill a whole row or column to blast it away; clear lines on back-to-back moves for a combo.",
+    "The game ends when none of your blocks fits. In Adventure, reach the goal before your blocks run out."
    ],
    "tips": [
     "Blocks never rotate, so keep room for long bars and the big L.",
-    "Clearing lines on back-to-back moves builds a combo that multiplies the points.",
-    "Every clear charges the Blast meter; at 5 you get a bomb that wipes a 3x3 area.",
-    "Hint tries every block in every spot and shows a ghost where the best one goes.",
-    "Undo takes back your last drop, as often as you like."
+    "The board glows the lines a block would finish before you let go.",
+    "Every clear charges the bomb meter; at 5 a bomb joins your tray and wipes a 3x3 area.",
+    "Gems hide inside blocks in Adventure: clear the row or column that holds one.",
+    "Undo (3 per game) and Swap (2 per game) can rescue a crowded board; Hint shows a good spot."
    ],
    "controls": {
-    "keyboard": "1, 2 or 3 picks a block, arrow keys move it, Enter drops it, Z undoes. P or Esc pauses.",
-    "touch": "Tap a block, then tap the grid. Undo, Hint and New Game sit under the tray."
+    "keyboard": "1, 2 or 3 picks a block, arrow keys move it, Enter drops it, Z undoes, H hints. P or Esc pauses.",
+    "touch": "Drag a block from the tray onto the board and lift your finger to drop it. Undo, Swap, Hint and Menu sit under the tray."
    },
    "tricks": [],
    "cheats": [
@@ -2861,20 +2901,28 @@
     {
      "code": "FRESHTRAY",
      "effect": "Fresh tray: swap your blocks for three new ones"
+    },
+    {
+     "code": "MOREUNDO",
+     "effect": "More undo: ten undos and ten swaps"
     }
    ],
-   "difficulty": "An adaptive curve: the first eight blocks are small, blocks get smaller again when the grid is crowded, and a new tray is re-rolled toward small pieces when nothing would fit.",
+   "difficulty": "Adventure levels get tighter from world to world (fewer blocks, more filled squares). Classic and Daily use an adaptive curve: small blocks first, small again when the board is crowded, and every tray can be finished.",
    "features": {
-    "hints": "Hint button (and Pause > Hint): tries every block in every spot, picks the drop that clears most and leaves the fewest gaps, and shows it as a ghost on the grid",
-    "undo": "Undo button (or Z) takes back the last drop, any number of times",
-    "level-select-or-daily": "Daily blocks on the title: everyone gets the same blocks in the same order today, with its own daily best",
-    "results": "The grid shows GAME OVER with the run's points, clears and best combo in a card, and the score board updates"
+    "hints": "Hint button (and Pause > Hint): tries every block in every spot, picks the drop that clears most (or grabs a gem) and shows it as a breathing outline on the board",
+    "undo": "Undo button (or Z) takes back the last drop, restoring the same blocks; 3 per game",
+    "level-select-or-daily": "Adventure: 3 worlds x 8 levels with a 3-star rating each; Daily blocks: everyone gets the same blocks in the same order today, with its own daily best",
+    "results": "A result card with score, best, lines, best combo, bombs and XP earned; Adventure shows the stars",
+    "tutorial": "First game: a guided board where you drag a two-square block into a gap and blast your first row; skippable, replayed from How to play",
+    "progression": "Adventure 24 levels x 3 stars (worlds unlock at 10 and 28 stars); XP levels unlock 6 board looks; 3 daily goals, a weekly stamp card with a chest; 8 trophies"
    },
    "saves": [
     "blockblast_best",
-    "blockblast_clears"
+    "blockblast_clears",
+    "blockblast_adv",
+    "pz_blockblast"
    ],
-   "start": "#playBtn",
+   "start": "#mCls",
    "authored": [
     "cheats",
     "controls",
@@ -2906,37 +2954,37 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/minesweeper.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseKeys": "p",
+   "pauseButton": "tr",
    "howto": [
-    "Pick Easy (8 mines), Normal (10), Hard (16) or the Daily board, then press Play.",
-    "Tap a square to open it. Your first tap is always safe.",
-    "A number tells you how many mines touch that square, diagonals included.",
-    "Hold a square (or right-click) to flag a mine. Open every safe square to win."
+    "Pick Expeditions (18 boards with 3 lives), Classic (Easy, Normal or Hard) or the Daily board.",
+    "Tap a square to dig. Your first tap is always safe and opens an area.",
+    "A number counts the bombs touching that square, diagonals included.",
+    "Hold a square (or switch to Flag mode) to plant a flag on a bomb; tap a number whose bombs are all flagged to open the rest around it."
    ],
    "tips": [
-    "A 1 with only one hidden neighbour: that neighbour is a mine.",
-    "When a number already has all its mines flagged, tap it to open the rest around it.",
+    "A 1 with only one hidden neighbour: that neighbour is a bomb.",
+    "When a number already has all its bombs flagged, tap it to open the squares around it.",
     "Compare two numbers side by side: the difference often proves a square safe.",
-    "Hint only uses the numbers and flags on the board, and names the square it proves.",
-    "Took a mine? Take back that move: the game goes on, but it will not count for your records."
+    "Hint only uses the numbers and flags on the board, and glows the square it proves.",
+    "In Expeditions a bomb costs a life, not the game: finish with all 3 lives for three stars."
    ],
    "controls": {
-    "keyboard": "Tab or the arrow keys pick a square, Enter opens it, F flags it. P or Esc pauses.",
-    "touch": "Tap to open, hold to flag (or turn on Flag mode). Tap a number to open around it."
+    "keyboard": "Tab, then the arrow keys pick a square, Enter digs, F flags. P or Esc pauses.",
+    "touch": "Tap to dig, hold to flag (or switch the Dig/Flag button). Tap a number to open around it."
    },
    "tricks": [],
    "cheats": [
@@ -2953,18 +3001,22 @@
      "effect": "Extra life: the next mine you tap is flagged instead"
     }
    ],
-   "difficulty": "Easy has 8 mines, Normal 10 and Hard 16 on the 9x9 board. The Daily board has 12 mines, is the same for everyone today and starts already opened.",
+   "difficulty": "Classic keeps the 9x9 board with 8, 10 or 16 bombs and one life. Expeditions grow from 7x7 to 9x9 with 5 to 18 bombs and 3 lives. The Daily board has 12 bombs and starts already opened.",
    "features": {
-    "hints": "Hint button (and Pause > Hint): proves a safe square or a mine from the numbers, says which numbers prove it and makes the square glow; if nothing is certain it names the least risky square",
-    "undo": "Undo button takes back any flag or opening; Take back that move on the Boom card undoes a mine (that game then keeps no record)",
-    "level-select-or-daily": "Easy, Normal and Hard on the title, plus a Daily board that is the same for everyone each day",
-    "results": "Cleared or Boom card with time, best, flag accuracy, stars, rank and achievements"
+    "hints": "Hint (3 per board): proves a safe square or a bomb from the numbers and makes it glow; if nothing is certain it names the least risky square",
+    "undo": "Undo (3 per board) takes back any dig or flag, even the bomb you just hit",
+    "level-select-or-daily": "Expeditions: 3 worlds x 6 boards with 3 stars each; Classic Easy/Normal/Hard; and a Daily board that is the same for everyone each day",
+    "results": "Cleared or Out-of-lives card with time, flags right, chords used, stars and XP",
+    "tutorial": "First game: three coach notes teach digging, reading numbers and flagging; skippable, replayed from How to play",
+    "progression": "18 expedition boards x 3 stars (worlds open at 8 and 24 stars); XP levels unlock 6 ground looks (meadow, sandy shore, snowfield, crystal cave, jungle ruins, volcano); 3 daily goals and a weekly stamp chest"
    },
    "saves": [
     "minesBest",
-    "minesWins"
+    "minesWins",
+    "mines_exp",
+    "pz_mines"
    ],
-   "start": "#playBtn",
+   "start": "#mClassic",
    "authored": [
     "cheats",
     "controls",
@@ -3088,37 +3140,37 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/connect-four.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseKeys": "p",
+   "pauseButton": "tr",
    "howto": [
-    "Pick Pass & Play or a CPU (Easy, Normal or Hard) and press Play.",
-    "Tap a column to drop a disc: it falls to the lowest free hole.",
-    "Red always goes first, then Yellow.",
-    "Four in a row across, down or diagonally wins. A full board is a draw."
+    "Press Play to face the next critter on the ladder, or pick Two players.",
+    "Tap a column (or drag along the board and let go): your disc drops to the lowest free hole.",
+    "Four in a row across, down or diagonally wins the round. Win two rounds before your opponent (three rounds at most).",
+    "Win 2 to 0 for three stars. Beat a critter to unlock the next one."
    ],
    "tips": [
     "The middle column is part of the most possible fours: start there.",
     "Before you drop, check the hole above your disc: could it hand the other player a win?",
-    "Build two threats at once; the other player can only block one.",
-    "Drop a disc in the gold ⚡ column to earn a hint coin.",
-    "Undo takes back your move and the CPU's reply."
+    "Build two threats at once; your opponent can only block one.",
+    "You get 2 hints per match: use them when a four looks close.",
+    "Undo takes back your move and the critter's reply."
    ],
    "controls": {
-    "keyboard": "1 to 7 drop in a column, or Left/Right then Enter. Z undoes, N starts a new round. P or Esc pauses.",
-    "touch": "Tap a column. New Round, Undo and Hint sit under the board."
+    "keyboard": "1 to 7 drop in a column, or Tab/Left/Right then Enter. Z undoes, H hints. P or Esc pauses.",
+    "touch": "Tap a column, or slide along the board and lift your finger. Undo, Hint and Menu sit under the board."
    },
    "tricks": [],
    "cheats": [
@@ -3132,21 +3184,27 @@
     },
     {
      "code": "EXTRACOINS",
-     "effect": "Ten extra ⚡ coins for hints"
+     "effect": "Ten extra hints"
     }
    ],
-   "difficulty": "Easy CPU always takes a win but otherwise plays a random column almost half the time; Normal always takes a win, blocks yours and avoids handing you one; Hard searches six moves ahead.",
+   "difficulty": "A six-critter ladder: Mousey plays almost at random, Bunny always takes wins and blocks yours, Kitty looks 3 moves ahead, Foxy 5, Owl 7 and the Dragon boss 9. Two-player mode is always available.",
    "features": {
-    "rules-screen": "The title card lists the three rules; Pause > How to play has them too, and Replay tutorial brings the card back",
-    "ai-difficulty": "Easy, Normal and Hard CPU on the title (Hard uses a six-move search)",
-    "undo": "Undo button (or Z) takes back your last move and the CPU's reply; in Pass & Play one move at a time",
-    "results": "Win, lose or draw card with the score, streak and totals; the winning four glow and a line is drawn through them"
+    "rules-screen": "The How-to card (title, Pause > How to play) lists the rules; the first match has coach notes",
+    "ai-difficulty": "Six critters from a random player to a nine-move search",
+    "undo": "Undo button (Z key) takes back your move and the critter's reply; in Two players one move at a time",
+    "hints": "Hint (2 per match, H key): rings the column that wins, blocks or builds the best position",
+    "level-select-or-daily": "The Ladder: six critters, three stars each, each one unlocking the next",
+    "results": "Round banners with a gold line through the winning four; a match card with stars, round score and XP",
+    "tutorial": "First match: coach notes teach the drop and the four-in-a-row goal; skippable, replayed from How to play",
+    "progression": "6 opponents x 3 stars; XP levels unlock 6 disc sets (enamel, wood and ivory, marble tavern, emerald, neon, gold and silver); 3 daily goals and a weekly stamp chest"
    },
    "saves": [
     "c4Best",
-    "c4Wins"
+    "c4Wins",
+    "c4_ladder",
+    "pz_c4"
    ],
-   "start": "#playBtn",
+   "start": "#mPlay",
    "authored": [
     "cheats",
     "controls",
@@ -3268,37 +3326,37 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/tic-tac-toe.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseKeys": "p",
+   "pauseButton": "tr",
    "howto": [
-    "Pick 2 Players, Easy CPU, Hard CPU or Misère and press Play.",
-    "You are X and go first. Tap an empty square.",
-    "Three in a row across, down or corner to corner wins; a full board is a draw.",
-    "In Misère, making three in a row loses."
+    "Press Play to face the next critter on the ladder, or pick Two players.",
+    "Tap a square to place your piece. You are X; the critter is O.",
+    "Three in a row across, down or corner to corner wins the round. Win two rounds before your opponent (five rounds at most).",
+    "Win 2 to 0 for three stars. Beat a critter to unlock the next one."
    ],
    "tips": [
-    "The centre sits on four lines: take it when you can.",
-    "If the CPU takes the centre, answer with a corner, not an edge.",
-    "Two open lines at once (a fork) is the only way to beat anyone who blocks.",
-    "Hard CPU plays perfectly, so a draw is a good result.",
-    "Hint names the best square and says whether it wins, blocks or keeps lines open."
+    "Take the centre or a corner first: they sit on the most lines.",
+    "Before you move, check whether the critter can win next turn and block it.",
+    "Make two threats at once (a fork): the critter can only block one.",
+    "The Owl and the Dragon rarely slip: a tie against them still earns a star.",
+    "Hint shows the best square with a look-ahead; Undo takes back your move and the reply."
    ],
    "controls": {
-    "keyboard": "1 to 9 play a square (or Tab/arrows then Enter), Z undoes. P or Esc pauses.",
-    "touch": "Tap a square. New Round, Undo and Hint sit under the board."
+    "keyboard": "Tab or the arrow keys pick a square, Enter or 1 to 9 places a piece, Z undoes, H hints. P or Esc pauses.",
+    "touch": "Tap a square. Undo, Hint and Menu sit under the board."
    },
    "tricks": [],
    "cheats": [
@@ -3308,25 +3366,31 @@
     },
     {
      "code": "XRAY",
-     "effect": "X-ray: see the square the CPU wants next (pink outline)"
+     "effect": "X-ray: a glow shows the square the CPU wants next"
     },
     {
      "code": "CLEANSLATE",
-     "effect": "Clean slate: the score board goes back to 0-0"
+     "effect": "Clean slate: the round score goes back to 0-0"
     }
    ],
-   "difficulty": "Easy CPU picks any square that does not hand you a win; Hard CPU looks ahead through every move and never loses. Misère turns the rules upside down.",
+   "difficulty": "A six-critter ladder: Mousey blunders, Bunny blocks, Kitty and Foxy plan ahead, Owl rarely slips and the Dragon plays Opposite Day (three in a row LOSES). Two-player mode is always available.",
    "features": {
-    "rules-screen": "The title card lists the rules; Pause > How to play has them too, and Replay tutorial brings the card back",
-    "ai-difficulty": "Easy CPU and Hard CPU (perfect play), plus a Misère CPU",
-    "undo": "Undo button (or Z) takes back your move and the CPU's reply; in 2 Players one move at a time",
-    "results": "Win, lose or draw card with the score; the winning line glows and a line is drawn through it"
+    "hints": "Hint button (H key, Pause > Hint): the best square by full look-ahead glows, and the text says whether it wins, blocks or builds",
+    "undo": "Undo button (Z key) takes back your move and the critter's reply",
+    "level-select-or-daily": "The Ladder: six critters, three stars each, each one unlocking the next",
+    "results": "Round banners with a gold line through the winning three; a match card with stars, round score and XP",
+    "tutorial": "First match: coach notes teach placing a piece and winning a round; skippable, replayed from How to play",
+    "ai-difficulty": "Six skill levels from a random player to a near-perfect look-ahead, plus Opposite Day",
+    "progression": "6 opponents x 3 stars; XP levels unlock 6 piece sets (oak and ivory, chalkboard, marble and brass, jade and ruby, neon glass, gold and onyx); 3 daily goals and a weekly stamp chest; meet every critter",
+    "rules-screen": "The How-to card (title, Pause > How to play) lists the rules; the first match has coach notes"
    },
    "saves": [
     "tttBest",
-    "tttRecW"
+    "tttRecW",
+    "ttt_ladder",
+    "pz_ttt"
    ],
-   "start": "#playBtn",
+   "start": "#mPlay",
    "authored": [
     "cheats",
     "controls",
@@ -3358,8 +3422,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/simon-says.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -3372,49 +3436,48 @@
     "sdkInit": false
    },
    "pauseKeys": "p+esc",
-   "pauseButton": "br",
+   "pauseButton": "tr",
    "howto": [
-    "Choose which round to start at (1, 5 or 10) and press Play.",
-    "Watch Simon light up the pads and play their notes.",
-    "Repeat the whole sequence by tapping the pads in the same order.",
-    "Each round adds one more colour. One wrong tap ends the game."
+    "Press Play. Watch the animals sing.",
+    "Tap them in the same order.",
+    "Finish all the rounds with few mistakes for 3 stars."
    ],
    "tips": [
-    "Say the colours in your head, or hum the notes: sound is easier to remember.",
-    "Group long sequences into chunks of three or four.",
-    "Replay shows the sequence again once per game.",
-    "The flashes speed up every round, so stay focused.",
-    "Missed one? Undo that tap once per game, right from the Game Over card."
+    "Hum the tune in your head.",
+    "The ear button plays the round again.",
+    "You have three hearts on each level.",
+    "Jam lets you play the animals freely."
    ],
    "controls": {
-    "keyboard": "1 red, 2 green, 3 blue, 4 yellow (or Tab to a pad and Enter). R replays. P or Esc pauses.",
-    "touch": "Tap the pads. Replay sits above them."
+    "keyboard": "1 to 4 tap the pads, R replays. P or Esc pauses.",
+    "touch": "Tap the animals"
    },
    "tricks": [],
    "cheats": [
     {
      "code": "SLOWSIMON",
-     "effect": "Slow Simon: flashes last almost twice as long"
+     "effect": "Slow Simon: the animals sing almost twice as slowly"
     },
     {
      "code": "SHOWNEXT",
      "effect": "Show next: the pad to tap next is outlined"
     },
     {
-     "code": "ENDLESSREPLAY",
-     "effect": "Endless replay: replay the sequence as often as you like"
+     "code": "EXTRALIVES",
+     "effect": "Extra lives: three more hearts"
     }
    ],
-   "difficulty": "An adaptive curve: every round adds a colour and the flashes get quicker. Starting at round 5 or 10 skips the easy part; Mirror mode (tap the opposite pad) is the expert setting.",
+   "difficulty": "15 levels in three bands. Sequences grow from 3 to 12 sounds and the tune speeds up.",
    "features": {
-    "hints": "Replay button shows the sequence again once per game; Pause > Hint names the next colour (and the mirrored pad in Mirror mode)",
-    "undo": "Undo that tap on the Game Over card takes back one wrong tap per game and lets you carry on",
-    "level-select-or-daily": "Start at round 1, 5 or 10 on the title",
-    "results": "Game Over card with the round reached, score, best, pads collected and the correct sequence played back"
+    "hints": "The ear button replays the round; Pause > Hint names the next animal",
+    "undo": "Hearts forgive mistakes: the round replays",
+    "level-select-or-daily": "Level map with stars and a daily goal",
+    "results": "Stars card with new stickers"
    },
    "saves": [
     "simonBest",
-    "simonScore"
+    "simonScore",
+    "simon_kk"
    ],
    "start": "#playBtn",
    "authored": [
@@ -3453,60 +3516,63 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
-    "ownPause": true,
+    "usesEsc": true,
+    "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
-   "pauseButton": "tr",
+   "pauseKeys": "p",
+   "pauseButton": "br",
    "howto": [
-    "Pick Easy, Normal or Hard speed and press Play.",
+    "Pick Garden, Portals or Rocks and press Play.",
     "The snake waits until your first swipe or arrow key.",
-    "Steer to the apples: each one makes you longer and a little faster.",
-    "Don't hit the walls, your own tail or the rocks that appear as you grow."
+    "Swipe anywhere to steer to the fruit: each one makes you longer and the snake a little faster.",
+    "Don't hit the hedge, your own tail or a rock. Spend apples on new snakes."
    ],
    "tips": [
-    "Grab ⭐ gold before it fades: +5, and it blasts a rock away.",
-    "A 👻 orb lets you slide through rocks for 5 seconds.",
-    "Eat apples quickly one after another to build an eat streak.",
-    "Every 5 apples is a new level; the snake speeds up a little with every apple.",
+    "Golden apples are worth 5 but vanish after about 6 seconds.",
+    "A ghost orb lets you slide through your tail and rocks for 6 seconds; a snail orb slows the snake.",
+    "Eat fruit quickly one after another to build a chain.",
+    "Every 6 points the snake speeds up a little.",
     "When you get long, run along the edges so your tail can't box you in."
    ],
    "controls": {
     "keyboard": "Arrow keys or WASD steer; Space starts. P or Esc pauses.",
-    "touch": "Swipe on the board to steer"
+    "touch": "Swipe anywhere to steer (you can swipe again without lifting your finger)"
    },
    "tricks": [],
    "cheats": [
     {
      "code": "NOWALLS",
-     "effect": "No walls: the snake wraps round to the other side"
+     "effect": "No walls: the snake wraps around the edges"
     },
     {
      "code": "SLOWSNAKE",
-     "effect": "Slow snake: 60% speed"
+     "effect": "Slow snake: the snake moves at two thirds speed"
     },
     {
      "code": "GOLDRUSH",
-     "effect": "Gold rush: a gold star appears after every apple"
+     "effect": "Gold rush: golden apples keep appearing"
     }
    ],
-   "difficulty": "Easy, Normal and Hard set the starting speed; on every level the snake gets faster, up to more than twice its starting speed.",
+   "difficulty": "An adaptive curve: a gentle first 30 seconds, then the snake speeds up with your score. Portals wraps the edges; Rocks adds a rock every fourth fruit.",
    "features": {
-    "difficulty": "Easy, Normal and Hard speed on the title (remembered)",
-    "power-up-list": "The title card lists the pick-ups: apples grow you, gold stars (+5) blast a rock, ghost orbs let you pass rocks for 5 s",
-    "wave-or-level-counter": "LV in the top bar goes up every 5 apples, as the snake speeds up",
-    "high-score-table": "Top 5 scores (with the speed) on the Game Over card; runs with codes on are left out",
-    "results": "Game Over card with score, best, medal, gold, streak, level, rank and the top 5"
+    "difficulty": "Adaptive speed: a slow start that speeds up with your score, plus Garden, Portals and Rocks modes on the title",
+    "power-up-list": "Golden apple (+5), ghost orb (pass through your tail and rocks for 6 s) and snail orb (slow snake), all drawn on the board",
+    "wave-or-level-counter": "Score with a medal target under it, and the snake's length in the top corner",
+    "high-score-table": "Top 5 runs on the result card",
+    "results": "Result card with score, medal, best, top-5 runs, apples earned, today's goals and the next snake to unlock",
+    "progression": "Nine snakes (seven bought with apples, two unlocked by score), three modes, daily goals with a star challenge, week stamps with a weekly gift",
+    "daily-goals": "Three goals and one star challenge a day"
    },
    "saves": [
     "snakeBest",
-    "snakeTop"
+    "snakeTotal",
+    "hm-snake"
    ],
    "start": "#playBtn",
    "authored": [
@@ -3557,20 +3623,18 @@
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [
-    "Press Play: a 30-second round starts.",
-    "Tap each 🐹 mole as it pops up, before it ducks back down.",
-    "⭐ gold moles are worth 5, 👑 crowns 10; a 🎃 boss takes three taps for 25.",
-    "Don't tap the 💣: it rumbles before it pops up and costs 3 points."
+    "Press Play. Tap each mole as it pops up.",
+    "Do not tap the bunny and chick friends.",
+    "Whack enough moles to earn 1, 2 or 3 stars, then go on to the next level."
    ],
    "tips": [
-    "Five hits in a row without letting one escape raises the multiplier (up to x3).",
-    "A hit within 350 ms of a mole popping up earns a +1 speed bonus.",
-    "A boss appears every 100 points.",
-    "Moles pop up faster and stay up for less time as the clock runs down.",
-    "On a keyboard, the number pad layout (7 8 9 / 4 5 6 / 1 2 3) matches the holes."
+    "Gold moles count as three and add two seconds.",
+    "Hard-hat moles need two taps.",
+    "Win stars to unlock new hammers and meadow friends.",
+    "Win 3 levels a day to fill your daily goal."
    ],
    "controls": {
-    "keyboard": "Number keys 1 to 9 whack the matching hole (number-pad layout); Space starts. P or Esc pauses.",
+    "keyboard": "Number keys 1 to 9 whack the matching hole (number-pad layout, 1 to 4 on small boards); Space starts. P or Esc pauses.",
     "touch": "Tap the moles"
    },
    "tricks": [],
@@ -3580,25 +3644,25 @@
      "effect": "Big hammer: a whack also hits the moles next door"
     },
     {
-     "code": "NOBOMBS",
-     "effect": "No bombs: only moles pop up"
+     "code": "EXTRATIME",
+     "effect": "Extra time: rounds last 15 seconds longer"
     },
     {
-     "code": "EXTRATIME",
-     "effect": "Extra time: rounds last 45 seconds"
+     "code": "SLOWMOLES",
+     "effect": "Slow moles: they stay up much longer"
     }
    ],
-   "difficulty": "An adaptive curve inside each round: moles appear faster and hide sooner as the timer runs down, and bosses arrive every 100 points.",
+   "difficulty": "15 levels in three worlds. Holes grow from 4 to 9, moles pop up faster and hide sooner, friends and hard-hat moles join in, and every fifth level has a crowned boss. Star goals are set from a simulated round.",
    "features": {
-    "one-tap-start": "Play starts the 30-second round at once",
-    "instant-restart": "Play Again (or Space) on the results card starts a new round",
-    "best-score-badge": "🏆 best in the top bar next to the score",
-    "tutorial-card": "First-round card with a tapping finger that stays until your first whack",
-    "results": "Time's Up card with score, best, new-best badge and rank"
+    "one-tap-start": "Play starts the next level at once",
+    "instant-restart": "Play again on the results card",
+    "best-score-badge": "Best score saved as whackBest",
+    "tutorial-card": "Level 1 holds the first mole until you tap it; Help replays",
+    "results": "Stars card with whacks, goal, new prizes and daily goal"
    },
    "saves": [
     "whackBest",
-    "whackTWhacks"
+    "whack_kk"
    ],
    "start": "#playBtn",
    "authored": [
@@ -3649,27 +3713,25 @@
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [
-    "Press Play: a 45-second round starts.",
-    "Tap bubbles to pop them before they float off the top.",
-    "Bigger bubbles score more; ⭐ bubbles split in two, gold bubbles add 4 seconds.",
-    "Never tap a 💣: it ends the round at once."
+    "Press Play. Tap the bubbles to set the animals free.",
+    "On some levels free one kind of animal.",
+    "Free enough to earn 1, 2 or 3 stars."
    ],
    "tips": [
-    "Pop quickly one after another to build a combo: every 4 pops raises the multiplier.",
-    "Gold bubbles buy time: +4 seconds each.",
-    "Bombs never appear in the first 8 seconds or the last 7.",
-    "Bubbles rise faster as the round goes on.",
-    "A ⭐ bubble needs two taps: the first splits it."
+    "Clock bubbles add 5 seconds.",
+    "Rainbow bubbles pop the ones around them.",
+    "Big bubbles need two taps.",
+    "Drag a finger across bubbles to pop many."
    ],
    "controls": {
-    "keyboard": "Space or Enter on Play; the round is played with the mouse. P or Esc pauses.",
-    "touch": "Tap the bubbles"
+    "keyboard": "Play with the mouse; Space or Enter on Play. P or Esc pauses.",
+    "touch": "Tap or drag over the bubbles"
    },
    "tricks": [],
    "cheats": [
     {
-     "code": "NOBOMBS",
-     "effect": "No bombs: only bubbles float up"
+     "code": "NOBIGS",
+     "effect": "No big bubbles: every bubble pops in one tap"
     },
     {
      "code": "SLOWBUBBLES",
@@ -3680,17 +3742,18 @@
      "effect": "Big bubbles: every bubble is a big one"
     }
    ],
-   "difficulty": "An adaptive curve inside each round: bubbles come more often and rise faster, and bombs become more likely as time runs down.",
+   "difficulty": "15 levels in three sea worlds. Bubbles come faster, get smaller and more kinds of animals appear; even levels ask for one kind only.",
    "features": {
-    "one-tap-start": "Play starts the 45-second round at once",
-    "instant-restart": "Play Again on the results card starts a new round",
-    "best-score-badge": "🏆 best in the top bar next to the score",
-    "tutorial-card": "First-round card with a tapping finger that stays until your first pop",
-    "results": "Time's Up or Boomed card with score, best, run stats, rank, lifetime pops and badges"
+    "one-tap-start": "Play starts the next level",
+    "instant-restart": "Play again on the results card",
+    "best-score-badge": "Best score saved as bubbleBest",
+    "tutorial-card": "Level 1 holds a slow bubble until you pop it",
+    "results": "Stars card with animals freed, goal and new friends"
    },
    "saves": [
     "bubbleBest",
-    "bubblePops"
+    "bubblePops",
+    "bubble_kk"
    ],
    "start": "#playBtn",
    "authored": [
@@ -3814,8 +3877,8 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/word-scramble.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -3830,34 +3893,33 @@
    "pauseKeys": "esc",
    "pauseButton": "tr",
    "howto": [
-    "Pick a level on the title: 3 letters up to 9+ letters. Harder levels unlock as you earn XP.",
-    "Tap the letter tiles in order to spell the hidden word. Tap a filled slot to send a letter back.",
-    "Finish each word before the time bar runs out. Three misses or time-outs end the game."
+    "Press Play. Look at the picture.",
+    "Tap the letters in order to spell it.",
+    "Spell without help for more stars."
    ],
    "tips": [
-    "Look for common endings like -ING, -ER and -LE first.",
-    "A word with no hints and no mistakes scores a PERFECT +5.",
-    "Your streak adds up to +30 points a word, so a skip costs more than it looks.",
-    "Shuffle the tiles when you are stuck: a new order often shows the word.",
-    "Gold tiles count towards your gold collection on the title screen."
+    "Tap the picture to hear the word.",
+    "The magnifier shows the next letter.",
+    "Tap a letter in a box to send it back.",
+    "Every word you spell goes into your book."
    ],
    "controls": {
-    "keyboard": "Type letters to place tiles, Backspace takes the last one back. Esc pauses.",
-    "touch": "Tap tiles to place them, tap a slot to send its letter back"
+    "keyboard": "Type letters to place tiles, Backspace takes one back. P or Esc pauses.",
+    "touch": "Tap the letter tiles"
    },
    "tricks": [],
    "cheats": [],
-   "difficulty": "Five level bands by word length: 3 letters (ages 5-6), 4-5 (6-7), 6 (7-8), 7-8 (8-9) and 9+ (9 and up). Each band unlocks with XP and gives more time for longer words.",
+   "difficulty": "15 levels from 3-letter to 9-letter words, each word has its own picture. The first six levels only accept the right letter.",
    "features": {
     "age-or-level-bands": "Five word-length levels on the title, with an age guide in the grown-ups report",
     "hints": "In-game Hint button places the next letter; the arcade Hint names the next letter or the wrong slot",
     "grown-up-progress-report": "Grown-ups button on the title: words tried and accuracy per level, practice days, the words missed most and a suggested next level",
     "tutorial": "Guided first word with coach cards (the timer waits); replay with Learn to play",
-    "results": "Game Over card with score, best, best streak and fastest word"
+    "results": "Stars card with the words you spelled and new prizes"
    },
    "saves": [
     "ws_best",
-    "ws_xp",
+    "ws_kk",
     "ws_progress"
    ],
    "start": ".diff-btn.sel",
@@ -4517,14 +4579,14 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -4534,11 +4596,11 @@
     "Own 25, 50 or 100 of a building to double its output. At 1M coins earned, Prestige for golden coins that raise all income by 10% each."
    ],
    "tips": [
-    "Cursors also make every tap stronger.",
-    "Use the ×10, ×25 and MAX buttons to buy in bulk.",
-    "Send a Trade Caravan with spare coins: it comes back with 1.5 to 2.4 times as much.",
-    "A Golden Rush doubles taps for 12 seconds: tap fast!",
-    "Claim the Daily Tribute once a day for a minute of income."
+    "Tap the fountain early, then let the buildings work.",
+    "Upgrades unlock when you own 10, 40, 75, 150 and 250 of a building.",
+    "Tap the delivery truck when it rolls in for a reward.",
+    "Come back tomorrow: the daily gift grows with your streak.",
+    "Crowns are permanent: spend them in the Crown tab."
    ],
    "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -4561,12 +4623,13 @@
    ],
    "difficulty": "An idle curve: each building costs 15% more than the last, and every prestige resets buildings but multiplies income, so each run goes further.",
    "features": {
-    "offline-earnings": "Welcome back card: coins earned while away at 50% rate, up to 8 hours",
-    "upgrade-tree": "Ten buildings from Cursor to Empire, each with ×2 milestones at 25, 50 and 100 owned, plus deeds worth +2% each",
-    "big-number-format": "Coins shown as 1.2K, 3.4M, 5.6B and on to Qi",
-    "prestige-or-next-goal": "Prestige for golden coins (+10% income each) with a progress bar to the next golden coin",
-    "tutorial": "Coach cards on the first visit: tap, buy, milestones and prestige; replay with Learn to play",
-    "results": "Prestige card with coins this run, all-time earnings, golden coins and the new multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, new building, welcome back and prestige sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%"
    },
    "saves": [
     "ie_state"
@@ -4604,18 +4667,18 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/tap-monsters.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -4625,11 +4688,11 @@
     "Every 10th level is a boss. When you have earned enough gold, Ascend for souls that raise your damage by 5% each."
    ],
    "tips": [
-    "Every hero you own also makes your taps 10% stronger.",
-    "Each tap has a 10% chance to CRIT for triple damage.",
-    "Golden monsters pay extra: tap them fast.",
-    "Keep killing quickly to build a Fever streak for bonus gold.",
-    "Crystals from bosses open Loot Caches full of gold."
+    "Tap crits hit three times harder.",
+    "Friends fight for you every second, even while away.",
+    "Bosses have ten times the health and drop twenty times the gold.",
+    "Tap the treasure bird when it flies over.",
+    "Souls are permanent: spend them in the Ascend tab."
    ],
    "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -4639,25 +4702,27 @@
    "cheats": [
     {
      "code": "GOLDRAIN",
-     "effect": "Gold rain: a big pile of gold (25 monsters' worth)"
+     "effect": "Gold rain: 1M gold"
     },
     {
      "code": "ONEPUNCH",
-     "effect": "One punch: taps hit 100 times harder"
+     "effect": "One punch: taps 10 times stronger"
     },
     {
-     "code": "HEROPARTY",
-     "effect": "Hero party: 5 of every hero join for free"
+     "code": "TIMEWARP",
+     "effect": "One hour of gold now"
     }
    ],
    "difficulty": "An idle curve: monsters gain health and pay more gold every level, bosses every 10 levels have ten times the health, and each hero costs 50% more than the last.",
    "features": {
-    "offline-earnings": "Welcome back card: gold your heroes earned while away at 50% rate, up to 8 hours",
-    "upgrade-tree": "Five heroes from Knight to Dragon, bought one, ten or MAX at a time, plus badges",
-    "big-number-format": "Gold and damage shown as 1.2K, 3.4M, 5.6B and beyond",
-    "prestige-or-next-goal": "Ascend for souls (+5% damage each) with the gold needed for the next soul shown under the button",
-    "tutorial": "Coach cards on the first visit: tap, hire, bosses and ascending; replay with Learn to play",
-    "results": "Ascended card with gold this run, level reached, best level, souls and the new multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, welcome back and Ascend sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%",
+    "collection": "Monster Dex of 30 monsters; every tenth stage is a boss"
    },
    "saves": [
     "tm_state"
@@ -4695,18 +4760,18 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/idle-miner.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -4716,11 +4781,11 @@
     "Deeper tiers have richer ore. Past 1000m, Prestige for gems that add 3% mining power each."
    ],
    "tips": [
-    "Tap quickly to build Flow: every 10 in a row pays a bonus.",
-    "Dynamite makes all digging 10 times faster for 20 seconds.",
-    "Each new ore tier doubles the value of every stone.",
-    "Gems also buy permanent upgrades like the Eternal Pick.",
-    "Use the ×10 and MAX buttons to hire miners in bulk."
+    "Tap the rock early, then dig new shafts.",
+    "Each shaft you dig lights the way to a richer ore.",
+    "Tap the gold cart when it rolls by.",
+    "The daily gift grows with your streak.",
+    "Gems are permanent: spend them in the Blast tab."
    ],
    "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -4729,26 +4794,27 @@
    "tricks": [],
    "cheats": [
     {
-     "code": "STONERAIN",
-     "effect": "Stone rain: a big pile of stones (ten minutes' worth, at least 1000)"
+     "code": "GOLDRAIN",
+     "effect": "Gold rain: 1M coins"
     },
     {
-     "code": "BIGBOOM",
-     "effect": "Big boom: free dynamite, ×10 digging for 60 seconds"
+     "code": "MIDAS",
+     "effect": "Golden pick: taps 10 times stronger"
     },
     {
-     "code": "DEEPDIVE",
-     "effect": "Deep dive: 500m deeper at once"
+     "code": "TIMEWARP",
+     "effect": "One hour of income now"
     }
    ],
    "difficulty": "An idle curve: pickaxes cost 60% more each level and miners 50% more each, while ore gets richer every tier from Stone at 0m to Void at 5000m.",
    "features": {
-    "offline-earnings": "Welcome back card: stones your miners dug while away at 50% rate, up to 8 hours",
-    "upgrade-tree": "Pickaxe levels, auto-miners, dynamite and four gem upgrades",
-    "big-number-format": "Stones shown as 1.2K, 3.4M, 5.6B and beyond",
-    "prestige-or-next-goal": "Prestige for gems (+3% mining each) plus the next ore tier and its depth shown under the rock",
-    "tutorial": "Coach cards on the first visit: dig, shop and dynamite; replay with Learn to play",
-    "results": "Prestige card with stones this run, depth reached, total gems and the new multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, new building, welcome back and prestige sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%"
    },
    "saves": [
     "im_state"
@@ -4786,32 +4852,33 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/farm-harvest.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
    "howto": [
-    "Pick a crop, then tap an empty plot to plant it.",
-    "Tap a growing plot to water it (twice as fast), and tap it again when it glows to harvest and sell it.",
-    "Spend coins in the shop on plots, a sprinkler, a harvester and chickens, and chase the goal at the top."
+    "Tap an empty plot to plant the seed you chose. Swipe across plots to do several at once.",
+    "Tap a growing plot to water it: it grows twice as fast. Tap a ripe crop to harvest it.",
+    "Fill orders in the Orders tab for coins and XP, or sell crops from the barn.",
+    "Level up to unlock crops, then buy plots, a bigger barn and helpers."
    ],
    "tips": [
-    "Each harvest of a crop raises its price by 6% for good.",
-    "Harvests sometimes drop a seed. Saved seeds are planted first, for free.",
-    "Three harvests within two seconds of each other make a combo.",
-    "The Sprinkler waters everything and the Harvester replants for you.",
-    "Crops and chickens keep working while you are away, for up to two hours."
+    "Water right after planting to halve the wait.",
+    "Slow crops pay much more per plot.",
+    "Orders pay 1.5 times the market price.",
+    "A full barn blocks harvesting: deliver or sell.",
+    "Helpers work while the game is open."
    ],
    "controls": {
     "keyboard": "Tab to a plot or button and press Enter or Space. P or Esc pauses.",
@@ -4820,31 +4887,33 @@
    "tricks": [],
    "cheats": [
     {
-     "code": "COINSHOWER",
-     "effect": "Coin shower: a big pile of coins"
+     "code": "HOTMONEY",
+     "effect": "+100,000 coins"
     },
     {
-     "code": "QUICKGROW",
-     "effect": "Quick grow: every planted crop is ready now"
+     "code": "GREENTHUMB",
+     "effect": "Every crop ripens now"
     },
     {
-     "code": "MAGICBEANS",
-     "effect": "Magic beans: 10 free seeds of every crop"
+     "code": "FULLBARN",
+     "effect": "Stock the barn with crops"
     }
    ],
    "difficulty": "Self-paced: dearer crops take longer but pay more, plot unlocks double in price, and each goal is a bigger coin total.",
    "features": {
-    "autosave": "The farm saves on this device every 5 seconds and when you leave (not while codes are on)",
-    "goals-or-quests": "Goal bar under the top bar: the next coin total to earn, with a coin reward when you reach it",
-    "day-time-ui": "Day number and clock in the top bar (6:00 to 22:00, dusk dims the farm) and a Day summary card at the end of each day",
-    "inventory": "The 🎒 Barn: saved seeds for every crop, harvest counts and mastery prices, plots and helpers",
-    "tutorial": "Coach cards on the first visit: pick, plant, water, harvest and the shop; replay with Learn to play",
-    "results": "Day summary card with crops harvested and coins earned that day"
+    "autosave": "Crops keep growing by the clock, even when the game is closed",
+    "goals-or-quests": "Delivery-truck orders, daily goals with a streak, 15 deeds",
+    "day-time-ui": "Timers on every plot and a golden-hour scene",
+    "inventory": "A barn with a capacity you can upgrade; sell or deliver crops",
+    "tutorial": "Coach cards: plant, water, harvest, deliver",
+    "results": "Level-up and order sheets",
+    "progression": "7 crops unlock from level 1 to 10, 12 plots, barn upgrades, two helpers that work for you",
+    "upgrade-tree": "Plots, barn and helper upgrades"
    },
    "saves": [
-    "farmHarvestSave_v1"
+    "farmHarvestSave_v2"
    ],
-   "start": "#playBtn",
+   "start": "#btnPlay",
    "authored": [
     "cheats",
     "controls",
@@ -4877,18 +4946,18 @@
    "ext": true,
    "src": "https://calebhomwe.github.io/arcade-hub/games/farm-idle.html",
    "scan": {
-    "engine": "dom",
-    "render": "dom",
+    "engine": "canvas",
+    "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
     "usesEsc": false,
     "ownPause": false,
     "sdk": true,
-    "sdkInit": false
+    "sdkInit": true
    },
    "pauseKeys": "p+esc",
    "pauseButton": "tr",
@@ -4898,11 +4967,11 @@
     "At 1M coins earned, start a New Farm+ for Legacy Points that raise all income by 10% each."
    ],
    "tips": [
-    "Tap quickly for a combo: fast taps pay extra.",
-    "25 taps charge a Golden Harvest: +25% income for 10 seconds.",
-    "Fill the market orders for a big coin bonus before their timer runs out.",
-    "Catch the butterflies that flutter past for a reward.",
-    "Use the ×10 and ×25 buttons to buy buildings in bulk."
+    "Tap the cow to milk it early on.",
+    "Catch the butterfly for a bonus.",
+    "Upgrades unlock when you own 10, 40, 75, 150 and 250 of a farm building.",
+    "The daily gift grows with your streak.",
+    "Blue ribbons are permanent: spend them in the Fair tab."
    ],
    "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -4911,31 +4980,32 @@
    "tricks": [],
    "cheats": [
     {
-     "code": "HAYRAIN",
-     "effect": "Hay rain: a big pile of coins (ten minutes' worth, at least 10,000)"
+     "code": "GOLDRAIN",
+     "effect": "Coin shower: 1M coins"
     },
     {
-     "code": "GOLDENHOUR",
-     "effect": "Golden hour: a Golden Harvest that lasts a whole minute"
+     "code": "MIDAS",
+     "effect": "Golden udder: taps 10 times stronger"
     },
     {
-     "code": "BUMPERCROP",
-     "effect": "Bumper crop: every tractor tap is worth 10 times more"
+     "code": "TIMEWARP",
+     "effect": "One hour of income now"
     }
    ],
    "difficulty": "An idle curve: each building costs more than the last, owning 25, 50 and 100 of one multiplies its income, and every New Farm+ restarts the farm with more income per building.",
    "features": {
-    "offline-earnings": "Welcome back card: coins the farm earned while away at half rate, up to 8 hours",
-    "upgrade-tree": "Ten buildings from Wheat Field to Mega Farm with income milestones, plus the Farm Market and achievements",
-    "big-number-format": "Coins shown as 1.2K, 3.4M, 5.6B and beyond",
-    "prestige-or-next-goal": "New Farm+ for Legacy Points (+10% income each), and timed market orders as the next goal",
-    "tutorial": "Coach cards on the first visit: tap, buy and prestige; replay with Learn to play",
-    "results": "New Farm+ card with coins earned, Legacy Points and the new income multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, new building, welcome back and prestige sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%"
    },
    "saves": [
-    "farmIdleSave_v1"
+    "farmIdleSave_v2"
    ],
-   "start": "#playBtn",
+   "start": "#btnPlay",
    "authored": [
     "cheats",
     "controls",
@@ -4984,16 +5054,17 @@
    "pauseKeys": "p+esc",
    "pauseButton": "bl",
    "howto": [
-    "Press Play, then drag the black hole around the field (or steer it with the arrow keys).",
-    "Swallow anything smaller than the hole to score and grow. Bigger things bounce off until you grow.",
-    "Score as much as you can before the 60-second clock runs out."
+    "Press Play. Pick MISSIONS (60 seconds, three star scores) or CLASSIC (the old best-score run).",
+    "Drag to steer the hole. It swallows anything smaller than itself and grows with every bite.",
+    "Bites in a row build a chain that adds bonus points; time stars add five seconds; golden things are worth extra.",
+    "A mission is cleared with one star at the first score target; higher targets earn two and three stars.",
+    "Coins buy new hole rims; new rims also unlock from stars, levels and day streaks."
    ],
    "tips": [
-    "Eat small things first: every bite makes the hole bigger.",
-    "Swallowing things quickly one after another builds a chain bonus.",
-    "A spinning blue time star adds 5 seconds.",
-    "Golden items are worth 2 extra points.",
-    "Houses and towers are worth the most once the hole is big enough."
+    "Chain bites without a two second gap: the bonus climbs to +22 a bite.",
+    "Grab time stars when the clock is low; they also make the hole a little bigger.",
+    "The four worlds (Town Park, Bakery Lane, Old Plaza, Night Market) change what is on the ground.",
+    "A daily goal pays coins once a day; playing on consecutive days lights the week stamps."
    ],
    "controls": {
     "keyboard": "Arrow keys or WASD steer the hole. P or Esc pauses.",
@@ -5014,17 +5085,24 @@
      "effect": "Gold rush: everything is golden and worth +2"
     }
    ],
-   "difficulty": "An adaptive curve: bigger, more valuable things drift in from the edges and only fit once the hole has grown.",
+   "difficulty": "Star targets rise with the mission number; the world changes every five missions and the mix of things to swallow changes with it. Classic is unchanged.",
    "features": {
     "one-tap-start": "Play, then the first drag starts the clock",
     "instant-restart": "Play Again on the Time's Up card starts a new round at once",
     "best-score-badge": "Best pill in the top bar during play, and on the Time's Up card",
     "tutorial-card": "Get-ready card with a dragging finger; the clock waits until you move",
-    "results": "Time's Up card with score, best, rank and golden feast record"
+    "results": "Result card with stars, score, coins, best and Next Mission",
+    "levels": "MISSIONS mode with a mission picker and stars per mission",
+    "stars": "Three stars per mission (score targets), star marks on the progress bar",
+    "worlds": "Four worlds with their own ground and things to swallow",
+    "unlocks": "Nine hole rims: free, stars, coins, level or day-streak unlocks",
+    "daily-goal": "One seeded daily goal with a coin reward, week stamps and a day streak"
    },
    "saves": [
+    "hole-swallow-prog-v1",
     "hole-swallow-best",
-    "hole-swallow-rank"
+    "hole-swallow-rank",
+    "hole-swallow-gild"
    ],
    "start": "#playBtn",
    "settings": {
@@ -5070,28 +5148,29 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": true,
+    "audio": false,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": false
    },
-   "pauseKeys": "p+esc",
-   "pauseButton": "bl",
+   "pauseKeys": "p",
+   "pauseButton": "br",
    "howto": [
     "Press Play, then tap anywhere (or press Space) to throw a knife into the spinning log.",
     "Never hit a knife that is already stuck in the log.",
-    "Land every knife to split the log and move to a faster level. Golden apples are worth +5."
+    "Stick every knife to split the log and reach the next stage; every fifth stage is a boss.",
+    "Slice apples for coins and spend them on new knives."
    ],
    "tips": [
     "Watch the bottom of the log: throw just after a stuck knife passes.",
-    "The log can change direction between levels, so check which way it spins.",
-    "A level cleared without slicing an apple counts as a Perfect Level.",
-    "Throwing quickly in a row builds a Flow streak.",
-    "Reach levels 3, 6, 9 and 12 to collect emblems."
+    "Stages 1 to 4 are a warm-up; from stage 2 some knives are already stuck in the log.",
+    "Beat the boss on stage 5, 10 and 15 for the Bark Splitter, Frost Fang and Ember Edge knives, and to save a checkpoint.",
+    "Golden apples are worth 3.",
+    "Throwing quickly in a row builds a Flow streak."
    ],
    "controls": {
     "keyboard": "Space or Up arrow throws. P or Esc pauses.",
@@ -5105,24 +5184,28 @@
     },
     {
      "code": "GHOSTBLADE",
-     "effect": "Ghost blade: knives slip past stuck knives"
+     "effect": "Ghost blade: knives slip past knives already in the log"
     },
     {
      "code": "APPLERAIN",
-     "effect": "Apple rain: a new golden apple after every slice"
+     "effect": "Apple rain: a new apple keeps growing on the log"
     }
    ],
-   "difficulty": "An adaptive curve: each level the log spins faster, has more sections and may reverse direction.",
+   "difficulty": "An adaptive curve: stages 1 to 4 have a slow log and few stuck knives, then the log spins faster, may reverse or pulse, and more knives are stuck in it. Every fifth stage is a boss with its own spin pattern. Beaten bosses save a checkpoint you can start from.",
    "features": {
     "one-tap-start": "Play, then the first tap throws and starts the run",
     "instant-restart": "Play Again on the Clash card starts a new run at once",
-    "best-score-badge": "Best pill in the top bar during play, and on the Clash card",
-    "tutorial-card": "Get-ready card with a tapping finger; the first run also explains stuck knives and apples",
-    "results": "Clash card with score, best and emblems"
+    "best-score-badge": "Best stage on the title and on the results card",
+    "tutorial-card": "Get-ready card with a tapping finger on the first run",
+    "results": "Result card with stage reached, medal, best, top-5 runs, apples earned, today's goals and the next knife to unlock",
+    "progression": "Nine knives (six bought with apples, three won from the bosses), boss checkpoints at stages 6, 11 and 16, three daily goals plus a star challenge, week stamps with a weekly gift",
+    "daily-goals": "Three goals and one star challenge a day"
    },
    "saves": [
     "knife-hit-best",
-    "knife-hit-apples"
+    "knife-hit-apples",
+    "knife-hit-ckpt",
+    "hm-knife"
    ],
    "start": "#playBtn",
    "authored": [
@@ -5173,16 +5256,18 @@
    "pauseKeys": "p+esc",
    "pauseButton": "bl",
    "howto": [
-    "Press Play, then tap (or press Space) to smash down through the platform below the ball.",
+    "Press Play. Pick LEVELS (a tower with a finish and three stars) or ENDLESS (the old best-score run).",
+    "Tap (or press Space) to smash down through the platform below the ball.",
     "Blue and purple parts break, green bounces you through for a combo, red and orange end the run.",
-    "Tap when a safe colour is at the front of the next platform. Gems, rings and shields float on the way down."
+    "Reach the gold star at the bottom to clear the level; the three stars are: reach the finish, hit the combo goal, finish under the par time.",
+    "Coins from every run buy ball skins; new balls also unlock from stars, levels and day streaks."
    ],
    "tips": [
     "Each platform spins at its own speed: watch the front edge, not the ball.",
     "Green bounces chain into combos worth more with every bounce.",
-    "Three plain smashes in a row light a fever bonus.",
-    "A shield blocks one red or orange landing.",
-    "The magnet pulls gems in for a few seconds."
+    "Every five levels the tower changes world (five palettes) and gets longer, faster and busier with red parts.",
+    "A daily goal (gems, platforms smashed or levels cleared) pays coins once a day; playing on consecutive days lights the week stamps.",
+    "A shield blocks one red or orange landing. The magnet pulls gems in for a few seconds."
    ],
    "controls": {
     "keyboard": "Space or Down arrow smashes. P or Esc pauses.",
@@ -5203,17 +5288,26 @@
      "effect": "Big ball: a giant ball that grabs gems from further away"
     }
    ],
-   "difficulty": "An adaptive curve: from the fourth platform down, more red and orange parts appear, up to four per platform.",
+   "difficulty": "Level N has 12+2N platforms (up to 70), up to four red or orange parts per platform from level 15, a faster spin every level and a new world every five levels. Endless keeps the adaptive curve.",
    "features": {
     "one-tap-start": "Play, then the first tap smashes and starts the run",
     "instant-restart": "Play Again on the Shattered card starts a new run at once",
     "best-score-badge": "Best pill in the top bar during play, and on the Shattered card",
     "tutorial-card": "Get-ready card with a tapping finger; the first run also explains the colours",
-    "results": "Shattered card with score, best, best combo and gem records"
+    "results": "Result card with stars, score, coins earned, gems, best, star goals ticked off and Next Level",
+    "levels": "LEVELS mode: levels 1, 2, 3 ... unlock in order, the level picker shows the stars earned",
+    "stars": "Three stars per level (finish, combo goal, par time), shown on the title, the HUD and the result card",
+    "worlds": "Five worlds with their own sky, light and platform colours (Golden Hour, Lavender Dusk, Ocean Morning, Ember Night, Sand and Sea)",
+    "unlocks": "Nine ball skins: free, stars, coins, level or day-streak unlocks; a badge shows new ones",
+    "daily-goal": "One seeded daily goal with a coin reward, week stamps and a day streak on the title screen"
    },
    "saves": [
+    "helix-smash-prog-v1",
     "helix-smash-best",
-    "helix-smash-gemsever"
+    "helix-smash-best-gemsever",
+    "helix-smash-best-combo",
+    "helix-smash-best-gemsbest",
+    "helix-smash-best-rings"
    ],
    "start": "#playBtn",
    "settings": {
@@ -5271,16 +5365,17 @@
    "pauseKeys": "p+esc",
    "pauseButton": "bl",
    "howto": [
-    "Press Play, then tap (or press Space) to smash down through the platform below the ball.",
-    "Tap again in mid-air to slam down faster for bonus points.",
-    "Coloured parts break. Landing on a black part ends the run."
+    "Press Play. Pick LEVELS (a tower with a finish and three stars) or ENDLESS (the old depth and gems run).",
+    "Tap (or press Space) to smash the platform under the ball; tap again while falling to slam through.",
+    "The dark parts are deadly: aim the ball at a colour. Slamming several platforms in a row builds a slam streak.",
+    "Reach the gold star to clear the level; the three stars are: reach the finish, hit the slam-streak goal, finish under the par time.",
+    "Coins buy ball skins; new balls also unlock from stars, levels and day streaks."
    ],
    "tips": [
-    "Watch the front edge of the next platform: tap just after a black part passes.",
-    "Slams in a row build a streak worth +5 bonuses.",
-    "Landing right next to a black part counts as a close call.",
-    "Gaps in the tower drop you straight to the next solid platform.",
-    "Gems add points and climb your gem rank; the bright elite gems are worth +15."
+    "Wait for a gap in the dark part before you tap: each platform spins at its own speed.",
+    "A slam streak of five earns a bonus.",
+    "Every five levels the tower changes world and gets longer with more dark parts.",
+    "A daily goal (gems, platforms, slams or levels) pays coins once a day; playing on consecutive days lights the week stamps."
    ],
    "controls": {
     "keyboard": "Space or Down arrow smashes, press again in the air to slam. P or Esc pauses.",
@@ -5301,18 +5396,27 @@
      "effect": "Big ball: a giant ball that grabs gems from further away"
     }
    ],
-   "difficulty": "An adaptive curve: every two platforms down adds another black part (up to five), and the platforms spin faster the deeper you go.",
+   "difficulty": "Level N has 12+2N platforms (up to 70), up to five deadly parts per platform (two at first, one more every six levels), a faster spin as N grows and a new world every five levels. Endless keeps the adaptive curve.",
    "features": {
     "one-tap-start": "Play, then the first tap smashes and starts the run",
     "instant-restart": "Play Again on the Cracked card starts a new run at once",
     "best-score-badge": "Best pill in the top bar during play, and on the Cracked card",
     "tutorial-card": "Get-ready card with a tapping finger; the first run also explains slams and black parts",
-    "results": "Cracked card with score, best, slam streak, close calls, gems and depth"
+    "results": "Result card with stars, score, coins, gems, best and Next Level",
+    "levels": "LEVELS mode with a level picker and stars per level",
+    "stars": "Three stars per level (finish, slam-streak goal, par time)",
+    "worlds": "Five worlds with their own palette (Terracotta, Rose Garden, Deep Sea, Ember Night, Sandy Cove)",
+    "unlocks": "Nine ball skins: free, stars, coins, level or day-streak unlocks",
+    "daily-goal": "One seeded daily goal with a coin reward, week stamps and a day streak"
    },
    "saves": [
+    "stack-ball-prog-v1",
     "stack-ball-best",
     "stack-ball-depth",
-    "stack-ball-gems"
+    "stack-ball-gems",
+    "stack-ball-chain",
+    "stack-ball-close",
+    "sb-days"
    ],
    "start": "#playBtn",
    "settings": {
@@ -7335,101 +7439,6 @@
     "pauseButton",
     "saves",
     "start",
-    "tips"
-   ]
-  },
-  "godot-claire-big-life": {
-   "title": "Claire's Big Life Adventure",
-   "cat": "sim",
-   "genre": "life-sim",
-   "genreName": "Life / farm / world sim",
-   "modules": [
-    "autosave",
-    "goals-or-quests",
-    "day-time-ui",
-    "inventory"
-   ],
-   "tier": "3D-S",
-   "should3d": true,
-   "why3d": "",
-   "cheatPolicy": "eligible",
-   "frozen": false,
-   "ownerActive": false,
-   "ext": false,
-   "src": "Godot/claire-big-life/index.html",
-   "scan": {
-    "engine": "godot",
-    "render": "godot-3d",
-    "saves": true,
-    "reducedMotion": true,
-    "audio": true,
-    "gamepad": false,
-    "usesP": true,
-    "usesEsc": true,
-    "ownPause": true,
-    "sdk": true,
-    "sdkInit": true
-   },
-   "pauseKeys": "",
-   "pauseButton": "tr",
-   "howto": [
-    "Tap the golden wheat in your garden beds to harvest it, then tap an empty bed to plant again.",
-    "Follow the task card: it always names your next step, and Show me takes you straight there.",
-    "Use the bar along the bottom (the left rail on phones) to Grow, Raise animals, Produce treats, Trade and Build.",
-    "Meet Milo, June, Hazel and Theo and finish the twelve chapters of the Lantern Fair story."
-   ],
-   "tips": [
-    "Drag across several ripe beds in one stroke to harvest them all at once.",
-    "Hungry animals eat wheat and berries; collect eggs, milk and wool from Milo's paddock when they are ready.",
-    "Crops and bakery batches keep growing while the game is closed.",
-    "The trader's boat docks at the harbour after Chapter 2: fill its crates for a big reward.",
-    "Open the Barn to see everything you have stored, and upgrade it before it fills up."
-   ],
-   "controls": {
-    "keyboard": "Click to walk and use things, or WASD to walk and Space for the nearest action. G shows your task, Q and E turn the camera, the wheel zooms, right-drag pans, Esc closes a menu.",
-    "touch": "Tap the ground to walk; tap beds, buildings, animals and neighbours to use them; drag across beds to harvest many at once. The menus sit on the left rail (More shows the rest)."
-   },
-   "tricks": [],
-   "cheats": [
-    {
-     "code": "COINS500",
-     "effect": "+500 coins in your purse"
-    },
-    {
-     "code": "GROWNOW",
-     "effect": "Every planted crop is ready to harvest"
-    },
-    {
-     "code": "BUILDALL",
-     "effect": "Unlock every building in the Build menu"
-    }
-   ],
-   "difficulty": "A relaxed farm and life sim with no fail state: crops, animals and batches take real minutes, and the story opens one chapter at a time.",
-   "features": {
-    "autosave": "Every harvest, purchase and chapter saves at once, and the day clock and needs save every 30 seconds (browser IndexedDB, /userfs)",
-    "goals-or-quests": "The task card: five starter goals, then the twelve chapters of the Lantern Fair story, each with Show me and a coin reward",
-    "day-time-ui": "Day number, morning, afternoon or evening and the clock under Claire's name; the sky dims through dusk and the village lanterns glow at night",
-    "inventory": "The Barn (the Barn quick button on desktop, or Menu > Shared barn on any screen) lists every good you hold, the barn's capacity and its upgrade",
-    "tutorial": "Milo's welcome and the first-harvest goal on a new farm; Replay tutorial in the arcade menu brings them back",
-    "results": "Each finished goal and chapter shows a reward card; the Lantern Fair finale ends with credits and Keep playing",
-    "codes-on": "Using a code marks the farm Codes on for good (a red tag under the header) and pauses its achievements"
-   },
-   "settings": {
-    "quality": "Menu > Settings > Graphics: Shadows on or off, Smooth edges on or off, and Render scale (lower is faster and softer)",
-    "sound": "Menu > Settings > Sound: master, music, effects, Claire's voice, ambience and interface volumes, plus Mute all"
-   },
-   "saves": [
-    "idb:/userfs"
-   ],
-   "authored": [
-    "cheats",
-    "controls",
-    "difficulty",
-    "features",
-    "howto",
-    "pauseButton",
-    "saves",
-    "settings",
     "tips"
    ]
   },

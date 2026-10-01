@@ -1,0 +1,237 @@
+{
+ "id": "mini-life-sim",
+ "title": "Mini Life Sim",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/mini-life-sim/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 57.86 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.6; raw p95 92, median 6.92, p99 179.43, max 330.5; time inside WebGL calls excluded, p95 of it 4.1)"
+ },
+ "notes": [
+  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.6)"
+ ],
+ "shots": {
+  "1-title": "shots/mini-life-sim-1-title.jpg",
+  "2-mid": "shots/mini-life-sim-2-mid.jpg",
+  "3-end": "shots/mini-life-sim-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.98,
+  "cores": 4,
+  "load1End": 17.24,
+  "contention": 1.59,
+  "contentionSamples": [
+   1.17,
+   1.95,
+   1.4,
+   1.59,
+   1.05,
+   2.31,
+   1.77
+  ]
+ },
+ "loadMs": 2606,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/mini-life-sim/index.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/mini-life-sim/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 93.6,
+  "bench1Ms": 36,
+  "effectiveSlowdown": 2.6
+ },
+ "start": {
+  "how": "#newBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.59,
+  "loadMs": 1225,
+  "playMs": 393,
+  "loadRawMs": 2411,
+  "playRawMs": 625,
+  "playGlMs": 0,
+  "loadGlMs": 464,
+  "longTasksPlay": 35,
+  "longTasks100Play": 8,
+  "tbtLoadMs": 1928,
+  "tbtPlayMs": 1452,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 12,
+  "slowestPollMs": 441,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.7,
+  "shaderCompileMaxCallMs": 0.5
+ },
+ "loafTop": [
+  {
+   "ms": 2318.5,
+   "blocking": 2233.3,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Response.arrayBuffer.then",
+     1494
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     786
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2253.4,
+   "blocking": 1791.4,
+   "scripts": [
+    [
+     "mini-life-sim/index.html",
+     "https://calebhomwe.github.io/neon-game-arcade/games/mini-life-sim/index.html",
+     1836
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1964.2,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     17
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 212,
+  "jsMedian": 6.92,
+  "jsP95": 57.86,
+  "jsP99": 179.43,
+  "jsMax": 330.5,
+  "jsP95Raw": 92,
+  "rawWithGlP95": 110.1,
+  "glP95": 4.1,
+  "gapP95": 566.7,
+  "gapMedian": 216.6,
+  "over100": 7,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 6.9,
+  "heap1MB": 7.3,
+  "heapGrowthPct": 6,
+  "heapMeasured": true,
+  "nodesStart": 220,
+  "nodesEnd": 237,
+  "nodesMax": 238,
+  "listeners0": 67,
+  "listeners1": 67,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 18,
+   "totalMB": 3.4,
+   "biggest": [
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 128,
+     "h": 512,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 21,
+  "scriptPct": 11,
+  "layoutPerSec": 4.7
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    12,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 19,
+  "swipes": 4,
+  "holds": 1,
+  "keys": 1,
+  "buttonPresses": 5,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 405,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4000,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 5.7,
+  "changeTitleToPlayPct": 85.2,
+  "maxChangeFromStartPct": 53.6,
+  "samples": 11
+ },
+ "severity": 43.2
+}

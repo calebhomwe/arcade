@@ -1,0 +1,220 @@
+{
+ "id": "hub-bubble-pop",
+ "title": "Bubble Pop",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/bubble-pop.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "5 touch input(s) took over 4 s to be acknowledged (machine slowdown x2.6)"
+ ],
+ "shots": {
+  "1-title": "shots/hub-bubble-pop-1-title.jpg",
+  "2-mid": "shots/hub-bubble-pop-2-mid.jpg",
+  "3-end": "shots/hub-bubble-pop-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.53,
+  "cores": 4,
+  "load1End": 19.24,
+  "contention": 2.58,
+  "contentionSamples": [
+   2.04,
+   2.58,
+   1.34,
+   5.31,
+   2.04,
+   3.11,
+   2.63
+  ]
+ },
+ "loadMs": 847,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/bubble-pop.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/bubble-pop.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 169.5,
+  "bench1Ms": 84.1,
+  "effectiveSlowdown": 2
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 2.58,
+  "loadMs": 390,
+  "playMs": 212,
+  "loadRawMs": 1007,
+  "playRawMs": 547,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 5,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 16,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 2,
+  "slowestPollMs": 66,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 3259.1,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     10
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1162,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 1001.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 214,
+  "jsMedian": 0.08,
+  "jsP95": 1.9,
+  "jsP99": 12.21,
+  "jsMax": 29.2,
+  "jsP95Raw": 4.9,
+  "rawWithGlP95": 4.9,
+  "glP95": 0,
+  "gapP95": 599.9,
+  "gapMedian": 166.7,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.8,
+  "heap1MB": 2,
+  "heapGrowthPct": 12,
+  "heapMeasured": true,
+  "nodesStart": 60,
+  "nodesEnd": 124,
+  "nodesMax": 124,
+  "listeners0": 47,
+  "listeners1": 108,
+  "audioContexts": 2,
+  "audioElements": 12,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 16,
+   "totalMB": 3.4,
+   "biggest": [
+    {
+     "w": 702,
+     "h": 928,
+     "mpx": 0.65,
+     "dom": true,
+     "css": [
+      351,
+      464
+     ]
+    },
+    {
+     "w": 128,
+     "h": 128,
+     "mpx": 0.02,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 128,
+     "h": 128,
+     "mpx": 0.02,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 128,
+     "h": 128,
+     "mpx": 0.02,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 5,
+  "scriptPct": 1,
+  "layoutPerSec": 4.3
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 1,
+  "last": 1,
+  "max": 1,
+  "trajectory": [
+   [
+    51,
+    1
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 14,
+  "swipes": 3,
+  "holds": 2,
+  "keys": 3,
+  "buttonPresses": 7,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 548,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4006,
+  "inputTimeouts": 5
+ },
+ "screen": {
+  "longestStaticS": 2.3,
+  "changeTitleToPlayPct": 19.3,
+  "maxChangeFromStartPct": 30.8,
+  "samples": 9
+ },
+ "severity": 0.4
+}

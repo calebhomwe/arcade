@@ -1,0 +1,223 @@
+{
+ "id": "kingdom-defense",
+ "title": "Kingdom Defense",
+ "cat": "arcade",
+ "genre": "tower-defense",
+ "src": "KingdomDefense/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.7)"
+ ],
+ "shots": {
+  "1-title": null,
+  "2-mid": "shots/kingdom-defense-2-mid.jpg",
+  "3-end": "shots/kingdom-defense-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 14,
+  "cores": 4,
+  "load1End": 15.26,
+  "contention": 1.68,
+  "contentionSamples": [
+   1.23,
+   1.81,
+   1.64,
+   3.87,
+   1.65,
+   1.68,
+   1.72
+  ]
+ },
+ "loadMs": 4546,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:44881/KingdomDefense/index.html",
+ "startPath": "http://127.0.0.1:44881/KingdomDefense/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 78.8,
+  "bench1Ms": 34.1,
+  "effectiveSlowdown": 2.3
+ },
+ "start": {
+  "how": "declared start button not tappable -> tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": true
+ },
+ "block": {
+  "c": 1.68,
+  "loadMs": 959,
+  "playMs": 337,
+  "loadRawMs": 1610,
+  "playRawMs": 565,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 8,
+  "longTasks100Play": 2,
+  "tbtLoadMs": 331,
+  "tbtPlayMs": 332,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 5,
+  "slowestPollMs": 224,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 7615.3,
+   "blocking": 0,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     33
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3728.7,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 2981.4,
+   "blocking": 1014.4,
+   "scripts": [
+    [
+     "KingdomDefense/index.html",
+     "apply",
+     5
+    ],
+    [
+     "KingdomDefense/index.html",
+     "apply",
+     10
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     119
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 55,
+  "jsMedian": 2.26,
+  "jsP95": 11.9,
+  "jsP99": 22.44,
+  "jsMax": 22.4,
+  "jsP95Raw": 20,
+  "rawWithGlP95": 20,
+  "glP95": 0,
+  "gapP95": 2066.5,
+  "gapMedian": 1133.4,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.8,
+  "heap1MB": 2.9,
+  "heapGrowthPct": 6,
+  "heapMeasured": true,
+  "nodesStart": 353,
+  "nodesEnd": 353,
+  "nodesMax": 353,
+  "listeners0": 208,
+  "listeners1": 208,
+  "audioContexts": 2,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 51,
+   "totalMB": 40.5,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 750,
+     "h": 846,
+     "mpx": 0.63,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 520,
+     "h": 520,
+     "mpx": 0.27,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 520,
+     "h": 520,
+     "mpx": 0.27,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 4,
+  "scriptPct": 1,
+  "layoutPerSec": 1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 6,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 2,
+  "buttonPresses": 2,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1819,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4000,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 5.9,
+  "maxChangeFromStartPct": 70.9,
+  "samples": 6
+ },
+ "severity": 1
+}

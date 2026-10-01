@@ -1,0 +1,243 @@
+{
+ "id": "neon-dash",
+ "title": "Neon Dash",
+ "cat": "arcade",
+ "genre": "arcade",
+ "src": "NeonDash/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 67.63 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.4; raw p95 94, median 10.72, p99 168.99, max 169; time inside WebGL calls excluded, p95 of it 5.5)"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.4)"
+ ],
+ "shots": {
+  "1-title": "shots/neon-dash-1-title.jpg",
+  "2-mid": "shots/neon-dash-2-mid.jpg",
+  "3-end": "shots/neon-dash-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 19.02,
+  "cores": 4,
+  "load1End": 17.71,
+  "contention": 1.39,
+  "contentionSamples": [
+   1.6,
+   1.39,
+   1.16,
+   8.6,
+   1.45,
+   1.22,
+   1.12
+  ]
+ },
+ "loadMs": 4721,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:33351/NeonDash/index.html",
+ "startPath": "http://127.0.0.1:33351/NeonDash/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 59.7,
+  "bench1Ms": 40.6,
+  "effectiveSlowdown": 1.5
+ },
+ "start": {
+  "how": "#play-btn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.39,
+  "loadMs": 658,
+  "playMs": 650,
+  "loadRawMs": 3434,
+  "playRawMs": 904,
+  "playGlMs": 1,
+  "loadGlMs": 2519,
+  "longTasksPlay": 10,
+  "longTasks100Play": 3,
+  "tbtLoadMs": 583,
+  "tbtPlayMs": 457,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 7,
+  "slowestPollMs": 3626,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 5468.3,
+   "blocking": 4028.2,
+   "scripts": [
+    [
+     "NeonDash/index.html",
+     "BUTTON#play-btn.onclick",
+     234
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     3757
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 4606,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     13
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     10
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3809.9,
+   "blocking": 3438,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "http://127.0.0.1:33351/assets/arcade-sdk.js",
+     6
+    ],
+    [
+     "vendor/three.classic.js",
+     "http://127.0.0.1:33351/NeonDash/vendor/three.classic.js",
+     15
+    ],
+    [
+     "NeonDash/index.html",
+     "http://127.0.0.1:33351/NeonDash/index.html",
+     3393
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 54,
+  "jsMedian": 10.72,
+  "jsP95": 67.63,
+  "jsP99": 168.99,
+  "jsMax": 169,
+  "jsP95Raw": 94,
+  "rawWithGlP95": 101.4,
+  "glP95": 5.5,
+  "gapP95": 2133.2,
+  "gapMedian": 1166.6,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.8,
+  "heap1MB": 6,
+  "heapGrowthPct": 3,
+  "heapMeasured": true,
+  "nodesStart": 74,
+  "nodesEnd": 74,
+  "nodesMax": 74,
+  "listeners0": 68,
+  "listeners1": 68,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 7,
+   "totalMB": 4.1,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 64,
+     "h": 128,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 128,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 128,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 5,
+  "scriptPct": 3,
+  "layoutPerSec": 1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 7,
+  "swipes": 1,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 4,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1967,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4000,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 32.7,
+  "maxChangeFromStartPct": 11.3,
+  "samples": 6
+ },
+ "severity": 42.7
+}

@@ -1,0 +1,162 @@
+{
+ "id": "rung-runner",
+ "title": "Rung Runner",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/playables/RungRunner/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "page crashed (renderer process died)"
+ },
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/rung-runner-wk-1-title.jpg",
+  "3-end": null
+ },
+ "machine": {
+  "load1Start": 9.69,
+  "cores": 4,
+  "load1End": 10.91,
+  "contention": 1.04,
+  "contentionSamples": [
+   1.05,
+   1.15,
+   1.03,
+   1.04,
+   1.03
+  ]
+ },
+ "loadMs": 1466,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/playables/RungRunner/index.html",
+ "startPath": "https://calebhomwe.github.io/playables/RungRunner/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 48,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#play",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.04,
+  "loadMs": 845,
+  "playMs": 570,
+  "loadRawMs": 1089,
+  "playRawMs": 824,
+  "playGlMs": 231,
+  "loadGlMs": 210,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 4,
+  "slowestPollMs": 548,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 283,
+  "shaderCompileMaxCallMs": 70
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 5,
+  "jsMedian": 30.77,
+  "jsP95": 91.35,
+  "jsP99": 91.35,
+  "jsMax": 91.3,
+  "jsP95Raw": 95,
+  "rawWithGlP95": 416,
+  "glP95": 321,
+  "gapP95": 2140,
+  "gapMedian": 1281,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 80,
+  "nodesEnd": 80,
+  "nodesMax": 80,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 1,
+  "canvases": null,
+  "sdkTimers": null
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    9,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 0,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": null,
+  "inputLatencyP95Ms": null,
+  "inputLatencyMaxMs": null,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": null,
+  "samples": 0
+ },
+ "severity": 102.8,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "page crashed (renderer process died)",
+  "blockPlayMs": 438,
+  "blockLoadMs": 805,
+  "load1": 11.25
+ }
+}

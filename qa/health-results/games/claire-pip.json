@@ -1,0 +1,188 @@
+{
+ "id": "claire-pip",
+ "title": "Claire's Big Life",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "ClairePip/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "animation loop paused 2x (over 3 s) but the screen kept changing, so it is not counted (DOM game or idle loop)"
+ ],
+ "shots": {
+  "1-title": "shots/claire-pip-1-title.jpg",
+  "2-mid": "shots/claire-pip-2-mid.jpg",
+  "3-end": "shots/claire-pip-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.9,
+  "cores": 4,
+  "load1End": 16.36,
+  "contention": 1.43,
+  "contentionSamples": [
+   1.43,
+   1.32,
+   2.15,
+   1.57,
+   1.43,
+   1.74,
+   1.06
+  ]
+ },
+ "loadMs": 446,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:44103/ClairePip/index.html",
+ "startPath": "http://127.0.0.1:44103/ClairePip/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 60.5,
+  "bench1Ms": 30.9,
+  "effectiveSlowdown": 2
+ },
+ "start": {
+  "how": "#ageBands .ageband + ▶ Start play",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.43,
+  "loadMs": 119,
+  "playMs": 134,
+  "loadRawMs": 171,
+  "playRawMs": 192,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 14,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 44,
+  "tbtPlayMs": 120,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 5,
+  "slowestPollMs": 66,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 2884.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 836.3,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 761.3,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [
+  {
+   "atMs": 15389,
+   "scene": "play",
+   "seconds": 11.2,
+   "recovered": true,
+   "errorAtStall": false,
+   "screenStatic": false,
+   "counted": false
+  },
+  {
+   "atMs": 33376,
+   "scene": "play",
+   "seconds": 23.4,
+   "recovered": true,
+   "errorAtStall": false,
+   "screenStatic": false,
+   "counted": false
+  }
+ ],
+ "frames": {
+  "n": 109,
+  "jsMedian": 0.56,
+  "jsP95": 3.64,
+  "jsP99": 4.97,
+  "jsMax": 13.3,
+  "jsP95Raw": 5.2,
+  "rawWithGlP95": 5.2,
+  "glP95": 0,
+  "gapP95": 316.6,
+  "gapMedian": 83.4,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2,
+  "heap1MB": 2.2,
+  "heapGrowthPct": 10,
+  "heapMeasured": true,
+  "nodesStart": 493,
+  "nodesEnd": 575,
+  "nodesMax": 621,
+  "listeners0": 117,
+  "listeners1": 118,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 0,
+   "totalMB": 0,
+   "biggest": [],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 6
+ },
+ "cpu": {
+  "mainThreadBusyPct": 11,
+  "scriptPct": 1,
+  "layoutPerSec": 3.2
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 33,
+  "swipes": 6,
+  "holds": 2,
+  "keys": 2,
+  "buttonPresses": 8,
+  "resumes": 2,
+  "touchApi": null,
+  "inputLatencyMedianMs": 235,
+  "inputLatencyP95Ms": 2553,
+  "inputLatencyMaxMs": 2669,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 14.8,
+  "changeTitleToPlayPct": 96.5,
+  "maxChangeFromStartPct": 93,
+  "samples": 12
+ },
+ "severity": 0.1
+}

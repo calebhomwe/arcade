@@ -1,0 +1,210 @@
+{
+ "id": "sky-parking-puzzle",
+ "title": "Parking Puzzle",
+ "cat": "hyper",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/parking-puzzle.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "STALL"
+ ],
+ "evidence": {
+  "STALL": "nothing on screen changed for 24 s while the bot kept tapping"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.3)"
+ ],
+ "shots": {
+  "1-title": "shots/sky-parking-puzzle-1-title.jpg",
+  "2-mid": "shots/sky-parking-puzzle-2-mid.jpg",
+  "3-end": "shots/sky-parking-puzzle-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 22.26,
+  "cores": 4,
+  "load1End": 19.77,
+  "contention": 1.34,
+  "contentionSamples": [
+   1.34,
+   1.58,
+   1.4,
+   1.19,
+   3.03,
+   1.09,
+   1.34
+  ]
+ },
+ "loadMs": 941,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/parking-puzzle.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/parking-puzzle.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 204.6,
+  "bench1Ms": 31.9,
+  "effectiveSlowdown": 6.4
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.34,
+  "loadMs": 288,
+  "playMs": 1357,
+  "loadRawMs": 385,
+  "playRawMs": 1819,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 8,
+  "longTasks100Play": 5,
+  "tbtLoadMs": 240,
+  "tbtPlayMs": 2885,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 9,
+  "slowestPollMs": 261,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 4877.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 2328.5,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 2046,
+   "blocking": 1713.6,
+   "scripts": [
+    [
+     "skywalker-playables/sky-arcade.js",
+     "BUTTON.onclick",
+     1748
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 81,
+  "jsMedian": 1.49,
+  "jsP95": 8.96,
+  "jsP99": 325.52,
+  "jsMax": 325.5,
+  "jsP95Raw": 12,
+  "rawWithGlP95": 12,
+  "glP95": 0,
+  "gapP95": 1316.6,
+  "gapMedian": 549.9,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 11,
+  "heapMeasured": true,
+  "nodesStart": 24,
+  "nodesEnd": 24,
+  "nodesMax": 24,
+  "listeners0": 58,
+  "listeners1": 58,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 14,
+   "totalMB": 3.8,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 12,
+  "scriptPct": 8,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 10,
+  "swipes": 0,
+  "holds": 1,
+  "keys": 3,
+  "buttonPresses": 3,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1360,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4000,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 24.2,
+  "changeTitleToPlayPct": 87.4,
+  "maxChangeFromStartPct": 3.5,
+  "samples": 8
+ },
+ "severity": 83.4
+}

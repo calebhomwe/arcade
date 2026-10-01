@@ -5,11 +5,11 @@
     "Every 10th level is a boss. When you have earned enough gold, Ascend for souls that raise your damage by 5% each."
   ],
   "tips": [
-    "Every hero you own also makes your taps 10% stronger.",
-    "Each tap has a 10% chance to CRIT for triple damage.",
-    "Golden monsters pay extra: tap them fast.",
-    "Keep killing quickly to build a Fever streak for bonus gold.",
-    "Crystals from bosses open Loot Caches full of gold."
+    "Tap crits hit three times harder.",
+    "Friends fight for you every second, even while away.",
+    "Bosses have ten times the health and drop twenty times the gold.",
+    "Tap the treasure bird when it flies over.",
+    "Souls are permanent: spend them in the Ascend tab."
   ],
   "controls": {
     "keyboard": "Tab to a button and press Enter or Space. P or Esc pauses.",
@@ -17,19 +17,32 @@
   },
   "difficulty": "An idle curve: monsters gain health and pay more gold every level, bosses every 10 levels have ten times the health, and each hero costs 50% more than the last.",
   "cheats": [
-    {"code": "GOLDRAIN", "effect": "Gold rain: a big pile of gold (25 monsters' worth)"},
-    {"code": "ONEPUNCH", "effect": "One punch: taps hit 100 times harder"},
-    {"code": "HEROPARTY", "effect": "Hero party: 5 of every hero join for free"}
+    {
+      "code": "GOLDRAIN",
+      "effect": "Gold rain: 1M gold"
+    },
+    {
+      "code": "ONEPUNCH",
+      "effect": "One punch: taps 10 times stronger"
+    },
+    {
+      "code": "TIMEWARP",
+      "effect": "One hour of gold now"
+    }
   ],
   "features": {
-    "offline-earnings": "Welcome back card: gold your heroes earned while away at 50% rate, up to 8 hours",
-    "upgrade-tree": "Five heroes from Knight to Dragon, bought one, ten or MAX at a time, plus badges",
-    "big-number-format": "Gold and damage shown as 1.2K, 3.4M, 5.6B and beyond",
-    "prestige-or-next-goal": "Ascend for souls (+5% damage each) with the gold needed for the next soul shown under the button",
-    "tutorial": "Coach cards on the first visit: tap, hire, bosses and ascending; replay with Learn to play",
-    "results": "Ascended card with gold this run, level reached, best level, souls and the new multiplier"
+    "offline-earnings": "Welcome back sheet: earnings while away at 50% (upgradable), up to 8 hours (upgradable), with a Collect button",
+    "upgrade-tree": "Per-building upgrade chains (x2/x3 at 10, 40, 75, 150, 250 owned), tap, helper, income, discount, away-time upgrades that unlock in order, plus x2 milestones at 25/50/100/200 and a permanent perk shop",
+    "big-number-format": "1.2K, 3.4M, 5.6B and on to Dc, then scientific",
+    "prestige-or-next-goal": "The goal chip under the scene always names the next thing to do; prestige for permanent income with a perk shop",
+    "tutorial": "Coach cards that point at what to tap: tap, build, then keep growing; replay from How to play or the pause menu",
+    "results": "Level-up, welcome back and Ascend sheets",
+    "progression": "Levels unlock tabs and buildings, daily goals with a streak and week stamps, 20 deeds worth +2% income each, level bonus +2%",
+    "collection": "Monster Dex of 30 monsters; every tenth stage is a boss"
   },
-  "saves": ["tm_state"],
+  "saves": [
+    "tm_state"
+  ],
   "start": "#btnPlay",
   "pauseButton": "tr"
 }

@@ -20,6 +20,7 @@
  *     // or declare the codes and just get told which one was entered (engines that can't return values):
  *     // cheats: [{code:'GODMODE', effect:'Invincible'}], onCheat(code){ ... },
  *     tricks: [{name:'Backflip', input:'Up + Space'}],
+ *     theme: {bg:'#123', ink:'#fff', accent:'#f80', font:'Fredoka, sans-serif'},  // pause sheet look (also --arcade-sdk-* CSS variables)
  *     orientation: 'landscape',     // phones held upright get a "turn sideways" card, and the game waits
  *   });
  *   ArcadeSDK.state({scene:'play', score:120});  // title | play | over
@@ -28,6 +29,17 @@
  *   if (ArcadeSDK.cheated) skipSavingBest();
  *   ArcadeSDK.sfx('coin');                      // a sound from the arcade's shared kit (assets/sfx/kit.json)
  *
+ * The arcade-wide profile (XP, level, streak, daily quests, badges; see docs/PROGRESSION.md) needs NO game code:
+ * the portal counts play time from this SDK's input heartbeats, counts a round when the game reports
+ * ArcadeSDK.state({scene:'over', score}), and notices a new best saved under a key the game lists in its meta
+ * `saves`. Games that want to do more can, and every call is safe to make when the profile is not there:
+ *   ArcadeSDK.state({scene:'over', score:120, level:4, stars:2});   // also: lower:true when a smaller score is better
+ *   ArcadeSDK.profile.award({xp:20, reason:'Beat the boss'});       // 1..30 XP, 60 a day per game
+ *   ArcadeSDK.profile.achievement('first-win', {title:'First Win', desc:'Win a match', tier:'silver'});   // a badge in the Trophy room
+ *   ArcadeSDK.profile.quest('clear-w5', 0.6, {title:'Clear wave 5'});   // 0..1 (1 = done): an extra goal on the quests card
+ *   ArcadeSDK.profile.get();                                        // {level, xp, streak, stars, avatar, title} or null
+ * Cheat codes on: every profile call is ignored and the run earns no XP (ArcadeSDK.cheated).
+ *
  * Nothing in here may break a game: every hook is guarded and falls back to the original.
  */
 (function () {
@@ -35,7 +47,8 @@
   if (window.ArcadeSDK) return;
   var V = 1, W = window, D = document;
   var inFrame = false; try { inFrame = W.parent && W.parent !== W; } catch (e) { inFrame = true; }
-  function post(type, data) { if (!inFrame) return; try { var m = { arcade: V, type: type }; for (var k in data) m[k] = data[k]; W.parent.postMessage(m, '*'); } catch (e) {} }
+  var sid = Math.random().toString(36).slice(2, 9);   // one per page load: tells the arcade a new game document started
+  function post(type, data) { if (!inFrame) return; try { var m = {}; for (var k in data) m[k] = data[k]; m.arcade = V; m.type = type; if (type === 'ready') m.sid = sid; W.parent.postMessage(m, '*'); } catch (e) {} }
 
   var cfg = {}, meta = {}, paused = false, reason = '', muted = false, cheated = false, events = [], glTypes = [];
   var rawST = W.setTimeout.bind(W), rawCT = W.clearTimeout.bind(W), rawSI = W.setInterval.bind(W), rawCI = W.clearInterval.bind(W);
@@ -239,19 +252,22 @@
       var mq = W.matchMedia('(orientation: portrait) and (pointer: coarse)');
       var phone = function () { try { return Math.min(W.screen.width, W.screen.height) < 700; } catch (e) { return false; } };   // phones only, not iPads
       rotateEl = el('div', { id: 'arcade-sdk-rotate', role: 'dialog', 'aria-label': 'Turn your phone sideways' });
-      rotateEl.innerHTML = '<div class="ph"></div><b>Turn your phone sideways</b><span>This game plays across the screen.</span>';
+      rotateEl.innerHTML = '<div class="ph"></div><b>Turn your phone sideways</b><span>This game plays across the screen.</span><button type="button" data-play-anyway>Play anyway</button>';
       var st = el('style', { text: '#arcade-sdk-rotate{position:fixed;inset:0;z-index:2147483646;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;background:#0b1024;color:#fff;font:700 22px/1.3 system-ui,-apple-system,sans-serif}' +
         '#arcade-sdk-rotate span{font-weight:500;font-size:17px;opacity:.8}' +
+        '#arcade-sdk-rotate button{margin-top:6px;min-height:48px;padding:0 26px;border-radius:24px;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font:700 17px system-ui,-apple-system,sans-serif}' +
         '#arcade-sdk-rotate .ph{width:70px;height:116px;border:6px solid #fff;border-radius:16px;animation:arcade-sdk-turn 2.2s ease-in-out infinite}' +
         '@keyframes arcade-sdk-turn{0%,20%{transform:rotate(0)}55%,80%{transform:rotate(-90deg)}100%{transform:rotate(0)}}' +
         '@media (prefers-reduced-motion:reduce){#arcade-sdk-rotate .ph{animation:none;transform:rotate(-90deg)}}' });
       (D.head || D.documentElement).appendChild(st); (D.body || D.documentElement).appendChild(rotateEl);
+      var anyway = false; try { anyway = W.sessionStorage.getItem('arcade-sdk-play-anyway') === '1'; } catch (e) {}
       var sync = function () {
-        var upright = mq.matches && phone();
+        var upright = mq.matches && phone() && !anyway;
         rotateEl.style.display = upright ? 'flex' : 'none';
         if (upright && !paused) { rotatePaused = true; pause('hidden'); }
         else if (!upright && rotatePaused) { rotatePaused = false; resume('visible'); }
       };
+      rotateEl.querySelector('button').addEventListener('click', function () { anyway = true; try { W.sessionStorage.setItem('arcade-sdk-play-anyway', '1'); } catch (e) {} sync(); });
       if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
       W.addEventListener('resize', sync);
       sync();
@@ -321,15 +337,15 @@
     if (styled || !(D.head || D.body)) return;
     styled = true;
     var css = el('style', { id: 'arcade-sdk-css', text:
-      '#arcade-sdk{position:fixed;inset:0;z-index:2147483600;display:none;align-items:center;justify-content:center;background:rgba(8,10,20,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c1f2e}' +
-      '#arcade-sdk.on{display:flex}#arcade-sdk .c{background:#fffdf7;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.45),inset 0 -5px 0 rgba(0,0,0,.08);padding:18px 20px 14px;width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 20px);overflow:auto;text-align:center;box-sizing:border-box}' +
+      '#arcade-sdk{position:fixed;inset:0;z-index:2147483600;display:none;align-items:center;justify-content:center;background:var(--arcade-sdk-overlay,rgba(8,10,20,.62));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font:15px/1.45 var(--arcade-sdk-font,system-ui,-apple-system,"Segoe UI",sans-serif);color:var(--arcade-sdk-ink,#1c1f2e)}' +
+      '#arcade-sdk.on{display:flex}#arcade-sdk .c{background:var(--arcade-sdk-bg,#fffdf7);border-radius:var(--arcade-sdk-radius,22px);box-shadow:0 24px 70px rgba(0,0,0,.45),inset 0 -5px 0 rgba(0,0,0,.08);padding:18px 20px 14px;width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 20px);overflow:auto;text-align:center;box-sizing:border-box}' +
       '#arcade-sdk h2{margin:0 0 2px;font-size:22px;font-weight:900;letter-spacing:.2px}#arcade-sdk .sub{margin:0 0 10px;color:#6a6f86;font-size:13px}' +
-      '#arcade-sdk button{display:block;width:100%;min-height:44px;margin:6px 0;border:0;border-radius:14px;font:800 16px system-ui,sans-serif;cursor:pointer;color:#1c1f2e;background:#eef0f8;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}' +
-      '#arcade-sdk button.p{background:linear-gradient(#5ee07c,#23b04b);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}#arcade-sdk button:focus-visible{outline:3px solid #6c7cff;outline-offset:2px}' +
+      '#arcade-sdk button{display:block;width:100%;min-height:44px;margin:6px 0;border:0;border-radius:14px;font:800 16px var(--arcade-sdk-font,system-ui,sans-serif);cursor:pointer;color:var(--arcade-sdk-ink,#1c1f2e);background:var(--arcade-sdk-button,#eef0f8);box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}' +
+      '#arcade-sdk button.p{background:var(--arcade-sdk-accent,linear-gradient(#5ee07c,#23b04b));color:var(--arcade-sdk-accent-ink,#fff);text-shadow:0 1px 0 rgba(0,0,0,.25)}#arcade-sdk button:focus-visible{outline:3px solid #6c7cff;outline-offset:2px}' +
       '#arcade-sdk .row{display:flex;gap:8px}#arcade-sdk .row button{flex:1}#arcade-sdk ol,#arcade-sdk ul{text-align:left;margin:6px 0 10px;padding-left:22px}#arcade-sdk li{margin:4px 0}' +
       '#arcade-sdk .tip{background:#fff4d6;border-radius:12px;padding:8px 12px;margin:8px 0;font-size:14px;text-align:left}#arcade-sdk input{width:100%;box-sizing:border-box;min-height:44px;border:2px solid #d9dcea;border-radius:12px;padding:0 12px;font:700 16px system-ui;text-transform:uppercase}' +
       '#arcade-sdk .msg{min-height:20px;font-weight:700;color:#23804a}#arcade-sdk table{width:100%;border-collapse:collapse;font-size:14px;text-align:left}#arcade-sdk td{padding:4px 6px;border-bottom:1px solid #eee}' +
-      '#arcade-sdk-btn{position:fixed;z-index:2147483599;width:40px;height:40px;border-radius:50%;border:0;background:rgba(10,12,24,.55);color:#fff;font:900 15px system-ui;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.3)}' +
+      '#arcade-sdk-btn{position:fixed;z-index:2147483599;width:44px;height:44px;border-radius:50%;border:0;background:var(--arcade-sdk-btn-bg,rgba(10,12,24,.55));color:var(--arcade-sdk-btn-ink,#fff);font:900 15px system-ui;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.3)}' +
       '#arcade-sdk-btn:focus-visible{outline:3px solid #6c7cff}@media (prefers-reduced-motion:reduce){#arcade-sdk{backdrop-filter:none}}@media (max-height:540px) and (min-width:420px){#arcade-sdk .c{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;align-content:start;width:min(600px,calc(100vw - 24px))}#arcade-sdk .c>h2,#arcade-sdk .c>.sub,#arcade-sdk .c>.tip,#arcade-sdk .c>ol,#arcade-sdk .c>ul,#arcade-sdk .c>table,#arcade-sdk .c>input,#arcade-sdk .c>.msg{grid-column:1/-1}#arcade-sdk .c>button[data-a=exit],#arcade-sdk .c>button[data-a=back]{grid-column:1/-1}#arcade-sdk button{min-height:40px;margin:4px 0}}' });
     D.head ? D.head.appendChild(css) : D.body.appendChild(css);
   }
@@ -341,11 +357,17 @@
     D.body.appendChild(root);
     return root;
   }
+  // theme: {bg, ink, font, accent, accentInk, button, overlay, radius, buttonBg, buttonInk} -> --arcade-sdk-* variables.
+  // Games can also just set those variables in their own CSS (e.g. :root{--arcade-sdk-bg:#123}).
+  function applyTheme() {
+    try { var t = cfg.theme; if (!t || !D.documentElement) return; var map = { bg: 'bg', ink: 'ink', font: 'font', accent: 'accent', accentInk: 'accent-ink', button: 'button', overlay: 'overlay', radius: 'radius', buttonBg: 'btn-bg', buttonInk: 'btn-ink' };
+      for (var k in map) if (t[k] != null) D.documentElement.style.setProperty('--arcade-sdk-' + map[k], String(t[k])); } catch (e) {}
+  }
   function pauseButton() {
     if (cfg.ownPauseUI || cfg.pauseButton === 'none' || D.getElementById('arcade-sdk-btn') || !D.body) return;
     ensureStyle();
     var pos = cfg.pauseButton || meta.pauseButton || 'tr', b = el('button', { id: 'arcade-sdk-btn', type: 'button', 'aria-label': 'Pause', title: pauseKeys === 'esc' ? 'Pause (Esc)' : pauseKeys ? 'Pause (P)' : 'Pause' });
-    b.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.6" height="12" rx="1.2" fill="#fff"/><rect x="9.4" y="2" width="3.6" height="12" rx="1.2" fill="#fff"/></svg>';
+    b.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.6" height="12" rx="1.2" fill="currentColor"/><rect x="9.4" y="2" width="3.6" height="12" rx="1.2" fill="currentColor"/></svg>';
     b.style[pos[0] === 't' ? 'top' : 'bottom'] = '10px'; b.style[pos[1] === 'l' ? 'left' : 'right'] = '10px';
     b.addEventListener('click', function (e) { e.stopPropagation(); pause('user'); });
     D.body.appendChild(b);
@@ -380,7 +402,7 @@
       c.appendChild(el('table', {}, (cfg.tricks || meta.tricks || []).map(function (t) { return el('tr', {}, [el('td', { text: t.name }), el('td', { text: t.input || '' })]); })));
       c.appendChild(el('button', { class: 'p', 'data-a': 'back', text: 'Back' }));
     } else if (panel === 'codes') {
-      c.appendChild(el('h2', { text: 'Codes' })); c.appendChild(el('p', { class: 'sub', text: 'Codes are just for fun: a run with codes on never replaces your best score.' }));
+      c.appendChild(el('h2', { text: 'Codes' })); c.appendChild(el('p', { class: 'sub', text: 'Codes are just for fun: a run with codes on never earns XP or replaces your best score.' }));
       var inp = el('input', { id: 'arcade-sdk-code', 'aria-label': 'Code', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false' });
       inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); act('enter-code'); } });
       c.appendChild(inp); c.appendChild(el('p', { class: 'msg', id: 'arcade-sdk-msg' }));
@@ -431,7 +453,8 @@
   /* ---------- messages from the arcade page ---------- */
   W.addEventListener('message', function (e) {
     var m = e.data; if (!m || m.arcade !== V || e.source !== W.parent) return;
-    if (m.type === 'config') { meta = m.meta || {}; pauseButton(); pauseKeys = cfg.pauseKeys != null ? cfg.pauseKeys : (meta.pauseKeys || ''); }
+    if (m.type === 'config') { meta = m.meta || {}; if (m.profile) setSnap(m.profile); pauseButton(); pauseKeys = cfg.pauseKeys != null ? cfg.pauseKeys : (meta.pauseKeys || ''); watchSaves(meta.saves); }
+    else if (m.type === 'profile-state') setSnap(m.p);
     else if (m.type === 'pause') pause(m.reason || 'user');
     else if (m.type === 'resume') resume(m.reason || 'user');
     else if (m.type === 'mute') setMuted(true);
@@ -447,17 +470,73 @@
 
   function caps() {
     return { sdk: V, pause: true, mute: true, menu: !cfg.ownPauseUI, ownPauseUI: !!cfg.ownPauseUI, restart: !!cfg.onRestart, exit: !!cfg.onExit,
-      tutorial: !!cfg.onTutorial, hints: hasHints(), cheats: hasCheats(), tricks: (cfg.tricks || []).length, declared: !!cfg.declared };
+      tutorial: !!cfg.onTutorial, hints: hasHints(), cheats: hasCheats(), tricks: (cfg.tricks || []).length, declared: !!cfg.declared, profile: true };
   }
   function log(name, data, at) { events.push({ t: Math.round(at == null ? rawNow() : at), name: name, data: data || null }); if (events.length > 200) events.shift(); }
 
+  /* ---------- the arcade profile: heartbeats, saved bests, and the opt-in calls ---------- */
+  var snap = null, snapCbs = [], lastBeat = 0, gpTimer = 0, doneAch = {}, hits = {}, saveKeys = [], saveLast = {}, saveTimer = 0;
+  function setSnap(p) {
+    if (!p || typeof p !== 'object') return; snap = { level: +p.level || 1, xp: +p.xp || 0, into: +p.into || 0, need: +p.need || 0, streak: +p.streak || 0, stars: +p.stars || 0, avatar: String(p.avatar || ''), title: String(p.title || '') };
+    snapCbs.slice().forEach(function (f) { try { f(snap); } catch (e) {} });
+  }
+  function rate(kind, max, ms) {   // a game cannot flood the portal
+    var t = rawNow(), a = (hits[kind] = (hits[kind] || []).filter(function (x) { return t - x < ms; }));
+    if (a.length >= max) return false; a.push(t); return true;
+  }
+  function beat() { var t = rawNow(); if (t - lastBeat > 8000 && !(paused && !soft)) { lastBeat = t; post('profile', { op: 'active' }); } }
+  ['pointerdown', 'pointermove', 'keydown', 'touchstart', 'touchmove', 'wheel'].forEach(function (n) { try { W.addEventListener(n, beat, { capture: true, passive: true }); } catch (e) {} });
+  try {
+    W.addEventListener('gamepadconnected', function () {   // a pad makes no DOM events: look at it every few seconds
+      if (gpTimer) return;
+      gpTimer = rawSI(function () { try { var pads = W.navigator.getGamepads ? W.navigator.getGamepads() : []; for (var i = 0; i < pads.length; i++) { var g = pads[i]; if (!g) continue; if (g.buttons.some(function (b) { return b.pressed; }) || g.axes.some(function (a) { return Math.abs(a) > 0.4; })) { beat(); return; } } } catch (e) {} }, 2500);
+    });
+  } catch (e) {}
+  // A new best under a key the game declares in its meta `saves`: the number that looks like a best, found in the value.
+  function readKey(k) { try { return W.localStorage.getItem(k); } catch (e) { return null; } }
+  function bestIn(raw, key) {
+    if (raw == null) return null; var val; try { val = JSON.parse(raw); } catch (e) { val = raw; }
+    var low = /time|lap|rank|moves/i.test(key), found = [];
+    (function walk(x, name, depth) {
+      if (depth > 4 || found.length > 40) return;
+      if (typeof x === 'number' && isFinite(x)) { if (/best|high|record|hi_?score|top/i.test(name) || (depth === 0 && /rec|score|best|high/i.test(key))) found.push(x); }
+      else if (typeof x === 'string' && depth === 0 && x !== '' && isFinite(+x) && /rec|score|best|high/i.test(key)) found.push(+x);
+      else if (x && typeof x === 'object' && !Array.isArray(x)) for (var k in x) walk(x[k], k, depth + 1);
+    })(val, key, 0);
+    if (!found.length) return null; return { v: low ? Math.min.apply(null, found) : Math.max.apply(null, found), low: low };
+  }
+  function pollSaves() {
+    if (!inFrame) return;
+    saveKeys.forEach(function (k) { var v = readKey(k); if (v === saveLast[k]) return; saveLast[k] = v; var b = bestIn(v, k); if (b && !cheated) post('profile', { op: 'saved', key: k, best: b.v, lower: b.low }); });
+  }
+  function watchSaves(list) {
+    if (!inFrame || saveTimer || !Array.isArray(list)) return;
+    saveKeys = list.filter(function (k) { return typeof k === 'string' && !/^idb:/.test(k); }).slice(0, 8); if (!saveKeys.length) return;
+    saveKeys.forEach(function (k) { saveLast[k] = readKey(k); }); saveTimer = rawSI(pollSaves, 2500);
+  }
+  var profileApi = {
+    award: function (o) { if (cheated || !inFrame || !o || !(+o.xp >= 1) || !rate('award', 8, 60000)) return false; post('profile', { op: 'award', xp: Math.min(30, Math.floor(+o.xp)), reason: String(o.reason || '').slice(0, 50) }); return true; },
+    achievement: function (id, o) {
+      id = String(id); if (cheated || !inFrame || !/^[A-Za-z0-9_.-]{1,32}$/.test(id) || doneAch[id] || !rate('ach', 10, 60000)) return false; doneAch[id] = 1; o = o || {};
+      post('profile', { op: 'achievement', id: id, title: String(o.title || '').slice(0, 40), desc: String(o.desc || '').slice(0, 100), tier: /^(bronze|silver|gold|diamond)$/.test(o.tier) ? o.tier : 'bronze' }); return true;
+    },
+    quest: function (id, progress, o) {
+      id = String(id); if (cheated || !inFrame || !/^[A-Za-z0-9_.-]{1,32}$/.test(id) || !rate('quest:' + id, 4, 5000)) return false; o = o || {};
+      var p = progress && typeof progress === 'object' ? (+progress.value) / Math.max(1e-9, +progress.target || 1) : +progress; if (!(p >= 0)) return false;
+      post('profile', { op: 'quest', id: id, progress: Math.min(1, p), title: String(o.title || '').slice(0, 60), xp: o.xp, stars: o.stars }); return true;
+    },
+    get: function () { return snap; },
+    onChange: function (cb) { if (typeof cb === 'function') snapCbs.push(cb); if (inFrame && !snap) post('profile', { op: 'get' }); }
+  };
+
   var api = {
     version: V,
-    init: function (o) { o = o || {}; for (var k in o) cfg[k] = o[k]; cfg.declared = true; if (cfg.pauseKeys != null) pauseKeys = cfg.pauseKeys; post('ready', { caps: caps() }); if (D.body) pauseButton(); if (cfg.orientation === 'landscape') rotateCard(); return api; },
+    init: function (o) { o = o || {}; for (var k in o) cfg[k] = o[k]; cfg.declared = true; applyTheme(); if (cfg.pauseKeys != null) pauseKeys = cfg.pauseKeys; post('ready', { caps: caps() }); if (D.body) pauseButton(); if (cfg.orientation === 'landscape') rotateCard(); return api; },
     pause: function () { pause('user'); }, resume: function () { resume('user'); }, gamePaused: gamePaused,
     get paused() { return paused; }, get muted() { return muted; }, get cheated() { return cheated; },
     setMuted: setMuted, restart: restart, showMenu: function (w) { pause('user'); showMenu(w || 'pause'); },
-    state: function (s) { post('state', s || {}); if (s && s.scene) log('scene', { scene: s.scene }); },
+    state: function (s) { var o = {}; s = s || {}; for (var k in s) o[k] = s[k]; if (typeof o.score === 'string' && o.score !== '' && isFinite(+o.score)) o.score = +o.score; if (cheated) o.cheated = true; post('state', o); if (s.scene) log('scene', { scene: s.scene, score: o.score, level: o.level, stars: o.stars }); },
+    profile: profileApi,
     event: function (name, data) { log(name, data); post('event', { name: name, data: data || null }); },
     now: vnow,
     sfx: playSfx,
@@ -468,7 +547,7 @@
       return { version: V, paused: paused, soft: soft, reason: reason, pauseKeys: pauseKeys, muted: muted, cheated: cheated, clock: vnow(), raw: rawNow(), pausedTotal: pausedTotal, caps: caps(), meta: !!meta.title,
         audio: Array.from(ctxs).map(function (c) { var m = masters.get(c); return { state: c.state, master: m ? m.gain.value : null }; }),
         media: Array.from(media).map(function (el) { return { muted: el.muted, paused: el.paused }; }),
-        gl: glTypes.slice(), frames: frames.size, timers: timers.size, heldAnims: heldAnims.length, events: events.slice(-40), menu: panel };
+        gl: glTypes.slice(), profile: { snap: !!snap, watching: saveKeys.slice(), cheated: cheated }, frames: frames.size, timers: timers.size, heldAnims: heldAnims.length, events: events.slice(-40), menu: panel };
     }
   };
   W.ArcadeSDK = api;

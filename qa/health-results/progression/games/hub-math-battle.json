@@ -1,0 +1,169 @@
+{
+ "id": "hub-math-battle",
+ "title": "Math Battle",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/math-battle.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "mathBattleSave",
+  "mathBattleBest",
+  "mathBattleReport"
+ ],
+ "session1": {
+  "start": "#playBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 1,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 60,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "mathBattleReport",
+   "mathBattleSave",
+   "mathBattleMuted"
+  ],
+  "savedKeysWrittenInSession1": 4,
+  "titleTextChanged": true,
+  "title1": "← Hub 🔊 ⚔️ MATH BATTLE 🧑 You · Lv 1 ❤️ 50/50 💰 0 Slime Slime ❤️ 20/20 Kills 0 8 − 6 = ? 2 5 1 4 🛒 Shop 🏆 Hunting Log 🎖 War Medals ⚔️ M",
+  "title2": "← Hub 🔇 ⚔️ MATH BATTLE 🧑 You · Lv 1 ❤️ 50/50 💰 0 Slime Slime ❤️ 20/20 Kills 0 9 − 2 = ? 7 9 5 8 🛒 Shop 🏆 Hunting Log 🎖 War Medals ⚔️ M",
+  "keysUpdatedAgain": [
+   "mathBattleReport"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 4,
+  "added": [
+   "mathBattleReport",
+   "mathBattleSave",
+   "mathBattleMuted",
+   "mbt_tut"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "mathBattleReport": "{\"bands\":{\"easy\":{\"n\":18,\"ok\":3}},\"miss\":{\"15 ÷ 5\":2,\"8 + 4\":1,\"4 × 4\"",
+   "mathBattleSave": "{\"P\":{\"level\":1,\"xp\":0,\"hp\":50,\"gold\":0,\"sword\":0,\"shield\":0},\"kills\":",
+   "mathBattleMuted": "1",
+   "mbt_tut": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "levels",
+   "currency",
+   "settings",
+   "other"
+  ],
+  "categoriesPresent": [
+   "levels",
+   "currency",
+   "settings",
+   "other"
+  ],
+  "writesDuringPlay": {
+   "mathBattleReport": "20x",
+   "mbt_tut": "1x",
+   "mathBattleMuted": "1x",
+   "mathBattleSave": "2x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "stars": {
+   "storage": false,
+   "dom": true,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "upgrades",
+  "stars"
+ ],
+ "claimedOnly": [
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "currency"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, currency); systems seen: levels, unlocks, upgrades, stars; sinks unlocks/upgrades fed by levels/stars/currency",
+ "expected": [
+  "levels",
+  "stars",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "lacks": [
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "pageErrors": []
+}

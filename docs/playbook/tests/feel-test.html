@@ -1,0 +1,130 @@
+<!doctype html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<title>feel-kit tests</title>
+<body style="font:14px system-ui;padding:12px"><h3>feel-kit.js tests</h3><pre id="out"></pre><div id="hud" style="position:fixed;right:20px;top:20px;width:40px;height:40px"></div>
+<script src="../feel-kit.js"></script>
+<script>
+const { Ease, Shake, TimeScale, Spring, squashScale, popTrack, coinPos, flyCoins, popNumber, comboPitch, Combo, varied, coinSfx, blip, Haptics } = Feel;
+const R = {}, sleep = ms => new Promise(r => setTimeout(r, ms));
+async function test(name, fn) { try { const note = await fn(); R[name] = { ok: true, note: note || '' }; } catch (e) { R[name] = { ok: false, note: String(e && e.message || e) }; } }
+const eq = (a, b, eps, msg) => { if (!(Math.abs(a - b) <= eps)) throw new Error(`${msg || 'eq'}: ${a} vs ${b}`); };
+const yes = (c, msg) => { if (!c) throw new Error(msg); };
+const zc = arr => { let n = 0; for (let i = 1; i < arr.length; i++) if ((arr[i - 1] < 0) !== (arr[i] < 0)) n++; return n; };
+
+(async () => {
+  await test('easing endpoints and overshoot', () => {
+    for (const [k, f] of Object.entries(Ease)) { eq(f(0), 0, 1e-9, k + '(0)'); eq(f(1), 1, 1e-9, k + '(1)'); }
+    let max = 0; for (let t = 0; t <= 1; t += 0.01) max = Math.max(max, Ease.outBack(t));
+    yes(max > 1.09 && max < 1.12, 'outBack overshoot ' + max);
+    let maxE = 0; for (let t = 0; t <= 1; t += 0.01) maxE = Math.max(maxE, Ease.outElastic(t));
+    yes(maxE > 1.2, 'outElastic overshoot ' + maxE);
+    return `outBack peak ${max.toFixed(3)}, outElastic peak ${maxE.toFixed(3)}`;
+  });
+
+  await test('shake: trauma squared and cubed, decay, frame-rate independence, reduced motion', () => {
+    const sq = [0.3, 0.6, 0.9].map(t => { const s = new Shake({ decay: 0 }); s.add(t); return +s.update(0).shake.toFixed(3); });
+    yes(sq.join() === '0.09,0.36,0.81', 'squared ' + sq);
+    const cu = [0.3, 0.6, 0.9].map(t => { const s = new Shake({ decay: 0, power: 3 }); s.add(t); return +s.update(0).shake.toFixed(3); });
+    yes(cu.join() === '0.027,0.216,0.729', 'cubed ' + cu);          // Eiserloh's slide: 3%, 22%, 73%
+    const a = new Shake(), b = new Shake(); a.add(0.8); b.add(0.8);
+    for (let i = 0; i < 60; i++) a.update(1 / 60); for (let i = 0; i < 30; i++) b.update(1 / 30);
+    eq(a.trauma, b.trauma, 1e-9, 'trauma after 1 s at 60 and 30 fps');
+    const c = new Shake({ maxOffset: 18 }); c.add(1); let mx = 0;
+    for (let i = 0; i < 90; i++) { const r = c.update(1 / 60); mx = Math.max(mx, Math.abs(r.x), Math.abs(r.y)); yes(Math.abs(r.x) <= 18 && Math.abs(r.angle) <= 0.05, 'bounds'); }
+    yes(mx > 5, 'shake visibly moves, max ' + mx);
+    const d = new Shake({ reduced: true }); d.add(1); const r = d.update(0.016); yes(r.x === 0 && r.y === 0 && r.angle === 0, 'reduced motion is silent');
+    const e = new Shake(); e.add(0.7); const r1 = new Shake(); r1.add(0.7); yes(e.update(0.1).x === r1.update(0.1).x, 'deterministic');
+    return `squared ${sq}, cubed ${cu}, max offset ${mx.toFixed(1)}px`;
+  });
+
+  await test('hit-stop freezes the sim for the asked time, then resumes', () => {
+    const ts = new TimeScale(); ts.hit(80); let sim = 0, frozen = 0, real = 0;
+    for (let i = 0; i < 12; i++) { const dt = ts.step(1 / 60); sim += dt; real += 1 / 60; if (dt === 0) frozen++; }
+    yes(frozen >= 4 && frozen <= 6, 'frozen frames ' + frozen);
+    eq(real - sim, 0.08, 0.02, 'lost sim time');
+    const s2 = new TimeScale(); s2.hit(50, { slowMs: 200, slowScale: 0.25 }); let slow = 0;
+    for (let i = 0; i < 30; i++) { const dt = s2.step(1 / 60); if (dt > 0 && dt < 1 / 60) slow++; }
+    yes(slow >= 10 && slow <= 13, 'slow-motion frames ' + slow);
+    return `80 ms hit froze ${frozen} of 12 frames at 60 fps; 200 ms slow-mo ran ${slow} frames`;
+  });
+
+  await test('spring + squash and stretch: overshoots, settles, keeps volume', () => {
+    const s = new Spring(260, 14); s.punch(-0.3); let mn = 0, mx = 0;
+    for (let i = 0; i < 120; i++) { const x = s.update(1 / 60); mn = Math.min(mn, x); mx = Math.max(mx, x); const q = squashScale(x); eq(q.sx * q.sy, 1, 1e-9, 'volume'); }
+    yes(mn <= -0.28 && mx > 0.01, `overshoot ${mn} .. ${mx}`); yes(Math.abs(s.x) < 0.002, 'settles ' + s.x);
+    const slow = new Spring(); slow.punch(-0.3); for (let i = 0; i < 10; i++) slow.update(0.5); yes(isFinite(slow.x) && Math.abs(slow.x) < 0.5, 'stable on 500 ms frames');
+    return `min ${mn.toFixed(3)}, max ${mx.toFixed(3)}, rest ${s.x.toExponential(1)}`;
+  });
+
+  await test('camera kick: an impulse on a spring peaks fast and settles', () => {
+    const k = new Spring(180, 12); k.impulse(6); let peak = 0, at = 0; for (let i = 1; i <= 90; i++) { const x = k.update(1 / 60); if (x > peak) { peak = x; at = i * 1000 / 60; } }
+    yes(peak > 0.2 && peak < 0.3 && at >= 60 && at <= 130, `peak ${peak} at ${at} ms`); yes(Math.abs(k.x) < 0.005, 'settled ' + k.x); return `peak ${peak.toFixed(3)} at ${at.toFixed(0)} ms (fov +${(peak * 4).toFixed(2)} deg), rest ${k.x.toExponential(1)}`;
+  });
+  await test('anticipation and follow-through track hits its keyframes', () => {
+    const t = popTrack(1), at = ms => { const p = popTrack(1); let v; for (let i = 0; i < ms; i++) v = p.update(0.001); return +v.toFixed(3); };
+    eq(at(90), 0.85, 0.01, 'dip'); eq(at(200), 1.25, 0.01, 'peak'); eq(at(500), 1, 1e-6, 'rest');
+    let mn = 9, mx = 0; for (let i = 0; i < 600; i++) { const v = t.update(0.001); mn = Math.min(mn, v); mx = Math.max(mx, v); }
+    yes(t.done && mn < 0.86 && mx > 1.24, 'done, min ' + mn + ' max ' + mx);
+    return 'dip 0.85 at 90 ms, peak 1.25 at 200 ms, rest 1.0 by 460 ms';
+  });
+
+  await test('coin path: starts at the coin, ends on the counter, accelerates in', () => {
+    const p0 = { x: 40, y: 500 }, p1 = { x: 350, y: 30 };
+    const a = coinPos(p0, p1, 0), b = coinPos(p0, p1, 1), m = coinPos(p0, p1, 0.5);
+    eq(a.x, 40, 1e-9); eq(a.y, 500, 1e-9); eq(b.x, 350, 1e-9); eq(b.y, 30, 1e-9);
+    const half = Math.hypot(m.x - p0.x, m.y - p0.y) / Math.hypot(p1.x - p0.x, p1.y - p0.y);
+    yes(half < 0.5, 'ease-in: at t=0.5 the coin has covered ' + half.toFixed(2)); return `at t=0.5 covered ${(half * 100).toFixed(0)}% of the way`;
+  });
+
+  await test('flyCoins (real rAF): all land, all removed, counter told per coin', async () => {
+    const hud = document.getElementById('hud'); let landed = 0, bumps = 0; const t0 = performance.now();
+    const n = await flyCoins(document.body, { x: 60, y: 400 }, hud, 8, { dur: 500, gap: 30, onLand: k => { landed = k; bumps++; hud.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], 120); } });
+    const ms = performance.now() - t0;
+    yes(n === 8 && landed === 8 && bumps === 8, `landed ${landed}, bumps ${bumps}`);
+    yes(document.querySelectorAll('.coin').length === 0, 'coins removed');
+    yes(ms >= 500 + 7 * 30 - 40 && ms < 2500, 'duration ' + ms.toFixed(0)); return `8 coins, ${ms.toFixed(0)} ms (expected about 710 ms)`;
+  });
+
+  await test('popNumber: animates and removes itself', async () => {
+    const a = popNumber(document.body, 100, 200, '+25', { size: 30 }); const el = document.body.lastElementChild;
+    yes(el.textContent === '+25' && document.getAnimations().length >= 1, 'created and animating');
+    await a.finished; await sleep(20); yes(!el.isConnected, 'removed after finish'); return 'WAAPI keyframes, removed on finish';
+  });
+
+  await test('combo: pitch ladder is musical, window expires, intensity is 0..1', () => {
+    eq(comboPitch(0), 1, 1e-9); eq(comboPitch(7), 2, 1e-9, 'octave at combo 7'); eq(comboPitch(99), 2, 1e-9, 'capped'); eq(comboPitch(4), Math.pow(2, 7 / 12), 1e-9, 'perfect fifth');
+    const c = new Combo(1000); c.hit(); c.hit(); c.hit(); yes(c.n === 3, 'n'); c.update(0.6); yes(c.n === 3, 'alive'); c.update(0.5); yes(c.n === 0, 'expired');
+    for (let i = 0; i < 40; i++) c.hit(); eq(c.intensity, 1, 1e-9); return 'combo 4 = fifth (1.498x), combo 7 = octave (2x)';
+  });
+
+  await test('varied(): stays within +-6 percent, never repeats back to back', () => {
+    let prev = 0, lo = 9e9, hi = 0;
+    for (let i = 0; i < 3000; i++) { const v = varied(880, 0.06); yes(v >= 880 * 0.94 - 1e-6 && v <= 880 * 1.06 + 1e-6, 'range'); yes(Math.abs(v - prev) > 1, 'repeat'); prev = v; lo = Math.min(lo, v); hi = Math.max(hi, v); }
+    return `range ${lo.toFixed(0)}..${hi.toFixed(0)} Hz over 3000 draws`;
+  });
+
+  await test('sound layering renders audible, unclipped audio (OfflineAudioContext)', async () => {
+    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext; yes(!!OAC, 'no OfflineAudioContext');
+    async function render(fn, len = 0.4) { const c = new OAC(1, Math.floor(44100 * len), 44100), m = c.createGain(); m.gain.value = 0.8; m.connect(c.destination); fn(c, m); return (await c.startRendering()).getChannelData(0); }
+    const stats = d => { let pk = 0, sq = 0; for (const v of d) { pk = Math.max(pk, Math.abs(v)); sq += v * v; } return { pk, rms: Math.sqrt(sq / d.length) }; };
+    const a = stats(await render((c, m) => coinSfx(c, m, 0.01, 0)));
+    yes(a.pk > 0.05 && a.pk < 1 && a.rms > 0.005, `peak ${a.pk} rms ${a.rms}`);
+    const lo = await render((c, m) => blip(c, m, 0.01, { f: 880, dur: 0.2, gain: 0.5 })), hi = await render((c, m) => blip(c, m, 0.01, { f: 1760, dur: 0.2, gain: 0.5 }));
+    const ratio = zc(hi) / zc(lo); yes(ratio > 1.8 && ratio < 2.2, 'octave ratio ' + ratio);
+    const b1 = await render((c, m) => coinSfx(c, m, 0.01, 0)), b2 = await render((c, m) => coinSfx(c, m, 0.01, 0));
+    let diff = 0; for (let i = 0; i < b1.length; i++) diff += Math.abs(b1[i] - b2[i]); yes(diff > 1, 'two coin sounds are not identical');
+    return `coin peak ${a.pk.toFixed(2)}, rms ${a.rms.toFixed(3)}; 880 to 1760 Hz zero-crossing ratio ${ratio.toFixed(2)}`;
+  });
+
+  await test('haptics: picks a path per engine and does not throw', () => {
+    const mode = Haptics.mode(); let res;
+    const b = document.createElement('button'); document.body.appendChild(b); b.addEventListener('click', () => { res = Haptics.tap(12); }); b.click();
+    const sw = document.querySelector('input[switch]');
+    const info = { mode, tapResult: res, hasVibrate: typeof navigator.vibrate, switchAppearance: sw ? getComputedStyle(sw).appearance || getComputedStyle(sw).webkitAppearance : null, switchToggledByClick: sw ? sw.checked : null, ua: /iPhone/.test(navigator.userAgent) };
+    yes(['vibrate', 'switch', 'none'].includes(mode) && res, JSON.stringify(info)); return JSON.stringify(info);
+  });
+
+  window.__results = R; document.getElementById('out').textContent = JSON.stringify(R, null, 1); window.__done = true;
+})();
+</script>

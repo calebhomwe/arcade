@@ -1,0 +1,147 @@
+{
+ "id": "hub-idle-empire",
+ "title": "Idle Empire",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "ie_state"
+ ],
+ "session1": {
+  "start": "#btnPlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 2,
+   "max": 2
+  },
+  "botTaps": 18,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "ie_state"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": true,
+  "title1": "1 Level 0/8 XP 0 0/s Build your first Market Stall 15 coins · tap the fountain to earn +XP ×1 ×10 ×25 MAX Market Stall ×0 Fresh fruit by the",
+  "title2": "1 Level 0/8 XP 2 0/s Build your first Market Stall 15 coins · tap the fountain to earn +XP ×1 ×10 ×25 MAX Market Stall ×0 Fresh fruit by the",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "ik_coach_idle-empire",
+   "ie_state"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "ik_coach_idle-empire": "1",
+   "ie_state": "{\"v\":2,\"coins\":2,\"lifetime\":2,\"alltime\":2,\"owned\":[0,0,0,0,0,0,0,0,0,0"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other"
+  ],
+  "categoriesPresent": [
+   "other"
+  ],
+  "writesDuringPlay": {
+   "ik_coach_idle-empire": "1x",
+   "ie_state": "5x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "stars": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "upgrades"
+ ],
+ "claimedOnly": [
+  "goals",
+  "achievements",
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [],
+  "unclassifiedBlob": true
+ },
+ "level": 1,
+ "label": "P1",
+ "why": "saves some state but shows no unlock, upgrade, goal or level system",
+ "expected": [
+  "upgrades",
+  "unlocks",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "lacks": [
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "pageErrors": []
+}

@@ -37,7 +37,7 @@ EXT_REPOS = {
 }
 # Godot web builds ship a binary .pck; their scenes are read from the source repo.
 GODOT_REPOS = {
-    'godot-claire-big-life': 'claires-big-life-adventure', 'godot-heat-firm': 'heat-firm-godot',
+    'godot-heat-firm': 'heat-firm-godot',
     'godot-city-builder': 'city-builder-godot', 'godot-tidebreak': 'tidebreak-godot',
     'godot-tidebreak-world-tour': 'TidebreakWorldTour', 'godot-la-city': 'LACity-Godot',
     'godot-chef-chloe': 'ChefChloe-Godot', 'godot-swellrider': 'swellrider-godot',
@@ -88,7 +88,7 @@ GENRE_BY_CAT = {'hyper': 'hyper-casual', 'puzzle': 'puzzle', 'classic': 'arcade'
 TIER_3DR = {'summit-line', 'godot-tidebreak', 'godot-swellrider'}
 TIER_3DS = {
     'critter-rush', 'neon-dash', 'godot-la-city', 'maths-kart', 'clean-house', 'godot-city-builder',
-    'godot-claire-big-life', 'bloxburg-town', 'hole-grind', 'hub-hole-swallow', 'sky-hole-eater',
+    'bloxburg-town', 'hole-grind', 'hub-hole-swallow', 'sky-hole-eater',
     'crowd-clash', 'bridge-rush', 'bridge-race-classic', 'rung-runner', 'helix-drop', 'hub-helix-smash',
     'hub-stack-ball', 'mini-life-sim',
 }

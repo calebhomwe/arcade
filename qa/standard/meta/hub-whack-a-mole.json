@@ -1,21 +1,45 @@
 {
-  "howto": ["Press Play: a 30-second round starts.", "Tap each 🐹 mole as it pops up, before it ducks back down.", "⭐ gold moles are worth 5, 👑 crowns 10; a 🎃 boss takes three taps for 25.", "Don't tap the 💣: it rumbles before it pops up and costs 3 points."],
-  "tips": ["Five hits in a row without letting one escape raises the multiplier (up to x3).", "A hit within 350 ms of a mole popping up earns a +1 speed bonus.", "A boss appears every 100 points.", "Moles pop up faster and stay up for less time as the clock runs down.", "On a keyboard, the number pad layout (7 8 9 / 4 5 6 / 1 2 3) matches the holes."],
-  "controls": {"keyboard": "Number keys 1 to 9 whack the matching hole (number-pad layout); Space starts. P or Esc pauses.", "touch": "Tap the moles"},
-  "difficulty": "An adaptive curve inside each round: moles appear faster and hide sooner as the timer runs down, and bosses arrive every 100 points.",
+  "howto": [
+    "Press Play. Tap each mole as it pops up.",
+    "Do not tap the bunny and chick friends.",
+    "Whack enough moles to earn 1, 2 or 3 stars, then go on to the next level."
+  ],
+  "tips": [
+    "Gold moles count as three and add two seconds.",
+    "Hard-hat moles need two taps.",
+    "Win stars to unlock new hammers and meadow friends.",
+    "Win 3 levels a day to fill your daily goal."
+  ],
+  "controls": {
+    "keyboard": "Number keys 1 to 9 whack the matching hole (number-pad layout, 1 to 4 on small boards); Space starts. P or Esc pauses.",
+    "touch": "Tap the moles"
+  },
+  "difficulty": "15 levels in three worlds. Holes grow from 4 to 9, moles pop up faster and hide sooner, friends and hard-hat moles join in, and every fifth level has a crowned boss. Star goals are set from a simulated round.",
   "cheats": [
-    {"code": "BIGHAMMER", "effect": "Big hammer: a whack also hits the moles next door"},
-    {"code": "NOBOMBS", "effect": "No bombs: only moles pop up"},
-    {"code": "EXTRATIME", "effect": "Extra time: rounds last 45 seconds"}
+    {
+      "code": "BIGHAMMER",
+      "effect": "Big hammer: a whack also hits the moles next door"
+    },
+    {
+      "code": "EXTRATIME",
+      "effect": "Extra time: rounds last 15 seconds longer"
+    },
+    {
+      "code": "SLOWMOLES",
+      "effect": "Slow moles: they stay up much longer"
+    }
   ],
   "features": {
-    "one-tap-start": "Play starts the 30-second round at once",
-    "instant-restart": "Play Again (or Space) on the results card starts a new round",
-    "best-score-badge": "🏆 best in the top bar next to the score",
-    "tutorial-card": "First-round card with a tapping finger that stays until your first whack",
-    "results": "Time's Up card with score, best, new-best badge and rank"
+    "one-tap-start": "Play starts the next level at once",
+    "instant-restart": "Play again on the results card",
+    "best-score-badge": "Best score saved as whackBest",
+    "tutorial-card": "Level 1 holds the first mole until you tap it; Help replays",
+    "results": "Stars card with whacks, goal, new prizes and daily goal"
   },
-  "saves": ["whackBest", "whackTWhacks"],
+  "saves": [
+    "whackBest",
+    "whack_kk"
+  ],
   "start": "#playBtn",
   "pauseButton": "tr"
 }

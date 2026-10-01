@@ -1,0 +1,142 @@
+{
+ "id": "sneaker-drop",
+ "title": "SneakerDrop — Hype Market Tycoon",
+ "cat": "sim",
+ "genre": "management",
+ "src": "SneakerDrop/index.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "sneakerdrop_save"
+ ],
+ "session1": {
+  "start": "#startBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 11,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "sneakerdrop_save"
+  ],
+  "savedKeysWrittenInSession1": 1,
+  "titleTextChanged": false,
+  "title1": "TAP TO START EASY NORMAL HARD SOUND: ON HOW TO PLAY",
+  "title2": "TAP TO START EASY NORMAL HARD SOUND: ON HOW TO PLAY",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 1,
+  "added": [
+   "sneakerdrop_save"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "sneakerdrop_save": "{\"tut\":1}"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "save-blob"
+  ],
+  "categoriesPresent": [
+   "save-blob"
+  ],
+  "writesDuringPlay": {
+   "sneakerdrop_save": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": false,
+  "meta": true
+ },
+ "observedSystems": [],
+ "claimedOnly": [
+  "levels",
+  "upgrades",
+  "stars",
+  "goals",
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "save-blob"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 1,
+ "label": "P1",
+ "why": "saves some state and save-blob but shows no unlock, upgrade, goal or level system",
+ "expected": [
+  "goals",
+  "upgrades",
+  "unlocks",
+  "stars",
+  "levels"
+ ],
+ "lacks": [
+  "goals",
+  "upgrades",
+  "unlocks",
+  "stars",
+  "levels"
+ ],
+ "pageErrors": []
+}

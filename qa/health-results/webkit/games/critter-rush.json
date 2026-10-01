@@ -1,0 +1,155 @@
+{
+ "id": "critter-rush",
+ "title": "Critter Rush 3D",
+ "cat": "arcade",
+ "genre": "racing",
+ "src": "CritterRush/index.html",
+ "engine": "webkit",
+ "throttle": 1,
+ "throttled": false,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "WebKit has no CPU throttle: numbers are unthrottled on this machine"
+ ],
+ "shots": {
+  "1-title": "shots/critter-rush-wk-1-title.jpg",
+  "2-mid": "shots/critter-rush-wk-2-mid.jpg",
+  "3-end": "shots/critter-rush-wk-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 13.42,
+  "cores": 4,
+  "load1End": 12.95,
+  "contention": 1.32,
+  "contentionSamples": [
+   1.06,
+   1.52,
+   1.24,
+   1.44,
+   1.32,
+   1.83,
+   1.2
+  ]
+ },
+ "loadMs": 1293,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:39731/CritterRush/index.html",
+ "startPath": "http://127.0.0.1:39731/CritterRush/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 64,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "Play/Start button",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.32,
+  "loadMs": 515,
+  "playMs": 195,
+  "loadRawMs": 1144,
+  "playRawMs": 277,
+  "playGlMs": 20,
+  "loadGlMs": 464,
+  "longTasksPlay": 0,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": false,
+  "heartbeatOver100Play": 14,
+  "slowestPollMs": 80,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 114,
+  "shaderCompileMaxCallMs": 21
+ },
+ "loafTop": [],
+ "rafStalls": [],
+ "frames": {
+  "n": 159,
+  "jsMedian": 13.64,
+  "jsP95": 31.82,
+  "jsP99": 66.67,
+  "jsMax": 68.9,
+  "jsP95Raw": 42,
+  "rawWithGlP95": 101,
+  "glP95": 62,
+  "gapP95": 498,
+  "gapMedian": 284,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": null,
+  "heap1MB": null,
+  "heapGrowthPct": null,
+  "heapMeasured": false,
+  "nodesStart": 100,
+  "nodesEnd": 105,
+  "nodesMax": 106,
+  "listeners0": null,
+  "listeners1": null,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 58,
+  "swipes": 14,
+  "holds": 7,
+  "keys": 4,
+  "buttonPresses": 28,
+  "resumes": 0,
+  "touchApi": true,
+  "inputLatencyMedianMs": 16,
+  "inputLatencyP95Ms": 764,
+  "inputLatencyMaxMs": 1303,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 67.6,
+  "maxChangeFromStartPct": 37.8,
+  "samples": 16
+ },
+ "severity": 0.5
+}

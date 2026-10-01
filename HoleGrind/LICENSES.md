@@ -16,3 +16,14 @@
 were needed), then packed into one file with shared textures and quantized with gltfpack
 (KHR_mesh_quantization, read natively by three.js). The ground, road markings and sky are drawn
 in code. Kenney asks for no credit; thank you, Kenney.
+
+## Added by the "warm" look pass
+
+| What | Source | Licence |
+| --- | --- | --- |
+| `tex/grass.jpg` (Grass001), `tex/paving.jpg` (PavingStones070), `tex/asphalt.jpg` (Asphalt 026 C) | ambientCG, https://ambientcg.com, downscaled to 512 px | CC0 1.0 |
+| `fonts/fraunces800.woff2` (Fraunces 800, latin), `fonts/nunito.woff2` (Nunito variable, latin) | Google Fonts | SIL Open Font License 1.1 |
+| `gk.css`, `gk.js` (Game Kit: buttons, panels, icons, progression), `hole3d.js` | copies of `arcade-hub/games/kit3d/` | this repo |
+
+The ground tile is now drawn from those photographs, tinted per district; the road markings, kerbs, minimap and sky are
+still drawn in code. Wood and parchment grain in the UI are SVG turbulence filters in `gk.css`, not image files.

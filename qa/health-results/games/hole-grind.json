@@ -1,0 +1,245 @@
+{
+ "id": "hole-grind",
+ "title": "Hole Grind",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "HoleGrind/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 8009 ms (during load), 914 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 5217 ms of JS; long-task API + timer heartbeat; longest frame 9565.5 ms: three/three.core.min.js Response.blob.then 7 / three/three.core.min.js Promise.resolve 24 / three/three.core.min.js Promise.resolve 12",
+  "JANK": "p95 JS frame cost 30.15 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.4; raw p95 41, median 6.18, p99 274.63, max 615.4; time inside WebGL calls excluded, p95 of it 4.1)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/hole-grind-1-title.jpg",
+  "2-mid": "shots/hole-grind-2-mid.jpg",
+  "3-end": "shots/hole-grind-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 21.95,
+  "cores": 4,
+  "load1End": 17.27,
+  "contention": 1.36,
+  "contentionSamples": [
+   2.01,
+   1.06,
+   1.28,
+   1.45,
+   1.32,
+   3.78,
+   1.36
+  ]
+ },
+ "loadMs": 9261,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:37993/HoleGrind/index.html",
+ "startPath": "http://127.0.0.1:37993/HoleGrind/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 64.3,
+  "bench1Ms": 52.1,
+  "effectiveSlowdown": 1.2
+ },
+ "start": {
+  "how": "#btnPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.36,
+  "loadMs": 5217,
+  "playMs": 621,
+  "loadRawMs": 8009,
+  "playRawMs": 845,
+  "playGlMs": 1,
+  "loadGlMs": 914,
+  "longTasksPlay": 18,
+  "longTasks100Play": 8,
+  "tbtLoadMs": 5543,
+  "tbtPlayMs": 2080,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 11,
+  "slowestPollMs": 614,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.2,
+  "shaderCompileMaxCallMs": 0.1
+ },
+ "loafTop": [
+  {
+   "ms": 9565.5,
+   "blocking": 9247.8,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Response.blob.then",
+     7
+    ],
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     24
+    ],
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     12
+    ]
+   ],
+   "phase": "calib"
+  },
+  {
+   "ms": 8501.2,
+   "blocking": 7987.9,
+   "scripts": [
+    [
+     "HoleGrind/index.html",
+     "http://127.0.0.1:37993/HoleGrind/index.html",
+     7996
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     8
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2283.5,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     10
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 217,
+  "jsMedian": 6.18,
+  "jsP95": 30.15,
+  "jsP99": 274.63,
+  "jsMax": 615.4,
+  "jsP95Raw": 41,
+  "rawWithGlP95": 42.7,
+  "glP95": 4.1,
+  "gapP95": 650,
+  "gapMedian": 200,
+  "over100": 6,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 6,
+  "heap1MB": 6.4,
+  "heapGrowthPct": 7,
+  "heapMeasured": true,
+  "nodesStart": 221,
+  "nodesEnd": 232,
+  "nodesMax": 234,
+  "listeners0": 80,
+  "listeners1": 80,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 3,
+   "totalMB": 2.2,
+   "biggest": [
+    {
+     "w": 390,
+     "h": 664,
+     "mpx": 0.26,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 195,
+     "h": 332,
+     "mpx": 0.06,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 17,
+  "scriptPct": 7,
+  "layoutPerSec": 4.8
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 29,
+  "swipes": 2,
+  "holds": 1,
+  "keys": 1,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 337,
+  "inputLatencyP95Ms": 3381,
+  "inputLatencyMaxMs": 3873,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 70.6,
+  "maxChangeFromStartPct": 73.1,
+  "samples": 10
+ },
+ "severity": 109.2,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK"
+  ],
+  "evidence": "main thread blocked 7202 ms (during load), 601 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 4314 ms of JS; long-task API + timer heartbeat; longest frame 7276.7 ms: HoleGrind/index.html http://127.0.0.1:37993/HoleGrind/index.html 7115 /  FrameRequestCallback 25",
+  "blockPlayMs": 286,
+  "blockLoadMs": 4314,
+  "load1": 16.06
+ }
+}

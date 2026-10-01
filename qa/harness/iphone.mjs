@@ -58,6 +58,21 @@ const launch = async () => {
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const heavy = g => g.src.includes('Godot/') || g.id === 'bloxburg-town';
 
+// A finger taps where the button is; Playwright's tap() also waits for it to hold still, which a pulsing Play button never does.
+// So: try the normal tap, and if that times out, tap the centre of the button, but only when that spot really hits the button.
+async function fingerTap(page, loc, timeout = 3000) {
+  if (await loc.tap({ timeout }).then(() => true).catch(() => false)) return true;
+  const box = await loc.boundingBox().catch(() => null);
+  if (!box || box.width < 4 || box.height < 4) return false;
+  const x = box.x + box.width / 2, y = box.y + box.height / 2;
+  const el = await loc.elementHandle().catch(() => null);
+  if (!el) return false;
+  const hits = await el.evaluate((n, [px, py]) => { const t = document.elementFromPoint(px, py); return !!t && (n === t || n.contains(t) || t.contains(n)); }, [x, y]).catch(() => false);
+  if (!hits) return false;
+  await page.touchscreen.tap(x, y).catch(() => {});
+  return true;
+}
+
 async function checkGame(g, browser, landscape) {
   const meta = g;
   const r = { id: g.id, title: g.title, cat: g.cat, src: g.src, errors: [], failed: [], bytes: 0 };
@@ -120,13 +135,13 @@ async function checkGame(g, browser, landscape) {
     let tapped = 'centre';
     if (ts) { await page.touchscreen.tap(vp.width * ts[1] / 100, vp.height * ts[2] / 100).catch(() => {}); tapped = meta.touchStart; }
     else if (start && !/^key:/.test(start) && start !== 'auto') {
-      const ok = await page.locator(start).first().tap({ timeout: 5000 }).then(() => true).catch(() => false);
+      const ok = await fingerTap(page, page.locator(start).first(), 5000);
       tapped = ok ? start : 'centre (start button not tappable)';
       if (!ok) await page.touchscreen.tap(vp.width / 2, vp.height / 2).catch(() => {});
     } else {
       // No declared start button: tap a visible Play / Start button if there is one, as a player would.
       const btn = page.locator('button, [role=button], a, .btn').filter({ hasText: /^\s*(▶\s*)?(play|start|tap to (play|start)|let'?s go|begin|go)\b/i }).first();
-      const ok = await btn.isVisible().catch(() => false) && await btn.tap({ timeout: 5000 }).then(() => true).catch(() => false);
+      const ok = await btn.isVisible().catch(() => false) && await fingerTap(page, btn, 5000);
       if (ok) tapped = 'Play/Start button'; else await page.touchscreen.tap(vp.width / 2, vp.height / 2).catch(() => {});
     }
     let after = before;
@@ -137,7 +152,7 @@ async function checkGame(g, browser, landscape) {
       const btn = page.locator('button, [role=button], a, .btn').filter({ hasText: go });
       const n = await btn.count().catch(() => 0);
       let hit = false;
-      for (let k = 0; k < n && !hit; k++) { const b = btn.nth(k); if (await b.isVisible().catch(() => false)) hit = await b.tap({ timeout: 4000 }).then(() => true).catch(() => false); }
+      for (let k = 0; k < n && !hit; k++) { const b = btn.nth(k); if (await b.isVisible().catch(() => false)) hit = await fingerTap(page, b, 4000); }
       if (!hit) break;
       tapped += ' + ' + 'continue';
       for (let i = 0; i < 6; i++) { await wait(1000); after = await scenes(); if (after.includes('play')) break; }

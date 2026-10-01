@@ -1,0 +1,256 @@
+{
+ "id": "summit-line",
+ "title": "Summit Line",
+ "cat": "arcade",
+ "genre": "board-sports",
+ "src": "SummitLine/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "landscape",
+ "verdicts": [
+  "FREEZE",
+  "STALL"
+ ],
+ "evidence": {
+  "FREEZE": "page did not answer the harness for 6 s (72 poll timeout(s))",
+  "STALL": "game never reported play after the start attempts (start: #btnPlay + SKIP + tap on game); scenes seen: title"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.4)"
+ ],
+ "shots": {
+  "1-title": null,
+  "3-end": null
+ },
+ "machine": {
+  "load1Start": 24.06,
+  "cores": 4,
+  "load1End": 18.5,
+  "contention": 1.36,
+  "contentionSamples": [
+   1.25,
+   1.24,
+   2.4,
+   1.53,
+   1.36
+  ]
+ },
+ "loadMs": 1839,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:36997/SummitLine/index.html",
+ "startPath": "http://127.0.0.1:36997/SummitLine/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 123.1,
+  "bench1Ms": 51.4,
+  "effectiveSlowdown": 2.4
+ },
+ "start": {
+  "how": "#btnPlay + SKIP + tap on game",
+  "viaKey": false,
+  "detectedBy": null,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.36,
+  "loadMs": 312,
+  "playMs": 1024,
+  "loadRawMs": 424,
+  "playRawMs": 56843,
+  "playGlMs": 55450,
+  "loadGlMs": 0,
+  "longTasksPlay": 7,
+  "longTasks100Play": 2,
+  "tbtLoadMs": 381,
+  "tbtPlayMs": 94,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 6,
+  "slowestPollMs": 6136,
+  "pollTimeouts": 72,
+  "shaderCompileMs": 0.1,
+  "shaderCompileMaxCallMs": 0.1
+ },
+ "loafTop": [
+  {
+   "ms": 55933.1,
+   "blocking": 55882.1,
+   "scripts": [
+    [
+     "js/main.js",
+     "BUTTON#btnPlay.onclick",
+     269
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     55584
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 47286.3,
+   "blocking": 87.2,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     23
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     7
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     6
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 11339.8,
+   "blocking": 75,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     12
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     11
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     82
+    ]
+   ],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 6,
+  "jsMedian": 40,
+  "jsP95": 65.88,
+  "jsP99": 65.88,
+  "jsMax": 65.9,
+  "jsP95Raw": 89.6,
+  "rawWithGlP95": 90.8,
+  "glP95": 10.5,
+  "gapP95": 1466.6,
+  "gapMedian": 1466.6,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 9.6,
+  "heap1MB": 9.6,
+  "heapGrowthPct": 0,
+  "heapMeasured": true,
+  "nodesStart": 328,
+  "nodesEnd": 339,
+  "nodesMax": 339,
+  "listeners0": 97,
+  "listeners1": 97,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 15,
+   "totalMB": 13.2,
+   "biggest": [
+    {
+     "w": 1500,
+     "h": 684,
+     "mpx": 1.03,
+     "dom": true,
+     "css": [
+      750,
+      342
+     ]
+    },
+    {
+     "w": 2048,
+     "h": 256,
+     "mpx": 0.52,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1024,
+     "h": 256,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1024,
+     "h": 256,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 3,
+  "scriptPct": 1,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title"
+  ],
+  "reachedPlay": false,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 2,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 2,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 2062,
+  "inputLatencyP95Ms": 4000,
+  "inputLatencyMaxMs": 4000,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": null,
+  "samples": 0
+ },
+ "severity": 105,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "page did not answer the harness for 6 s (1 poll timeout(s))",
+  "blockPlayMs": 92,
+  "blockLoadMs": 1040,
+  "load1": 17.71
+ }
+}

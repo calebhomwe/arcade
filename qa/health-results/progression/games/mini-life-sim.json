@@ -1,0 +1,149 @@
+{
+ "id": "mini-life-sim",
+ "title": "Mini Life Sim",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/mini-life-sim/index.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "miniLifeSimSave",
+  "mls_best"
+ ],
+ "session1": {
+  "start": "#newBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 30,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "miniLifeSimSave"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": true,
+  "title1": "Day 1 08:00 $120 1x 5x 15x 60x Autonomy: on Goals 0/3 NEEDS Very happy Hunger 80 Bladder 80 Energy 80 Hygiene 80 Fun 80 Social 80 Mini Life ",
+  "title2": "Day 1 08:00 $120 1x 5x 15x 60x Autonomy: on Goals 0/3 NEEDS Very happy Hunger 80 Bladder 80 Energy 80 Hygiene 80 Fun 80 Social 80 Mini Life ",
+  "keysUpdatedAgain": [
+   "miniLifeSimSave"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "mls_tut",
+   "miniLifeSimSave"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "mls_tut": "1",
+   "miniLifeSimSave": "{\"time\":480,\"day\":1,\"speed\":5,\"paused\":false,\"autonomy\":true,\"money\":1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other"
+  ],
+  "categoriesPresent": [
+   "other"
+  ],
+  "writesDuringPlay": {
+   "miniLifeSimSave": "33x",
+   "mls_tut": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": false,
+   "dom": true,
+   "meta": false
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "goals",
+  "achievements"
+ ],
+ "claimedOnly": [
+  "upgrades",
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [],
+  "unclassifiedBlob": true
+ },
+ "level": 1,
+ "label": "P1",
+ "why": "saves some state but shows no unlock, upgrade, goal or level system",
+ "expected": [
+  "goals",
+  "unlocks",
+  "cosmetics",
+  "achievements",
+  "daily"
+ ],
+ "lacks": [
+  "cosmetics",
+  "daily"
+ ],
+ "pageErrors": []
+}

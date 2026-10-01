@@ -1,0 +1,254 @@
+{
+ "id": "survivor-wave",
+ "title": "Survivor Wave",
+ "cat": "arcade",
+ "genre": "arcade",
+ "src": "SurvivorWave/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 53.73 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.5; raw p95 82.2, median 5.75, p99 97.52, max 97.5; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.5)"
+ ],
+ "shots": {
+  "1-title": "shots/survivor-wave-1-title.jpg",
+  "2-mid": "shots/survivor-wave-2-mid.jpg",
+  "3-end": "shots/survivor-wave-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.71,
+  "cores": 4,
+  "load1End": 23.16,
+  "contention": 1.53,
+  "contentionSamples": [
+   1.53,
+   1.42,
+   1.53,
+   3.11,
+   1.44,
+   1.55,
+   1.06
+  ]
+ },
+ "loadMs": 2381,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:36997/SurvivorWave/index.html",
+ "startPath": "http://127.0.0.1:36997/SurvivorWave/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 113.3,
+  "bench1Ms": 55.9,
+  "effectiveSlowdown": 2
+ },
+ "start": {
+  "how": "tap centre + ▶ PLAY",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.53,
+  "loadMs": 678,
+  "playMs": 240,
+  "loadRawMs": 1038,
+  "playRawMs": 368,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 14,
+  "longTasks100Play": 5,
+  "tbtLoadMs": 486,
+  "tbtPlayMs": 368,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 8,
+  "slowestPollMs": 320,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 7009.2,
+   "blocking": 41.4,
+   "scripts": [
+    [
+     "SurvivorWave/index.html",
+     "http://127.0.0.1:36997/SurvivorWave/index.html",
+     16
+    ],
+    [
+     "SurvivorWave/index.html",
+     "http://127.0.0.1:36997/SurvivorWave/index.html",
+     5
+    ],
+    [
+     "SurvivorWave/index.html",
+     "http://127.0.0.1:36997/SurvivorWave/index.html",
+     5
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 4487.6,
+   "blocking": 0,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     6
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     5
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     11
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 3695.2,
+   "blocking": 115.4,
+   "scripts": [
+    [
+     "SurvivorWave/index.html",
+     "BUTTON#swQuickPlay.onclick",
+     77
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     13
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     21
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 40,
+  "jsMedian": 5.75,
+  "jsP95": 53.73,
+  "jsP99": 97.52,
+  "jsMax": 97.5,
+  "jsP95Raw": 82.2,
+  "rawWithGlP95": 82.2,
+  "glP95": 0,
+  "gapP95": 2966.5,
+  "gapMedian": 1633.2,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 3.2,
+  "heap1MB": 4,
+  "heapGrowthPct": 26,
+  "heapMeasured": true,
+  "nodesStart": 355,
+  "nodesEnd": 323,
+  "nodesMax": 362,
+  "listeners0": 277,
+  "listeners1": 277,
+  "audioContexts": 1,
+  "audioElements": 25,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 73,
+   "totalMB": 22.3,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 600,
+     "h": 600,
+     "mpx": 0.36,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 40
+ },
+ "cpu": {
+  "mainThreadBusyPct": 11,
+  "scriptPct": 6,
+  "layoutPerSec": 1.7
+ },
+ "risks": [
+  "25 Audio elements created"
+ ],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 5,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 2,
+  "buttonPresses": 2,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 2896,
+  "inputLatencyP95Ms": 4001,
+  "inputLatencyMaxMs": 4001,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 86.3,
+  "maxChangeFromStartPct": 68.6,
+  "samples": 4
+ },
+ "severity": 45.7
+}

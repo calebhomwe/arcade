@@ -1,0 +1,243 @@
+{
+ "id": "fishing-for-words",
+ "title": "Fishing for Words",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "WordFishing/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 31.97 ms over 16 ms (CPU throttled x4, divided by machine slowdown x2.5; raw p95 81.2, median 3.11, p99 51.1, max 51.1; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x2.5)"
+ ],
+ "shots": {
+  "1-title": null,
+  "2-mid": "shots/fishing-for-words-2-mid.jpg",
+  "3-end": "shots/fishing-for-words-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 22.67,
+  "cores": 4,
+  "load1End": 21.08,
+  "contention": 2.54,
+  "contentionSamples": [
+   26.41,
+   2.54,
+   3.45,
+   1.51,
+   2.9,
+   1.18,
+   1.14
+  ]
+ },
+ "loadMs": 888,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:38637/WordFishing/index.html",
+ "startPath": "http://127.0.0.1:38637/WordFishing/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 192.4,
+  "bench1Ms": 99.3,
+  "effectiveSlowdown": 1.9
+ },
+ "start": {
+  "how": "#btn-spell",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 2.54,
+  "loadMs": 99,
+  "playMs": 286,
+  "loadRawMs": 251,
+  "playRawMs": 727,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 11,
+  "longTasks100Play": 1,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 213,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 4,
+  "slowestPollMs": 624,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 16553.9,
+   "blocking": 64.8,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     23
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     20
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     5
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 7173.6,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     8
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 4326.1,
+   "blocking": 93.5,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     125
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     5
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     16
+    ]
+   ],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 66,
+  "jsMedian": 3.11,
+  "jsP95": 31.97,
+  "jsP99": 51.1,
+  "jsMax": 51.1,
+  "jsP95Raw": 81.2,
+  "rawWithGlP95": 81.2,
+  "glP95": 0,
+  "gapP95": 1533.3,
+  "gapMedian": 533.3,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.4,
+  "heap1MB": 2.5,
+  "heapGrowthPct": 7,
+  "heapMeasured": true,
+  "nodesStart": 120,
+  "nodesEnd": 122,
+  "nodesMax": 122,
+  "listeners0": 66,
+  "listeners1": 65,
+  "audioContexts": 2,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 28,
+   "totalMB": 12.9,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 804,
+     "h": 296,
+     "mpx": 0.24,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 796,
+     "h": 260,
+     "mpx": 0.21,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 6,
+  "scriptPct": 3,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 7,
+  "swipes": 1,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 3,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 952,
+  "inputLatencyP95Ms": 4002,
+  "inputLatencyMaxMs": 4002,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": 43.4,
+  "samples": 5
+ },
+ "severity": 42.3
+}

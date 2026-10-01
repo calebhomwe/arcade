@@ -1,22 +1,22 @@
 {
   "howto": [
-    "Pick Pass & Play or a CPU (Easy, Normal or Hard) and press Play.",
-    "Tap a column to drop a disc: it falls to the lowest free hole.",
-    "Red always goes first, then Yellow.",
-    "Four in a row across, down or diagonally wins. A full board is a draw."
+    "Press Play to face the next critter on the ladder, or pick Two players.",
+    "Tap a column (or drag along the board and let go): your disc drops to the lowest free hole.",
+    "Four in a row across, down or diagonally wins the round. Win two rounds before your opponent (three rounds at most).",
+    "Win 2 to 0 for three stars. Beat a critter to unlock the next one."
   ],
   "tips": [
     "The middle column is part of the most possible fours: start there.",
     "Before you drop, check the hole above your disc: could it hand the other player a win?",
-    "Build two threats at once; the other player can only block one.",
-    "Drop a disc in the gold ⚡ column to earn a hint coin.",
-    "Undo takes back your move and the CPU's reply."
+    "Build two threats at once; your opponent can only block one.",
+    "You get 2 hints per match: use them when a four looks close.",
+    "Undo takes back your move and the critter's reply."
   ],
   "controls": {
-    "keyboard": "1 to 7 drop in a column, or Left/Right then Enter. Z undoes, N starts a new round. P or Esc pauses.",
-    "touch": "Tap a column. New Round, Undo and Hint sit under the board."
+    "keyboard": "1 to 7 drop in a column, or Tab/Left/Right then Enter. Z undoes, H hints. P or Esc pauses.",
+    "touch": "Tap a column, or slide along the board and lift your finger. Undo, Hint and Menu sit under the board."
   },
-  "difficulty": "Easy CPU always takes a win but otherwise plays a random column almost half the time; Normal always takes a win, blocks yours and avoids handing you one; Hard searches six moves ahead.",
+  "difficulty": "A six-critter ladder: Mousey plays almost at random, Bunny always takes wins and blocks yours, Kitty looks 3 moves ahead, Foxy 5, Owl 7 and the Dragon boss 9. Two-player mode is always available.",
   "cheats": [
     {
       "code": "CPUNAP",
@@ -28,19 +28,25 @@
     },
     {
       "code": "EXTRACOINS",
-      "effect": "Ten extra ⚡ coins for hints"
+      "effect": "Ten extra hints"
     }
   ],
   "features": {
-    "rules-screen": "The title card lists the three rules; Pause > How to play has them too, and Replay tutorial brings the card back",
-    "ai-difficulty": "Easy, Normal and Hard CPU on the title (Hard uses a six-move search)",
-    "undo": "Undo button (or Z) takes back your last move and the CPU's reply; in Pass & Play one move at a time",
-    "results": "Win, lose or draw card with the score, streak and totals; the winning four glow and a line is drawn through them"
+    "rules-screen": "The How-to card (title, Pause > How to play) lists the rules; the first match has coach notes",
+    "ai-difficulty": "Six critters from a random player to a nine-move search",
+    "undo": "Undo button (Z key) takes back your move and the critter's reply; in Two players one move at a time",
+    "hints": "Hint (2 per match, H key): rings the column that wins, blocks or builds the best position",
+    "level-select-or-daily": "The Ladder: six critters, three stars each, each one unlocking the next",
+    "results": "Round banners with a gold line through the winning four; a match card with stars, round score and XP",
+    "tutorial": "First match: coach notes teach the drop and the four-in-a-row goal; skippable, replayed from How to play",
+    "progression": "6 opponents x 3 stars; XP levels unlock 6 disc sets (enamel, wood and ivory, marble tavern, emerald, neon, gold and silver); 3 daily goals and a weekly stamp chest"
   },
   "saves": [
     "c4Best",
-    "c4Wins"
+    "c4Wins",
+    "c4_ladder",
+    "pz_c4"
   ],
-  "start": "#playBtn",
-  "pauseButton": "br"
+  "start": "#mPlay",
+  "pauseButton": "tr"
 }

@@ -1,0 +1,204 @@
+{
+ "id": "hub-flappy-flight",
+ "title": "Flappy Flight",
+ "cat": "arcade",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.4)"
+ ],
+ "shots": {
+  "1-title": "shots/hub-flappy-flight-1-title.jpg",
+  "2-mid": "shots/hub-flappy-flight-2-mid.jpg",
+  "3-end": "shots/hub-flappy-flight-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 18.05,
+  "cores": 4,
+  "load1End": 18.36,
+  "contention": 1.36,
+  "contentionSamples": [
+   1.32,
+   1.57,
+   1.36,
+   1.62,
+   4.93,
+   1.35,
+   1.27
+  ]
+ },
+ "loadMs": 993,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 142.1,
+  "bench1Ms": 36.2,
+  "effectiveSlowdown": 3.9
+ },
+ "start": {
+  "how": "#playBtn + tap on game",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.36,
+  "loadMs": 478,
+  "playMs": 174,
+  "loadRawMs": 650,
+  "playRawMs": 237,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 2,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 54,
+  "tbtPlayMs": 3,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 1,
+  "slowestPollMs": 165,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 1806.3,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "start"
+  },
+  {
+   "ms": 1693.7,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 1592.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 121,
+  "jsMedian": 0.59,
+  "jsP95": 4.78,
+  "jsP99": 8.9,
+  "jsMax": 10.1,
+  "jsP95Raw": 6.5,
+  "rawWithGlP95": 6.5,
+  "glP95": 0,
+  "gapP95": 1233.3,
+  "gapMedian": 466.7,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2,
+  "heapGrowthPct": 3,
+  "heapMeasured": true,
+  "nodesStart": 61,
+  "nodesEnd": 61,
+  "nodesMax": 61,
+  "listeners0": 51,
+  "listeners1": 51,
+  "audioContexts": 1,
+  "audioElements": 12,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4.5,
+   "biggest": [
+    {
+     "w": 840,
+     "h": 1400,
+     "mpx": 1.18,
+     "dom": true,
+     "css": [
+      390,
+      650
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 3,
+  "scriptPct": 1,
+  "layoutPerSec": 0.3
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 3,
+  "restartsAfterOver": 2
+ },
+ "gameScore": {
+  "updates": 3,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    35,
+    0
+   ],
+   [
+    50,
+    0
+   ],
+   [
+    68,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 15,
+  "swipes": 1,
+  "holds": 1,
+  "keys": 2,
+  "buttonPresses": 10,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1029,
+  "inputLatencyP95Ms": 3999,
+  "inputLatencyMaxMs": 3999,
+  "inputTimeouts": 1
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 91.4,
+  "maxChangeFromStartPct": 94.9,
+  "samples": 9
+ },
+ "severity": 0.5
+}

@@ -1,0 +1,234 @@
+{
+ "id": "godot-tidebreak",
+ "title": "TIDEBREAK",
+ "cat": "arcade",
+ "genre": "board-sports",
+ "src": "Godot/tidebreak/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK",
+  "STALL"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 7691 ms (during load), 1874 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 3957 ms of JS; long-task API + timer heartbeat; longest frame 6532.8 ms: _engine/godot.js IDBRequest.onsuccess 6473 /  FrameRequestCallback 30",
+  "JANK": "p95 JS frame cost 18.37 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.5; raw p95 27, median 6.33, p99 28.37, max 106.6; time inside WebGL calls excluded, p95 of it 538.1)",
+  "STALL": "game never reported play after the start attempts (start: tap centre + tap on game); scenes seen: title | nothing on screen changed for 42 s while the bot kept tapping"
+ },
+ "notes": [
+  "3 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.5)"
+ ],
+ "shots": {
+  "1-title": "shots/godot-tidebreak-1-title.jpg",
+  "2-mid": "shots/godot-tidebreak-2-mid.jpg",
+  "3-end": "shots/godot-tidebreak-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 21.51,
+  "cores": 4,
+  "load1End": 17.69,
+  "contention": 1.47,
+  "contentionSamples": [
+   1.31,
+   1.08,
+   1.47,
+   1.58,
+   1.15,
+   2.22,
+   2.08
+  ]
+ },
+ "loadMs": 526,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:33001/Godot/tidebreak/index.html",
+ "startPath": "http://127.0.0.1:33001/Godot/tidebreak/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 122.7,
+  "bench1Ms": 31,
+  "effectiveSlowdown": 4
+ },
+ "start": {
+  "how": "tap centre + tap on game",
+  "viaKey": false,
+  "detectedBy": null
+ },
+ "block": {
+  "c": 1.47,
+  "loadMs": 3957,
+  "playMs": 210,
+  "loadRawMs": 7691,
+  "playRawMs": 1036,
+  "playGlMs": 727,
+  "loadGlMs": 1874,
+  "longTasksPlay": 219,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 3117,
+  "tbtPlayMs": 0,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 2,
+  "slowestPollMs": 793,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0.3,
+  "shaderCompileMaxCallMs": 0.1
+ },
+ "loafTop": [
+  {
+   "ms": 6532.8,
+   "blocking": 6459.2,
+   "scripts": [
+    [
+     "_engine/godot.js",
+     "IDBRequest.onsuccess",
+     6473
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     30
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 1204.1,
+   "blocking": 1068.5,
+   "scripts": [
+    [
+     "_engine/godot.js",
+     "AudioContext.onstatechange",
+     6
+    ],
+    [
+     "_engine/godot.js",
+     "IDBRequest.onsuccess",
+     28
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     1089
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 972,
+   "blocking": 920.8,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     970
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 224,
+  "jsMedian": 6.33,
+  "jsP95": 18.37,
+  "jsP99": 28.37,
+  "jsMax": 106.6,
+  "jsP95Raw": 27,
+  "rawWithGlP95": 543.9,
+  "glP95": 538.1,
+  "gapP95": 616.6,
+  "gapMedian": 266.6,
+  "over100": 1,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [
+  "WARNING: Occlusion culling is disabled at build-time.",
+  "   at: _print_warning (./servers/rendering/renderer_scene_occlusion_cull.h:211)"
+ ],
+ "failed": [],
+ "resources": {
+  "heap0MB": 8.9,
+  "heap1MB": 8.9,
+  "heapGrowthPct": 0,
+  "heapMeasured": true,
+  "nodesStart": 33,
+  "nodesEnd": 23,
+  "nodesMax": 33,
+  "listeners0": 78,
+  "listeners1": 78,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 3,
+  "canvases": {
+   "n": 1,
+   "totalMB": 3.6,
+   "biggest": [
+    {
+     "w": 741,
+     "h": 1261,
+     "mpx": 0.93,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 1.9
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 97,
+  "scriptPct": 94,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title"
+  ],
+  "reachedPlay": false,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 9,
+  "swipes": 3,
+  "holds": 0,
+  "keys": 2,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 609,
+  "inputLatencyP95Ms": 4034,
+  "inputLatencyMaxMs": 4034,
+  "inputTimeouts": 3
+ },
+ "screen": {
+  "longestStaticS": 42.3,
+  "changeTitleToPlayPct": 0,
+  "maxChangeFromStartPct": 0,
+  "samples": 8
+ },
+ "severity": 110,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "JANK",
+   "STALL"
+  ],
+  "evidence": "main thread blocked 5451 ms (during load), 490 ms of it inside WebGL calls (software GL), machine slowdown x1.5 -> about 3375 ms of JS; long-task API + timer heartbeat; longest frame 5526.1 ms: _engine/godot.js IDBRequest.onsuccess 5429 /  FrameRequestCallback 79",
+  "blockPlayMs": 485,
+  "blockLoadMs": 3375,
+  "load1": 18.25
+ }
+}

@@ -5,154 +5,133 @@
 <script src="../assets/arcade-sdk.js"></script>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
 <link rel="modulepreload" href="vendor/three/three.module.min.js">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#3f6fa8">
+<link rel="stylesheet" href="./gk.css">
 <title>HOLE GRIND</title>
 <style>
-  :root{
-    --ink:#0b0d12; --panel:#151a24; --panel2:#1d2432; --line:#2c3547;
-    --text:#e8edf7; --dim:#8b97ad; --gold:#ffc94a; --good:#57d98a; --bad:#ff6b6b;
-  }
+  :root{ --ink:#07132a; --gold:#ffd35c; }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:var(--ink);color:var(--text);
-    font-family:ui-monospace,"Consolas","DejaVu Sans Mono",monospace;overflow:hidden;
-    -webkit-user-select:none;user-select:none;touch-action:none}
+  html,body{margin:0;height:100%;background:#3f6fa8;color:#fff;font-family:var(--gk-body);overflow:hidden;
+    -webkit-user-select:none;user-select:none;touch-action:none;overscroll-behavior:none}
   /* A canvas is a REPLACED element: with width:auto, `inset:0` does NOT stretch it --
      it keeps its 300x150 intrinsic size and the whole game renders into a postage
      stamp in the top-left. Explicit viewport units are required. */
   #game,#hudc{position:fixed;left:0;top:0;width:100vw;height:100vh;display:block}
   #hudc{pointer-events:none;z-index:2}
   #fx{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
-  #fx .pop{position:absolute;left:0;top:0;font-size:16px;font-weight:800;color:#ffe08a;letter-spacing:1px;
-    text-shadow:0 2px 0 #3a2a00,0 0 10px rgba(0,0,0,.6);white-space:nowrap;will-change:transform,opacity}
-  #fx .pop.big{font-size:22px;color:#fff3b0}
-  #fx .tag{position:absolute;left:0;top:0;font-size:12px;font-weight:800;letter-spacing:2px;padding:2px 8px;border-radius:6px;
-    background:rgba(10,14,20,.62);color:#cfe0ff;white-space:nowrap}
-  #fx .tag.you{color:#9cc6ff;border:1px solid rgba(127,184,255,.6)}
-  #loading{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:30;font-size:12px;letter-spacing:3px;color:var(--dim)}
-  .layer{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
-    background:linear-gradient(180deg,rgba(6,8,12,.30),rgba(6,8,12,.62));z-index:10}
+  #fx .pop{position:absolute;left:0;top:0;font:900 20px/1 var(--gk-body);color:#fff;letter-spacing:.01em;
+    -webkit-text-stroke:3px rgba(7,19,42,.75);paint-order:stroke fill;text-shadow:0 3px 8px rgba(0,0,0,.4);white-space:nowrap;will-change:transform,opacity}
+  #fx .pop.big{font-size:28px;color:var(--gold)}
+  #fx .tag{position:absolute;left:0;top:0;font:900 13px/1 var(--gk-body);letter-spacing:.08em;padding:3px 9px;border-radius:8px;
+    background:linear-gradient(180deg,rgba(40,78,134,.92),rgba(11,28,58,.95));color:#fff;white-space:nowrap;border:1.5px solid var(--gold2);text-shadow:0 1px 0 rgba(0,0,0,.6)}
+  #fx .tag.you{color:#bfe0ff;border-color:#86c6ff}
+  #loading{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:30;font:800 13px/1 var(--gk-body);letter-spacing:.3em;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.7)}
+  .layer{display:none}
   .layer.on{display:flex}
-  .card{width:min(760px,94vw);max-height:92vh;overflow:auto;background:var(--panel);
-    border:1px solid var(--line);border-radius:14px;padding:22px 24px;
-    box-shadow:0 18px 60px rgba(0,0,0,.6)}
-  h1{margin:0 0 2px;font-size:34px;letter-spacing:6px}
-  h2{margin:18px 0 8px;font-size:14px;letter-spacing:3px;color:var(--dim);font-weight:600}
-  .sub{color:var(--dim);font-size:12px;margin-bottom:14px;line-height:1.6}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .stat{flex:1 1 120px;background:var(--panel2);border:1px solid var(--line);
-    border-radius:9px;padding:9px 11px}
-  .stat b{display:block;font-size:19px;color:var(--gold)}
-  .stat span{font-size:12px;color:var(--dim);letter-spacing:2px}
-  button{font-family:inherit;font-size:13px;color:var(--text);background:var(--panel2);
-    border:1px solid var(--line);border-radius:9px;padding:10px 16px;cursor:pointer;
-    letter-spacing:1px;transition:background .12s,border-color .12s;min-height:44px}
-  button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-  button:hover:not(:disabled){background:#28324a;border-color:#455madd}
-  button:disabled{opacity:.4;cursor:not-allowed}
-  button.go{background:#2a6cf0;border-color:#4a86ff;font-size:15px;padding:13px 26px;font-weight:700}
-  button.go:hover{background:#3a7cff}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:8px}
-  .up{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
-  .up .t{font-size:12px;font-weight:700;letter-spacing:1px}
-  .up .d{font-size:12px;color:var(--dim);margin:3px 0 8px;line-height:1.5;min-height:28px}
-  .up .b{display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .pips{font-size:12px;color:var(--gold);letter-spacing:2px}
-  .dist{background:var(--panel2);border:1px solid var(--line);border-radius:9px;
-    padding:9px 11px;cursor:pointer;font-size:12px;display:block;width:100%;text-align:left;color:var(--text);letter-spacing:0}
-  .dist.sel{border-color:var(--gold);background:#2a2517}
-  .dist.lock{opacity:.5;cursor:pointer}
-  .dist .n{font-weight:700;letter-spacing:1px}
-  .dist .m{font-size:12px;color:var(--dim);margin-top:3px}
-  .bar{height:7px;background:#0d1017;border-radius:4px;overflow:hidden;margin-top:6px}
-  .bar i{display:block;height:100%;background:linear-gradient(90deg,#2a6cf0,#57d98a)}
-  .keys{font-size:12px;color:var(--dim);margin-top:14px;letter-spacing:1px}
-  /* codes-on tag and the first-run coach card, in the hub's panel style */
-  .codes-on{position:fixed;left:14px;top:132px;z-index:6;font-size:12px;font-weight:700;letter-spacing:2px;color:#0b0d12;
-    background:var(--gold);border-radius:6px;padding:4px 9px;pointer-events:none}
+  .codes-on{position:fixed;left:calc(12px + env(safe-area-inset-left,0px));top:calc(150px + env(safe-area-inset-top,0px));z-index:6;font:900 13px/1 var(--gk-body);letter-spacing:.14em;color:#3b2814;
+    background:linear-gradient(#ffe38c,#f0b33a);border:2px solid #7a4a08;border-radius:8px;padding:5px 9px;pointer-events:none}
   .codes-on[hidden]{display:none}
-  #coach{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:8;width:min(420px,calc(100vw - 32px));
-    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px 12px;text-align:center;
-    box-shadow:0 18px 60px rgba(0,0,0,.6);pointer-events:none;display:none}
+  /* HUD: time, quota bar with three stars, score, size of the hole and what it can eat next */
+  #hudd{display:none}
+  #hudd.on{display:flex}
+  #hudd .gk-score{text-align:left;margin:0;font-size:clamp(40px,12vw,56px)}
+  :root{--gk-tt:176px}
+  .gk-size{width:min(68%,260px);align-self:flex-start;padding:7px 12px 8px;border-radius:12px;pointer-events:none;font:800 15px/1.1 var(--gk-body);
+    background:linear-gradient(180deg,rgba(40,78,134,.93),rgba(11,28,58,.95));border:2px solid var(--line);box-shadow:inset 0 0 0 1.5px rgba(240,179,58,.7),0 6px 12px rgba(0,0,0,.35)}
+  .gk-size .l{display:flex;justify-content:space-between;gap:10px;align-items:baseline;text-shadow:0 1px 0 rgba(0,0,0,.6)}
+  .gk-size .l b{font:900 22px/1 var(--gk-body);color:#9be566}
+  .gk-size .l span{color:#d3def2;font-size:14px;text-align:right}
+  .gk-size .pb{height:9px;margin-top:6px;border-radius:5px;background:#0a1730;border:1.5px solid var(--line);overflow:hidden}
+  .gk-size .pb i{display:block;height:100%;width:0;background:linear-gradient(#c6f59a,var(--g2))}
+  .gk-lv{gap:6px}
+  .gk-lv .gk-mini{width:44px;margin:0}
+  #coach{padding:8px 12px !important;position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:8;width:min(400px,calc(100vw - 28px));
+    text-align:center;pointer-events:none;display:none;padding:12px 16px 12px;border-radius:16px;
+    background:linear-gradient(180deg,rgba(40,78,134,.96),rgba(11,28,58,.97));border:2px solid var(--line);box-shadow:inset 0 0 0 1.5px rgba(240,179,58,.78),0 12px 24px rgba(0,0,0,.45)}
   #coach.on{display:block}
-  #coach h2{margin:0 0 4px;color:var(--gold)}
-  #coach .big{font-size:22px;font-weight:700;letter-spacing:4px}
-  #coach .sub{margin:6px 0 0}
-  #coach button{pointer-events:auto;margin-top:10px}
+  #coach .demo,#coach h2,#coach .sub{display:none}
+  #coach h2{margin:0 0 3px;font:900 13px/1 var(--gk-body);letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+  #coach .big{font:900 22px/1.1 var(--gk-body);letter-spacing:.04em;text-transform:uppercase;text-shadow:0 2px 0 rgba(0,0,0,.6)}
+  #coach .sub{margin:6px 0 0;font:700 14px/1.3 var(--gk-body);color:#d3def2}
+  #coach button{pointer-events:auto;margin-top:8px}
   .demo{position:relative;width:200px;height:56px;margin:8px auto 0}
   .demo .h{position:absolute;left:12px;top:10px;width:36px;height:36px;border-radius:50%;
-    background:radial-gradient(#000 55%,#14203a);box-shadow:0 0 0 2px rgba(120,170,255,.85);animation:hgSteer 2.6s ease-in-out infinite}
-  .demo .c{position:absolute;top:22px;width:12px;height:12px;border-radius:50%;background:#ffd75e;animation:hgGulp 2.6s linear infinite}
+    background:radial-gradient(#000 55%,#14203a);box-shadow:0 0 0 3px rgba(255,211,92,.9);animation:hgSteer 2.6s ease-in-out infinite}
+  .demo .c{position:absolute;top:22px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6c8,#f0b33a);animation:hgGulp 2.6s linear infinite}
   .demo .c1{left:80px}.demo .c2{left:120px;animation-delay:.35s}.demo .c3{left:160px;animation-delay:.7s}
   @keyframes hgSteer{0%{left:12px}80%,100%{left:156px}}
   @keyframes hgGulp{0%,20%{opacity:1;transform:scale(1)}40%,100%{opacity:0;transform:scale(.2)}}
-  .gfx{margin-left:auto}
-  /* DROP IN stays in view at the bottom of the hub card on short screens, even while the shop scrolls */
-  #hubActions{position:sticky;bottom:-22px;z-index:1;background:var(--panel);padding:10px 0 12px;
-    box-shadow:0 -10px 14px -8px var(--panel)}
-  @media (max-width:560px){ #coach{bottom:calc(50% + 34px);padding:10px 14px} }   /* phones: above the hole; the minimap owns the bottom corner */
-  html body #arcade-sdk-btn{position:fixed;width:44px;height:44px;border-radius:9px;background:rgba(10,14,20,.72);
-    border:1px solid var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;min-height:0}
-  @media (prefers-reduced-motion:reduce){
-    .demo .h,.demo .c{animation:none}
-    #toast{transition:none}
-  }
-  #toast{position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:20;
-    pointer-events:none;font-size:13px;letter-spacing:2px;color:var(--gold);
-    text-shadow:0 2px 10px #000;opacity:0;transition:opacity .25s}
-  #toast.on{opacity:1}
+  /* hub */
+  #hub .gk-pick .mid{min-width:190px}
+  #hub .gk-pick .lv{font-size:clamp(28px,8.5vw,36px)}
+  #hub .info{font:800 13px/1.2 var(--gk-body);color:#e8eefb;text-shadow:0 2px 3px rgba(0,0,0,.8);letter-spacing:.04em}
+  #hub .info.lock{color:#ffd35c}
+  html body #arcade-sdk-btn{position:fixed;width:44px;height:44px;border-radius:12px;background:linear-gradient(180deg,rgba(40,78,134,.95),rgba(11,28,58,.97));
+    border:2px solid #050d1f;box-shadow:inset 0 0 0 1.5px rgba(240,179,58,.78);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;min-height:0}
+  @media (prefers-reduced-motion:reduce){ .demo .h,.demo .c{animation:none} }
 </style>
 </head>
-<body>
+<body class="gk">
 <canvas id="game"></canvas>
 <canvas id="hudc"></canvas>
 <div id="fx"></div>
 <div id="loading">LOADING THE CITY…</div>
-<div id="toast"></div>
 <div class="codes-on" id="codesOn" hidden>CODES ON · NOT SAVED</div>
+
+<div class="gk-hud" id="hudd">
+  <div class="gk-row">
+    <span class="gk-chip" id="timeChip"></span>
+    <div id="qbar" style="flex:1;min-width:0"></div>
+    <span style="width:50px;flex:none"></span>
+  </div>
+  <div class="gk-row" style="justify-content:flex-start;gap:10px">
+    <div class="gk-score gk-out" id="scoreBig">0</div>
+    <span class="gk-chip dim" id="rivChip"></span>
+  </div>
+  <div class="gk-size" id="sizeP"><div class="l"><b id="sizeV">9.0</b><span id="nextT"></span></div><div class="pb"><i id="sizeBar"></i></div></div>
+</div>
+
 <div id="coach" role="status" aria-live="polite">
   <h2 id="coachKick">FIRST DROP</h2>
   <div class="big" id="coachBig">STEER THE HOLE</div>
   <div class="demo" id="coachDemo" aria-hidden="true"><i class="c c1"></i><i class="c c2"></i><i class="c c3"></i><i class="h"></i></div>
   <div class="sub" id="coachText"></div>
-  <button id="coachSkip">SKIP</button>
+  <button class="gk-btn xs dark" id="coachSkip">SKIP</button>
 </div>
 
-<div class="layer on" id="hub"><div class="card">
-  <h1>HOLE GRIND</h1>
-  <div class="sub">Steer the hole. Swallow anything smaller than you. Grow, then swallow
-    what used to be too big. Rival holes eat you if they get bigger first.</div>
-  <div class="row" id="hubStats"></div>
-  <h2>DISTRICT</h2>
-  <div class="grid" id="districts"></div>
-  <h2>UPGRADES</h2>
-  <div class="grid" id="upgrades"></div>
-  <div class="row" id="hubActions" style="margin-top:18px">
-    <button class="go" id="btnPlay">DROP IN</button>
-    <button id="btnWipe">WIPE SAVE</button>
-    <button class="gfx" id="btnGfx" aria-label="Graphics quality">GRAPHICS: HIGH</button>
-  </div>
-  <div class="keys">WASD / ARROWS / hold MOUSE or FINGER to move &nbsp;·&nbsp; P or ESC pauses &nbsp;·&nbsp;
-    everything saves locally, works offline</div>
-</div></div>
+<div class="gk-screen layer on" id="hub">
+  <div class="gk-tb"><span class="gk-chip" id="coinChip"></span><span class="gk-chip gk-lv" id="lvChip"></span></div>
+  <h1 class="gk-logo">Hole<span class="l2">Grind</span></h1>
+  <div id="districts" class="gk-pick"></div>
+  <div class="gk-goals row" id="dgoals"></div>
+  <button class="gk-btn green wide throb" id="btnPlay" type="button">DROP IN</button>
+  <div class="gk-menu"><button class="gk-btn sm dark" id="btnUp" type="button"></button><button class="gk-btn sm dark" id="btnSkins" type="button"></button></div>
+  <div id="dailyHost"></div>
+  <div class="gk-menu"><button class="gk-btn xs dark" id="btnGfx" type="button" aria-label="Graphics quality">GRAPHICS: HIGH</button><button class="gk-btn xs dark" id="btnWipe" type="button">WIPE SAVE</button></div>
+</div>
 
-<div class="layer" id="over"><div class="card">
-  <h1 id="ovTitle">RUN OVER</h1>
-  <div class="sub" id="ovWhy"></div>
-  <div class="row" id="ovStats"></div>
-  <h2>PROGRESS</h2>
-  <div id="ovProg" class="sub"></div>
-  <div class="row" style="margin-top:14px">
-    <button class="go" id="btnAgain">RUN AGAIN</button>
-    <button id="btnHub">HUB</button>
+<div class="gk-screen dim layer" id="over">
+  <div class="gk-card">
+    <div class="gk-head" id="ovHead"><h2 id="ovTitle">RUN OVER</h2></div>
+    <div class="gk-stars" id="ovStars"></div>
+    <div><div class="gk-big gk-out" id="ovScore">0</div><div class="gk-cap">Score <span class="gk-newbest gk-hidden" id="ovNew">NEW BEST</span></div></div>
+    <div class="gk-stat" id="ovStats"></div>
+    <div class="gk-goals card" id="ovGoals"></div>
+    <div id="ovProg" class="gk-note"></div>
+    <button class="gk-btn green wide" id="btnAgain" type="button"></button>
+    <div class="gk-menu"><button class="gk-btn sm dark" id="btnHub" type="button"></button></div>
   </div>
-</div></div>
+</div>
 
-<div class="layer" id="pause"><div class="card">
-  <h1>PAUSED</h1>
-  <div class="sub">Nothing is uploading anywhere. Take your time.</div>
-  <div class="row"><button class="go" id="btnResume">RESUME</button>
-  <button id="btnQuit">ABANDON RUN</button></div>
-</div></div>
+<div class="gk-screen dim layer" id="pause">
+  <div class="gk-card">
+    <div class="gk-head"><h2>PAUSED</h2></div>
+    <p>Nothing is uploading anywhere. Take your time.</p>
+    <button class="gk-btn green wide" id="btnResume" type="button">RESUME</button>
+    <button class="gk-btn sm dark" id="btnQuit" type="button">ABANDON RUN</button>
+  </div>
+</div>
 
 <script type="module">
 /* ------------------------------------------------------------------ *
@@ -162,6 +141,7 @@
  * ------------------------------------------------------------------ */
 import { HoleWorld, REDUCED } from './hole3d.js';
 import * as THREE from 'three';
+import { GK } from './gk.js';
 
 //// ---------- tuning ----------
 const BASE_R      = 9;      // starting hole radius (px, world space)
@@ -185,32 +165,33 @@ const TIERS = [
   {n:"tower",  r:80, m:2200, c:"#8e96ad", mods:["towerA","towerC","towerE","towerG","skyA","skyB","skyC","skyE"]},
 ];
 
-// district look: ground palette and sky
+// district look: ground palette and sky (golden hour, natural colours; the ground textures are CC0 ambientCG, tinted per district)
 const DISTRICTS = [
-  {n:"SUBURB",    cost:0,     rivals:1, dens:1.00, top:5, mult:1.00, tint:"#1b2a1f",
-   look:{lawn:"#8fd06a", lawn2:"#83c65f", walk:"#ece6d8", road:"#5d6573", line:"#ffffff", lot:"#9ad978", sky:["#63b3ff","#e4f5ff"], hemi:0.95, sun:1.9}},
-  {n:"DOWNTOWN",  cost:900,   rivals:2, dens:1.15, top:6, mult:1.35, tint:"#1b2130",
-   look:{lawn:"#d8d1c4", lawn2:"#cfc7b8", walk:"#f1ece2", road:"#4f5664", line:"#ffe27a", lot:"#e3dccf", sky:["#7aa9ff","#ffe8d2"], hemi:0.9, sun:2.0}},
-  {n:"HARBOUR",   cost:4500,  rivals:3, dens:1.25, top:7, mult:1.75, tint:"#152730",
-   look:{lawn:"#bfc9c3", lawn2:"#b4beb8", walk:"#e4e0d4", road:"#56606b", line:"#ffffff", lot:"#cad3cd", sky:["#4fb4ff","#d9f4ff"], hemi:0.95, sun:1.85}},
-  {n:"SKYLINE",   cost:18000, rivals:4, dens:1.35, top:8, mult:2.30, tint:"#251c2e",
-   look:{lawn:"#a7a2b8", lawn2:"#9d98ae", walk:"#d9d3e0", road:"#474556", line:"#ffd27a", lot:"#b3aec4", sky:["#3f4f9a","#ffb38a"], hemi:0.8, sun:1.75}},
-  {n:"THE VOID",  cost:60000, rivals:5, dens:1.50, top:8, mult:3.20, tint:"#241a1a",
-   look:{lawn:"#5b4f78", lawn2:"#54486f", walk:"#8a7fa6", road:"#2b273a", line:"#c69bff", lot:"#665a84", sky:["#1d1545","#8a4fb0"], hemi:0.75, sun:1.4}},
+  {n:"SUBURB",    cost:0,     rivals:1, dens:1.00, top:5, mult:1.00, tint:"#1b2a1f", tag:"Quiet streets, big lawns",
+   look:{lawn:"#9cc26f", lawn2:"#8db462", walk:"#ddd0b6", road:"#67635f", line:"#f4ead0", lot:"#a9c982", sky:["#3f6fa8","#f3c58e"], glow:"#ffb464", hemi:0.85, sun:3.0, tint:0.55}},
+  {n:"DOWNTOWN",  cost:900,   rivals:2, dens:1.15, top:6, mult:1.35, tint:"#1b2130", tag:"Traffic and tall glass",
+   look:{lawn:"#cdbf9f", lawn2:"#c2b491", walk:"#e6d9bf", road:"#575a63", line:"#ffd97a", lot:"#d8ccb0", sky:["#4a6fa0","#f0cfa8"], glow:"#ffbe78", hemi:0.85, sun:3.0, tint:0.5}},
+  {n:"HARBOUR",   cost:4500,  rivals:3, dens:1.25, top:7, mult:1.75, tint:"#152730", tag:"Docks, trucks and salt air",
+   look:{lawn:"#b3bfb2", lawn2:"#a7b3a6", walk:"#d9d3c0", road:"#5a636d", line:"#f4ead0", lot:"#bfcabd", sky:["#2f7fb0","#d8ecf0"], glow:"#fff0b8", hemi:0.9, sun:2.8, tint:0.5}},
+  {n:"SKYLINE",   cost:18000, rivals:4, dens:1.35, top:8, mult:2.30, tint:"#251c2e", tag:"Rooftop dusk, rival hunters",
+   look:{lawn:"#a49aa8", lawn2:"#998fa0", walk:"#cfc4cf", road:"#4a4858", line:"#ffcf80", lot:"#b0a6b6", sky:["#2a2f6a","#f0a070"], glow:"#ff9a5a", hemi:0.8, sun:2.9, tint:0.55}},
+  {n:"THE VOID",  cost:60000, rivals:5, dens:1.50, top:8, mult:3.20, tint:"#241a1a", tag:"No rules. Everything bites.",
+   look:{lawn:"#5b4f78", lawn2:"#54486f", walk:"#8a7fa6", road:"#2b273a", line:"#c69bff", lot:"#665a84", sky:["#150f36","#6a3a8a"], glow:"#c08aff", hemi:0.75, sun:2.2, tint:0.7}},
 ];
+const STAR_AT = [0.5, 1.0, 1.8];   // a district run earns a star at half the quota, at the quota (cleared) and at 1.8x
 
 const UPGRADES = [
-  {id:"size",  t:"WIDE MOUTH",  max:10, cost:i=>120*Math.pow(1.55,i),
+  {id:"size", ic:"ball",  t:"WIDE MOUTH",  max:10, cost:i=>120*Math.pow(1.55,i),
    d:"Start each run bigger.",            f:i=>`+${(i*7)}% start radius`},
-  {id:"speed", t:"SLIPSTREAM",  max:10, cost:i=>140*Math.pow(1.55,i),
+  {id:"speed", ic:"bolt", t:"SLIPSTREAM",  max:10, cost:i=>140*Math.pow(1.55,i),
    d:"Move faster across the map.",       f:i=>`+${(i*6)}% speed`},
-  {id:"time",  t:"OVERTIME",    max:10, cost:i=>200*Math.pow(1.6,i),
+  {id:"time", ic:"clock",  t:"OVERTIME",    max:10, cost:i=>200*Math.pow(1.6,i),
    d:"Longer runs, more to swallow.",     f:i=>`+${i*6}s run time`},
-  {id:"pull",  t:"GRAVITY WELL",max:8,  cost:i=>180*Math.pow(1.6,i),
+  {id:"pull", ic:"magnet",  t:"GRAVITY WELL",max:8,  cost:i=>180*Math.pow(1.6,i),
    d:"Drags nearby edible props in.",     f:i=>`+${i*12}% pull range`},
-  {id:"greed", t:"GREED",       max:10, cost:i=>250*Math.pow(1.65,i),
+  {id:"greed", ic:"coin", t:"GREED",       max:10, cost:i=>250*Math.pow(1.65,i),
    d:"More coins banked per run.",        f:i=>`+${i*18}% coins`},
-  {id:"digest",t:"DIGESTION",   max:8,  cost:i=>300*Math.pow(1.7,i),
+  {id:"digest", ic:"heart",t:"DIGESTION",   max:8,  cost:i=>300*Math.pow(1.7,i),
    d:"Each prop feeds you more mass.",    f:i=>`+${i*5}% mass gain`},
 ];
 const RIVAL_NAMES = ["VORTEX","GULP","MAW","ABYSS","CHOMPY","SINKHOLE","NOMAD","PIT"];
@@ -220,7 +201,7 @@ const SAVE_KEY = "holegrind.save.v2";
 const FRESH = () => ({
   coins:0, xp:0, best:0, runs:0, totalScore:0,
   up:{size:0,speed:0,time:0,pull:0,greed:0,digest:0},
-  unlocked:[0], district:0, cleared:[]
+  unlocked:[0], district:0, cleared:[], stars:{}
 });
 let save = FRESH();
 
@@ -247,6 +228,7 @@ function load(){
       save.up = Object.assign(FRESH().up, o.up||{});
       if(!Array.isArray(save.unlocked)||!save.unlocked.length) save.unlocked=[0];
       if(!Array.isArray(save.cleared)) save.cleared=[];
+      if(!save.stars || typeof save.stars!=='object') save.stars={};
     }
   }catch(e){ save = FRESH(); }
 }
@@ -258,12 +240,40 @@ const playerLevel = () => 1 + Math.floor(Math.sqrt(save.xp/900));
 const xpInto  = () => save.xp - 900*Math.pow(playerLevel()-1,2);
 const xpNeed  = () => 900*(Math.pow(playerLevel(),2)-Math.pow(playerLevel()-1,2));
 
+//// ---------- progression on top of the save: hole styles, daily goal, stars ----------
+const SKINS = [
+  { id:'azure',  name:'Azure',   css:'radial-gradient(circle,#050a14 46%,#a9d6ff 50%,#4a94e8 62%,#050a14 64%)', color:'#7fb8ff', cost:0 },
+  { id:'amber',  name:'Amber',   css:'radial-gradient(circle,#140e02 46%,#fff2a8 50%,#f0a81c 62%,#140e02 64%)', color:'#f2b544', cost:{ stars:3 } },
+  { id:'jade',   name:'Jade',    css:'radial-gradient(circle,#04140c 46%,#a6f0c8 50%,#2fae72 62%,#04140c 64%)', color:'#48c78e', cost:{ coins:400 } },
+  { id:'ruby',   name:'Ruby',    css:'radial-gradient(circle,#160406 46%,#ffb0b0 50%,#d8384a 62%,#160406 64%)', color:'#e5533f', cost:{ coins:900 } },
+  { id:'violet', name:'Violet',  css:'radial-gradient(circle,#0a0716 46%,#d3b8ff 50%,#7444e8 62%,#0a0716 64%)', color:'#a78bfa', cost:{ stars:8 } },
+  { id:'ghost',  name:'Ghost',   css:'radial-gradient(circle,#0b0d12 46%,#ffffff 50%,#b8c0d0 62%,#0b0d12 64%)', color:'#e8ecf4', cost:{ coins:2500 } },
+  { id:'rainbow',name:'Rainbow', css:'radial-gradient(circle,#0a0716 46%,transparent 50%),conic-gradient(#ff5a6e,#ffd23f,#5cec8c,#3fa8ff,#b48bff,#ff5a6e)', color:'#ff7ad0', rainbow:true, cost:{ streak:3 } },
+  { id:'ember',  name:'Ember',   css:'radial-gradient(circle,#160a04 46%,#ffd08a 50%,#ff7a1a 62%,#160a04 64%)', color:'#fb923c', pulse:true, cost:{ stars:12 } },
+  { id:'crown',  name:'Crown',   css:'radial-gradient(circle,#140e02 46%,#fff6c8 50%,#ffc94a 62%,#140e02 64%)', color:'#ffd35c', cost:{ stars:15 } },
+];
+const PROG = GK.progress('holegrind', {
+  perWorld: 1, worlds: [{name:'District'}], skins: SKINS, dailyReward: 150,
+  daily: [
+    { id:'score', icon:'trophy', text:n=>'Score '+n+' points in total', targets:[6000, 15000, 30000] },
+    { id:'eat',   icon:'gem',    text:n=>'Swallow '+n+' things',         targets:[120, 220, 360] },
+    { id:'runs',  icon:'flag',   text:n=>'Finish '+n+' runs',            targets:[2, 3, 4] },
+    { id:'cars',  icon:'bolt',   text:n=>'Swallow '+n+' cars or trucks', targets:[8, 14, 22] },
+  ],
+});
+GK.hooks.sfx = n => { try{ sfx(n==='levelup'?'levelup':n==='coin'?'coin':n==='buzz'?'error':'tap'); }catch(e){} };
+let skinNow = SKINS[0];
+function applySkin(){ skinNow = PROG.current() || SKINS[0]; }
+function starsTotal(){ let n=0; for(const k in save.stars) n += save.stars[k]|0; return n; }
+function starsFor(quotaFrac){ let n=0; for(const f of STAR_AT) if(quotaFrac>=f) n++; return n; }
+
 //// ---------- 3D stage + HUD canvas ----------
 const cv = document.getElementById("game");
 const W3 = new HoleWorld(cv, {quality:GFX});
 GFX = W3.quality;   // "auto" starts on Low when WebGL runs on the CPU
 const hudCv = document.getElementById("hudc"), ctx = hudCv.getContext("2d");
-let VW=1280, VH=720, DPR=1, ready=false;
+let VW=1280, VH=720, DPR=1, ready=false, SAB=0;
+try{ const pr=document.createElement('div'); pr.style.cssText='position:fixed;bottom:0;height:env(safe-area-inset-bottom,0px);visibility:hidden'; document.body.appendChild(pr); SAB=pr.offsetHeight||0; pr.remove(); }catch(e){}
 function resize(){
   DPR = GFX==="low" ? 1 : Math.min(2, window.devicePixelRatio||1);
   VW = hudCv.clientWidth || window.innerWidth;
@@ -419,7 +429,7 @@ function startSim(d){
   const D = DISTRICTS[R.district];
   R.on=true; R.paused=false; R.over=false; R.t=0; R.wave=0;
   R.timeLeft = RUN_TIME + upLvl("time")*6;
-  R.score=0; R.eaten=0; R.endReason=""; R.apTarget=null; R.pulse=0; R.squash=0;
+  R.score=0; R.eaten=0; R.carsEaten=0; R.endReason=""; hudReset(); R.apTarget=null; R.pulse=0; R.squash=0;
   R.hole = makeHole(ARENA/2, ARENA/2, R.demo?0:startMass(), true);
   R.tierSeen = tierIndexFor(R.hole.r);
   R.lots = makeLots();
@@ -510,7 +520,7 @@ function eatPass(h, dt){
         p.gone=true;
         absorb(h,p.m);
         if(h.isPlayer){
-          if(!R.demo){ R.score += Math.round(p.m*4*DISTRICTS[R.district].mult); R.eaten++; }
+          if(!R.demo){ R.score += Math.round(p.m*4*DISTRICTS[R.district].mult); R.eaten++; if(p.tier===4||p.tier===5) R.carsEaten++; }
           swallowFx(h,p);
           if(!RM.matches && !R.demo) R.shake = Math.min(9, R.shake + 0.6 + p.tier*0.35);   // reduced motion: no shake
           if(tut===1 && ++tutEaten>=3) coachGrow();
@@ -661,7 +671,7 @@ function step(dt){
   const ti = tierIndexFor(h.r);
   if(ti>R.tierSeen){
     R.tierSeen = ti;
-    if(!R.demo && ti>=1){ toast("NOW YOU CAN SWALLOW "+TIERS[ti].n.toUpperCase()+"S"); sfx("levelup"); R.pulse=1;
+    if(!R.demo && ti>=1){ toast("NOW YOU CAN SWALLOW "+plural(TIERS[ti].n).toUpperCase(), "gem"); sfx("levelup"); R.pulse=1;
       W3.burst(h.x*M, 0.2, h.y*M, "#8fc1ff", GFX==="low"?10:26, 7, 0.22); }
   }
 
@@ -737,7 +747,11 @@ function drawHoles(){
   const all=[R.hole].concat(R.rivals);
   W3.setHoleCount(all.length);
   all.forEach((h,i)=>{
-    if(h.isPlayer) holeCol.set("#7fb8ff"); else holeCol.setHSL(h.hue/360,0.85,0.6);
+    if(h.isPlayer){
+      if(skinNow.rainbow && !RM.matches) holeCol.setHSL((performance.now()/2800)%1,0.9,0.62);
+      else if(skinNow.pulse && !RM.matches) holeCol.set(skinNow.color).offsetHSL(0,0,Math.sin(performance.now()/330)*0.1);
+      else holeCol.set(skinNow.color);
+    } else holeCol.setHSL(h.hue/360,0.7,0.6);
     W3.setHole(i, h.x*M, h.y*M, h.r*M, holeCol, h.isPlayer?R.pulse:0, h.isPlayer?R.squash:0);
   });
 }
@@ -788,15 +802,26 @@ function stepTags(){
 }
 
 //// ---------- city dressing: ground tile, border and skyline ----------
+const TEX = {};   // asphalt, grass, paving (ambientCG, CC0), filled as they load
+['asphalt','grass','paving'].forEach(n=>{ const im=new Image(); im.onload=()=>{ TEX[n]=im; if(ready){ dressedFor=-1; dressCity(); } }; im.src='tex/'+n+'.jpg'; });
+// a real texture, tinted towards the district colour so the palette stays but the grain is real
+function texFill(g, name, x, y, w, h, tint, mix, scale){
+  const im=TEX[name];
+  if(!im){ g.fillStyle=tint; g.fillRect(x,y,w,h); return; }
+  const pat=g.createPattern(im,'repeat');
+  if(pat && pat.setTransform){ try{ pat.setTransform(new DOMMatrix().scale(scale)); }catch(e){} }
+  g.fillStyle=pat; g.fillRect(x,y,w,h);
+  g.globalAlpha=mix; g.fillStyle=tint; g.fillRect(x,y,w,h); g.globalAlpha=1;
+}
 function paintTile(look){
   return (g, P)=>{
     const k=P/BLOCK;   // texture px per sim px
-    g.fillStyle=look.road; g.fillRect(0,0,P,P);
+    texFill(g,'asphalt',0,0,P,P,look.road,look.tint,P/1024);
     // asphalt grain
     for(let i=0;i<P*P/90;i++){ g.fillStyle=`rgba(${Math.random()<.5?255:0},${Math.random()<.5?255:0},${Math.random()<.5?255:0},0.035)`; g.fillRect(Math.random()*P,Math.random()*P,2,2); }
     const r=ROAD/2*k, w=WALK*k;
     // sidewalk slab with joints
-    g.fillStyle=look.walk; g.fillRect(r,r,P-2*r,P-2*r);
+    texFill(g,'paving',r,r,P-2*r,P-2*r,look.walk,look.tint*0.8,P/2048);
     g.strokeStyle="rgba(0,0,0,.10)"; g.lineWidth=Math.max(1,P/512);
     for(let x=r;x<P-r;x+=w){ g.beginPath(); g.moveTo(x,r); g.lineTo(x,r+w); g.moveTo(x,P-r-w); g.lineTo(x,P-r); g.stroke(); }
     for(let y=r;y<P-r;y+=w){ g.beginPath(); g.moveTo(r,y); g.lineTo(r+w,y); g.moveTo(P-r-w,y); g.lineTo(P-r,y); g.stroke(); }
@@ -804,7 +829,7 @@ function paintTile(look){
     g.strokeStyle="rgba(0,0,0,.22)"; g.lineWidth=Math.max(2,P/300); g.strokeRect(r,r,P-2*r,P-2*r);
     // lawn or plaza inside, split into 4 lots by paths
     const i0=r+w, inner=P-2*i0;
-    g.fillStyle=look.lawn; g.fillRect(i0,i0,inner,inner);
+    texFill(g,'grass',i0,i0,inner,inner,look.lawn,look.tint,P/1400);
     for(let i=0;i<inner*inner/60;i++){ g.fillStyle=Math.random()<0.5?look.lawn2:"rgba(255,255,255,.05)"; g.fillRect(i0+Math.random()*inner,i0+Math.random()*inner,3,3); }
     g.fillStyle=look.lot; const pw=Math.max(3,P/110);
     g.fillRect(i0+inner/2-pw/2,i0,pw,inner); g.fillRect(i0,i0+inner/2-pw/2,inner,pw);
@@ -828,7 +853,7 @@ let dressedFor = -1;
 function dressCity(){
   const D=DISTRICTS[R.district], L=D.look;
   W3.setSky(L.sky[0], L.sky[1]);
-  W3.hemi.intensity = L.hemi; W3.sun.intensity = L.sun;
+  W3.hemi.intensity = L.hemi; W3.sun.intensity = L.sun; document.querySelector('meta[name=theme-color]').setAttribute('content', L.sky[0]);
   if(dressedFor===R.district*10+(GFX==="low"?1:0)) return;
   dressedFor = R.district*10+(GFX==="low"?1:0);
   W3.setGround(0, 0, ARENA*M, BLOCK*M, paintTile(L), 140);
@@ -860,64 +885,52 @@ function dressCity(){
   W3.addStatic("lamp", lamps, true);
 }
 
-//// ---------- HUD (2D canvas over the 3D view) ----------
-function drawHUD(){
-  const pad=14;
-  ctx.font="700 13px ui-monospace,Consolas,monospace"; ctx.textBaseline="top";
-  // time bar
-  const full = RUN_TIME + upLvl("time")*6;
-  const w=Math.min(360,VW-28-(SDK?54:0));
-  ctx.fillStyle="rgba(10,14,20,.72)"; rr(pad,pad,w,58,8); ctx.fill();
-  ctx.fillStyle="#8b97ad"; ctx.fillText("TIME", pad+12, pad+9);
-  ctx.fillStyle= R.timeLeft<15?"#ff6b6b":"#e8edf7";
-  ctx.fillText(R.timeLeft.toFixed(1)+"s", pad+62, pad+9);
-  ctx.fillStyle="#8b97ad"; ctx.fillText("SCORE", pad+150, pad+9);
-  ctx.fillStyle="#ffc94a"; ctx.fillText(String(R.score), pad+208, pad+9);
-  ctx.fillStyle="#0d1017"; rr(pad+12,pad+32,w-24,8,4); ctx.fill();
-  ctx.fillStyle="#2a6cf0"; rr(pad+12,pad+32,(w-24)*clamp(R.timeLeft/full,0,1),8,4); ctx.fill();
-
-  // size readout + next tier
-  const h=R.hole;
-  let next=null;
-  for(const T of TIERS) if(T.r>=h.r*EAT_RATIO){ next=T; break; }
-  ctx.fillStyle="rgba(10,14,20,.72)"; rr(pad,pad+66,w,44,8); ctx.fill();
-  ctx.fillStyle="#8b97ad"; ctx.fillText("SIZE", pad+12, pad+74);
-  ctx.fillStyle="#57d98a"; ctx.fillText(h.r.toFixed(1), pad+62, pad+74);
-  ctx.fillStyle="#8b97ad";
-  ctx.fillText(next?("NEXT: "+next.n.toUpperCase()+" @ "+next.r):"NEXT: EVERYTHING", pad+120, pad+74);
-  if(next){
-    const need=(next.r*next.r-BASE_R*BASE_R)/GROW, have=h.mass;
-    const prevR = TIERS[Math.max(0,TIERS.indexOf(next)-1)].r;
-    const prevNeed=(prevR*prevR-BASE_R*BASE_R)/GROW;
-    const f=clamp((have-prevNeed)/Math.max(1,need-prevNeed),0,1);
-    ctx.fillStyle="#0d1017"; rr(pad+12,pad+94,w-24,7,4); ctx.fill();
-    ctx.fillStyle="#57d98a"; rr(pad+12,pad+94,(w-24)*f,7,4); ctx.fill();
+//// ---------- HUD: DOM chips (kit) over the 3D view, and a minimap on the HUD canvas ----------
+const ic = (n,px)=>GK.icon(n,px);
+const qbar = GK.levelBar(document.getElementById('qbar'));
+qbar.marks([STAR_AT[0]/STAR_AT[2], STAR_AT[1]/STAR_AT[2], 1]); qbar.end(ic('star',24));
+let hudState = {t:-1, score:-1, size:'', next:'', riv:'', dist:-1, acc:0};
+function hudReset(){ hudState = {t:-1, score:-1, size:'', next:'', riv:'', dist:-1, acc:0}; }
+function nextTier(h){ for(const T of TIERS) if(T.r>=h.r*EAT_RATIO) return T; return null; }
+function updateHud(dt){
+  const on = R.on && !R.over && !R.demo;
+  const hd = document.getElementById('hudd'); if(hd.classList.contains('on')!==on) hd.classList.toggle('on', on);
+  if(!on) return;
+  const H = hudState, D = DISTRICTS[R.district];
+  if(H.dist!==R.district){ H.dist=R.district; qbar.levels(R.district+1, ''); qbar.marks([STAR_AT[0]/STAR_AT[2], STAR_AT[1]/STAR_AT[2], 1]); qbar.end(ic('star',24)); qbar.set(0);
+    $('rivChip').innerHTML = ic('flame') + '<b>x'+D.mult.toFixed(2)+'</b>'; }
+  const t = Math.ceil(R.timeLeft);
+  if(t!==H.t){ H.t=t; $('timeChip').innerHTML = ic('clock')+'<b>'+t+'</b>'; $('timeChip').style.background = t<=10 ? 'linear-gradient(#ff8b7a,#c9351f)' : ''; }
+  if(R.score!==H.score){ const up=H.score>=0; H.score=R.score; $('scoreBig').textContent=fmt(R.score); qbar.set(R.score/(districtQuota(R.district)*STAR_AT[2]));
+    if(up){ const e=$('scoreBig'); e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump'); } }
+  H.acc += dt;
+  if(H.acc>0.15){
+    H.acc=0;
+    const h=R.hole, sz=h.r.toFixed(1); if(sz!==H.size){ H.size=sz; $('sizeV').textContent=sz; }
+    const nx=nextTier(h), nt = nx ? 'Next: '+nx.n+' at '+nx.r : 'You can swallow everything';
+    if(nt!==H.next){ H.next=nt; $('nextT').textContent=nt; }
+    if(nx){
+      const need=(nx.r*nx.r-BASE_R*BASE_R)/GROW, have=h.mass, prevR=TIERS[Math.max(0,TIERS.indexOf(nx)-1)].r, prevNeed=(prevR*prevR-BASE_R*BASE_R)/GROW;
+      $('sizeBar').style.width = (clamp((have-prevNeed)/Math.max(1,need-prevNeed),0,1)*100).toFixed(0)+'%';
+    } else $('sizeBar').style.width='100%';
+    const rv = R.rivals.length+(R.rivals.length===1?' rival':' rivals');
+    if(rv!==H.riv){ H.riv=rv; $('rivChip').innerHTML = ic('flame')+'<b>x'+D.mult.toFixed(2)+'</b> <span style="font:800 14px var(--gk-body);opacity:.85">'+rv+'</span>'; }
   }
-  // district + rivals right side (left of the arcade's pause button when it is there)
-  ctx.textAlign="right";
-  const rx = VW-pad-4-(SDK?54:0);
-  // on a narrow phone the left panel spans the width, so the right block drops below the minimap row
-  const ry = VW<560 ? VH-pad-110-66 : pad;
-  const rxx = VW<560 ? VW-pad-4 : rx;
-  ctx.fillStyle="rgba(10,14,20,.62)"; rr(rxx-176, ry+2, 180, 64, 8); ctx.fill();
-  ctx.fillStyle="#c9d3e6";
-  ctx.fillText(DISTRICTS[R.district].n+"  ·  x"+DISTRICTS[R.district].mult.toFixed(2), rxx-8, ry+9);
-  ctx.fillText("RIVALS "+R.rivals.length, rxx-8, ry+28);
-  const q=districtQuota(R.district);
-  ctx.fillStyle=R.score>=q?"#57d98a":"#c9d3e6";
-  ctx.fillText("QUOTA "+R.score+" / "+q, rxx-8, ry+47);
-  ctx.textAlign="left";
-
-  // minimap
-  const ms=110, mx=VW-ms-pad, my=VH-ms-pad;
-  ctx.fillStyle="rgba(10,14,20,.7)"; rr(mx,my,ms,ms,8); ctx.fill();
+}
+function drawMinimap(){
+  const pad=12, ms=104, mx=VW-ms-pad, my=VH-ms-pad-SAB;
+  const g=ctx.createLinearGradient(0,my,0,my+ms); g.addColorStop(0,'rgba(34,80,140,.92)'); g.addColorStop(1,'rgba(8,20,44,.94)');
+  ctx.fillStyle=g; rr(mx,my,ms,ms,12); ctx.fill();
+  ctx.strokeStyle='rgba(240,179,58,.85)'; ctx.lineWidth=2; rr(mx+1,my+1,ms-2,ms-2,11); ctx.stroke();
+  ctx.save(); rr(mx+3,my+3,ms-6,ms-6,9); ctx.clip();
   const k=ms/ARENA;
-  ctx.strokeStyle="rgba(255,255,255,.08)"; ctx.lineWidth=1;
+  ctx.strokeStyle="rgba(255,255,255,.09)"; ctx.lineWidth=1;
   for(let i=1;i<NB;i++){ ctx.beginPath(); ctx.moveTo(mx+i*BLOCK*k,my); ctx.lineTo(mx+i*BLOCK*k,my+ms); ctx.moveTo(mx,my+i*BLOCK*k); ctx.lineTo(mx+ms,my+i*BLOCK*k); ctx.stroke(); }
-  for(const rv of R.rivals){ ctx.fillStyle=`hsl(${rv.hue},80%,60%)`;
-    ctx.beginPath(); ctx.arc(mx+rv.x*k,my+rv.y*k,Math.max(2,rv.r*k*2),0,6.283); ctx.fill(); }
-  ctx.fillStyle="#6ea8ff";
-  ctx.beginPath(); ctx.arc(mx+R.hole.x*k,my+R.hole.y*k,Math.max(2.5,R.hole.r*k*2),0,6.283); ctx.fill();
+  for(const rv of R.rivals){ ctx.fillStyle=`hsl(${rv.hue},70%,62%)`;
+    ctx.beginPath(); ctx.arc(mx+rv.x*k,my+rv.y*k,Math.max(2.5,rv.r*k*2),0,6.283); ctx.fill(); }
+  ctx.fillStyle="#ffd35c"; ctx.strokeStyle="#07132a"; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(mx+R.hole.x*k,my+R.hole.y*k,Math.max(3,R.hole.r*k*2),0,6.283); ctx.fill(); ctx.stroke();
+  ctx.restore();
 }
 function rr(x,y,w,h,r){ ctx.beginPath();
   ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
@@ -935,7 +948,8 @@ function render(dt, time){
   W3.view(R.cam.x*M, R.cam.y*M + (R.demo?0:dist*0.04), dist, pitch, yaw, R.shake*0.05);
   W3.render(dt);
   stepPops(dt); stepTags();
-  if(R.on && !R.over && !R.demo) drawHUD();
+  if(R.on && !R.over && !R.demo) drawMinimap();
+  updateHud(dt);
 }
 
 //// ---------- loop ----------
@@ -953,88 +967,102 @@ const $ = id=>document.getElementById(id);
 function showLayer(id){
   for(const l of ["hub","over","pause"]) $(l).classList.toggle("on", l===id);
 }
-let toastT=null;
-function toast(msg){
-  const el=$("toast"); el.textContent=msg; el.classList.add("on");
-  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("on"),1400);
-}
+const plural = n => /(ch|sh|s|x)$/.test(n) ? n+"es" : n+"s";
+function toast(msg, icon){ msg=String(msg); GK.toast(msg.charAt(0)+msg.slice(1).toLowerCase(), {icon: icon||"star"}); }
 function togglePause(){
   if(!R.on||R.over||R.demo) return;
   R.paused=!R.paused; showLayer(R.paused?"pause":null);
 }
 function fmt(n){ return n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e4?(n/1e3).toFixed(1)+"k":String(n); }
 
-let selDistrict = 0;
+let selDistrict = null;
+function starsHTML(n){ return ic(n>=1?'star':'starOff')+ic(n>=2?'star':'starOff')+ic(n>=3?'star':'starOff'); }
 function renderHub(){
-  selDistrict = save.unlocked.includes(save.district)? save.district : 0;
-  $("hubStats").innerHTML =
-    `<div class="stat"><b>${fmt(save.coins)}</b><span>COINS</span></div>
-     <div class="stat"><b>LV ${playerLevel()}</b><span>${xpInto()} / ${xpNeed()} XP</span>
-       <div class="bar"><i style="width:${clamp(xpInto()/xpNeed()*100,0,100)}%"></i></div></div>
-     <div class="stat"><b>${fmt(save.best)}</b><span>BEST RUN</span></div>
-     <div class="stat"><b>${save.runs}</b><span>RUNS</span></div>`;
-  $("districts").innerHTML = DISTRICTS.map((d,i)=>{
-    const un = save.unlocked.includes(i);
-    return `<button type="button" class="dist ${un?"":"lock"} ${i===selDistrict?"sel":""}" data-d="${i}" aria-pressed="${i===selDistrict}">
-      <div class="n">${un?"":"🔒 "}${d.n}</div>
-      <div class="m">${un?`payout x${d.mult.toFixed(2)} · ${d.rivals} rivals · quota ${fmt(districtQuota(i))}`
-                        :`unlock for ${fmt(d.cost)} coins`}
-        ${save.cleared.includes(i)?" · ✔ cleared":""}</div></button>`;
-  }).join("");
-  for(const el of $("districts").children){
-    el.onclick = ()=>{
-      const i=+el.dataset.d;
-      if(save.unlocked.includes(i)){ save.district=i; persist(); renderHub(); sfx("tap"); if(R.demo && R.district!==i) startDemo(); }
-      else if(save.coins>=DISTRICTS[i].cost){
-        save.coins-=DISTRICTS[i].cost; save.unlocked.push(i); save.district=i;
-        persist(); toast(DISTRICTS[i].n+" UNLOCKED"); sfx("unlock"); renderHub(); if(R.demo) startDemo();
-      } else { toast("NEED "+fmt(DISTRICTS[i].cost-save.coins)+" MORE COINS"); sfx("error"); }
-    };
+  if(selDistrict==null || !DISTRICTS[selDistrict]) selDistrict = save.unlocked.includes(save.district)? save.district : 0;
+  const i=selDistrict, d=DISTRICTS[i], un=save.unlocked.includes(i), q=districtQuota(i), st=save.stars[i]|0;
+  $("coinChip").innerHTML = ic('coin')+'<b>'+fmt(save.coins)+'</b><i class="plus"></i>';
+  $("lvChip").innerHTML = 'LV '+playerLevel()+'<span class="gk-mini"><i style="width:'+clamp(xpInto()/xpNeed()*100,0,100)+'%"></i></span>';
+  $("districts").innerHTML = '<button type="button" class="gk-ib" id="dPrev" aria-label="Previous district">'+ic('chevL')+'</button>'+
+    '<div class="mid"><div class="lv gk-out">'+(un?'':'<span style="display:inline-block;width:.8em;vertical-align:-.1em">'+ic('lock')+'</span> ')+d.n+'</div><div class="gk-stars mini">'+starsHTML(st)+'</div>'+
+    '<div class="info'+(un?'':' lock')+'">'+d.tag+'</div><div class="info">payout x'+d.mult.toFixed(2)+' · '+d.rivals+(d.rivals===1?' rival':' rivals')+'</div></div>'+
+    '<button type="button" class="gk-ib" id="dNext" aria-label="Next district">'+ic('chevR')+'</button>';
+  const move=dir=>()=>{ selDistrict=(selDistrict+dir+DISTRICTS.length)%DISTRICTS.length; sfx("tap"); renderHub();
+    if(R.demo && save.unlocked.includes(selDistrict) && R.district!==selDistrict){ save.district=selDistrict; persist(); startDemo(); } };
+  $("dPrev").onclick=move(-1); $("dNext").onclick=move(1);
+  $("dgoals").innerHTML = [0,1,2].map(k=>'<div class="g'+(st>k?' done':'')+'"><span class="gk-stars mini">'+ic(st>k?'star':'starOff').repeat(k+1)+'</span><span>'+(k===1?'Clear ':'Score ')+fmt(Math.round(q*STAR_AT[k]))+'</span></div>').join('');
+  const pb=$("btnPlay");
+  if(un){ pb.className='gk-btn green wide throb'; pb.disabled=false; pb.innerHTML=ic('play')+'DROP IN'; }
+  else if(save.coins>=d.cost){ pb.className='gk-btn gold wide throb'; pb.disabled=false; pb.innerHTML=ic('lock')+'UNLOCK '+fmt(d.cost)+ic('coin'); }
+  else { pb.className='gk-btn wide dark'; pb.disabled=true; pb.innerHTML=ic('lock')+'NEED '+fmt(d.cost-save.coins)+' MORE'+ic('coin'); }
+  $("btnUp").innerHTML = ic('bolt')+'UPGRADES';
+  $("btnSkins").innerHTML = ic('bag')+'HOLES'+(PROG.newSkins.length?'<span class="gk-badge">'+PROG.newSkins.length+'</span>':'');
+  $("dailyHost").replaceChildren(GK.dailyStrip(PROG));
+}
+let upSheet=null;
+function openUpgrades(){
+  const sh=GK.sheet({title:'Upgrades', chip:true, onClose:()=>{ upSheet=null; renderHub(); }});
+  function paint(){
+    sh.chip.innerHTML = ic('coin')+'<b>'+fmt(save.coins)+'</b>';
+    sh.body.innerHTML = UPGRADES.map(u=>{
+      const lv=upLvl(u.id), maxed=lv>=u.max, cost=Math.round(u.cost(lv));
+      return '<div class="gk-lrow">'+ic(u.ic,40)+'<div class="tx"><b>'+u.t+'</b>'+u.d+' <em>'+u.f(lv)+'</em><div class="gk-pips">'+Array.from({length:u.max},(_,k)=>'<i class="'+(k<lv?'on':'')+'"></i>').join('')+'</div></div>'+
+        '<button type="button" class="gk-btn '+(maxed?'dark':'green')+'" data-u="'+u.id+'" '+(maxed||save.coins<cost?'disabled':'')+'>'+(maxed?'MAX':fmt(cost)+ic('coin'))+'</button></div>';
+    }).join('');
+    for(const b of sh.body.querySelectorAll('button[data-u]')) b.onclick=()=>{ if(buyUpgrade(b.dataset.u)){ GK.haptic(15); paint(); } };
   }
-  $("upgrades").innerHTML = UPGRADES.map(u=>{
-    const lv=upLvl(u.id), maxed=lv>=u.max, cost=Math.round(u.cost(lv));
-    return `<div class="up"><div class="t">${u.t}</div>
-      <div class="d">${u.d}<br><span style="color:#57d98a">${u.f(lv)}</span></div>
-      <div class="b"><span class="pips">${"■".repeat(lv)}${"·".repeat(u.max-lv)}</span>
-      <button data-u="${u.id}" ${maxed||save.coins<cost?"disabled":""}>
-        ${maxed?"MAX":fmt(cost)+" ⨀"}</button></div></div>`;
-  }).join("");
-  for(const b of $("upgrades").querySelectorAll("button[data-u]")){
-    b.onclick=()=>{ buyUpgrade(b.dataset.u); };
-  }
+  sh.paint=paint; upSheet=sh; paint();
+}
+function openSkins(){
+  PROG.d.coins = save.coins; PROG.d.stars = save.stars; PROG.takeNewSkins();
+  GK.shop({ prog:PROG, title:'Hole styles', onEquip:()=>{ applySkin(); }, onBuy:()=>{ save.coins = PROG.d.coins; persist(); renderHub(); },
+    onClose:()=>{ save.coins = PROG.d.coins; renderHub(); },
+    preview:s=>'<div class="sw" style="background:'+s.css+';border-radius:50%;background-color:#5c88c455"></div>' });
 }
 function buyUpgrade(id){
   const u=UPGRADES.find(x=>x.id===id); if(!u) return false;
   const lv=upLvl(id); if(lv>=u.max) return false;
   const cost=Math.round(u.cost(lv));
   if(save.coins<cost){ toast("NOT ENOUGH COINS"); sfx("error"); return false; }
-  save.coins-=cost; save.up[id]=lv+1; persist(); renderHub(); toast(u.t+" LV"+(lv+1)); sfx("powerup");
+  save.coins-=cost; save.up[id]=lv+1; persist(); renderHub(); toast(u.t+" LV"+(lv+1), "bolt"); sfx("powerup");
   return true;
 }
+function dailyDone(){ const r=PROG.cfg.dailyReward||150; GK.toast('Daily goal done! +'+r+' coins', {icon:'check'}); save.coins += r; PROG.d.coins = Math.max(0, PROG.d.coins - r); persist(); GK.confetti(innerWidth/2, innerHeight*0.3, 40); }
 function showOver(res){
-  $("ovTitle").textContent = R.endReason==="swallowed" ? "SWALLOWED" : "TIME UP";
-  $("ovWhy").textContent = R.endReason==="swallowed"
-    ? "A rival hole got bigger than you and took the whole map with it."
-    : "The run clock ran out. Everything you swallowed is banked.";
-  $("ovStats").innerHTML =
-    `<div class="stat"><b>${fmt(R.score)}</b><span>SCORE${res.pb?" ★ BEST":""}</span></div>
-     <div class="stat"><b>+${fmt(res.coins)}</b><span>COINS</span></div>
-     <div class="stat"><b>+${fmt(res.xp)}</b><span>XP</span></div>
-     <div class="stat"><b>${R.eaten}</b><span>SWALLOWED</span></div>
-     <div class="stat"><b>${R.hole.r.toFixed(1)}</b><span>FINAL SIZE</span></div>`;
+  const q=res.quota, frac=R.score/q, ns=starsFor(frac), prevS=save.stars[R.district]|0;
+  if(!cheated() && ns>prevS) save.stars[R.district]=ns;
+  if(!cheated()){
+    PROG.d.stars=save.stars; PROG.d.coins=save.coins; PROG.bump('runs');
+    if(PROG.addDaily('score',R.score)) dailyDone(); if(PROG.addDaily('eat',R.eaten)) dailyDone(); if(PROG.addDaily('runs',1)) dailyDone(); if(PROG.addDaily('cars',R.carsEaten)) dailyDone();
+    PROG.refreshUnlocks(); PROG.save(); persist();
+  }
+  const swallowed = R.endReason==="swallowed";
+  $("ovHead").className='gk-head '+(swallowed?'lose':ns>0?'win':'');
+  $("ovTitle").textContent = swallowed ? "SWALLOWED" : ns>0 ? "DISTRICT RUN" : "TIME UP";
+  GK.stars($("ovStars"), ns, {animate:ns>0});
+  $("ovScore").textContent='0'; GK.countUp($("ovScore"), R.score, 800, fmt);
+  $("ovNew").classList.toggle('gk-hidden', !res.pb);
+  const stat=(i,v,l)=>'<div><b>'+ic(i)+'<span>'+v+'</span></b><span>'+l+'</span></div>';
+  $("ovStats").innerHTML = stat('coin','+'+fmt(res.coins),'Coins')+stat('bolt','+'+fmt(res.xp),'XP')+stat('gem',R.eaten,'Swallowed');
+  $("ovGoals").innerHTML = [0,1,2].map(k=>'<div class="g'+(ns>k?' done':'')+'">'+ic(ns>k?'star':'starOff')+'<span>'+(k===1?'Clear the quota':'Score')+'</span><span class="n">'+fmt(Math.round(q*STAR_AT[k]))+'</span></div>').join('');
   const nxt = DISTRICTS[R.district+1];
-  $("ovProg").innerHTML =
-    `District quota ${fmt(res.quota)} — ${res.clr?"<span style='color:#57d98a'>CLEARED</span>"
-      :"<span style='color:#ff6b6b'>not met</span>"}<br>
-     Bank: <b style="color:#ffc94a">${fmt(save.coins)}</b> coins · LV ${playerLevel()}
-     ${nxt&&!save.unlocked.includes(R.district+1)
-        ? `<br>Next district <b>${nxt.n}</b> costs ${fmt(nxt.cost)} coins.`:""}
-     ${cheated()?"<br><span style='color:#ffc94a'>CODES ON — nothing from this session is saved.</span>":""}`;
+  $("ovProg").textContent = (swallowed ? "A rival hole got bigger than you and took the whole map with it. " : "Everything you swallowed is banked. ")+
+    "Final size "+R.hole.r.toFixed(1)+". "+(nxt&&!save.unlocked.includes(R.district+1) ? nxt.n+" costs "+fmt(nxt.cost)+" coins. " : "")+
+    (cheated()?"CODES ON: nothing from this session is saved.":"");
+  $("btnAgain").innerHTML = ic('replay')+'RUN AGAIN'; $("btnHub").innerHTML = ic('home')+'HUB';
   showLayer("over"); hudTags(); labels();
   renderHub();
+  if(ns>0||res.pb) setTimeout(()=>GK.confetti(innerWidth/2, innerHeight*0.35, res.pb?70:45), 350);
+  if(res.coins>0) setTimeout(()=>GK.fly({x:innerWidth/2,y:innerHeight*0.5}, $("ovStats").firstElementChild, Math.min(8,2+Math.floor(res.coins/40)), 'coin'), 700);
+  PROG.takeNewSkins().forEach((sk,k)=>setTimeout(()=>GK.toast('New hole style: '+sk.name+'<small>Open Holes on the hub to use it</small>',{icon:'gift'}), 1500+k*900));
 }
 
-$("btnPlay").onclick  = ()=>beginRun(save.district);
+$("btnPlay").onclick  = ()=>{
+  const i=selDistrict, d=DISTRICTS[i];
+  if(save.unlocked.includes(i)){ save.district=i; persist(); beginRun(i); return; }
+  if(save.coins>=d.cost){ save.coins-=d.cost; save.unlocked.push(i); save.district=i; persist(); toast(d.n+" UNLOCKED","lock"); sfx("unlock"); GK.confetti(innerWidth/2, innerHeight*0.5, 60); renderHub(); if(R.demo) startDemo(); }
+  else { toast("NEED "+fmt(d.cost-save.coins)+" MORE COINS","coin"); sfx("error"); }
+};
+$("btnUp").onclick = openUpgrades; $("btnSkins").onclick = openSkins; $("coinChip").onclick = openUpgrades;
 $("btnAgain").onclick = ()=>beginRun(save.district);
 $("btnHub").onclick   = ()=>toHub();
 function toHub(){
@@ -1101,13 +1129,14 @@ function code(c){
   if(c==="GHOSTHOLE") CHEAT.ghost=true;
   if(c==="MONEYPIT") save.coins+=50000;
   if(c==="UNLOCKALL") DISTRICTS.forEach((d,i)=>{ if(!save.unlocked.includes(i)) save.unlocked.push(i); });
-  setTimeout(()=>{ renderHub(); hudTags(); toast("CODES ON — THIS SESSION IS NOT SAVED"); },0);
+  setTimeout(()=>{ renderHub(); hudTags(); toast("CODES ON — THIS SESSION IS NOT SAVED","lock"); },0);
   return {ok:true, message:CODES[c]};
 }
 $("btnResume").onclick= ()=>togglePause();
 $("btnQuit").onclick  = ()=>{ R.paused=false; endRun("time"); };
 $("btnWipe").onclick  = ()=>{
-  save=FRESH(); persist(); renderHub(); toast("SAVE WIPED");
+  if(!confirm("Wipe your whole Hole Grind save (coins, upgrades, districts, stars)?")) return;
+  save=FRESH(); PROG.d.stars=save.stars; persist(); selDistrict=null; renderHub(); toast("SAVE WIPED");
 };
 
 //// ---------- debug handle (headless harness drives this) ----------
@@ -1141,13 +1170,13 @@ window.__DEBUG = {
                 save.district=i; persist(); renderHub(); return save.unlocked.slice(); },
   feed:(m)=>{ absorb(R.hole,m); return +R.hole.r.toFixed(1); },
   end:()=>endRun("time"),
-  wipe:()=>{ save=FRESH(); persist(); renderHub(); },
+  wipe:()=>{ save=FRESH(); PROG.d.stars=save.stars; persist(); renderHub(); },
   tiers:TIERS, districts:DISTRICTS, upgrades:UPGRADES.map(u=>u.id),
   saveKey:SAVE_KEY
 };
 
 //// ---------- boot ----------
-load(); resize(); renderHub(); startDemo(); requestAnimationFrame(frame);
+load(); PROG.d.stars = save.stars; PROG.refreshUnlocks(); applySkin(); resize(); renderHub(); startDemo(); requestAnimationFrame(frame);
 W3.load("models/city.glb").then(()=>{ ready=true; dressedFor=-1; dressCity(); $("loading").remove(); })
   .catch(e=>{ $("loading").textContent="Could not load the city models. Reload to try again."; });
 

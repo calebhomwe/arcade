@@ -1,0 +1,172 @@
+{
+ "id": "mini-mart",
+ "title": "QuickStop Mini Mart",
+ "cat": "sim",
+ "genre": "management",
+ "src": "MiniMart/index.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "minimart_career",
+  "minimart_day",
+  "minimart_bestday"
+ ],
+ "session1": {
+  "start": "#titlePlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 72,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "minimart_data",
+   "minimart_cart",
+   "minimart_muted",
+   "minimart_career"
+  ],
+  "savedKeysWrittenInSession1": 5,
+  "titleTextChanged": true,
+  "title1": "QuickStop 0 DAY 1 Takings target $100.00 · Costs $40.00 · Bank $0.00 · Best day cleared 0 Career · records Start Day 1 STORE Shop Cart 0 Ord",
+  "title2": "QuickStop 3 DAY 1 Takings target $100.00 · Costs $40.00 · Bank $0.00 · Best day cleared 0 Career · records Start Day 1 STORE Shop Cart 3 Ord",
+  "keysUpdatedAgain": [
+   "minimart_cart"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 5,
+  "added": [
+   "minimart_tut",
+   "minimart_data",
+   "minimart_cart",
+   "minimart_muted",
+   "minimart_career"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "minimart_tut": "1",
+   "minimart_data": "{\"products\":[{\"id\":1,\"name\":\"Organic Bananas\",\"category\":\"Produce\",\"pr",
+   "minimart_cart": "[{\"id\":1,\"qty\":2},{\"id\":2,\"qty\":1}]",
+   "minimart_muted": "1",
+   "minimart_career": "{\"bank\":0,\"daysCleared\":0,\"misses\":0,\"strikes\":0,\"lifetimeTakings\":0,\""
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "save-blob",
+   "settings",
+   "levels",
+   "score",
+   "upgrades"
+  ],
+  "categoriesPresent": [
+   "other",
+   "save-blob",
+   "settings",
+   "levels",
+   "score",
+   "upgrades"
+  ],
+  "writesDuringPlay": {
+   "minimart_career": "1x",
+   "minimart_tut": "1x",
+   "minimart_data": "10x",
+   "minimart_cart": "10x",
+   "minimart_muted": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "stars": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": true,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": false,
+  "meta": false
+ },
+ "observedSystems": [
+  "levels",
+  "upgrades",
+  "goals",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "unlocks",
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "upgrades",
+   "save-blob"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, upgrades, save-blob); systems seen: levels, upgrades, goals, cosmetics; sinks upgrades/cosmetics fed by levels/goals",
+ "expected": [
+  "goals",
+  "upgrades",
+  "unlocks",
+  "stars",
+  "levels"
+ ],
+ "lacks": [
+  "unlocks",
+  "stars"
+ ],
+ "pageErrors": []
+}

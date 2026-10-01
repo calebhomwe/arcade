@@ -54,6 +54,21 @@ ICONS = {
   'mic':    '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
   'download':'<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/>',
   'phone':  '<rect x="6.5" y="2.5" width="11" height="19" rx="2.8"/><path d="M10.5 18.5h3"/>',
+  'user':   '<circle cx="12" cy="8.5" r="3.7"/><path d="M4.5 20c.6-4 3.8-6.2 7.5-6.2s6.9 2.2 7.5 6.2"/>',
+  'flag':   '<path d="M5.5 21V4"/><path d="M5.5 5c3-1.6 5.2 1.6 8.2 0 1.6-.8 3.2-.9 4.8-.2v8.2c-1.6-.7-3.2-.6-4.8.2-3 1.6-5.2-1.6-8.2 0"/>',
+  'compass':'<circle cx="12" cy="12" r="8.5"/><path d="M15.7 8.3l-2.1 5.3-5.3 2.1 2.1-5.3z"/>',
+  'bulb':   '<path d="M12 3.5a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3.5z"/><path d="M9.6 19.2h4.8M10.6 21.5h2.8"/>',
+  'book':   '<path d="M12 6.5c-1.8-1.4-4.4-2-7.5-2v13c3.1 0 5.7.6 7.5 2 1.8-1.4 4.4-2 7.5-2v-13c-3.1 0-5.7.6-7.5 2z"/><path d="M12 6.5v13"/>',
+  'medal':  '<circle cx="12" cy="14.5" r="5.6"/><path d="M8.2 3.5l2.5 5.2M15.8 3.5l-2.5 5.2"/><path d="M12 12.2l.9 1.7 1.9.3-1.4 1.3.4 1.9-1.8-.9-1.8.9.4-1.9-1.4-1.3 1.9-.3z"/>',
+  'target': '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.8"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/>',
+  'calendar':'<rect x="4" y="5.5" width="16" height="14.5" rx="3"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
+  'star':   '<path d="M12 3.6l2.5 5.3 5.8.8-4.2 4.1 1 5.8-5.1-2.8-5.1 2.8 1-5.8-4.2-4.1 5.8-.8z"/>',
+  'gift':   '<rect x="4" y="9.5" width="16" height="10.5" rx="2.2"/><path d="M12 9.5V20M3.5 9.5h17"/><path d="M12 9.5C11 6 7 5.3 7 7.7c0 1.6 2.6 1.8 5 1.8zM12 9.5c1-3.5 5-4.2 5-1.8 0 1.6-2.6 1.8-5 1.8z"/>',
+  'palette':'<path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.4-1.2-1.5-1.2-2.7 0-1 .8-1.6 1.8-1.6h2.4a3.4 3.4 0 0 0 3.4-3.4C20.2 6.6 16.6 3.5 12 3.5z"/><circle cx="7.8" cy="11.2" r="1.1" fill="currentColor"/><circle cx="10.4" cy="7.4" r="1.1" fill="currentColor"/><circle cx="14.7" cy="7.4" r="1.1" fill="currentColor"/>',
+  'lock':   '<rect x="5" y="10.5" width="14" height="10" rx="2.6"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
+  'pencil': '<path d="M4.5 19.5l.9-4.2L16 4.7a2 2 0 0 1 2.8 0l.5.5a2 2 0 0 1 0 2.8L8.7 18.6z"/><path d="M14 6.8l3.2 3.2"/>',
+  'copy':   '<rect x="8.5" y="8.5" width="11" height="11" rx="2.5"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/>',
+  'upload': '<path d="M12 15.5v-11M7.5 9L12 4.5 16.5 9"/><path d="M5 19.5h14"/>',
 }
 LOGO = ('<symbol id="logo" viewBox="0 0 48 48"><defs><linearGradient id="lg-a" x1="0" y1="0" x2="1" y2="1">'
         '<stop offset="0" stop-color="#ffb000"/><stop offset=".48" stop-color="#ff3d8b"/><stop offset="1" stop-color="#6d4aff"/></linearGradient></defs>'
@@ -75,7 +90,7 @@ def rail(G, CATS):
     for key, label, icon, href in (('home', 'Home', 'home', './'), ('recent', 'Recently played', 'clock', './?view=recent'),
                                    ('favourites', 'Favourites', 'heart', './?view=favourites'), ('new', 'New games', 'spark', './?view=new'),
                                    ('popular', 'Popular', 'flame', './?view=popular'), ('iphone', 'Plays on iPhone', 'phone', './?view=iphone'),
-                                   ('all', 'All games', 'grid', './?view=all')):
+                                   ('trophies', 'Trophy room', 'trophy', './?view=trophies'), ('all', 'All games', 'grid', './?view=all')):
         extra = '<span class="n">%d</span>' % len(G) if key == 'all' else ''
         out.append('  <a href="%s" data-view="%s" title="%s"><span class="dot">%s</span><span>%s</span>%s</a>' % (href, key, label, ico(icon), label, extra))
     out.append('  <hr><h4>Categories</h4>')
@@ -92,7 +107,8 @@ def chips(G, CATS):
            '  <a class="chip" href="./" data-view="home">%s Home</a>' % ico('home'),
            '  <a class="chip" href="./?view=new" data-view="new" style="--cc:var(--c-learning)">%s New</a>' % ico('spark'),
            '  <a class="chip" href="./?view=popular" data-view="popular" style="--cc:var(--c-hyper)">%s Popular</a>' % ico('flame'),
-           '  <a class="chip" href="./?view=iphone" data-view="iphone">%s iPhone</a>' % ico('phone')]
+           '  <a class="chip" href="./?view=iphone" data-view="iphone">%s iPhone</a>' % ico('phone'),
+           '  <a class="chip" href="./?view=trophies" data-view="trophies" style="--cc:var(--c-idle)">%s Trophies</a>' % ico('trophy')]
     for cid, name, icon, _ in CATS:
         out.append('  <a class="chip" href="./?cat=%s" data-cat="%s" style="--cc:var(--c-%s)">%s %s</a>' % (cid, cid, cid, ico(icon), html.escape(name)))
     out += ['  <a class="chip" href="./?view=recent" data-view="recent">%s Recent</a>' % ico('clock'),
@@ -111,7 +127,7 @@ def foot(G, CATS):
       '      <div class="perks"><span>%s No ads</span><span>%s No accounts</span><span>%s Saves on your device</span></div></div>' % (ico('check'), ico('shield'), ico('offline')),
       '    <div><h2 class="fh">Categories</h2><ul>%s</ul></div>' % cats,
       '    <div><h2 class="fh">Explore</h2><ul><li><a href="./?view=new">New games</a></li><li><a href="./?view=popular">Popular</a></li><li><a href="./?view=iphone">Plays on iPhone</a></li><li><a href="./?view=all">All %d games</a></li><li><a href="play.html?g=random">Surprise me</a></li><li><a href="./?view=recent">Recently played</a></li><li><a href="./?view=favourites">Favourites</a></li></ul></div>' % len(G),
-      '    <div><h2 class="fh">Your arcade</h2><ul><li><button type="button" data-open-prefs>Settings &amp; theme</button></li><li><button type="button" data-open-prefs="data">Back up your progress</button></li><li><button type="button" data-open-prefs="report">Tester report for Caleb</button></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>',
+      '    <div><h2 class="fh">Your arcade</h2><ul><li><button type="button" data-open-profile>My profile</button></li><li><a href="./?view=trophies">Trophy room</a></li><li><button type="button" data-open-prefs>Settings &amp; theme</button></li><li><button type="button" data-open-profile="backup">Back up your progress</button></li><li><button type="button" data-open-prefs="report">Tester report for Caleb</button></li><li><a href="sitemap.xml">Sitemap</a></li></ul></div>',
       '    <div class="base"><span>© %d Caleb\'s Arcade. Every game here was made by Caleb.</span><span class="keys"><span><kbd class="kbd">/</kbd> search</span><span><kbd class="kbd">S</kbd> surprise me</span><span><kbd class="kbd">,</kbd> settings</span></span></div>' % year,
       '  </div>', '</footer>'])
 

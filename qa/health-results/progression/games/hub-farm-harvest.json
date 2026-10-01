@@ -1,0 +1,150 @@
+{
+ "id": "hub-farm-harvest",
+ "title": "Farm Harvest",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/farm-harvest.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "farmHarvestSave_v2"
+ ],
+ "session1": {
+  "start": "#btnPlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 100,
+   "max": 100
+  },
+  "botTaps": 24,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "farmHarvestSave_v2",
+   "fh_muted"
+  ],
+  "savedKeysWrittenInSession1": 3,
+  "titleTextChanged": true,
+  "title1": "1 Level 0/10 XP 30 Level 1 farmer 0/24 Your daily gift is waiting Free coins, every day Harvest 0 ready Plant all 4 · 8 Water all all wet CH",
+  "title2": "2 Level 5/28 XP 232 Level 2 farmer 0/24 Reach level 3 for Strawberry 23 XP to the next level New crop Harvest 4 ready Plant all none empty W",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 3,
+  "added": [
+   "ik_coach_farm-harvest",
+   "farmHarvestSave_v2",
+   "fh_muted"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "ik_coach_farm-harvest": "1",
+   "farmHarvestSave_v2": "{\"v\":2,\"coins\":232,\"lifetime\":100,\"alltime\":100,\"owned\":[],\"ups\":{},\"p",
+   "fh_muted": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "settings"
+  ],
+  "categoriesPresent": [
+   "other",
+   "settings"
+  ],
+  "writesDuringPlay": {
+   "ik_coach_farm-harvest": "1x",
+   "farmHarvestSave_v2": "6x",
+   "fh_muted": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "stars": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "upgrades",
+  "goals",
+  "daily"
+ ],
+ "claimedOnly": [],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [],
+  "unclassifiedBlob": true
+ },
+ "level": 1,
+ "label": "P1",
+ "why": "saves some state but shows no unlock, upgrade, goal or level system",
+ "expected": [
+  "goals",
+  "unlocks",
+  "cosmetics",
+  "achievements",
+  "daily"
+ ],
+ "lacks": [
+  "cosmetics",
+  "achievements"
+ ],
+ "pageErrors": []
+}

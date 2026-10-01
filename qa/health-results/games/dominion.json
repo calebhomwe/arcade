@@ -1,0 +1,248 @@
+{
+ "id": "dominion",
+ "title": "Dominion",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "Dominion/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 11352 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.6 -> about 7095 ms of JS; long-task API + timer heartbeat; longest frame 26336.7 ms:  TimerHandler:setTimeout 6 /  TimerHandler:setTimeout 8 /  TimerHandler:setTimeout 49 | 3 touch inputs not acknowledged within 4 s while the main thread was blocked",
+  "JANK": "p95 JS frame cost 50.19 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.6; raw p95 80.3, median 12.25, p99 62.75, max 62.8; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": null,
+  "2-mid": "shots/dominion-2-mid.jpg",
+  "3-end": "shots/dominion-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 17.11,
+  "cores": 4,
+  "load1End": 16.92,
+  "contention": 1.6,
+  "contentionSamples": [
+   1.04,
+   1.6,
+   1.44,
+   2.09,
+   1.82,
+   1.65,
+   1.51
+  ]
+ },
+ "loadMs": 11638,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:43265/Dominion/index.html",
+ "startPath": "http://127.0.0.1:43265/Dominion/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 110.9,
+  "bench1Ms": 29.2,
+  "effectiveSlowdown": 3.8
+ },
+ "start": {
+  "how": "#dPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.6,
+  "loadMs": 7095,
+  "playMs": 2261,
+  "loadRawMs": 11352,
+  "playRawMs": 3617,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 12,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 7044,
+  "tbtPlayMs": 83,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 3,
+  "slowestPollMs": 77,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 26336.7,
+   "blocking": 54.9,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     6
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     8
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     49
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 11537.4,
+   "blocking": 11270.1,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "http://127.0.0.1:43265/assets/arcade-sdk.js",
+     5
+    ],
+    [
+     "Dominion/index.html",
+     "http://127.0.0.1:43265/Dominion/index.html",
+     10948
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3583.2,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     28
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 30,
+  "jsMedian": 12.25,
+  "jsP95": 50.19,
+  "jsP99": 62.75,
+  "jsMax": 62.8,
+  "jsP95Raw": 80.3,
+  "rawWithGlP95": 80.3,
+  "glP95": 0,
+  "gapP95": 2183.3,
+  "gapMedian": 1599.9,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.8,
+  "heap1MB": 2.9,
+  "heapGrowthPct": 5,
+  "heapMeasured": true,
+  "nodesStart": 71,
+  "nodesEnd": 80,
+  "nodesMax": 80,
+  "listeners0": 76,
+  "listeners1": 76,
+  "audioContexts": 0,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 63,
+   "totalMB": 33.7,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 1280,
+     "h": 720,
+     "mpx": 0.92,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1280,
+     "h": 510,
+     "mpx": 0.65,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1280,
+     "h": 510,
+     "mpx": 0.65,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 5,
+  "scriptPct": 2,
+  "layoutPerSec": 0.6
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 2,
+  "swipes": 1,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 4000,
+  "inputLatencyP95Ms": 4002,
+  "inputLatencyMaxMs": 4002,
+  "inputTimeouts": 3
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": 78.8,
+  "samples": 2
+ },
+ "severity": 111.1,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "main thread blocked 10384 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1.4 -> about 7417 ms of JS; long-task API + timer heartbeat; longest frame 25405.1 ms:  TimerHandler:setTimeout 11 /  TimerHandler:setTimeout 6 / assets/arcade-sdk.js TimerHandler:setTimeout 6",
+  "blockPlayMs": 186,
+  "blockLoadMs": 7417,
+  "load1": 17.09
+ }
+}

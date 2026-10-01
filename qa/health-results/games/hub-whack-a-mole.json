@@ -1,0 +1,205 @@
+{
+ "id": "hub-whack-a-mole",
+ "title": "Whack-a-Mole",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/whack-a-mole.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [
+  "ERRORS"
+ ],
+ "evidence": {
+  "ERRORS": "1 uncaught page error(s): KKs.banner is not a function"
+ },
+ "notes": [],
+ "shots": {
+  "1-title": "shots/hub-whack-a-mole-1-title.jpg",
+  "2-mid": "shots/hub-whack-a-mole-2-mid.jpg",
+  "3-end": "shots/hub-whack-a-mole-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 16.73,
+  "cores": 4,
+  "load1End": 17.19,
+  "contention": 5.42,
+  "contentionSamples": [
+   1.12,
+   5.88,
+   5.58,
+   5.42,
+   7.19,
+   3.43,
+   4.48
+  ]
+ },
+ "loadMs": 1186,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/whack-a-mole.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/whack-a-mole.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 150.7,
+  "bench1Ms": 37.2,
+  "effectiveSlowdown": 4.1
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 4,
+  "loadMs": 249,
+  "playMs": 68,
+  "loadRawMs": 997,
+  "playRawMs": 274,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 1,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 136,
+  "tbtPlayMs": 0,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 0,
+  "slowestPollMs": 126,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 1692.7,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 1165.8,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 835.2,
+   "blocking": 780.1,
+   "scripts": [
+    [
+     "games/whack-a-mole.html",
+     "https://calebhomwe.github.io/arcade-hub/games/whack-a-mole.html",
+     738
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 17,
+  "jsMedian": 0.13,
+  "jsP95": 11.25,
+  "jsP99": 11.25,
+  "jsMax": 11.3,
+  "jsP95Raw": 45,
+  "rawWithGlP95": 45,
+  "glP95": 0,
+  "gapP95": 283.2,
+  "gapMedian": 66.7,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [
+  "KKs.banner is not a function"
+ ],
+ "errorCount": 1,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 12,
+  "heapMeasured": true,
+  "nodesStart": 181,
+  "nodesEnd": 152,
+  "nodesMax": 181,
+  "listeners0": 53,
+  "listeners1": 54,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 1,
+   "totalMB": 4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 2
+ },
+ "cpu": {
+  "mainThreadBusyPct": 10,
+  "scriptPct": 1,
+  "layoutPerSec": 2.2
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 2,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    1,
+    0
+   ],
+   [
+    3,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 57,
+  "swipes": 9,
+  "holds": 6,
+  "keys": 2,
+  "buttonPresses": 25,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 69,
+  "inputLatencyP95Ms": 898,
+  "inputLatencyMaxMs": 1671,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 2.6,
+  "changeTitleToPlayPct": 44.1,
+  "maxChangeFromStartPct": 2.6,
+  "samples": 16
+ },
+ "severity": 22.4
+}

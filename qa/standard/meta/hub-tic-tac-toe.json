@@ -1,22 +1,22 @@
 {
   "howto": [
-    "Pick 2 Players, Easy CPU, Hard CPU or Misère and press Play.",
-    "You are X and go first. Tap an empty square.",
-    "Three in a row across, down or corner to corner wins; a full board is a draw.",
-    "In Misère, making three in a row loses."
+    "Press Play to face the next critter on the ladder, or pick Two players.",
+    "Tap a square to place your piece. You are X; the critter is O.",
+    "Three in a row across, down or corner to corner wins the round. Win two rounds before your opponent (five rounds at most).",
+    "Win 2 to 0 for three stars. Beat a critter to unlock the next one."
   ],
   "tips": [
-    "The centre sits on four lines: take it when you can.",
-    "If the CPU takes the centre, answer with a corner, not an edge.",
-    "Two open lines at once (a fork) is the only way to beat anyone who blocks.",
-    "Hard CPU plays perfectly, so a draw is a good result.",
-    "Hint names the best square and says whether it wins, blocks or keeps lines open."
+    "Take the centre or a corner first: they sit on the most lines.",
+    "Before you move, check whether the critter can win next turn and block it.",
+    "Make two threats at once (a fork): the critter can only block one.",
+    "The Owl and the Dragon rarely slip: a tie against them still earns a star.",
+    "Hint shows the best square with a look-ahead; Undo takes back your move and the reply."
   ],
   "controls": {
-    "keyboard": "1 to 9 play a square (or Tab/arrows then Enter), Z undoes. P or Esc pauses.",
-    "touch": "Tap a square. New Round, Undo and Hint sit under the board."
+    "keyboard": "Tab or the arrow keys pick a square, Enter or 1 to 9 places a piece, Z undoes, H hints. P or Esc pauses.",
+    "touch": "Tap a square. Undo, Hint and Menu sit under the board."
   },
-  "difficulty": "Easy CPU picks any square that does not hand you a win; Hard CPU looks ahead through every move and never loses. Misère turns the rules upside down.",
+  "difficulty": "A six-critter ladder: Mousey blunders, Bunny blocks, Kitty and Foxy plan ahead, Owl rarely slips and the Dragon plays Opposite Day (three in a row LOSES). Two-player mode is always available.",
   "cheats": [
     {
       "code": "CPUNAP",
@@ -24,23 +24,29 @@
     },
     {
       "code": "XRAY",
-      "effect": "X-ray: see the square the CPU wants next (pink outline)"
+      "effect": "X-ray: a glow shows the square the CPU wants next"
     },
     {
       "code": "CLEANSLATE",
-      "effect": "Clean slate: the score board goes back to 0-0"
+      "effect": "Clean slate: the round score goes back to 0-0"
     }
   ],
   "features": {
-    "rules-screen": "The title card lists the rules; Pause > How to play has them too, and Replay tutorial brings the card back",
-    "ai-difficulty": "Easy CPU and Hard CPU (perfect play), plus a Misère CPU",
-    "undo": "Undo button (or Z) takes back your move and the CPU's reply; in 2 Players one move at a time",
-    "results": "Win, lose or draw card with the score; the winning line glows and a line is drawn through it"
+    "hints": "Hint button (H key, Pause > Hint): the best square by full look-ahead glows, and the text says whether it wins, blocks or builds",
+    "undo": "Undo button (Z key) takes back your move and the critter's reply",
+    "level-select-or-daily": "The Ladder: six critters, three stars each, each one unlocking the next",
+    "results": "Round banners with a gold line through the winning three; a match card with stars, round score and XP",
+    "tutorial": "First match: coach notes teach placing a piece and winning a round; skippable, replayed from How to play",
+    "ai-difficulty": "Six skill levels from a random player to a near-perfect look-ahead, plus Opposite Day",
+    "progression": "6 opponents x 3 stars; XP levels unlock 6 piece sets (oak and ivory, chalkboard, marble and brass, jade and ruby, neon glass, gold and onyx); 3 daily goals and a weekly stamp chest; meet every critter",
+    "rules-screen": "The How-to card (title, Pause > How to play) lists the rules; the first match has coach notes"
   },
   "saves": [
     "tttBest",
-    "tttRecW"
+    "tttRecW",
+    "ttt_ladder",
+    "pz_ttt"
   ],
-  "start": "#playBtn",
-  "pauseButton": "br"
+  "start": "#mPlay",
+  "pauseButton": "tr"
 }

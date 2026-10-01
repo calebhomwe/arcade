@@ -1,21 +1,22 @@
 {
   "howto": [
-    "Press Play, then drag the black hole around the field (or steer it with the arrow keys).",
-    "Swallow anything smaller than the hole to score and grow. Bigger things bounce off until you grow.",
-    "Score as much as you can before the 60-second clock runs out."
+    "Press Play. Pick MISSIONS (60 seconds, three star scores) or CLASSIC (the old best-score run).",
+    "Drag to steer the hole. It swallows anything smaller than itself and grows with every bite.",
+    "Bites in a row build a chain that adds bonus points; time stars add five seconds; golden things are worth extra.",
+    "A mission is cleared with one star at the first score target; higher targets earn two and three stars.",
+    "Coins buy new hole rims; new rims also unlock from stars, levels and day streaks."
   ],
   "tips": [
-    "Eat small things first: every bite makes the hole bigger.",
-    "Swallowing things quickly one after another builds a chain bonus.",
-    "A spinning blue time star adds 5 seconds.",
-    "Golden items are worth 2 extra points.",
-    "Houses and towers are worth the most once the hole is big enough."
+    "Chain bites without a two second gap: the bonus climbs to +22 a bite.",
+    "Grab time stars when the clock is low; they also make the hole a little bigger.",
+    "The four worlds (Town Park, Bakery Lane, Old Plaza, Night Market) change what is on the ground.",
+    "A daily goal pays coins once a day; playing on consecutive days lights the week stamps."
   ],
   "controls": {
     "keyboard": "Arrow keys or WASD steer the hole. P or Esc pauses.",
     "touch": "Drag anywhere to move the hole"
   },
-  "difficulty": "An adaptive curve: bigger, more valuable things drift in from the edges and only fit once the hole has grown.",
+  "difficulty": "Star targets rise with the mission number; the world changes every five missions and the mix of things to swallow changes with it. Classic is unchanged.",
   "cheats": [
     {
       "code": "MEGAHOLE",
@@ -35,11 +36,18 @@
     "instant-restart": "Play Again on the Time's Up card starts a new round at once",
     "best-score-badge": "Best pill in the top bar during play, and on the Time's Up card",
     "tutorial-card": "Get-ready card with a dragging finger; the clock waits until you move",
-    "results": "Time's Up card with score, best, rank and golden feast record"
+    "results": "Result card with stars, score, coins, best and Next Mission",
+    "levels": "MISSIONS mode with a mission picker and stars per mission",
+    "stars": "Three stars per mission (score targets), star marks on the progress bar",
+    "worlds": "Four worlds with their own ground and things to swallow",
+    "unlocks": "Nine hole rims: free, stars, coins, level or day-streak unlocks",
+    "daily-goal": "One seeded daily goal with a coin reward, week stamps and a day streak"
   },
   "saves": [
+    "hole-swallow-prog-v1",
     "hole-swallow-best",
-    "hole-swallow-rank"
+    "hole-swallow-rank",
+    "hole-swallow-gild"
   ],
   "start": "#playBtn",
   "pauseButton": "bl",

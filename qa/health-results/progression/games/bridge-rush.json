@@ -1,0 +1,159 @@
+{
+ "id": "bridge-rush",
+ "title": "Bridge Rush",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/playables/BridgeRush/index.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "bridge-rush-prog-v1",
+  "br_rec"
+ ],
+ "session1": {
+  "start": "#play",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 16,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "br_snd",
+   "br_hint"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": false,
+  "title1": "0 Bridge Rush RACES CLASSIC RACE 1 BEST 0 RACE 1 WORLD 1 · HARBOUR WORKS Reach the flag (220 m) Finish ahead of the rival Win by 14 m or mor",
+  "title2": "0 Bridge Rush RACES CLASSIC RACE 1 BEST 0 RACE 1 WORLD 1 · HARBOUR WORKS Reach the flag (220 m) Finish ahead of the rival Win by 14 m or mor",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 3,
+  "added": [
+   "br_snd",
+   "br_hint"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "br_snd": "false",
+   "br_hint": "true",
+   "bridge-rush-prog-v1": "{\"coins\":0,\"level\":1,\"stars\":{},\"skin\":\"oak\",\"owned\":[\"oak\"],\"days\":[\""
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "settings"
+  ],
+  "categoriesPresent": [
+   "other",
+   "settings",
+   "currency",
+   "levels",
+   "stars",
+   "cosmetics",
+   "unlocks",
+   "daily",
+   "goals"
+  ],
+  "writesDuringPlay": {
+   "bridge-rush-prog-v1": "4x",
+   "br_hint": "1x",
+   "br_snd": "5x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "goals": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": false,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "upgrades"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [],
+  "unclassifiedBlob": true
+ },
+ "level": 1,
+ "label": "P1",
+ "why": "saves some state but shows no unlock, upgrade, goal or level system",
+ "expected": [
+  "unlocks",
+  "cosmetics",
+  "daily",
+  "achievements",
+  "goals"
+ ],
+ "lacks": [
+  "achievements"
+ ],
+ "pageErrors": []
+}

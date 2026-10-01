@@ -1,0 +1,253 @@
+{
+ "id": "math-miner",
+ "title": "Math Miner",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "MathMiner/index.html",
+ "engine": "chromium",
+ "throttle": 4,
+ "throttled": true,
+ "durationS": 45,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x3.2)"
+ ],
+ "shots": {
+  "1-title": null,
+  "2-mid": "shots/math-miner-2-mid.jpg",
+  "3-end": "shots/math-miner-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 22.74,
+  "cores": 4,
+  "load1End": 22.52,
+  "contention": 3.24,
+  "contentionSamples": [
+   4.29,
+   6.2,
+   31.45,
+   2,
+   1.39,
+   3.24,
+   3.18
+  ]
+ },
+ "loadMs": 962,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:42685/MathMiner/index.html",
+ "startPath": "http://127.0.0.1:42685/MathMiner/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 135,
+  "bench1Ms": 157.1,
+  "effectiveSlowdown": 0.9
+ },
+ "start": {
+  "how": "#btnMath",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 3.24,
+  "loadMs": 66,
+  "playMs": 293,
+  "loadRawMs": 214,
+  "playRawMs": 948,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 9,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 16,
+  "tbtPlayMs": 0,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 3,
+  "slowestPollMs": 133,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 8279.8,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     5
+    ],
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     13
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     8
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 8224.5,
+   "blocking": 6.4,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     6
+    ],
+    [
+     "",
+     "TimerHandler:setTimeout",
+     49
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     6
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 2552.3,
+   "blocking": 57,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     90
+    ]
+   ],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 93,
+  "jsMedian": 1.33,
+  "jsP95": 12.07,
+  "jsP99": 44.57,
+  "jsMax": 44.6,
+  "jsP95Raw": 39.1,
+  "rawWithGlP95": 39.1,
+  "glP95": 0,
+  "gapP95": 1349.9,
+  "gapMedian": 483.3,
+  "over100": 0,
+  "limit": 16
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.2,
+  "heap1MB": 2.3,
+  "heapGrowthPct": 7,
+  "heapMeasured": true,
+  "nodesStart": 136,
+  "nodesEnd": 150,
+  "nodesMax": 151,
+  "listeners0": 93,
+  "listeners1": 92,
+  "audioContexts": 2,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 18,
+   "totalMB": 8.1,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 780,
+     "h": 894,
+     "mpx": 0.7,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 431,
+     "h": 226,
+     "mpx": 0.1,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 436,
+     "h": 184,
+     "mpx": 0.08,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 7,
+  "scriptPct": 3,
+  "layoutPerSec": 0.4
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 1
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 1,
+  "last": 1,
+  "max": 1,
+  "trajectory": [
+   [
+    44,
+    1
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 9,
+  "swipes": 2,
+  "holds": 1,
+  "keys": 1,
+  "buttonPresses": 6,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 936,
+  "inputLatencyP95Ms": 4018,
+  "inputLatencyMaxMs": 4018,
+  "inputTimeouts": 2
+ },
+ "screen": {
+  "longestStaticS": 7.1,
+  "changeTitleToPlayPct": 88.1,
+  "maxChangeFromStartPct": 90.5,
+  "samples": 7
+ },
+ "severity": 0.3
+}
