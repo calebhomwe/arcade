@@ -121,6 +121,7 @@
     <div class="cell"><span class="lab">Score</span><span class="val" id="score">0</span></div>
     <div class="cell"><span class="lab">Best</span><span class="val" id="best">0</span></div>
     <div class="cell"><span class="lab">Merged</span><span class="val" id="merged">0</span></div>
+    <div class="cell"><span class="lab">Crew</span><span class="val" id="carCell">LV 1</span></div>
     <div class="cell" id="nextcell"><span class="lab">Next</span><canvas id="next" width="44" height="44"></canvas></div>
   </div>
   <span class="modetag" id="modeTag">Normal</span><span class="codes-on" id="codesOn" hidden>Codes on</span>
@@ -159,6 +160,7 @@
     <div class="dailywrap"><div class="seglab">Daily crate</div><button class="btn daily" id="dailyBtn">Today</button></div>
   </div>
   <div class="dailybest" id="dailyBest"></div>
+  <div id="career" style="margin-top:10px;text-align:left"></div>
   <p class="hint">Move · mouse, drag or arrows &nbsp;·&nbsp; drop · click, lift or space &nbsp;·&nbsp; U · undo &nbsp;·&nbsp; H · hint</p>
 </div></div>
 
@@ -235,6 +237,62 @@ const FRUITS=[
  {n:'pumpkin',   r:100, c:'#c46a2e', d:'#96501f', pts:55},
  {n:'watermelon',r:113, c:'#5f7a4a', d:'#45591f', pts:66}];
 const LAST=FRUITS.length-1, WM_BONUS=200;
+
+/* ═══ market crew: player level + XP, coins, buyable stall themes, goals and a daily job ═══
+   Saved in mm_car (compact, written every clean run). Themes repaint the fruit crate. */
+const BASEC=FRUITS.map(f=>[f.c,f.d]);
+const THEMES=[{id:'market',name:'Market',cost:0,c:['#c1543a','#8a5a7a','#d99a3c','#cf7433','#b5493a','#9aa04c','#a03d54','#c98a4a','#b98a2e','#c46a2e','#5f7a4a'],d:['#8f3a26','#64405a','#a8712a','#9c5424','#8a3529','#747a36','#7a2c3f','#9a6634','#8f6a20','#96501f','#45591f']},
+ {id:'neon',name:'Neon Night',cost:60,c:['#ff4d6d','#c77dff','#ffd166','#ff9e00','#ff5c8a','#5bd75b','#ff6bd6','#38d9ff','#ffe066','#ff7b00','#66f2b0'],d:['#7a1f38','#5a3a80','#8a6a20','#8a5200','#7a2a44','#2f7a2f','#8a2f7a','#1f6a8a','#8a7a20','#8a4200','#2f8a60']},
+ {id:'pastel',name:'Pastel Fair',cost:120,c:['#f4a3b0','#c3b1e1','#f7d6a0','#f9b77a','#f2a1a1','#cfd6a3','#e8a8c3','#f4d6a8','#f4dca0','#f7b98c','#bcd6a8'],d:['#b56a78','#8a7aa8','#b5985a','#b57a4a','#b56a6a','#98a06a','#aa6a8a','#b59a6a','#b5a06a','#b5805a','#8aa070']},
+ {id:'winter',name:'Frost Stall',cost:200,c:['#7fb2d6','#9ad1c8','#cfe3ef','#a8d0e0','#dfe9f2','#bfe3d0','#cdd9ea','#dce9e0','#e8dfe8','#c9d8e8','#b8d8c8'],d:['#4a7a94','#5f9a90','#8aa0aa','#6a95a8','#9ab0b8','#7aa888','#8a97a8','#98b0a0','#a898a8','#8fa0b0','#78a088']}];
+const CAR=Object.assign({lvl:1,xp:0,coins:0,theme:'market',owned:['market'],goals:{},stars:0,daily:{d:'',job:0,done:false}},store.get('mm_car',{}));
+const saveCar=()=>store.set('mm_car',CAR);
+saveCar();
+const carXpNeed=l=>60+(l-1)*45;
+const DAILY_JOBS=['Score 120 in one crate today','Merge 25 fruits in one crate today','Grow a melon or better today'];
+function carDayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function rollDailyCar(){const k=carDayKey();if(CAR.daily.d===k)return;
+  let h=0;for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;
+  CAR.daily={d:k,job:h%3,done:false};saveCar()}
+rollDailyCar();
+function applyTheme(id){const th=THEMES.find(x=>x.id===id)||THEMES[0];
+  FRUITS.forEach((f,i)=>{f.c=th.c[i];f.d=th.d[i]});CAR.theme=th.id;saveCar();paintCareer();}
+const CAR_GOALS=[{id:'g1',txt:'Play 5 crates',test:()=>REC.games>=5},{id:'g2',txt:'Merge 100 fruits',test:()=>REC.merged>=100},
+ {id:'g3',txt:'Score 200 in one crate',test:()=>(REC.best||0)>=200},{id:'g4',txt:'Grow a pineapple',test:()=>REC.biggest>=8},
+ {id:'g5',txt:'Reach the watermelon',test:()=>REC.biggest>=10},{id:'g6',txt:'Own two stall themes',test:()=>CAR.owned.length>=2}];
+function checkCarGoals(){let changed=false;
+  CAR_GOALS.forEach(g=>{if(!CAR.goals[g.id]&&g.test()){CAR.goals[g.id]=1;CAR.coins+=15;CAR.stars++;changed=true;
+    try{if(window.ArcadeSDK&&ArcadeSDK.profile)ArcadeSDK.profile.achievement('mm-'+g.id,{title:g.txt,desc:g.txt,tier:'bronze'})}catch(e){}}});
+  if(changed)saveCar();return changed}
+function carAward(scored,mergedCount,biggest){
+  if(cheated())return;
+  const coins=Math.round(scored/25)+Math.round(mergedCount/6);
+  CAR.coins+=coins;CAR.xp+=Math.max(5,Math.round(scored/2));
+  while(CAR.xp>=carXpNeed(CAR.lvl)){CAR.xp-=carXpNeed(CAR.lvl);CAR.lvl++;CAR.stars++;}
+  rollDailyCar();const j=CAR.daily.job;
+  if(!CAR.daily.done&&((j===0&&scored>=120)||(j===1&&mergedCount>=25)||(j===2&&biggest>=7))){CAR.daily.done=true;CAR.coins+=20;CAR.stars++;}
+  checkCarGoals();saveCar();
+  try{if(window.ArcadeSDK)ArcadeSDK.state({scene:'over',score:scored,level:CAR.lvl,stars:CAR.stars});}catch(e){}
+}
+function paintCareer(){
+  const cell=document.getElementById('carCell');
+  if(cell)cell.textContent='LV '+CAR.lvl+' · '+CAR.coins+' coins';
+  const el=document.getElementById('career');if(!el)return;
+  const done=CAR_GOALS.filter(g=>CAR.goals[g.id]).length;
+  el.innerHTML='<div class="log"><span>Stall crew LV '+CAR.lvl+' · '+CAR.xp+'/'+carXpNeed(CAR.lvl)+' XP</span><b>'+CAR.coins+' coins · '+CAR.stars+'★</b></div>'
+   +'<div class="log"><span>Daily job: '+DAILY_JOBS[CAR.daily.job]+'</span><b>'+(CAR.daily.done?'done ✓':'· +20 coins +1★')+'</b></div>'
+   +'<div class="log"><span>Goals done</span><b>'+done+'/'+CAR_GOALS.length+'</b></div>'
+   +'<div class="seglab" id="thLab">Stall themes</div><div class="seg" role="group" aria-labelledby="thLab">'+THEMES.map(th=>{
+      const owned=CAR.owned.indexOf(th.id)>=0;
+      return '<button type="button" data-th="'+th.id+'" aria-pressed="'+(CAR.theme===th.id)+'">'+(owned?th.name:th.name+' · '+th.cost+' coins')+'</button>'}).join('')+'</div>';
+  el.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{const th=THEMES.find(x=>x.id===b.dataset.th);
+    if(!th)return;
+    if(CAR.owned.indexOf(th.id)>=0){applyTheme(th.id);AU.click&&AU.click();}
+    else if(CAR.coins>=th.cost){CAR.coins-=th.cost;CAR.owned.push(th.id);applyTheme(th.id);AU.click&&AU.click();}
+    else{AU.bad&&AU.bad();}});
+}
+applyTheme(CAR.theme&&THEMES.some(x=>x.id===CAR.theme)?CAR.theme:'market');
+setInterval(function(){try{CAR.lastSeen=Date.now();saveCar();}catch(e){}},15000);
 
 /* ═══ audio: crate thumps and bottle-pops ═══ */
 const AU={ctx:null,on:store.get('mm_snd',true),
@@ -465,7 +523,8 @@ function gameOver(){
     if(mode==='daily'){const d=dailyRec();d.best=Math.max(d.best,state.score);d.tries++;store.set('mm_daily',d);}
     else{const k=DIFF[diff].key;REC[k]=Math.max(REC[k]||0,state.score);}
     REC.games++;REC.merged+=state.merged;REC.biggest=Math.max(REC.biggest,state.biggest);
-    store.set('mm_rec',REC);}
+    store.set('mm_rec',REC);
+    carAward(state.score,state.merged,state.biggest);}
   AU.over();
   $('#overKick').textContent=state.biggest>=LAST?'A legend of the market':mode==='daily'?'Daily crate · '+dayLabel():'The crate is full';
   $('#newbest').style.display=nb?'block':'none';
@@ -653,7 +712,7 @@ function paintMenu(){
   document.querySelectorAll('[data-diff]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.diff===diff)));
   const d=dailyRec();
   $('#dailyBtn').textContent=dayLabel();
-  $('#dailyBest').textContent=d.best?'Today\'s best '+d.best+' · same fruit order for everyone today':'Same fruit order for everyone today';}
+  $('#dailyBest').textContent=d.best?'Today\'s best '+d.best+' · same fruit order for everyone today':'Same fruit order for everyone today';paintCareer();}
 document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{
   diff=b.dataset.diff;store.set('mm_diff',diff);paintMenu();AU.init();AU.click();});
 paintMenu();

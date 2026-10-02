@@ -1,0 +1,259 @@
+{
+ "id": "sky-swim-dodge",
+ "title": "Swim Dodge",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 30,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "page did not answer the harness for 6 s (2 poll timeout(s))"
+ },
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-swim-dodge-1-title.jpg",
+  "2-mid": "shots\\sky-swim-dodge-2-mid.jpg",
+  "3-end": "shots\\sky-swim-dodge-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1.91,
+  "contentionSamples": [
+   1.28,
+   8.13,
+   1,
+   13.88,
+   1,
+   1.94,
+   1.91
+  ]
+ },
+ "loadMs": 308,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.4,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.91,
+  "loadMs": 0,
+  "playMs": 330,
+  "loadRawMs": 0,
+  "playRawMs": 630,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 47,
+  "longTasks100Play": 3,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 502,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 5,
+  "slowestPollMs": 6109,
+  "pollTimeouts": 2,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 513.8,
+   "blocking": 431.5,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     50
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 477.5,
+   "blocking": 20.3,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     47
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 240.2,
+   "blocking": 93.4,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     111
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 2033,
+  "jsMedian": 0.1,
+  "jsP95": 9.16,
+  "jsP99": 24.5,
+  "jsMax": 68.1,
+  "jsP95Raw": 17.5,
+  "rawWithGlP95": 17.5,
+  "glP95": 0,
+  "gapP95": 33.4,
+  "gapMedian": 16.7,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 4,
+  "heapMeasured": true,
+  "nodesStart": 31,
+  "nodesEnd": 32,
+  "nodesMax": 32,
+  "listeners0": 60,
+  "listeners1": 60,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 57,
+   "totalMB": 4.5,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 36,
+  "scriptPct": 14,
+  "layoutPerSec": 0.3
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "title",
+   "play",
+   "over",
+   "title",
+   "play",
+   "over",
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 3,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 3,
+  "first": 19,
+  "last": 13,
+  "max": 19,
+  "trajectory": [
+   [
+    13,
+    19
+   ],
+   [
+    30,
+    16
+   ],
+   [
+    42,
+    13
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 11,
+  "swipes": 2,
+  "holds": 2,
+  "keys": 0,
+  "buttonPresses": 4,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 33,
+  "inputLatencyP95Ms": 3576,
+  "inputLatencyMaxMs": 3576,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 17.5,
+  "maxChangeFromStartPct": 74.4,
+  "samples": 7
+ },
+ "severity": 102.3,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [],
+  "evidence": null,
+  "blockPlayMs": 251,
+  "blockLoadMs": 0,
+  "load1": 0
+ }
+}

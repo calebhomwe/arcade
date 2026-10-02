@@ -1,0 +1,224 @@
+{
+ "id": "sky-slide-runner",
+ "title": "Slide Runner",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/slide-runner.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 30,
+ "orientation": "portrait",
+ "verdicts": [
+  "STALL"
+ ],
+ "evidence": {
+  "STALL": "game over screen reached 1x and the game never got back to play (bot pressed buttons for 16 s)"
+ },
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-slide-runner-1-title.jpg",
+  "2-mid": "shots\\sky-slide-runner-2-mid.jpg",
+  "3-end": "shots\\sky-slide-runner-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1.54,
+  "contentionSamples": [
+   1.54,
+   1,
+   1,
+   1.09,
+   2.72,
+   3.98,
+   2.72
+  ]
+ },
+ "loadMs": 30,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/slide-runner.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/slide-runner.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 21.5,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.54,
+  "loadMs": 0,
+  "playMs": 428,
+  "loadRawMs": 0,
+  "playRawMs": 659,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 36,
+  "longTasks100Play": 15,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 2453,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 17,
+  "slowestPollMs": 1209,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 627.6,
+   "blocking": 577.2,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     614
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 485.1,
+   "blocking": 385.5,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 451,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 1238,
+  "jsMedian": 0.13,
+  "jsP95": 6.04,
+  "jsP99": 34.09,
+  "jsMax": 399,
+  "jsP95Raw": 9.3,
+  "rawWithGlP95": 9.3,
+  "glP95": 0,
+  "gapP95": 33.4,
+  "gapMedian": 16.7,
+  "over100": 5,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.8,
+  "heap1MB": 2,
+  "heapGrowthPct": 9,
+  "heapMeasured": true,
+  "nodesStart": 30,
+  "nodesEnd": 31,
+  "nodesMax": 31,
+  "listeners0": 59,
+  "listeners1": 59,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 20,
+   "totalMB": 3.9,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 37,
+  "scriptPct": 14,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "title"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 11,
+  "last": 11,
+  "max": 11,
+  "trajectory": [
+   [
+    17,
+    11
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 17,
+  "swipes": 2,
+  "holds": 0,
+  "keys": 2,
+  "buttonPresses": 10,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 37,
+  "inputLatencyP95Ms": 1259,
+  "inputLatencyMaxMs": 2514,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 10.1,
+  "maxChangeFromStartPct": 12.1,
+  "samples": 8
+ },
+ "severity": 82.4
+}

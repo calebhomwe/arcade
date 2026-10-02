@@ -1,0 +1,230 @@
+{
+ "id": "sky-swim-dodge",
+ "title": "Swim Dodge",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 30,
+ "orientation": "portrait",
+ "verdicts": [
+  "STALL"
+ ],
+ "evidence": {
+  "STALL": "game over screen reached 1x and the game never got back to play (bot pressed buttons for 21 s)"
+ },
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-swim-dodge-1-title.jpg",
+  "2-mid": "shots\\sky-swim-dodge-2-mid.jpg",
+  "3-end": "shots\\sky-swim-dodge-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   1,
+   1,
+   1.09,
+   1,
+   1,
+   1,
+   1
+  ]
+ },
+ "loadMs": 57,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.6,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 458,
+  "playMs": 1184,
+  "loadRawMs": 458,
+  "playRawMs": 1184,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 69,
+  "longTasks100Play": 45,
+  "tbtLoadMs": 1116,
+  "tbtPlayMs": 10566,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 42,
+  "slowestPollMs": 1611,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 933.8,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 896.3,
+   "blocking": 606.8,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     297
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 581.1,
+   "blocking": 427.4,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     476
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 1052,
+  "jsMedian": 0.3,
+  "jsP95": 19.2,
+  "jsP99": 164,
+  "jsMax": 477,
+  "jsP95Raw": 19.2,
+  "rawWithGlP95": 19.2,
+  "glP95": 0,
+  "gapP95": 116.6,
+  "gapMedian": 16.7,
+  "over100": 18,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2,
+  "heap1MB": 2,
+  "heapGrowthPct": 3,
+  "heapMeasured": true,
+  "nodesStart": 30,
+  "nodesEnd": 31,
+  "nodesMax": 31,
+  "listeners0": 59,
+  "listeners1": 59,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 18,
+   "totalMB": 3.9,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 54,
+  "scriptPct": 22,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "title"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 16,
+  "last": 16,
+  "max": 16,
+  "trajectory": [
+   [
+    21,
+    16
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 5,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 1,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1150,
+  "inputLatencyP95Ms": 1303,
+  "inputLatencyMaxMs": 1303,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 12.7,
+  "changeTitleToPlayPct": 80,
+  "maxChangeFromStartPct": 50.2,
+  "samples": 5
+ },
+ "severity": 83.2
+}

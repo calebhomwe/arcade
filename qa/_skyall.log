@@ -1,0 +1,24 @@
+9 games, chromium x0 CPU throttle, 30 s each, 2 worker(s), load 0.0 on 24 cores
+  1/9 STALL          sky-slide-runner             game over screen reached 1x and the game never got back to play (bot pressed buttons for 16 s)
+  2/9 OK             sky-slingshot                tap centre
+  3/9 OK             sky-snake                    tap centre
+  4/9 OK             sky-sniper-shot              tap centre
+  5/9 OK             sky-spike-jump               tap centre
+  6/9 OK             sky-stack-tower              tap centre
+  7/9 STALL          sky-swim-dodge               game over screen reached 1x and the game never got back to play (bot pressed buttons for 21 s)
+  8/9 OK             sky-traffic-run              tap centre
+  9/9 OK             sky-turret-defense           tap centre
+-> qa\_skyall\health.md
+sky-slide-runner             PASS 21  FAIL  0  REVIEW  4  28s
+sky-slingshot                PASS 21  FAIL  0  REVIEW  4  42s
+sky-sniper-shot              PASS 20  FAIL  1  REVIEW  4  34s
+sky-spike-jump               PASS 22  FAIL  1  REVIEW  2  39s
+sky-snake                    PASS 21  FAIL  1  REVIEW  3  101s
+sky-swim-dodge               PASS 21  FAIL  0  REVIEW  4  45s
+sky-stack-tower              PASS 21  FAIL  0  REVIEW  4  97s
+sky-traffic-run              PASS 23  FAIL  0  REVIEW  2  47s
+sky-turret-defense           PASS 21  FAIL  0  REVIEW  4  30s
+
+9 games: PASS 191, FAIL 3, REVIEW 31, N/A 9
+-> qa\_skyall-std\matrix.json
+done

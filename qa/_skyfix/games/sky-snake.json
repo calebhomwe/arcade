@@ -1,0 +1,233 @@
+{
+ "id": "sky-snake",
+ "title": "Snake",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/snake.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "ERRORS",
+  "STALL"
+ ],
+ "evidence": {
+  "FREEZE": "game loop (requestAnimationFrame) stopped for 25.6 s while visible in scene play, never recovered; an uncaught error was thrown at that moment: Uncaught TypeError: Cannot read properties of undefined (reading '0') @assets/arcade-sdk.js:75",
+  "ERRORS": "2 uncaught page error(s): Cannot read properties of undefined (reading '0')",
+  "STALL": "nothing on screen changed for 22 s while the bot kept tapping | game over screen reached 1x and the game never got back to play (bot pressed buttons for 26 s)"
+ },
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-snake-1-title.jpg",
+  "2-mid": "shots\\sky-snake-2-mid.jpg",
+  "3-end": "shots\\sky-snake-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   1,
+   1,
+   1.11,
+   1,
+   1,
+   1,
+   1
+  ]
+ },
+ "loadMs": 76,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/snake.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/snake.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.3,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 0,
+  "playMs": 73,
+  "loadRawMs": 0,
+  "playRawMs": 73,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 1,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 7,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 0,
+  "slowestPollMs": 7,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 159.5,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [
+  {
+   "atMs": 2112,
+   "scene": "play",
+   "seconds": 25.6,
+   "recovered": false,
+   "errorAtStall": true,
+   "screenStatic": false,
+   "counted": true
+  }
+ ],
+ "frames": {
+  "n": 59,
+  "jsMedian": 0.1,
+  "jsP95": 0.4,
+  "jsP99": 57.1,
+  "jsMax": 57.1,
+  "jsP95Raw": 0.4,
+  "rawWithGlP95": 0.4,
+  "glP95": 0,
+  "gapP95": 16.8,
+  "gapMedian": 16.7,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [
+  "Cannot read properties of undefined (reading '0')"
+ ],
+ "errorCount": 2,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2,
+  "heapGrowthPct": 7,
+  "heapMeasured": true,
+  "nodesStart": 31,
+  "nodesEnd": 32,
+  "nodesMax": 32,
+  "listeners0": 61,
+  "listeners1": 61,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 5,
+   "totalMB": 4.6,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 370,
+     "h": 644,
+     "mpx": 0.24,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 1,
+  "scriptPct": 0,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    2,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 51,
+  "swipes": 9,
+  "holds": 3,
+  "keys": 1,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 2,
+  "inputLatencyP95Ms": 370,
+  "inputLatencyMaxMs": 1135,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 21.8,
+  "changeTitleToPlayPct": 79.8,
+  "maxChangeFromStartPct": 1.4,
+  "samples": 11
+ },
+ "severity": 106.5,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE",
+   "ERRORS",
+   "STALL"
+  ],
+  "evidence": "game loop (requestAnimationFrame) stopped for 20.3 s while visible in scene play, never recovered; an uncaught error was thrown at that moment: Uncaught TypeError: Cannot read properties of undefined (reading '0') @assets/arcade-sdk.js:75",
+  "blockPlayMs": 101,
+  "blockLoadMs": 0,
+  "load1": 0
+ }
+}

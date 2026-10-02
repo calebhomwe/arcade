@@ -1,0 +1,697 @@
+{
+ "generated": "2026-10-02T06:46:44.882Z",
+ "engine": "chromium",
+ "count": 3,
+ "results": [
+  {
+   "id": "sky-swim-dodge",
+   "title": "Swim Dodge",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 20,
+   "orientation": "portrait",
+   "verdicts": [
+    "STALL"
+   ],
+   "evidence": {
+    "STALL": "game over screen reached 1x and the game never got back to play (bot pressed buttons for 16 s)"
+   },
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\sky-swim-dodge-1-title.jpg",
+    "2-mid": "shots\\sky-swim-dodge-2-mid.jpg",
+    "3-end": "shots\\sky-swim-dodge-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1,
+    "contentionSamples": [
+     1.1,
+     1.12,
+     1,
+     11.49,
+     1,
+     1,
+     1
+    ]
+   },
+   "loadMs": 74,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+   "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/swim-dodge.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 19.3,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "tap centre",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1,
+    "loadMs": 0,
+    "playMs": 502,
+    "loadRawMs": 0,
+    "playRawMs": 502,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 17,
+    "longTasks100Play": 5,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 942,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 8,
+    "slowestPollMs": 1194,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 430.3,
+     "blocking": 380.2,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       336
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 428,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    },
+    {
+     "ms": 155.7,
+     "blocking": 105.7,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       133
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 1351,
+    "jsMedian": 0.2,
+    "jsP95": 13.6,
+    "jsP99": 30.3,
+    "jsMax": 335.9,
+    "jsP95Raw": 13.6,
+    "rawWithGlP95": 13.6,
+    "glP95": 0,
+    "gapP95": 33.3,
+    "gapMedian": 16.7,
+    "over100": 2,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2,
+    "heap1MB": 2.1,
+    "heapGrowthPct": 2,
+    "heapMeasured": true,
+    "nodesStart": 30,
+    "nodesEnd": 31,
+    "nodesMax": 31,
+    "listeners0": 59,
+    "listeners1": 59,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 19,
+     "totalMB": 3.9,
+     "biggest": [
+      {
+       "w": 740,
+       "h": 1288,
+       "mpx": 0.95,
+       "dom": true,
+       "css": [
+        370,
+        644
+       ]
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 28,
+    "scriptPct": 12,
+    "layoutPerSec": 0.1
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play",
+     "over",
+     "title"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 1,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 1,
+    "first": 15,
+    "last": 15,
+    "max": 15,
+    "trajectory": [
+     [
+      11,
+      15
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 4,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 0,
+    "buttonPresses": 1,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 81,
+    "inputLatencyP95Ms": 472,
+    "inputLatencyMaxMs": 472,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 80,
+    "maxChangeFromStartPct": 51.9,
+    "samples": 4
+   },
+   "severity": 82.5
+  },
+  {
+   "id": "sky-snake",
+   "title": "Snake",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/snake.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 20,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\sky-snake-1-title.jpg",
+    "2-mid": "shots\\sky-snake-2-mid.jpg",
+    "3-end": "shots\\sky-snake-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1.01,
+    "contentionSamples": [
+     1,
+     1.01,
+     2.64,
+     1,
+     1.09,
+     1,
+     1.28
+    ]
+   },
+   "loadMs": 105,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/snake.html",
+   "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/snake.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 19.2,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "tap centre",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1.01,
+    "loadMs": 69,
+    "playMs": 212,
+    "loadRawMs": 70,
+    "playRawMs": 214,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 40,
+    "longTasks100Play": 7,
+    "tbtLoadMs": 19,
+    "tbtPlayMs": 1207,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 14,
+    "slowestPollMs": 138,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 153.2,
+     "blocking": 0,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       49
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 147.7,
+     "blocking": 52,
+     "scripts": [
+      [
+       "assets/arcade-sdk.js",
+       "TimerHandler:setTimeout",
+       42
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       58
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 138,
+     "blocking": 87.9,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       90
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 1000,
+    "jsMedian": 0.2,
+    "jsP95": 12.28,
+    "jsP99": 51.58,
+    "jsMax": 101.7,
+    "jsP95Raw": 12.4,
+    "rawWithGlP95": 12.4,
+    "glP95": 0,
+    "gapP95": 50,
+    "gapMedian": 16.7,
+    "over100": 1,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 1.8,
+    "heap1MB": 2.1,
+    "heapGrowthPct": 14,
+    "heapMeasured": true,
+    "nodesStart": 30,
+    "nodesEnd": 31,
+    "nodesMax": 31,
+    "listeners0": 59,
+    "listeners1": 59,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 24,
+     "totalMB": 4.9,
+     "biggest": [
+      {
+       "w": 740,
+       "h": 1288,
+       "mpx": 0.95,
+       "dom": true,
+       "css": [
+        370,
+        644
+       ]
+      },
+      {
+       "w": 370,
+       "h": 644,
+       "mpx": 0.24,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 1
+   },
+   "cpu": {
+    "mainThreadBusyPct": 38,
+    "scriptPct": 14,
+    "layoutPerSec": 0.5
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play",
+     "over",
+     "title",
+     "play",
+     "over",
+     "title",
+     "play",
+     "over",
+     "title"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 3,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 3,
+    "first": 0,
+    "last": 0,
+    "max": 0,
+    "trajectory": [
+     [
+      2,
+      0
+     ],
+     [
+      11,
+      0
+     ],
+     [
+      13,
+      0
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 37,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 1,
+    "buttonPresses": 27,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 28,
+    "inputLatencyP95Ms": 91,
+    "inputLatencyMaxMs": 541,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 82.5,
+    "maxChangeFromStartPct": 14.1,
+    "samples": 8
+   },
+   "severity": 0.2
+  },
+  {
+   "id": "sky-turret-defense",
+   "title": "Turret Defense",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/turret-defense.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 20,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\sky-turret-defense-1-title.jpg",
+    "2-mid": "shots\\sky-turret-defense-2-mid.jpg",
+    "3-end": "shots\\sky-turret-defense-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 3.93,
+    "contentionSamples": [
+     8,
+     2.38,
+     3.93,
+     1,
+     8.01,
+     1,
+     7.52
+    ]
+   },
+   "loadMs": 71,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/turret-defense.html",
+   "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/turret-defense.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 19.4,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "tap centre",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 3.93,
+    "loadMs": 0,
+    "playMs": 65,
+    "loadRawMs": 0,
+    "playRawMs": 255,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 2,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 11,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 0,
+    "slowestPollMs": 698,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 213.3,
+     "blocking": 147.2,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       61
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 1309,
+    "jsMedian": 0.13,
+    "jsP95": 3.64,
+    "jsP99": 5.24,
+    "jsMax": 15.8,
+    "jsP95Raw": 14.3,
+    "rawWithGlP95": 14.3,
+    "glP95": 0,
+    "gapP95": 16.8,
+    "gapMedian": 16.7,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2.7,
+    "heap1MB": 2.2,
+    "heapGrowthPct": -18,
+    "heapMeasured": true,
+    "nodesStart": 30,
+    "nodesEnd": 31,
+    "nodesMax": 31,
+    "listeners0": 59,
+    "listeners1": 59,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 8,
+     "totalMB": 3.7,
+     "biggest": [
+      {
+       "w": 740,
+       "h": 1288,
+       "mpx": 0.95,
+       "dom": true,
+       "css": [
+        370,
+        644
+       ]
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 64,
+       "mpx": 0,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 34,
+    "scriptPct": 15,
+    "layoutPerSec": 0.2
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play",
+     "over",
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 1,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 1,
+    "first": 4,
+    "last": 4,
+    "max": 4,
+    "trajectory": [
+     [
+      15,
+      4
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 15,
+    "swipes": 2,
+    "holds": 1,
+    "keys": 0,
+    "buttonPresses": 1,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 89,
+    "inputLatencyP95Ms": 912,
+    "inputLatencyMaxMs": 912,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 12.7,
+    "maxChangeFromStartPct": 16,
+    "samples": 6
+   },
+   "severity": 0.1
+  }
+ ]
+}

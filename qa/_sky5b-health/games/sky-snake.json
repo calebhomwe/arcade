@@ -1,0 +1,251 @@
+{
+ "id": "sky-snake",
+ "title": "Snake",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/snake.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 20,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-snake-1-title.jpg",
+  "2-mid": "shots\\sky-snake-2-mid.jpg",
+  "3-end": "shots\\sky-snake-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1.01,
+  "contentionSamples": [
+   1,
+   1.01,
+   2.64,
+   1,
+   1.09,
+   1,
+   1.28
+  ]
+ },
+ "loadMs": 105,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/snake.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/snake.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.2,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.01,
+  "loadMs": 69,
+  "playMs": 212,
+  "loadRawMs": 70,
+  "playRawMs": 214,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 40,
+  "longTasks100Play": 7,
+  "tbtLoadMs": 19,
+  "tbtPlayMs": 1207,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 14,
+  "slowestPollMs": 138,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 153.2,
+   "blocking": 0,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     49
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 147.7,
+   "blocking": 52,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     42
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     58
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 138,
+   "blocking": 87.9,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     90
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 1000,
+  "jsMedian": 0.2,
+  "jsP95": 12.28,
+  "jsP99": 51.58,
+  "jsMax": 101.7,
+  "jsP95Raw": 12.4,
+  "rawWithGlP95": 12.4,
+  "glP95": 0,
+  "gapP95": 50,
+  "gapMedian": 16.7,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.8,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 14,
+  "heapMeasured": true,
+  "nodesStart": 30,
+  "nodesEnd": 31,
+  "nodesMax": 31,
+  "listeners0": 59,
+  "listeners1": 59,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 24,
+   "totalMB": 4.9,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 370,
+     "h": 644,
+     "mpx": 0.24,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 38,
+  "scriptPct": 14,
+  "layoutPerSec": 0.5
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "title",
+   "play",
+   "over",
+   "title",
+   "play",
+   "over",
+   "title"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 3,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 3,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    2,
+    0
+   ],
+   [
+    11,
+    0
+   ],
+   [
+    13,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 37,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 27,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 28,
+  "inputLatencyP95Ms": 91,
+  "inputLatencyMaxMs": 541,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 82.5,
+  "maxChangeFromStartPct": 14.1,
+  "samples": 8
+ },
+ "severity": 0.2
+}
