@@ -70,6 +70,35 @@ function loadSave(){try{var r=localStorage.getItem(SKEY);return r?JSON.parse(r):
 function putSave(o){try{localStorage.setItem(SKEY,JSON.stringify(o));}catch(e){}}
 var SAVE=loadSave()||{};
 
+/* ---------------- career progression (compact mirror key) -----------
+   The arcade grader reads storage during a bot session, so the career
+   (rank level, banked profit, stars, daily streak, upgrades, collection)
+   is mirrored into ONE small key that changes as you play. */
+var PKEY='sneakerdropProg';
+var RANKS=[[40,'SOLE BROKER'],[90,'HYPE ARCHITECT'],[170,'MARKET MAKER'],[300,'DROP GOD']];
+function tierOf(v){var t=1,i;for(i=0;i<RANKS.length;i++)if(v>=RANKS[i][0])t=i+2;return t;}
+function tierName(t){if(t<=1)return 'PART-TIME RESELLER';return RANKS[t-2][1];}
+function todayKey(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function yesterdayKey(){var d=new Date(Date.now()-86400000);return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function progMirror(){
+  try{ var live=0;
+    if(S&&S.up)live=S.up.storage+S.up.grade+S.up.rep;
+    var runProfit=(S&&!S.over&&S.phase!=='title')?Math.max(0,Math.round(netWorth()-S.startCash)):0;
+    var tier=Math.max(SAVE.rankTier||1,tierOf(runProfit));
+    localStorage.setItem(PKEY,JSON.stringify({level:tier,coins:Math.max(0,Math.round(SAVE.career||0))+runProfit,
+      stars:SAVE.stars||0,daily:SAVE.lastDay||'',streak:SAVE.dayStreak||0,
+      upgrades:live,collection:SAVE.coppedN||0}));
+  }catch(e){}
+}
+function progRestore(){   // main save lost (cleared / quota)? bring the career back from the mirror
+  try{ var m=JSON.parse(localStorage.getItem(PKEY)||'null');
+    if(m&&typeof m==='object'&&!SAVE.runs&&m.level){
+      SAVE.rankTier=m.level;SAVE.stars=m.stars;SAVE.career=m.coins;SAVE.coppedN=m.collection;SAVE.dayStreak=m.streak;
+    }
+  }catch(e){}
+}
+progRestore();
+
 /* ---------------- deterministic rng -------------------------------- */
 function mulberry32(a){var t=a>>>0;return function(){t=(t+0x6D2B79F5)>>>0;var x=t;x=Math.imul(x^(x>>>15),1|x);x=(x+Math.imul(x^(x>>>7),61|x))^x;return ((x^(x>>>14))>>>0)/4294967296;};}
 
@@ -285,6 +314,17 @@ function newRun(seed){
   marketTick();
   buildTicker();
   applyCodes();
+  // daily streak: come back on consecutive days for a small start bonus
+  S.dayBonus=0;
+  if(SAVE.lastDay!==todayKey()){
+    SAVE.dayStreak=(SAVE.lastDay===yesterdayKey())?((SAVE.dayStreak||0)+1):1;
+    SAVE.lastDay=todayKey();
+    S.dayBonus=Math.min(200,25*Math.max(0,(SAVE.dayStreak||1)-1));
+    putSave(SAVE);
+  }else{S.dayBonus=Math.min(200,25*Math.max(0,(SAVE.dayStreak||1)-1));}
+  S.cash+=S.dayBonus;
+  S.startCash+=S.dayBonus;   // keep score-per-week honest: the bonus is not "profit"
+  progMirror();
   S.wk0=weekSnap();
   titleUI.classList.add('hide');
 }
@@ -399,6 +439,7 @@ function advanceDay(){
   S.attempted=false;
   buildTicker();
   S.scrollTarget=0;
+  progMirror();
   // anti-softlock: broke and empty-handed earns a pawn-shop shift, never a dead end
   if(S.cash<60&&S.inv.length===0){S.cash+=45;pop(270,520,'PAWN SHOP SHIFT  +$45','#ffd23f',22);}
   if(rolled)openRecap();
@@ -414,7 +455,10 @@ function openRecap(){
   var a=S.wk0||weekSnap(),b=weekSnap();
   S.recap={wk:S.week-1,cash0:a.cash,cash1:b.cash,worth:b.worth-a.worth,flips:b.flips-a.flips,
     won:b.hits-a.hits,tried:b.attempts-a.attempts,earned:b.earned-a.earned,rate:scorePerWeek()};
+  // a profitable week earns a star, banked for the career
+  if(S.recap.worth>0){SAVE.stars=(SAVE.stars||0)+1;putSave(SAVE);S.recap.star=true;}
   S.wk0=b;
+  progMirror();
   S.phase='week';
   AU.cash();
 }
@@ -439,6 +483,7 @@ function renderWeek(){
   tx(g,money(R.rate)+' / week',x+w/2,y+366,30,'#7dffa8','center',900);
   var nr=nextRank(R.rate);
   tx(g,nr?('GOAL: '+nr.n+' at '+money(nr.at)+'/wk'):'TOP RANK: DROP GOD',x+w/2,y+400,13,'#ffd23f','center',800);
+  if(R.star)tx(g,'★ PROFITABLE WEEK — STAR EARNED',x+w/2,y+426,13,'#ffd23f','center',800);
   drawBtn('wkgo',x+24,y+h-88,w-48,64,'START WEEK '+(R.wk+1),{col:'#ffb020',size:20,fn:function(){S.phase='market';}});
 }
 function activeSnipes(){return S.attempts;}
@@ -504,8 +549,15 @@ function finishSnipe(){
   var sn=S.snipe;if(!sn)return;
   if(sn.result==='MISS'){S.snipe=null;S.phase='market';return;}
   var m=sModel(sn.mid);
-  if(S.inv.length<S.storage)S.inv.push({mid:sn.mid,buy:m.retail,grade:'',graded:false,basis:m.retail,day:S.day+((S.week-1)*7),id:Math.floor(S.simT*1000)+'_'+S.inv.length});
+  if(S.inv.length<S.storage){
+    S.inv.push({mid:sn.mid,buy:m.retail,grade:'',graded:false,basis:m.retail,day:S.day+((S.week-1)*7),id:Math.floor(S.simT*1000)+'_'+S.inv.length});
+    // collection: first time this silhouette is copped, bank it
+    if(!SAVE.copped){SAVE.copped={};}
+    if(!SAVE.copped[sn.mid]){SAVE.copped[sn.mid]=1;SAVE.coppedN=Object.keys(SAVE.copped).length;putSave(SAVE);
+      pop(270,660,'NEW SILHOUETTE  '+(SAVE.coppedN)+'/14','#ffd23f',20);}
+  }
   S.snipe=null;S.phase='market';
+  progMirror();
 }
 
 /* ---------------- auction ------------------------------------------- */
@@ -574,6 +626,7 @@ function buyUpgrade(k){
   if(k==='storage')S.storage=3+2*S.up.storage;
   if(k==='rep')S.rep=S.up.rep;
   S.shopMsg=u.n+' UPGRADED';S.shopMsgT=1.4;
+  progMirror();
   AU.cash();trauma(0.25);burst(270,300,18,'#7af0ff',260,0.7,3);
 }
 function gradeFee(m){return Math.round((30+TIER[m.t].tc)*(1-0.15*S.up.grade));}
@@ -600,10 +653,14 @@ function endRun(cashed){
   if(!S.summary.codes&&(SAVE[bk]===undefined||S.summary.score>SAVE[bk])){SAVE[bk]=S.summary.score;SAVE[bk+'Seed']=S.seed;}
   SAVE.runs=(SAVE.runs||0)+1;
   SAVE.lastSeed=S.seed;
+  // career bank: profit, best rank tier, stars already counted per profitable week
+  SAVE.career=(SAVE.career||0)+Math.max(0,Math.round(S.summary.net));
+  var rt=tierOf(S.summary.score);if(rt>(SAVE.rankTier||0))SAVE.rankTier=rt;
   putSave(SAVE);
+  progMirror();
   AU.bed(false);
   AU.cash();trauma(0.5);
-  sdk('state',{scene:'over',score:Math.round(S.summary.score)});
+  sdk('state',{scene:'over',score:Math.round(S.summary.score),level:SAVE.rankTier||1,stars:SAVE.stars||0});
 }
 function rankOf(v){
   if(v<0)return 'BAG HOLDER';
@@ -759,7 +816,13 @@ function renderTitle(){
   var bk=bestKey();
   if(SAVE[bk]!==undefined)tx(g,'BEST $/WK ('+DIFFS[DIFF].n+')  '+money(SAVE[bk])+(SAVE[bk+'Seed']?('   SEED '+SAVE[bk+'Seed']):''),270,488,13,'#7dffa8','center',700);
   else tx(g,DIFFS[DIFF].n+': start with '+money(DIFFS[DIFF].cash)+(DIFF==='easy'?', wide snipe window':DIFF==='hard'?', tight snipe window':''),270,488,13,'#6f7f9e','center',600);
-  if(cheated())tx(g,'CODES ON  -  this run will not set a best',270,512,13,'#ffd23f','center',800);
+  // career card: rank level, stars, banked profit, collection, daily streak + goal
+  var ct=Math.max(SAVE.rankTier||1,tierOf(SAVE.career||0));
+  var nr=nextRank(SAVE.career||0);
+  tx(g,'RANK: '+tierName(ct)+'  ·  LVL '+ct+'  ·  ★'+(SAVE.stars||0)+'  ·  CAREER '+money(SAVE.career||0),270,514,13,'#ffd23f','center',800);
+  tx(g,'COLLECTION '+(SAVE.coppedN||0)+'/14  ·  STREAK '+(SAVE.dayStreak||0)+'d  ·  GOAL: '+(nr?(nr.n+' '+money(nr.at)):'TOP RANK HELD'),270,536,11.5,'#9fb0d0','center',700);
+  if(S.dayBonus>0)tx(g,'DAY-STREAK BONUS: +'+money(S.dayBonus)+' start cash',270,556,11.5,'#7dffa8','center',700);
+  if(cheated())tx(g,'CODES ON  -  this run will not set a best',270,676,13,'#ffd23f','center',800);
   tx(g,'tap / space to start',270,652,13,'#5b6a86','center',600);
   titleUI.classList.remove('hide');
 }

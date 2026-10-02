@@ -1,0 +1,243 @@
+{
+ "id": "hub-flappy-flight",
+ "title": "Flappy Flight",
+ "cat": "arcade",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "animation loop paused 1x (over 3 s) but the screen kept changing, so it is not counted (DOM game or idle loop)",
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\hub-flappy-flight-1-title.jpg",
+  "2-mid": "shots\\hub-flappy-flight-2-mid.jpg",
+  "3-end": "shots\\hub-flappy-flight-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1.94,
+  "contentionSamples": [
+   1,
+   1.92,
+   1.94,
+   1.52,
+   4.14,
+   7.6,
+   3.93
+  ]
+ },
+ "loadMs": 185,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 20.5,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1.94,
+  "loadMs": 73,
+  "playMs": 554,
+  "loadRawMs": 141,
+  "playRawMs": 1075,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 2,
+  "longTasks100Play": 1,
+  "tbtLoadMs": 23,
+  "tbtPlayMs": 477,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 1,
+  "slowestPollMs": 76,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 9392.8,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 1024.1,
+   "blocking": 974,
+   "scripts": [
+    [
+     "games/flappy-flight.html",
+     "DIV#stage.onpointerdown",
+     1023
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 675.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [
+  {
+   "atMs": 1709,
+   "scene": "title",
+   "seconds": 9.4,
+   "recovered": true,
+   "errorAtStall": false,
+   "screenStatic": null,
+   "counted": false
+  }
+ ],
+ "frames": {
+  "n": 813,
+  "jsMedian": 0.1,
+  "jsP95": 0.21,
+  "jsP99": 0.41,
+  "jsMax": 1.8,
+  "jsP95Raw": 0.4,
+  "rawWithGlP95": 0.4,
+  "glP95": 0,
+  "gapP95": 66.6,
+  "gapMedian": 33.3,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.2,
+  "heap1MB": 2.4,
+  "heapGrowthPct": 11,
+  "heapMeasured": true,
+  "nodesStart": 65,
+  "nodesEnd": 128,
+  "nodesMax": 129,
+  "listeners0": 50,
+  "listeners1": 57,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 24,
+   "totalMB": 17.7,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 1560,
+     "h": 631,
+     "mpx": 0.98,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1560,
+     "h": 371,
+     "mpx": 0.58,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1560,
+     "h": 279,
+     "mpx": 0.44,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 7,
+  "scriptPct": 5,
+  "layoutPerSec": 3.4
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 3,
+  "restartsAfterOver": 2
+ },
+ "gameScore": {
+  "updates": 3,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    18,
+    0
+   ],
+   [
+    27,
+    0
+   ],
+   [
+    39,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 12,
+  "swipes": 1,
+  "holds": 1,
+  "keys": 3,
+  "buttonPresses": 8,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 147,
+  "inputLatencyP95Ms": 1990,
+  "inputLatencyMaxMs": 1990,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 76.6,
+  "maxChangeFromStartPct": 49.8,
+  "samples": 6
+ },
+ "severity": 0.6
+}

@@ -1,0 +1,272 @@
+{
+ "id": "sky-balance-tile",
+ "title": "Balance Tile",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/balance-tile.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-balance-tile-1-title.jpg",
+  "2-mid": "shots\\sky-balance-tile-2-mid.jpg",
+  "3-end": "shots\\sky-balance-tile-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 8.56,
+  "contentionSamples": [
+   1,
+   1,
+   8.6,
+   1,
+   14.24,
+   22.71,
+   8.56
+  ]
+ },
+ "loadMs": 127,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/balance-tile.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/balance-tile.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.4,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 4,
+  "loadMs": 85,
+  "playMs": 249,
+  "loadRawMs": 341,
+  "playRawMs": 997,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 49,
+  "longTasks100Play": 4,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 567,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 9,
+  "slowestPollMs": 1436,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 616.5,
+   "blocking": 479.3,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "DOMWindow.onpointerdown",
+     13
+    ],
+    [
+     "skywalker-playables/balance-tile.html",
+     "CANVAS.onpointerdown",
+     86
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 613.2,
+   "blocking": 557.4,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     601
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 604.4,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 971,
+  "jsMedian": 0.05,
+  "jsP95": 2.98,
+  "jsP99": 30.65,
+  "jsMax": 150.4,
+  "jsP95Raw": 11.9,
+  "rawWithGlP95": 11.9,
+  "glP95": 0,
+  "gapP95": 99.9,
+  "gapMedian": 16.7,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 9,
+  "heapMeasured": true,
+  "nodesStart": 31,
+  "nodesEnd": 32,
+  "nodesMax": 32,
+  "listeners0": 58,
+  "listeners1": 58,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 5,
+   "totalMB": 3.7,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 40,
+  "scriptPct": 17,
+  "layoutPerSec": 0.6
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 8,
+  "restartsAfterOver": 7
+ },
+ "gameScore": {
+  "updates": 8,
+  "first": 10,
+  "last": 23,
+  "max": 51,
+  "trajectory": [
+   [
+    6,
+    10
+   ],
+   [
+    11,
+    23
+   ],
+   [
+    12,
+    10
+   ],
+   [
+    17,
+    48
+   ],
+   [
+    19,
+    23
+   ],
+   [
+    20,
+    20
+   ],
+   [
+    28,
+    51
+   ],
+   [
+    31,
+    23
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 15,
+  "swipes": 0,
+  "holds": 1,
+  "keys": 2,
+  "buttonPresses": 6,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 147,
+  "inputLatencyP95Ms": 1855,
+  "inputLatencyMaxMs": 1855,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 14.6,
+  "maxChangeFromStartPct": 89.4,
+  "samples": 7
+ },
+ "severity": 0.2
+}

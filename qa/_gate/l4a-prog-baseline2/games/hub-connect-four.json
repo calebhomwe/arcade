@@ -1,0 +1,191 @@
+{
+ "id": "hub-connect-four",
+ "title": "Connect Four",
+ "cat": "classic",
+ "genre": "board",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/connect-four.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "c4Best",
+  "c4Wins",
+  "c4_ladder",
+  "pz_c4"
+ ],
+ "session1": {
+  "start": "#mPlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 4,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 41,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "c4Tut",
+   "pz_c4"
+  ],
+  "savedKeysWrittenInSession1": 6,
+  "titleTextChanged": false,
+  "title1": "‹ Hub Connect Four Goals You Your move! Mousey Undo Hint 2 Menu CONNECT FOUR Line up four discs. Beat six critters, earn stars, unlock new s",
+  "title2": "‹ Hub Connect Four Goals You Your move! Mousey Undo Hint 2 Menu CONNECT FOUR Line up four discs. Beat six critters, earn stars, unlock new s",
+  "keysUpdatedAgain": [
+   "pz_c4"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 6,
+  "added": [
+   "flappyFeathers",
+   "hm-flappy",
+   "flappyTut",
+   "flappyMute",
+   "c4Tut"
+  ],
+  "changed": [
+   "pz_c4"
+  ],
+  "removed": [],
+  "sample": {
+   "flappyFeathers": "0",
+   "hm-flappy": "{\"v\":1,\"coins\":10,\"life\":10,\"owned\":{\"sunny\":1},\"skin\":\"sunny\",\"runs\":",
+   "flappyTut": "1",
+   "pz_c4": "{\"xp\":0,\"days\":[\"2026-10-03\"],\"theme\":\"classic\",\"seenLevel\":1,\"chest\":",
+   "flappyMute": "1",
+   "c4Tut": "\"1\""
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "currency",
+   "unlocks",
+   "cosmetics",
+   "score",
+   "levels",
+   "stars",
+   "settings"
+  ],
+  "categoriesPresent": [
+   "other",
+   "currency",
+   "unlocks",
+   "cosmetics",
+   "score",
+   "levels",
+   "stars",
+   "settings"
+  ],
+  "writesDuringPlay": {
+   "hm-flappy": "6x",
+   "flappyTut": "1x",
+   "flappyMute": "5x",
+   "flappyFeathers": "5x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "unlocks",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, unlocks, cosmetics); systems seen: levels, unlocks, stars, goals, cosmetics; sinks unlocks/cosmetics fed by levels/stars/goals/currency",
+ "expected": [
+  "levels",
+  "stars",
+  "achievements",
+  "unlocks"
+ ],
+ "lacks": [
+  "achievements"
+ ],
+ "pageErrors": []
+}

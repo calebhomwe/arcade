@@ -1,0 +1,172 @@
+{
+ "id": "surviv-royale",
+ "title": "Surviv Royale",
+ "cat": "arcade",
+ "genre": "arcade",
+ "src": "SurvivIO/index.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "surviv_meta_v1",
+  "hm-surviv"
+ ],
+ "session1": {
+  "start": "#btn-play",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 23,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "surviv_meta_v1",
+   "surviv_career_v1"
+  ],
+  "savedKeysWrittenInSession1": 3,
+  "titleTextChanged": true,
+  "title1": "SURVIV ROYALE 16 drop in. 1 walks out. Left thumb moves, right thumb aims and fires. 0 WINS 0 KILLS 0 MATCHES - BEST PLACE RANK 1 0 XP · 0★ ",
+  "title2": "SURVIV ROYALE 16 drop in. 1 walks out. Left thumb moves, right thumb aims and fires. 0 WINS 0 KILLS 1 MATCHES - BEST PLACE RANK 1 0 XP · 0★ ",
+  "keysUpdatedAgain": [
+   "surviv_career_v1",
+   "surviv_meta_v1"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 4,
+  "added": [
+   "surviv_meta_v1",
+   "surviv_tut"
+  ],
+  "changed": [
+   "surviv_career_v1"
+  ],
+  "removed": [],
+  "sample": {
+   "surviv_career_v1": "{\"xp\":0,\"level\":1,\"stars\":0,\"daily\":\"2026-10-03\",\"dailyOK\":false,\"goal",
+   "surviv_meta_v1": "{\"bestPlace\":null,\"wins\":0,\"kills\":0,\"matches\":1}",
+   "hm-surviv": "{\"v\":1,\"coins\":0,\"life\":0,\"owned\":{\"sand\":1},\"skin\":\"sand\",\"runs\":0,\"b",
+   "surviv_tut": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "score",
+   "other",
+   "levels",
+   "stars",
+   "daily",
+   "goals"
+  ],
+  "categoriesPresent": [
+   "levels",
+   "stars",
+   "daily",
+   "goals",
+   "score",
+   "currency",
+   "unlocks",
+   "cosmetics",
+   "other"
+  ],
+  "writesDuringPlay": {
+   "surviv_career_v1": "5x",
+   "hm-surviv": "1x",
+   "surviv_meta_v1": "1x",
+   "surviv_tut": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": false,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "upgrades"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "goals",
+   "daily"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, goals, daily); systems seen: levels, unlocks, stars, goals, daily, cosmetics; sinks unlocks/cosmetics fed by levels/stars/goals/daily/currency",
+ "expected": [
+  "levels",
+  "upgrades",
+  "unlocks",
+  "achievements",
+  "daily"
+ ],
+ "lacks": [
+  "upgrades",
+  "achievements"
+ ],
+ "pageErrors": []
+}

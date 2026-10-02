@@ -1410,6 +1410,9 @@ function drawMenu(tt){
   const th=themeOf(Math.max(1,meta.cp[G.mode]||1));
   menuBackdrop(tt,th);
   if(G.menuTab==='wardrobe'){drawWardrobe(tt);return;}
+  /* pushed first, so any control pushed later wins (zones are matched back-to-front):
+     a tap on dead space starts the last mode, so a small thumb never has to aim */
+  hit(0,0,W,H,()=>{const m=G.mode||'math';pressId='go_'+m;pressT=G.time;AU.init();startRun(m,1);});
   /* the title sign */
   const sw=Math.min(W-80,560),sx=W/2-sw/2;
   KL.drawPanel(ctx,'wood',sx,18,sw,84,{r:18,gold:true});

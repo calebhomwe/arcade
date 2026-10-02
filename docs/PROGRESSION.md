@@ -9,6 +9,28 @@ playing. It works with every game **without editing the game**, and games can op
   frames, badge medals as SVG), `assets/profile-ui.js` (header chip, profile sheet, quests card, Trophy room, toasts,
   level-up), `assets/profile.css`, the SDK's `ArcadeSDK.profile` in `assets/arcade-sdk.js`.
 - **Tests:** `node qa/harness/profile-test.mjs` (logic, then the real portal in Chromium; `ENGINE=webkit` for Safari's engine).
+  On Windows the harness resolves Playwright through a `file://` URL, so it runs from any drive layout.
+
+## What it feels like (the meta layer)
+
+The rules below are the contract; this is the experience the portal builds on top of them.
+
+- **A level-up is a moment.** While a game is open the chip glows gold and a toast shows the new level badge and
+  what it unlocked; the full celebration (rays, confetti, the new looks to try, one tap to put one on) waits until the
+  child is back at the arcade, and a level reached while away is still celebrated on return. Everything stops moving
+  with `prefers-reduced-motion` or the Settings motion switch: the card still shows, without confetti.
+- **The trophy room reads at a glance.** The All view is grouped by family with an "x of y earned" line per group and
+  a count on every group chip; "Next up" surfaces the three closest badges with live progress bars; a brand-new player
+  gets one inviting empty state ("Your first trophy is 30 seconds away" with a Surprise-me button) instead of a wall
+  of padlocks. Small medals (under 56 px: toasts, "Next up") drop the count label and keep one big crisp glyph.
+- **Quest bars visibly move.** When play pushes a quest forward the card is redrawn and each bar slides from its old
+  width to the new one; a finished quest turns green with a check, and all three pays the set bonus with its own toast.
+- **The chip never blocks the game.** On a phone the profile chip is the size of the other header buttons (or just the
+  buddy face on very small screens), every profile control answers taps without the double-tap delay, and toasts while
+  a game is open sit at the bottom of the player area, capped at two, so a wallet, score or HUD at the top stays clear.
+- **Stretch reminders stay gentle.** At 30 and 60 minutes of play in a day the arcade suggests a stretch *once each*: a
+  calm toast with "I'll take a break" (pauses the game, earns Well Rested) or "Keep playing", which fades by itself in
+  12 s. No popups, no blocked input, nothing that counts down or nags a second time.
 
 ## Kid-safe by design
 
@@ -118,6 +140,8 @@ few days; level 50 is a few months for a very keen player. Run `node qa/harness/
 ## Streak, with a rest day
 
 A day counts once you have played 20 seconds, or finished a round. Play on consecutive days and the streak grows.
+The time-of-day badges (Night Owl, Early Bird) light up only once the day has qualified the same way — 20 seconds of
+active play — so opening a game and walking straight away earns nothing at any hour: no XP, no badge, no quest credit.
 Miss **exactly one** day and the streak keeps going: that day becomes a *rest day* (shown with a moon in the calendar),
 one every 7 days. Miss two days in a row and the next play starts a new streak at 1; the best streak is always kept and
 shown ("Your best is 9 days. Welcome back!"), never a loss. Days are the device's local calendar days, so daylight-saving
@@ -127,7 +151,10 @@ changes and a phone changing time zone cannot break a streak, and a clock set ba
 
 Three a day: one easy, one medium, one hard, all different kinds. They are picked from the pool below with a seeded
 shuffle (`hash(profile seed + date)`), so the same child sees the same three on any reload, another child sees a different
-set, and no kind repeats two days in a row. Targets scale a little with level. They suit the player: "Play a learning
+set, and no kind repeats two days in a row. Targets scale a little with level. The quests that read the clock ("play X
+minutes", "a learning game for 5 minutes", "your favourite category for 6 minutes") only start moving once the day has
+qualified — 20 seconds of play or a finished round, the same rule as the streak — so opening a game and leaving straight
+away leaves every bar exactly where it was. They suit the player: "Play a learning
 game for 5 minutes" only if the arcade has learning games the player can reach, "Try a new category" only while one is
 untried, "Play {favourite category} for 6 minutes" only after a couple of minutes there, and the quests that need a
 game to report scores (finish rounds, beat your best) appear only once the player has finished at least one reported

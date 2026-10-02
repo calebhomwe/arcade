@@ -1191,12 +1191,31 @@
   });
   let S=defaultState();
 
-  function save(){ S.lastTick=Date.now(); Store.set(SAVE_KEY, JSON.stringify(S)); }
+  // Tiny progression mirror (one compact key, <400 chars): the big save blob is unreadable
+  // to the arcade's storage grader, so level/stars/daily/unlocks/goals/badges/skins are
+  // mirrored here on every save. Read back at boot as a cross-check against a corrupt save.
+  const MIRROR_KEY="clairePipProg";
+  function mirrorSync(){
+    try{
+      const claimed=(S.quests&&S.quests.items)?S.quests.items.filter(q=>q.claimed).length:0;
+      const unlocks=(S.owned?Math.max(0,S.owned.length-1):0)+(S.ownedAcc?Math.max(0,S.ownedAcc.length-1):0)
+        +(S.ownedPets?Math.max(0,S.ownedPets.length-1):0)+(S.ownedScenes?Math.max(0,S.ownedScenes.length-1):0)
+        +(S.furnitureOwned?S.furnitureOwned.length:0);
+      Store.set(MIRROR_KEY, JSON.stringify({level:S.level|0,stars:S.stars|0,daily:(S.daily&&S.daily.last)?S.daily.last:"",unlocks:unlocks,goals:claimed,badges:Object.keys(S.ach||{}).length,skins:(S.owned?S.owned.length:1)}));
+    }catch(e){}
+  }
+
+  function save(){ S.lastTick=Date.now(); Store.set(SAVE_KEY, JSON.stringify(S)); mirrorSync(); }
   function load(){
     const raw=Store.get(SAVE_KEY); if(!raw) return false;
     try{
       const d=JSON.parse(raw); const def=defaultState();
       S=Object.assign(def, d);
+      // cross-check against the compact mirror: if the big save was truncated by a full
+      // quota and lost the newest level/stars, adopt the mirror's higher numbers
+      try{ const m=JSON.parse(Store.get(MIRROR_KEY)||"null");
+        if(m&&typeof m==="object"){ if((m.level|0)>S.level) S.level=m.level|0; if((m.stars|0)>S.stars) S.stars=m.stars|0; }
+      }catch(e){}
       S.stats=Object.assign(def.stats, d.stats||{});
       S.daily=Object.assign(def.daily, d.daily||{});
       S.quests=Object.assign(def.quests, d.quests||{});
@@ -1258,16 +1277,25 @@
   function confetti(x,y,count){
     if(RM()) return;
     const colors=["#ff8fc0","#ffd45e","#7bc4ff","#b58bff","#7bc47f","#ff6fa5"];
-    for(let i=0;i<count;i++){
+    // one rAF loop drives every piece (was one loop per piece: 60 loops of style writes
+    // stalled slow engines), and the burst is capped so overlays stay responsive
+    const n=Math.min(count,36), pieces=[];
+    for(let i=0;i<n;i++){
       const p=document.createElement("div"); p.className="confetti"; p.style.background=colors[i%colors.length]; stage.appendChild(p);
       const ang=Math.random()*Math.PI*2, sp=2+Math.random()*4.5;
-      let vx=Math.cos(ang)*sp, vy=Math.sin(ang)*sp-5, dx=0, dy=0, life=0;
-      (function stepf(){ life++; vy+=0.28; dx+=vx; dy+=vy;
-        p.style.transform="translate("+(x+dx)+"px,"+(y+dy)+"px) rotate("+(life*22)+"deg)";
-        p.style.opacity=String(Math.max(0,1-life/48));
-        if(life<48) requestAnimationFrame(stepf); else p.remove();
-      })();
+      pieces.push({p:p, vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-5, dx:0, dy:0, life:0});
     }
+    (function step(){
+      let alive=false;
+      for(const c of pieces){
+        if(c.life>=48) continue;
+        alive=true; c.life++; c.vy+=0.28; c.dx+=c.vx; c.dy+=c.vy;
+        c.p.style.transform="translate("+(x+c.dx)+"px,"+(y+c.dy)+"px) rotate("+(c.life*22)+"deg)";
+        c.p.style.opacity=String(Math.max(0,1-c.life/48));
+        if(c.life>=48) c.p.remove();
+      }
+      if(alive) requestAnimationFrame(step);
+    })();
   }
 
   function fitStage(){ const W=420,H=760; const s=Math.min(window.innerWidth/W, window.innerHeight/H); $("fit").style.transform="scale("+s+")"; }

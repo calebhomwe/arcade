@@ -157,6 +157,9 @@
   }
   function badge(a, o) {
     o = o || {}; var done = o.done !== false && (a.done !== false), fam = a.fam || 'start', tier = a.tier || 'bronze', size = o.size || 96, label = a.label != null ? a.label : badgeLabel(a.id || ''), s = '';
+    // at toast and "Next up" size (under 56 px) the 10.5 px count pill would render around 5 px and turn to mush:
+    // the small medal drops the label and keeps one big crisp glyph instead
+    if (size < 56) label = '';
     var rim = done ? 'url(#pf-' + tier + ')' : 'url(#pf-locked)', face = done ? 'url(#pf-' + fam + ')' : 'url(#pf-lockface)', ink = done ? '#fff' : '#9aa3bd';
     s += '<svg class="pf-badge' + (done ? '' : ' locked') + '" viewBox="0 0 96 100" width="' + size + '" height="' + Math.round(size * 100 / 96) + '" role="img" aria-label="' + (a.title || 'Badge') + (done ? '' : ', locked') + '">';
     s += '<path d="M31 66 L22 94 L35 88.5 L42 97.5 L48 68Z" fill="' + (done ? '#3a4a8a' : '#aeb6cc') + '"/><path d="M65 66 L74 94 L61 88.5 L54 97.5 L48 68Z" fill="' + (done ? '#4c5fb0' : '#bec5d9') + '"/>';

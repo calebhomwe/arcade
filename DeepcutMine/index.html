@@ -256,9 +256,22 @@ function fresh(){
     up: { drill:0, cargo:0, fuel:0, hull:0, radiator:0, lamp:0 },
     p: { x: Math.floor(COLS/2), y: 0 },
     fuel: 100, hull: 100, cargo: [], depth: 0, deepest: 0,
-    combo: 0, comboT: 0, runs: 0
+    combo: 0, comboT: 0, runs: 0,
+    /* progression: layer levels, stars, ore collection, daily streak, badges */
+    bestTier: 1, stars: 0, found: {}, badges: {}, lastDay: '', dayStreak: 0
   };
 }
+/* progression mirror: one compact key the arcade grader can read (<400 chars) */
+function todayKey(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function yesterdayKey(){ var d=new Date(Date.now()-86400000); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function layerTier(d){ var t=1; for(var i=0;i<LAYERS.length;i++){ if(d>=LAYERS[i].from) t=i+1; } return t; }
+function progMirror(){
+  try{ localStorage.setItem('deepcutProg', JSON.stringify({
+    level:S.bestTier||1, coins:Math.round(S.cash), stars:S.stars||0,
+    daily:S.lastDay||'', streak:S.dayStreak||0,
+    unlocks:Object.keys(S.found||{}).length, badges:Object.keys(S.badges||{}).length })); }catch(e){}
+}
+function earnBadge(id, msg){ if(S.badges[id]) return; S.badges[id]=1; toast('BADGE: '+msg, '#e6b455'); }
 function load(){ try{ var s = localStorage.getItem(SAVE_KEY); if(s){ var o = JSON.parse(s); if(o && o.up) return o; } }catch(e){} return null; }
 /* Shared purse: the hub (hub/index.html) keeps hub_save_v1 on the SAME origin, so any
    cabinet can credit it directly. This is what makes "one coin purse" real rather than
@@ -275,7 +288,7 @@ function hubCredit(n){
   }catch(e){}
 }
 /* A session with codes on is never saved: the best haul, deepest depth and purse stay honest. */
-function persist(){ if(cheated()) return; try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+function persist(){ if(cheated()) return; try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} progMirror(); }
 
 /* ---------------------------------------------------------------- tuning */
 var UP = {
@@ -394,6 +407,10 @@ function tryDig(dir, dt){
       var v = Math.round(t.ore.val * (1 + 0.05*Math.min(S.combo, 12)));
       if(S.cargo.length < cargoMax()){ S.cargo.push({ id:t.ore.id, val:v, col:t.ore.col });
         var rare = v >= 1200;
+        // collection: first time this ore is ever found, bank the discovery
+        if(!S.found[t.ore.id]){ S.found[t.ore.id]=1; toast('NEW ORE DISCOVERED: ' + t.ore.name, t.ore.col);
+          if(Object.keys(S.found).length >= 5) earnBadge('ore5','5 ORES FOUND');
+          if(Object.keys(S.found).length >= 8) earnBadge('ore8','8 ORES FOUND'); }
         popText((nc+0.5)*TS,(nr+0.5)*TS, '+$' + v.toLocaleString(), t.ore.col);
         burst((nc+0.5)*TS,(nr+0.5)*TS, t.ore.col, rare?22:10, rare?260:150);
         shakeAdd(rare?0.7:0.18); hit(rare?0.07:0.035);
@@ -438,6 +455,8 @@ function surfaceTick(){
     toast('Sold $' + v.toLocaleString(), '#8fbf6a'); AU.play('sell', 0.8);
     if(!cheated()) hubCredit(Math.round(v * 0.1));   // 10% of every haul feeds the shared hub purse
     if(v > S.best && !cheated()) S.best = v;
+    if(!cheated()){ earnBadge('sold','FIRST SALE');
+      if(S.cash >= 1000) earnBadge('k1','$1,000 IN THE PURSE'); }
     recordHaul(v); tut.sold = true;
     S.cargo = []; persist(); }
   if(S.fuel < fuelMax()){ S.fuel = Math.min(fuelMax(), S.fuel + 34*0.016*60*0.016*60);
@@ -501,6 +520,14 @@ function startGame(){
   world = {};
   mode = 'play';
   dive.on = false; dive.max = 0;
+  // daily streak: the first dive of a day pays a small bonus
+  var tk = todayKey();
+  if(S.lastDay !== tk){
+    S.dayStreak = (S.lastDay === yesterdayKey()) ? ((S.dayStreak||0)+1) : 1;
+    S.lastDay = tk;
+    S.cash += 50;
+    setTimeout(function(){ toast('DAY ' + S.dayStreak + ' STREAK — +$50 BONUS', '#8fbf6a'); }, 400);
+  }
   S.runs = (S.runs||0) + 1; persist();
   document.getElementById('title').style.display = 'none';
   document.body.classList.remove('on-title');
@@ -698,6 +725,12 @@ function frame(now){
     if(CH.tank) S.fuel = fuelMax();
     if(S.fuel <= 0 && dir){ popText((S.p.x+.5)*TS,(S.p.y+.5)*TS,'NO FUEL','#e2725b'); }
     if(S.p.y > S.deepest && !cheated()){ S.deepest = S.p.y; }
+    // layer levels: reaching a deeper band for the first time earns a star
+    if(!cheated()){ var lt = layerTier(S.p.y);
+      if(lt > (S.bestTier||1)){ S.bestTier = lt; S.stars = (S.stars||0) + 1;
+        toast('NEW LAYER: ' + layerAt(S.p.y).name.toUpperCase() + ' — ★ earned!', '#e6b455'); progMirror(); }
+      if(S.p.y >= 500) earnBadge('d500','500 m CLUB');
+      if(S.p.y >= 1000) earnBadge('d1000','1000 m CLUB'); }
     if(S.p.y > 1){ dive.on = true; if(S.p.y > dive.max) dive.max = S.p.y; }
     tutTick(dt);
     S.depth = S.p.y;
@@ -755,7 +788,12 @@ function buildTitle(){
   el('stats').innerHTML =
     '<div><b>$' + Math.round(S.cash).toLocaleString() + '</b><span>Cash</span></div>' +
     '<div><b>' + S.deepest + 'm</b><span>Deepest</span></div>' +
-    '<div><b>$' + S.best.toLocaleString() + '</b><span>Best haul</span></div>';
+    '<div><b>$' + S.best.toLocaleString() + '</b><span>Best haul</span></div>' +
+    '<div><b>LVL ' + (S.bestTier||1) + '</b><span>' + layerAt(Math.max(2,S.deepest)).name + '</span></div>' +
+    '<div><b>★' + (S.stars||0) + '</b><span>Stars</span></div>' +
+    '<div><b>' + Object.keys(S.found||{}).length + '/' + ORES.length + '</b><span>Ores found</span></div>' +
+    '<div><b>' + Object.keys(S.badges||{}).length + '</b><span>Badges</span></div>' +
+    '<div><b>' + (S.dayStreak||0) + 'd</b><span>Daily streak</span></div>';
   var h = S.hauls || [], rows = '';
   for(var i = 0; i < h.length; i++){
     var d = new Date(h[i].t);
@@ -782,7 +820,7 @@ function wreck(why){
     '<div><b>' + S.deepest + 'm</b><span>Deepest</span></div>';
   el('over').hidden = false; el('coach').hidden = true;
   try{ el('btnAgain').focus({ preventScroll:true }); }catch(e){}
-  sdk('state', { scene:'over', score:deepestDive });
+  sdk('state', { scene:'over', score:deepestDive, level:S.bestTier||1, stars:S.stars||0 });
 }
 function hideOver(){ el('over').hidden = true; }
 function digAgain(){ hideOver(); mode = 'play'; if(tut.on) tutShow(); renderShop(); renderHUD(); sdk('state', { scene:'play' }); }
@@ -883,6 +921,14 @@ try{ RM = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: re
 
 /* ---------------------------------------------------------------- boot */
 S = load() || fresh();
+/* older saves predate the progression fields: backfill them, deriving the layer level from depth */
+if(S.bestTier == null) S.bestTier = Math.max(1, layerTier(S.deepest||0));
+if(S.stars == null) S.stars = 0;
+if(!S.found) S.found = {};
+if(!S.badges) S.badges = {};
+if(S.lastDay == null) S.lastDay = '';
+if(S.dayStreak == null) S.dayStreak = 0;
+progMirror();
 renderShop(); renderHUD();
 (function(){ var sl=document.getElementById('seedLine');
   if(sl) sl.textContent = URLSEED===null ? 'free dig - random mine' : ('DAILY SEED ' + URLSEED + ' - same mine for everyone today'); })();

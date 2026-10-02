@@ -1,0 +1,187 @@
+{
+ "id": "hub-idle-miner",
+ "title": "Idle Miner",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/idle-miner.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "im_state"
+ ],
+ "session1": {
+  "start": "#btnPlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 12,
+   "max": 12
+  },
+  "botTaps": 88,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "im_state",
+   "im_muted",
+   "idle-miner_prog"
+  ],
+  "savedKeysWrittenInSession1": 4,
+  "titleTextChanged": true,
+  "title1": "1 Level 0/8 XP 0 0/s Build your first Copper Seam 15 coins · tap the rock to earn Badges 0/19 · Upgrades at level 2 +XP ×1 ×10 ×25 MAX Coppe",
+  "title2": "1 Level 0/8 XP 12 0/s Build your first Copper Seam 15 coins · tap the rock to earn Goals today 0/3 · Streak 1 · Goals tab at level 3 · Badge",
+  "keysUpdatedAgain": [
+   "idle-miner_prog",
+   "im_state",
+   "im_muted"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 4,
+  "added": [
+   "ik_coach_idle-miner",
+   "im_state",
+   "im_muted"
+  ],
+  "changed": [
+   "idle-miner_prog"
+  ],
+  "removed": [],
+  "sample": {
+   "ik_coach_idle-miner": "1",
+   "idle-miner_prog": "{\"level\":1,\"xp\":0,\"coins\":9,\"stars\":0,\"daily\":1,\"unlocks\":0,\"upgrades\"",
+   "im_state": "{\"v\":2,\"coins\":9,\"lifetime\":9,\"alltime\":9,\"owned\":[0,0,0,0,0,0,0,0],\"u",
+   "im_muted": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "settings",
+   "levels",
+   "currency",
+   "stars",
+   "daily",
+   "unlocks",
+   "upgrades",
+   "goals",
+   "achievements",
+   "cosmetics"
+  ],
+  "categoriesPresent": [
+   "other",
+   "levels",
+   "currency",
+   "stars",
+   "daily",
+   "unlocks",
+   "upgrades",
+   "goals",
+   "achievements",
+   "cosmetics",
+   "settings"
+  ],
+  "writesDuringPlay": {
+   "idle-miner_prog": "9x",
+   "ik_coach_idle-miner": "1x",
+   "im_state": "8x",
+   "im_muted": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "upgrades",
+  "stars",
+  "goals",
+  "achievements",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "unlocks",
+   "upgrades",
+   "goals",
+   "achievements",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, unlocks, upgrades, goals, achievements, daily, cosmetics); systems seen: levels, unlocks, upgrades, stars, goals, achievements, daily, cosmetics; sinks unlocks/upgrades/cosmetics fed by levels/stars/goals/achievements/daily/currency",
+ "expected": [
+  "upgrades",
+  "unlocks",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "lacks": [],
+ "pageErrors": []
+}

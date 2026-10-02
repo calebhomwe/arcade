@@ -1,0 +1,172 @@
+{
+ "id": "hub-simon-says",
+ "title": "Simon Says",
+ "cat": "classic",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/simon-says.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "simonBest",
+  "simonScore",
+  "simon_kk"
+ ],
+ "session1": {
+  "start": "#playBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 1,
+  "score": {
+   "first": 0,
+   "last": 10,
+   "max": 10
+  },
+  "botTaps": 15,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "simon_kk"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": true,
+  "title1": "← Simon Says Copy the band! ▶ Play Levels Stickers 1 Jam Help 0 M T W T F S S Today: win 3 levels 0/3",
+  "title2": "← Simon Says Copy the band! ▶ Play Levels Stickers 1 Jam Help 1 M T W T F S Today: win 3 levels 0/3",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "simon_kk"
+  ],
+  "changed": [
+   "simon_kk_prog"
+  ],
+  "removed": [],
+  "sample": {
+   "simon_kk": "{\"v\":1,\"lv\":{},\"own\":{},\"eq\":{},\"days\":[\"2026-10-03\"],\"daily\":{\"d\":\"20",
+   "simon_kk_prog": "{\"level\":1,\"stars\":0,\"daily\":\"2026-10-03:0:0\",\"unlocks\":[\"oak\"],\"equip"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "levels",
+   "daily",
+   "settings",
+   "stars",
+   "unlocks",
+   "cosmetics",
+   "goals",
+   "achievements",
+   "score"
+  ],
+  "categoriesPresent": [
+   "levels",
+   "daily",
+   "settings",
+   "stars",
+   "unlocks",
+   "cosmetics",
+   "goals",
+   "achievements",
+   "score"
+  ],
+  "writesDuringPlay": {
+   "simon_kk_prog": "3x",
+   "simon_kk": "2x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "goals": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "daily": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": false,
+  "meta": false
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "achievements",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "unlocks",
+   "goals",
+   "achievements",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": false
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, unlocks, goals, achievements, daily, cosmetics); systems seen: levels, unlocks, stars, goals, achievements, daily, cosmetics; sinks unlocks/cosmetics fed by levels/stars/goals/achievements/daily",
+ "expected": [
+  "levels",
+  "stars",
+  "daily",
+  "goals",
+  "unlocks"
+ ],
+ "lacks": [],
+ "pageErrors": []
+}

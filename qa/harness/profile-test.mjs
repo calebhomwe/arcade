@@ -8,6 +8,7 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 
 const root = path.resolve(import.meta.dirname, '../..');
@@ -356,7 +357,7 @@ if (process.env.LOGIC_ONLY || failed) process.exit(failed ? 1 : 0);
 
 /* ================= B. the real portal, in a browser ================= */
 const engine = (process.env.ENGINE || 'chromium').toLowerCase();
-const pw = await import(path.join(root, 'qa/harness/node_modules/playwright/index.mjs'));
+const pw = await import(pathToFileURL(path.join(root, 'qa/harness/node_modules/playwright/index.mjs')).href);
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.mp3': 'audio/mpeg', '.webmanifest': 'application/manifest+json', '.wasm': 'application/wasm', '.pck': 'application/octet-stream', '.txt': 'text/plain' };
 const server = http.createServer((req, res) => {
   let p = path.join(root, decodeURIComponent(req.url.split('?')[0])); if (!p.startsWith(root)) { res.writeHead(403); res.end(); return; }

@@ -1,0 +1,936 @@
+{
+ "generated": "2026-10-02T17:45:35.548Z",
+ "engine": "chromium",
+ "count": 4,
+ "results": [
+  {
+   "id": "hub-flappy-flight",
+   "title": "Flappy Flight",
+   "cat": "arcade",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "animation loop paused 1x (over 3 s) but the screen kept changing, so it is not counted (DOM game or idle loop)",
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\hub-flappy-flight-1-title.jpg",
+    "2-mid": "shots\\hub-flappy-flight-2-mid.jpg",
+    "3-end": "shots\\hub-flappy-flight-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1.94,
+    "contentionSamples": [
+     1,
+     1.92,
+     1.94,
+     1.52,
+     4.14,
+     7.6,
+     3.93
+    ]
+   },
+   "loadMs": 185,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+   "startPath": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 20.5,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#playBtn",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1.94,
+    "loadMs": 73,
+    "playMs": 554,
+    "loadRawMs": 141,
+    "playRawMs": 1075,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 2,
+    "longTasks100Play": 1,
+    "tbtLoadMs": 23,
+    "tbtPlayMs": 477,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 1,
+    "slowestPollMs": 76,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 9392.8,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    },
+    {
+     "ms": 1024.1,
+     "blocking": 974,
+     "scripts": [
+      [
+       "games/flappy-flight.html",
+       "DIV#stage.onpointerdown",
+       1023
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 675.9,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [
+    {
+     "atMs": 1709,
+     "scene": "title",
+     "seconds": 9.4,
+     "recovered": true,
+     "errorAtStall": false,
+     "screenStatic": null,
+     "counted": false
+    }
+   ],
+   "frames": {
+    "n": 813,
+    "jsMedian": 0.1,
+    "jsP95": 0.21,
+    "jsP99": 0.41,
+    "jsMax": 1.8,
+    "jsP95Raw": 0.4,
+    "rawWithGlP95": 0.4,
+    "glP95": 0,
+    "gapP95": 66.6,
+    "gapMedian": 33.3,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2.2,
+    "heap1MB": 2.4,
+    "heapGrowthPct": 11,
+    "heapMeasured": true,
+    "nodesStart": 65,
+    "nodesEnd": 128,
+    "nodesMax": 129,
+    "listeners0": 50,
+    "listeners1": 57,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 24,
+     "totalMB": 17.7,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 1560,
+       "h": 631,
+       "mpx": 0.98,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 1560,
+       "h": 371,
+       "mpx": 0.58,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 1560,
+       "h": 279,
+       "mpx": 0.44,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 7,
+    "scriptPct": 5,
+    "layoutPerSec": 3.4
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play",
+     "over",
+     "play",
+     "over",
+     "play",
+     "over"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 3,
+    "restartsAfterOver": 2
+   },
+   "gameScore": {
+    "updates": 3,
+    "first": 0,
+    "last": 0,
+    "max": 0,
+    "trajectory": [
+     [
+      18,
+      0
+     ],
+     [
+      27,
+      0
+     ],
+     [
+      39,
+      0
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 12,
+    "swipes": 1,
+    "holds": 1,
+    "keys": 3,
+    "buttonPresses": 8,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 147,
+    "inputLatencyP95Ms": 1990,
+    "inputLatencyMaxMs": 1990,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 76.6,
+    "maxChangeFromStartPct": 49.8,
+    "samples": 6
+   },
+   "severity": 0.6
+  },
+  {
+   "id": "hub-brick-breaker",
+   "title": "Brick Breaker",
+   "cat": "arcade",
+   "genre": "arcade",
+   "src": "https://calebhomwe.github.io/arcade-hub/games/brick-breaker.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\hub-brick-breaker-1-title.jpg",
+    "2-mid": "shots\\hub-brick-breaker-2-mid.jpg",
+    "3-end": "shots\\hub-brick-breaker-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1,
+    "contentionSamples": [
+     1,
+     1.68,
+     7.51,
+     2.58,
+     1,
+     1,
+     1
+    ]
+   },
+   "loadMs": 119,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/arcade-hub/games/brick-breaker.html",
+   "startPath": "https://calebhomwe.github.io/arcade-hub/games/brick-breaker.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 21.3,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#playBtn",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1,
+    "loadMs": 66,
+    "playMs": 338,
+    "loadRawMs": 66,
+    "playRawMs": 338,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 5,
+    "longTasks100Play": 1,
+    "tbtLoadMs": 16,
+    "tbtPlayMs": 138,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 1,
+    "slowestPollMs": 199,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 127.3,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 1407,
+    "jsMedian": 0.3,
+    "jsP95": 4.8,
+    "jsP99": 17.5,
+    "jsMax": 56.1,
+    "jsP95Raw": 4.8,
+    "rawWithGlP95": 4.8,
+    "glP95": 0,
+    "gapP95": 33.4,
+    "gapMedian": 16.7,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2,
+    "heap1MB": 2.3,
+    "heapGrowthPct": 13,
+    "heapMeasured": true,
+    "nodesStart": 59,
+    "nodesEnd": 61,
+    "nodesMax": 63,
+    "listeners0": 53,
+    "listeners1": 60,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 24,
+     "totalMB": 9.4,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 420,
+       "h": 715,
+       "mpx": 0.3,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 104,
+       "h": 104,
+       "mpx": 0.01,
+       "dom": true,
+       "css": [
+        52,
+        52
+       ]
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 18,
+    "scriptPct": 6,
+    "layoutPerSec": 4.4
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play",
+     "over"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 1,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 1,
+    "first": 790,
+    "last": 790,
+    "max": 790,
+    "trajectory": [
+     [
+      26,
+      790
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 20,
+    "swipes": 2,
+    "holds": 2,
+    "keys": 1,
+    "buttonPresses": 5,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 48,
+    "inputLatencyP95Ms": 1406,
+    "inputLatencyMaxMs": 1490,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 62.6,
+    "maxChangeFromStartPct": 26.5,
+    "samples": 7
+   },
+   "severity": 0.3
+  },
+  {
+   "id": "hub-game-2048",
+   "title": "2048",
+   "cat": "puzzle",
+   "genre": "puzzle",
+   "src": "https://calebhomwe.github.io/arcade-hub/games/game-2048.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\hub-game-2048-1-title.jpg",
+    "2-mid": "shots\\hub-game-2048-2-mid.jpg",
+    "3-end": "shots\\hub-game-2048-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1.1,
+    "contentionSamples": [
+     1,
+     1,
+     1.1,
+     1.55,
+     1.1,
+     2.55,
+     8.03
+    ]
+   },
+   "loadMs": 93,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/arcade-hub/games/game-2048.html",
+   "startPath": "https://calebhomwe.github.io/arcade-hub/games/game-2048.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 22.1,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#mClassic",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1.1,
+    "loadMs": 45,
+    "playMs": 190,
+    "loadRawMs": 50,
+    "playRawMs": 209,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 8,
+    "longTasks100Play": 4,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 382,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 4,
+    "slowestPollMs": 172,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 159,
+     "blocking": 36.2,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       34
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 156.2,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    },
+    {
+     "ms": 139.9,
+     "blocking": 89.8,
+     "scripts": [
+      [
+       "assets/arcade-sdk.js",
+       "TimerHandler:setTimeout",
+       138
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 1414,
+    "jsMedian": 0.09,
+    "jsP95": 0.18,
+    "jsP99": 1.82,
+    "jsMax": 73.3,
+    "jsP95Raw": 0.2,
+    "rawWithGlP95": 0.2,
+    "glP95": 0,
+    "gapP95": 16.8,
+    "gapMedian": 16.7,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2,
+    "heap1MB": 2.2,
+    "heapGrowthPct": 14,
+    "heapMeasured": true,
+    "nodesStart": 157,
+    "nodesEnd": 170,
+    "nodesMax": 187,
+    "listeners0": 66,
+    "listeners1": 67,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 2,
+     "totalMB": 7.9,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 13,
+    "scriptPct": 3,
+    "layoutPerSec": 3.9
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 15,
+    "first": 0,
+    "last": 20,
+    "max": 24,
+    "trajectory": [
+     [
+      1,
+      0
+     ],
+     [
+      4,
+      0
+     ],
+     [
+      7,
+      4
+     ],
+     [
+      8,
+      8
+     ],
+     [
+      11,
+      8
+     ],
+     [
+      11,
+      8
+     ],
+     [
+      15,
+      12
+     ],
+     [
+      16,
+      12
+     ],
+     [
+      19,
+      20
+     ],
+     [
+      27,
+      20
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 37,
+    "swipes": 8,
+    "holds": 2,
+    "keys": 2,
+    "buttonPresses": 9,
+    "resumes": 4,
+    "touchApi": null,
+    "inputLatencyMedianMs": 18,
+    "inputLatencyP95Ms": 670,
+    "inputLatencyMaxMs": 1285,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 86.1,
+    "maxChangeFromStartPct": 93.4,
+    "samples": 9
+   },
+   "severity": 0.2
+  },
+  {
+   "id": "hub-dino-dash",
+   "title": "Dino Dash",
+   "cat": "arcade",
+   "genre": "hyper-casual",
+   "src": "https://calebhomwe.github.io/arcade-hub/games/dino-dash.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "animation loop paused 1x (over 3 s) but the screen kept changing, so it is not counted (DOM game or idle loop)",
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\hub-dino-dash-1-title.jpg",
+    "2-mid": "shots\\hub-dino-dash-2-mid.jpg",
+    "3-end": "shots\\hub-dino-dash-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 7.96,
+    "contentionSamples": [
+     8.99,
+     1,
+     9.09,
+     1.28,
+     3.89,
+     7.96,
+     9.1
+    ]
+   },
+   "loadMs": 122,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/arcade-hub/games/dino-dash.html",
+   "startPath": "https://calebhomwe.github.io/arcade-hub/games/dino-dash.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 30.9,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#playBtn",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 4,
+    "loadMs": 47,
+    "playMs": 32,
+    "loadRawMs": 188,
+    "playRawMs": 130,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 4,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 0,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 0,
+    "slowestPollMs": 86,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 4746.3,
+     "blocking": 6.4,
+     "scripts": [],
+     "phase": "load"
+    },
+    {
+     "ms": 444.3,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    },
+    {
+     "ms": 323.2,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [
+    {
+     "atMs": 1255,
+     "scene": "title",
+     "seconds": 4.7,
+     "recovered": true,
+     "errorAtStall": false,
+     "screenStatic": null,
+     "counted": false
+    }
+   ],
+   "frames": {
+    "n": 575,
+    "jsMedian": 0.07,
+    "jsP95": 0.13,
+    "jsP99": 0.82,
+    "jsMax": 7.5,
+    "jsP95Raw": 0.5,
+    "rawWithGlP95": 0.5,
+    "glP95": 0,
+    "gapP95": 83.3,
+    "gapMedian": 50,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2.2,
+    "heap1MB": 2.4,
+    "heapGrowthPct": 12,
+    "heapMeasured": true,
+    "nodesStart": 56,
+    "nodesEnd": 71,
+    "nodesMax": 121,
+    "listeners0": 54,
+    "listeners1": 61,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 34,
+     "totalMB": 19.9,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 1560,
+       "h": 557,
+       "mpx": 0.87,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 1560,
+       "h": 371,
+       "mpx": 0.58,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 1560,
+       "h": 371,
+       "mpx": 0.58,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 6,
+    "scriptPct": 1,
+    "layoutPerSec": 2.1
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play",
+     "over",
+     "play",
+     "over"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 2,
+    "restartsAfterOver": 1
+   },
+   "gameScore": {
+    "updates": 2,
+    "first": 18,
+    "last": 13,
+    "max": 18,
+    "trajectory": [
+     [
+      21,
+      18
+     ],
+     [
+      40,
+      13
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 4,
+    "swipes": 0,
+    "holds": 2,
+    "keys": 1,
+    "buttonPresses": 3,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 277,
+    "inputLatencyP95Ms": 2160,
+    "inputLatencyMaxMs": 2160,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 80.8,
+    "maxChangeFromStartPct": 88.3,
+    "samples": 5
+   },
+   "severity": 0
+  }
+ ]
+}

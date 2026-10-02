@@ -961,14 +961,25 @@ function drawFishAt(g, x, y, sp, flip, wiggle, alpha){
   g.save(); g.translate(x,y); if (flip) g.scale(-1,1); g.rotate(wiggle||0); if (alpha!==undefined) g.globalAlpha=alpha;
   g.drawImage(sp.c, -sp.ox, -sp.oy, sp.w, sp.h); g.restore();
 }
+/* label bubbles are stamped from a cache: one radial gradient + one fillText per
+   (text, size) ever, instead of per fish per frame */
+const bubCache = new Map();
 function labelBubble(g, x, y, r, txt){
-  g.save(); g.translate(x,y);
-  g.fillStyle='rgba(20,40,60,.25)'; g.beginPath(); g.arc(1.5,2.5,r,0,TAU); g.fill();
-  const gr=g.createRadialGradient(-r*.35,-r*.4,r*.1,0,0,r*1.1); gr.addColorStop(0,'#ffffff'); gr.addColorStop(.7,'#eaf3f6'); gr.addColorStop(1,'#b9d2dc'); g.fillStyle=gr; g.beginPath(); g.arc(0,0,r,0,TAU); g.fill();
-  g.lineWidth=1.6; g.strokeStyle='rgba(40,90,120,.55)'; g.stroke();
-  const str=String(txt), px = str.length>=3 ? r*.95 : str.length===2 ? r*1.15 : r*1.35;
-  g.font='700 '+Math.round(px)+'px Fredoka,system-ui,sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillStyle='#123a52'; g.fillText(str,0,r*.06);
-  g.restore();
+  const key = String(txt)+'|'+Math.round(r)+'|'+DPRK;
+  let b = bubCache.get(key);
+  if (!b){
+    const pad = 8, w = Math.ceil(r*2+pad*2), h = w, m = KL.make(w,h), gg = m.g;
+    gg.translate(w/2, h/2);
+    gg.fillStyle='rgba(20,40,60,.25)'; gg.beginPath(); gg.arc(1.5,2.5,r,0,TAU); gg.fill();
+    const gr=gg.createRadialGradient(-r*.35,-r*.4,r*.1,0,0,r*1.1); gr.addColorStop(0,'#ffffff'); gr.addColorStop(.7,'#eaf3f6'); gr.addColorStop(1,'#b9d2dc'); gg.fillStyle=gr; gg.beginPath(); gg.arc(0,0,r,0,TAU); gg.fill();
+    gg.lineWidth=1.6; gg.strokeStyle='rgba(40,90,120,.55)'; gg.stroke();
+    const str=String(txt), px = str.length>=3 ? r*.95 : str.length===2 ? r*1.15 : r*1.35;
+    gg.font='700 '+Math.round(px)+'px Fredoka,system-ui,sans-serif'; gg.textAlign='center'; gg.textBaseline='middle'; gg.fillStyle='#123a52'; gg.fillText(str,0,r*.06);
+    b = {c:m.c, w, h};
+    if (bubCache.size>90) bubCache.delete(bubCache.keys().next().value);
+    bubCache.set(key,b);
+  }
+  g.save(); g.translate(x,y); g.drawImage(b.c, -b.w/2, -b.h/2, b.w, b.h); g.restore();
 }
 
 /* ═══════════ the fisher: painted, not outlined. hats unlock with stars ═══════════ */
@@ -1533,7 +1544,16 @@ function drawWater(){
   for (let x=0;x<=VW;x+=14) ctx.lineTo(x, WL+1+Math.sin(x*.03+t*1.7)*1.6); ctx.stroke();
   ctx.strokeStyle = pi===4 ? 'rgba(160,190,255,.09)' : 'rgba(255,255,255,.08)';
   for (let i=1;i<6;i++){ const y = WL + (VH-WL)*i/6; ctx.beginPath(); for (let x=0;x<=VW;x+=22) ctx.lineTo(x, y+Math.sin(x*.02+t*.9+i)*3); ctx.stroke(); }
-  if (!RM.matches){ ctx.globalAlpha=.12; for (let i=0;i<9;i++){ const x=((i*137+t*9)%(VW+80))-40, y=WL+30*U+((i*61)%(VH-WL-90)); const gr=ctx.createRadialGradient(x,y,0,x,y,30*U); gr.addColorStop(0,pi===4?'#a0c8ff':'#fffbe0'); gr.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=gr; ctx.beginPath(); ctx.ellipse(x,y,34*U,10*U,0,0,TAU); ctx.fill(); } ctx.globalAlpha=1; }
+  if (!RM.matches){ /* drifting light: one cached sparkle sprite stamped 9 times, no per-frame gradients */
+    const sk='SP|'+pi+'|'+Math.round(30*U)+'|'+DPRK;
+    let spark=KL.cache.get(sk);
+    if(!spark){ const sw=Math.ceil(68*U), m=KL.make(sw,sw), sg=m.g, sc=sw/2;
+      const gr=sg.createRadialGradient(sc,sc*0.5,0,sc,sc*0.5,sc); gr.addColorStop(0,pi===4?'#a0c8ff':'#fffbe0'); gr.addColorStop(1,'rgba(255,255,255,0)');
+      sg.fillStyle=gr; sg.beginPath(); sg.ellipse(sc,sc*0.5,sc*1.13,sc*0.33,0,0,TAU); sg.fill();
+      spark={c:m.c,w:sw,h:sw}; KL.cache.set(sk,spark); }
+    ctx.globalAlpha=.12;
+    for (let i=0;i<9;i++){ const x=((i*137+t*9)%(VW+80))-40, y=WL+30*U+((i*61)%(VH-WL-90)); ctx.drawImage(spark.c,x-spark.w/2,y-spark.h/2,spark.w,spark.h); }
+    ctx.globalAlpha=1; }
   ctx.restore();
   if (!weeds.length){ const r=KL.rng(5+pi); for (let i=0;i<7;i++) weeds.push({x:VW*(.06+i*.135)+r()*20,h:(30+r()*40)*U,ph:r()*6,c:pi===4?['#3affe0','#ff6ad8','#6aa0ff'][i%3]:pi===2?['#3fae6a','#4ec87a'][i%2]:['#3f8a4a','#2f7a44','#56a05a'][i%3]}); }
   if (pi!==1 && pi!==3){ for (const w of weeds){ const y0=VH-6*U; ctx.strokeStyle=KL.rgba(w.c,.85); ctx.lineWidth=3.4*U; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(w.x,y0); const sw=Math.sin(t*1.3+w.ph)*8*U; ctx.bezierCurveTo(w.x+sw*.4,y0-w.h*.4,w.x-sw*.6,y0-w.h*.7,w.x+sw,y0-w.h); ctx.stroke(); if (pi===4){ KL.glow(ctx,w.x+sw,y0-w.h,26*U,w.c,.4); } } }

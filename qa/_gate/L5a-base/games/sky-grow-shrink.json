@@ -1,0 +1,181 @@
+{
+ "id": "sky-grow-shrink",
+ "title": "Grow or Shrink",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/grow-shrink.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "sky-grow-shrink-best",
+  "sky-PK-grow-shrink"
+ ],
+ "session1": {
+  "start": "tap centre",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 6,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 106,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "sky-PK-grow-shrink",
+   "sky-grow-shrink-tut"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": true,
+  "title1": "Easy Normal Hard LVL 1 █░░░░ · coins 0 · ★ 0 stars Daily: reach 6 doors · +10 coins Best 0 doors · LVL 1 · ★ 0 · coins 0 ☀ Daily: reach 6 do",
+  "title2": "Easy Normal Hard LVL 1 ███░░ · coins 11 · ★ 1 stars Daily: reach 6 doors · +10 coins Best 0 doors · LVL 1 · ★ 1 · coins 11 ☀ Daily: reach 6 ",
+  "keysUpdatedAgain": [
+   "sky-PK-grow-shrink"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "sky-PK-grow-shrink",
+   "sky-grow-shrink-tut"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "sky-PK-grow-shrink": "{\"best\":0,\"coins\":11,\"xp\":7,\"stars\":1,\"plays\":7,\"wins\":0,\"skins\":[\"Cla",
+   "sky-grow-shrink-tut": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "score",
+   "currency",
+   "levels",
+   "stars",
+   "cosmetics",
+   "daily",
+   "other"
+  ],
+  "categoriesPresent": [
+   "score",
+   "currency",
+   "levels",
+   "stars",
+   "cosmetics",
+   "daily",
+   "other"
+  ],
+  "writesDuringPlay": {
+   "sky-grow-shrink-tut": "1x",
+   "sky-PK-grow-shrink": "7x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "stars",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "unlocks",
+  "upgrades",
+  "goals",
+  "achievements"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, daily, cosmetics); systems seen: levels, stars, daily, cosmetics; sinks cosmetics fed by levels/stars/daily/currency",
+ "expected": [
+  "unlocks",
+  "cosmetics",
+  "daily",
+  "achievements",
+  "goals"
+ ],
+ "lacks": [
+  "unlocks",
+  "achievements",
+  "goals"
+ ],
+ "pageErrors": []
+}

@@ -5193,6 +5193,8 @@ addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updat
 
 /* ═══════════ loop ═══════════ */
 const clock=new THREE.Clock(); let T=0, puffT=0;
+/* approach bar elements cached once; the per-frame writes only touch style values */
+const appEls={bar:$('#approach'),fill:$('#approachfill')};
 function tick(){
   requestAnimationFrame(tick);
   const raw=Math.min(clock.getDelta(),.05);
@@ -5266,9 +5268,9 @@ function tick(){
   }
   if(state.gates.length&&state.running){
     const p=clamp(1-(state.gates[0].position.z+320)/332,0,1);
-    $('#approach').style.opacity=p>.45?1:0;
-    $('#approachfill').style.transform='scaleX('+(1-p)+')';
-  } else $('#approach').style.opacity=0;
+    appEls.bar.style.opacity=p>.45?1:0;
+    appEls.fill.style.transform='scaleX('+(1-p).toFixed(3)+')';
+  } else appEls.bar.style.opacity=0;
 
   /* chips */
   chips.forEach(c=>{ if(c.life>0){ c.life-=dt;

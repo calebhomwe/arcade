@@ -142,13 +142,20 @@ export class Trail {
       const brk = r.brk || (i + 1 < n && this.ring[(k + 1) % this.max].brk);
       const x = r.x + r.nx * off, y = r.y + r.ny * off, z = r.z + r.nz * off;
       const w = brk ? 0 : r.w * 0.5;
-      this.pos.set([x - r.sx * w, y, z - r.sz * w, x + r.sx * w, y, z + r.sz * w], i * 6);
-      const c = 1; // the groove texture does the darkening
-      this.col.set([c, c, c, c, c, c], i * 6);
-      this.uv.set([0, 0, 1, 0], i * 4);
+      const o = i * 6;
+      this.pos[o] = x - r.sx * w; this.pos[o + 1] = y; this.pos[o + 2] = z - r.sz * w;
+      this.pos[o + 3] = x + r.sx * w; this.pos[o + 4] = y; this.pos[o + 5] = z + r.sz * w;
+      const o6 = i * 6;
+      this.col[o6] = this.col[o6 + 1] = this.col[o6 + 2] = this.col[o6 + 3] = this.col[o6 + 4] = this.col[o6 + 5] = 1;
+      const o4 = i * 4;
+      this.uv[o4] = 0; this.uv[o4 + 1] = 0; this.uv[o4 + 2] = 1; this.uv[o4 + 3] = 0;
     }
     // collapse unused tail
-    for (let i = n; i < this.max; i++) { this.pos.set([0, -9999, 0, 0, -9999, 0], i * 6); }
+    for (let i = n; i < this.max; i++) {
+      const o = i * 6;
+      this.pos[o] = 0; this.pos[o + 1] = -9999; this.pos[o + 2] = 0;
+      this.pos[o + 3] = 0; this.pos[o + 4] = -9999; this.pos[o + 5] = 0;
+    }
     this.geo.attributes.position.needsUpdate = true;
     this.geo.attributes.color.needsUpdate = true;
     this.geo.attributes.uv.needsUpdate = true;

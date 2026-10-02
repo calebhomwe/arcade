@@ -118,6 +118,22 @@ function searchGames(q) {
 
 /* ---------- tiles ---------- */
 const canPreview = () => !reduce() && !touch.matches;
+/* Progressive paint: long lists (All 110, search results, every home row) are filled in idle
+   frames instead of one long task. Chunks are only ever appended at the end of their container,
+   so nothing on screen moves — skeletons above stay put and the page grows below the fold. */
+const idle = fn => window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 240 }) : setTimeout(fn, 16);
+function fillTiles(container, list, make, after) {
+  let i = 0;
+  const chunk = n => {
+    const f = document.createDocumentFragment();
+    const end = Math.min(list.length, i + n);
+    for (; i < end; i++) f.appendChild(make(list[i], i));
+    container.appendChild(f);
+    if (after) after();
+    if (i < list.length) idle(() => chunk(30));
+  };
+  chunk(24);
+}
 function tile(g, o = {}) {
   const d = document.createElement('div');
   d.className = 'tile' + (o.size ? ' ' + o.size : '') + (o.caption ? ' captioned' : '') + (o.labeled ? ' labeled' : '');
@@ -157,14 +173,16 @@ function rowSection(title, list, o = {}) {
   const s = document.createElement('section'); s.className = 'sec'; if (o.id) s.id = o.id;
   s.setAttribute('aria-label', title);
   s.innerHTML = secHead(title, Object.assign({ arrows: true }, o)) + '<div class="row"></div>';
-  const r = $('.row', s); list.forEach((g, i) => r.appendChild(tile(g, { caption: true, hot: o.hot, rank: o.ranked ? i + 1 : 0 })));
+  const r = $('.row', s);
   const btns = $$('.arrows button', s);
   const paint = () => { btns[0].disabled = r.scrollLeft < 8; btns[1].disabled = r.scrollLeft + r.clientWidth > r.scrollWidth - 8; };
+  fillTiles(r, list, (g, i) => tile(g, { caption: true, hot: o.hot, rank: o.ranked ? i + 1 : 0 }), paint);
   btns.forEach(b => b.addEventListener('click', () => r.scrollBy(scrollOpts({ left: +b.dataset.dir * r.clientWidth * .85 }))));
   r.addEventListener('scroll', paint, { passive: true }); requestAnimationFrame(paint);
+  if (window.ResizeObserver) new ResizeObserver(paint).observe(r);   // the row may be built detached (skeleton stream-in): re-check the arrows when it lands
   return s;
 }
-function gridOf(list, o = {}) { const g = document.createElement('div'); g.className = 'grid'; list.forEach((x, i) => g.appendChild(tile(x, { caption: true, hot: true, eager: i < 8, rank: o.ranked ? i + 1 : 0 }))); return g; }
+function gridOf(list, o = {}) { const g = document.createElement('div'); g.className = 'grid'; fillTiles(g, list, (x, i) => tile(x, { caption: true, hot: true, eager: i < 8, rank: o.ranked ? i + 1 : 0 })); return g; }
 
 /* Mosaic: big tiles among small ones. `items` = [{g, size}], filled so the last row is complete when `fill` is given. */
 function mosaic(items, fill) {
@@ -232,6 +250,10 @@ function shellInit() {
     if (e.key === '/') { e.preventDefault(); if (innerWidth <= 760) document.body.classList.add('searching'); q.focus(); q.select(); }
     else if (e.key === 's' || e.key === 'S') { e.preventDefault(); location.href = playHref(randomGame(new URLSearchParams(location.search).get('g'))); }
     else if (e.key === ',') { e.preventDefault(); openPrefs(); }
+    else if (/^[1-9]$/.test(e.key)) {   // arcade speed-run: 1-9 focus (and open with Enter) the first nine cards of the page
+      const a = $$('.main .tile > a')[+e.key - 1];
+      if (a) { e.preventDefault(); a.focus({ preventScroll: true }); a.scrollIntoView(scrollOpts({ block: 'nearest' })); }
+    }
   });
 }
 
@@ -299,7 +321,7 @@ function openPrefs(focus) {
     '<button type="button" class="btn sm" data-act="install"' + (installEvt ? '' : ' hidden') + '>Install app</button><button type="button" class="btn sm" data-act="reset">Reset settings</button></div>' +
     '<h3>Keyboard</h3><div class="keys">' +
     (onPlay ? '<kbd>F</kbd><span>Fullscreen</span><kbd>R</kbd><span>Restart the game</span><kbd>N</kbd><span>Next game</span><kbd>L</kbd><span>Like</span>' : '<kbd>/</kbd><span>Search</span><kbd>Esc</kbd><span>Clear the search</span>') +
-    '<kbd>S</kbd><span>Surprise me: a random game</span><kbd>,</kbd><span>Open settings</span></div></div></form>';
+    '<kbd>S</kbd><span>Surprise me: a random game</span><kbd>1-9</kbd><span>Jump to a card</span><kbd>,</kbd><span>Open settings</span></div></div></form>';
   d.showModal();
   if (focus === 'data') $('#prefs-data', d).scrollIntoView();
 }
@@ -432,11 +454,24 @@ function home() {
       frag.appendChild(rowSection('Popular right now', popular().slice(0, 14), { icon: 'flame', cc: 'var(--c-hyper)', ranked: true }));
     }
   }
+  let streamToken = 0;
   function render(focusMain) {
     const frag = document.createDocumentFragment();
     const c = st.cat && catOf(st.cat);
     if (st.q) renderSearch(frag); else if (c) renderCat(frag, c); else if (st.view && st.view !== 'home') renderList(frag); else renderHome(frag);
-    view.innerHTML = ''; view.appendChild(frag);
+    // Progressive paint: the first blocks land in this frame; the rest stream in on idle frames,
+    // always appended at the end of #view, so what is on screen never moves (no layout shift).
+    const kids = [...frag.childNodes], token = ++streamToken;
+    view.innerHTML = ''; view.append(...kids.slice(0, 5));
+    if (kids.length > 5) {
+      let ki = 5;
+      const pump = () => {
+        if (token !== streamToken) return;   // a newer render already replaced the view
+        view.append(...kids.slice(ki, ki + 2)); ki += 2;
+        if (ki < kids.length) idle(pump);
+      };
+      idle(pump);
+    }
     document.title = st.q ? 'Search: ' + st.q + " — Caleb's Arcade" : c ? c.name + " games — Caleb's Arcade" : st.view && st.view !== 'home' ? ({ new: 'New games', popular: 'Popular games', iphone: 'Plays on iPhone', recent: 'Recently played', favourites: 'Your favourites', trophies: 'Trophy room', all: 'All games' }[st.view] || 'Games') + " — Caleb's Arcade" : TITLE;
     markNav(st.q ? null : st);
     if (q.value !== st.q && document.activeElement !== q) q.value = st.q;
@@ -686,15 +721,22 @@ function play() {
 }
 function suggest() {
   const q = $('#q'), box = $('#sugg'); if (!box) return;
-  let sel = -1, items = [];
-  const close = () => { box.hidden = true; q.setAttribute('aria-expanded', 'false'); q.removeAttribute('aria-activedescendant'); sel = -1; };
+  let sel = -1, items = [], sq = null, last = null;
+  const close = () => { clearTimeout(sq); sq = null; last = null; box.hidden = true; q.setAttribute('aria-expanded', 'false'); q.removeAttribute('aria-activedescendant'); sel = -1; };
   const paint = () => $$('a', box).forEach((a, i) => { a.setAttribute('aria-selected', i === sel); if (i === sel) { q.setAttribute('aria-activedescendant', a.id); a.scrollIntoView({ block: 'nearest' }); } });
   q.addEventListener('input', () => {
-    const v = q.value.trim(); if (!v) { close(); return; }
-    const res = searchGames(v); items = res.slice(0, 7);
-    box.innerHTML = items.length ? items.map((g, i) => '<a id="sg-' + i + '" role="option" href="' + playHref(g) + '"><img src="' + g.thumb + '" alt="" width="64" height="40"><span>' + esc(g.title) + '<small>' + esc(catName(g.cat)) + '</small></span></a>').join('') +
-      '<a class="all" id="sg-' + items.length + '" role="option" href="./?q=' + encodeURIComponent(v) + '">See all ' + res.length + ' results</a>' : '<p>No games match “' + esc(v) + '”.</p>';
-    box.hidden = false; q.setAttribute('aria-expanded', 'true'); sel = -1; paint();
+    clearTimeout(sq);
+    sq = setTimeout(() => {
+      sq = null;
+      const v = q.value.trim();
+      if (v === last) return;   // same word, no reason to rebuild the list (keeps typing smooth)
+      last = v;
+      if (!v) { close(); return; }
+      const res = searchGames(v); items = res.slice(0, 7);
+      box.innerHTML = items.length ? items.map((g, i) => '<a id="sg-' + i + '" role="option" href="' + playHref(g) + '"><img src="' + g.thumb + '" alt="" width="64" height="40"><span>' + esc(g.title) + '<small>' + esc(catName(g.cat)) + '</small></span></a>').join('') +
+        '<a class="all" id="sg-' + items.length + '" role="option" href="./?q=' + encodeURIComponent(v) + '">See all ' + res.length + ' results</a>' : '<p>No games match “' + esc(v) + '”.</p>';
+      box.hidden = false; q.setAttribute('aria-expanded', 'true'); sel = -1; paint();
+    }, 60);
   });
   q.addEventListener('keydown', e => {
     const links = $$('a', box);

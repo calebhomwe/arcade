@@ -1,0 +1,872 @@
+{
+ "generated": "2026-10-02T19:21:21.376Z",
+ "engine": "chromium",
+ "count": 4,
+ "results": [
+  {
+   "id": "critter-rush-2d",
+   "title": "Critter Rush 2D",
+   "cat": "arcade",
+   "genre": "racing",
+   "src": "CritterRush2D/index.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "STALL"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 4643 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 4643 ms of JS; long-task API + timer heartbeat; longest frame 1985.7 ms: CritterRush2D/index.html DOMWindow.onkeydown 1869 /  FrameRequestCallback 45",
+    "STALL": "started only with a keyboard key (tap centre + EASY + EASY + EASY + tap on game + KEY Enter); a phone has no keyboard"
+   },
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\critter-rush-2d-1-title.jpg",
+    "2-mid": null,
+    "3-end": null
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1,
+    "contentionSamples": [
+     1,
+     7.79,
+     1,
+     3.93,
+     1,
+     7.63,
+     1
+    ]
+   },
+   "loadMs": 2254,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:57844/CritterRush2D/index.html",
+   "startPath": "http://127.0.0.1:57844/CritterRush2D/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 25.5,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "tap centre + EASY + EASY + EASY + tap on game + KEY Enter",
+    "viaKey": true,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1,
+    "loadMs": 507,
+    "playMs": 4643,
+    "loadRawMs": 507,
+    "playRawMs": 4643,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 41,
+    "longTasks100Play": 32,
+    "tbtLoadMs": 1,
+    "tbtPlayMs": 10358,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 44,
+    "slowestPollMs": 4726,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 1985.7,
+     "blocking": 1934.6,
+     "scripts": [
+      [
+       "CritterRush2D/index.html",
+       "DOMWindow.onkeydown",
+       1869
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       45
+      ]
+     ],
+     "phase": "start"
+    },
+    {
+     "ms": 1802.5,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    },
+    {
+     "ms": 1765.1,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 1256,
+    "jsMedian": 0.2,
+    "jsP95": 2.5,
+    "jsP99": 30.4,
+    "jsMax": 307.3,
+    "jsP95Raw": 2.5,
+    "rawWithGlP95": 2.5,
+    "glP95": 0,
+    "gapP95": 150,
+    "gapMedian": 16.7,
+    "over100": 7,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2.1,
+    "heap1MB": 2.2,
+    "heapGrowthPct": 7,
+    "heapMeasured": true,
+    "nodesStart": 74,
+    "nodesEnd": 79,
+    "nodesMax": 79,
+    "listeners0": 74,
+    "listeners1": 72,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 1,
+     "totalMB": 4,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 1
+   },
+   "cpu": {
+    "mainThreadBusyPct": 11,
+    "scriptPct": 3,
+    "layoutPerSec": 8.9
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 6,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 1,
+    "buttonPresses": 1,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 411,
+    "inputLatencyP95Ms": 3241,
+    "inputLatencyMaxMs": 3241,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": null,
+    "maxChangeFromStartPct": null,
+    "samples": 0
+   },
+   "severity": 108.6,
+   "recheck": {
+    "reproduced": false,
+    "verdicts": [
+     "STALL"
+    ],
+    "evidence": null,
+    "blockPlayMs": 138,
+    "blockLoadMs": 0,
+    "load1": 0
+   }
+  },
+  {
+   "id": "neon-dash",
+   "title": "Neon Dash",
+   "cat": "arcade",
+   "genre": "arcade",
+   "src": "NeonDash/index.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "JANK"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 4667 ms (during load), 275 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 4392 ms of JS; long-task API + timer heartbeat; longest frame 6893.5 ms: vendor/three.classic.js http://127.0.0.1:57844/NeonDash/vendor/three.classic.js 552 | page did not answer the harness for 6 s (3 poll timeout(s))",
+    "JANK": "p95 JS frame cost 233.6 ms over 33 ms (unthrottled, divided by machine slowdown x1; raw p95 233.6, median 37.1, p99 354.9, max 449.1; time inside WebGL calls excluded, p95 of it 51.8)"
+   },
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\neon-dash-1-title.jpg",
+    "3-end": "shots\\neon-dash-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1,
+    "contentionSamples": [
+     9.37,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "loadMs": 19342,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:57844/NeonDash/index.html",
+   "startPath": "http://127.0.0.1:57844/NeonDash/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 247.6,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "declared start button not tappable -> Play/Start button",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1,
+    "loadMs": 4392,
+    "playMs": 3198,
+    "loadRawMs": 4667,
+    "playRawMs": 3209,
+    "playGlMs": 12,
+    "loadGlMs": 275,
+    "longTasksPlay": 188,
+    "longTasks100Play": 113,
+    "tbtLoadMs": 20688,
+    "tbtPlayMs": 21293,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 81,
+    "slowestPollMs": 10845,
+    "pollTimeouts": 3,
+    "shaderCompileMs": 0.2,
+    "shaderCompileMaxCallMs": 0.1
+   },
+   "loafTop": [
+    {
+     "ms": 6893.5,
+     "blocking": 3014.9,
+     "scripts": [
+      [
+       "vendor/three.classic.js",
+       "http://127.0.0.1:57844/NeonDash/vendor/three.classic.js",
+       552
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 4766.2,
+     "blocking": 4715.2,
+     "scripts": [
+      [
+       "NeonDash/index.html",
+       "http://127.0.0.1:57844/NeonDash/index.html",
+       4584
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       115
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 3046.6,
+     "blocking": 2996.4,
+     "scripts": [
+      [
+       "NeonDash/index.html",
+       "BUTTON#play-btn.onclick",
+       2503
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       139
+      ]
+     ],
+     "phase": "start"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 272,
+    "jsMedian": 37.1,
+    "jsP95": 233.6,
+    "jsP99": 354.9,
+    "jsMax": 449.1,
+    "jsP95Raw": 233.6,
+    "rawWithGlP95": 243.4,
+    "glP95": 51.8,
+    "gapP95": 416.6,
+    "gapMedian": 116.6,
+    "over100": 87,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 6,
+    "heap1MB": 6.4,
+    "heapGrowthPct": 6,
+    "heapMeasured": true,
+    "nodesStart": 8,
+    "nodesEnd": 85,
+    "nodesMax": 85,
+    "listeners0": 72,
+    "listeners1": 72,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 1,
+    "canvases": {
+     "n": 7,
+     "totalMB": 4.1,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 64,
+       "h": 128,
+       "mpx": 0.01,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 128,
+       "mpx": 0.01,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 64,
+       "h": 128,
+       "mpx": 0.01,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 1
+   },
+   "cpu": {
+    "mainThreadBusyPct": 91,
+    "scriptPct": 56,
+    "layoutPerSec": 11.5
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 0,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 0,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": null,
+    "inputLatencyP95Ms": null,
+    "inputLatencyMaxMs": null,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 41.3,
+    "maxChangeFromStartPct": null,
+    "samples": 1
+   },
+   "severity": 108.4,
+   "recheck": {
+    "reproduced": false,
+    "verdicts": [
+     "JANK"
+    ],
+    "evidence": null,
+    "blockPlayMs": 1447,
+    "blockLoadMs": 401,
+    "load1": 0
+   }
+  },
+  {
+   "id": "surviv-royale",
+   "title": "Surviv Royale",
+   "cat": "arcade",
+   "genre": "arcade",
+   "src": "SurvivIO/index.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "JANK"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 2235 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 2235 ms of JS; long-task API + timer heartbeat | page did not answer the harness for 6 s (1 poll timeout(s))",
+    "JANK": "p95 JS frame cost 248.1 ms over 33 ms (unthrottled, divided by machine slowdown x1; raw p95 248.1, median 1.2, p99 444.3, max 948.7; time inside WebGL calls excluded, p95 of it 0)"
+   },
+   "notes": [
+    "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1)",
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\surviv-royale-1-title.jpg",
+    "2-mid": "shots\\surviv-royale-2-mid.jpg",
+    "3-end": "shots\\surviv-royale-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1,
+    "contentionSamples": [
+     4.29,
+     1,
+     1,
+     1,
+     23.01,
+     10.49,
+     1
+    ]
+   },
+   "loadMs": 428,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:57844/SurvivIO/index.html",
+   "startPath": "http://127.0.0.1:57844/SurvivIO/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 50,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#btn-play",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1,
+    "loadMs": 303,
+    "playMs": 2235,
+    "loadRawMs": 303,
+    "playRawMs": 2235,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 227,
+    "longTasks100Play": 176,
+    "tbtLoadMs": 1310,
+    "tbtPlayMs": 31986,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 109,
+    "slowestPollMs": 6178,
+    "pollTimeouts": 1,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 949,
+     "blocking": 898.9,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       948
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 724.3,
+     "blocking": 668,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       717
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 693.9,
+     "blocking": 561.6,
+     "scripts": [
+      [
+       "",
+       "PerformanceObserverCallback",
+       375
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       214
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 579,
+    "jsMedian": 1.2,
+    "jsP95": 248.1,
+    "jsP99": 444.3,
+    "jsMax": 948.7,
+    "jsP95Raw": 248.1,
+    "rawWithGlP95": 248.1,
+    "glP95": 0,
+    "gapP95": 350,
+    "gapMedian": 16.7,
+    "over100": 122,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 3.4,
+    "heap1MB": 3,
+    "heapGrowthPct": -12,
+    "heapMeasured": true,
+    "nodesStart": 157,
+    "nodesEnd": 158,
+    "nodesMax": 158,
+    "listeners0": 76,
+    "listeners1": 76,
+    "audioContexts": 0,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 13,
+     "totalMB": 6.4,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 605,
+       "h": 605,
+       "mpx": 0.37,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 237,
+       "h": 237,
+       "mpx": 0.06,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 237,
+       "h": 237,
+       "mpx": 0.06,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 1
+   },
+   "cpu": {
+    "mainThreadBusyPct": 90,
+    "scriptPct": 60,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 1,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 0,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 6429,
+    "inputLatencyP95Ms": 6429,
+    "inputLatencyMaxMs": 6429,
+    "inputTimeouts": 1
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": null,
+    "maxChangeFromStartPct": null,
+    "samples": 0
+   },
+   "severity": 106.2,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE",
+     "JANK"
+    ],
+    "evidence": "main thread blocked 5582 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 5582 ms of JS; long-task API + timer heartbeat; longest frame 5460.8 ms: SurvivIO/index.html http://127.0.0.1:57844/SurvivIO/index.html 1357 /  FrameRequestCallback 374 | page did not answer the harness for 6 s (2 poll timeout(s))",
+    "blockPlayMs": 814,
+    "blockLoadMs": 5582,
+    "load1": 0
+   }
+  },
+  {
+   "id": "chili-firm",
+   "title": "Chili Firm 2: Replanted",
+   "cat": "idle",
+   "genre": "idle",
+   "src": "ChiliFirm/index.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\chili-firm-1-title.jpg",
+    "2-mid": "shots\\chili-firm-2-mid.jpg",
+    "3-end": "shots\\chili-firm-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 3.95,
+    "contentionSamples": [
+     1.09,
+     22.75,
+     1,
+     3.95,
+     10.12,
+     8.59,
+     1
+    ]
+   },
+   "loadMs": 230,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:57844/ChiliFirm/index.html",
+   "startPath": "http://127.0.0.1:57844/ChiliFirm/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 22.5,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": ".playbtn",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 3.95,
+    "loadMs": 100,
+    "playMs": 282,
+    "loadRawMs": 396,
+    "playRawMs": 1115,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 57,
+    "longTasks100Play": 5,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 901,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 13,
+    "slowestPollMs": 854,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 1141.5,
+     "blocking": 1029.3,
+     "scripts": [],
+     "phase": "play"
+    },
+    {
+     "ms": 656.2,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "start"
+    },
+    {
+     "ms": 627.8,
+     "blocking": 267.3,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       316
+      ]
+     ],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 963,
+    "jsMedian": 0.03,
+    "jsP95": 0.28,
+    "jsP99": 15.9,
+    "jsMax": 119.7,
+    "jsP95Raw": 1.1,
+    "rawWithGlP95": 1.1,
+    "glP95": 0,
+    "gapP95": 166.8,
+    "gapMedian": 16.7,
+    "over100": 1,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 3,
+    "heap1MB": 3.1,
+    "heapGrowthPct": 4,
+    "heapMeasured": true,
+    "nodesStart": 1150,
+    "nodesEnd": 1153,
+    "nodesMax": 1219,
+    "listeners0": 70,
+    "listeners1": 70,
+    "audioContexts": 1,
+    "audioElements": 2,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 0,
+     "totalMB": 0,
+     "biggest": [],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 4
+   },
+   "cpu": {
+    "mainThreadBusyPct": 54,
+    "scriptPct": 6,
+    "layoutPerSec": 27
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 8,
+    "swipes": 1,
+    "holds": 2,
+    "keys": 0,
+    "buttonPresses": 5,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 119,
+    "inputLatencyP95Ms": 1953,
+    "inputLatencyMaxMs": 1953,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 81.8,
+    "maxChangeFromStartPct": 15.1,
+    "samples": 7
+   },
+   "severity": 0.3
+  }
+ ]
+}

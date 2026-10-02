@@ -1,0 +1,179 @@
+{
+ "id": "hub-tap-monsters",
+ "title": "Tap Monsters",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/tap-monsters.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "tm_state"
+ ],
+ "session1": {
+  "start": "#btnPlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 32,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "tm_state",
+   "tap-monsters_prog"
+  ],
+  "savedKeysWrittenInSession1": 3,
+  "titleTextChanged": true,
+  "title1": "1 Level 0/8 XP 0 0 dmg/s Build your first Kitty 15 gold · tap the monster to earn Badges 0/20 · Upgrades at level 2 +XP ×1 ×10 ×25 MAX Kitty",
+  "title2": "1 Level 0/8 XP 0 0 dmg/s Build your first Kitty 15 gold · tap the monster to earn Goals today 0/3 · Streak 1 · Goals tab at level 3 · Badges",
+  "keysUpdatedAgain": [
+   "tm_state"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 3,
+  "added": [
+   "ik_coach_tap-monsters",
+   "tm_state"
+  ],
+  "changed": [
+   "tap-monsters_prog"
+  ],
+  "removed": [],
+  "sample": {
+   "ik_coach_tap-monsters": "1",
+   "tm_state": "{\"v\":2,\"coins\":0,\"lifetime\":0,\"alltime\":0,\"owned\":[0,0,0,0,0,0,0,0],\"u",
+   "tap-monsters_prog": "{\"level\":1,\"xp\":0,\"coins\":0,\"stars\":0,\"daily\":1,\"unlocks\":0,\"upgrades\""
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "levels",
+   "currency",
+   "stars",
+   "daily",
+   "unlocks",
+   "upgrades",
+   "goals",
+   "achievements",
+   "cosmetics"
+  ],
+  "categoriesPresent": [
+   "other",
+   "levels",
+   "currency",
+   "stars",
+   "daily",
+   "unlocks",
+   "upgrades",
+   "goals",
+   "achievements",
+   "cosmetics"
+  ],
+  "writesDuringPlay": {
+   "tap-monsters_prog": "8x",
+   "ik_coach_tap-monsters": "1x",
+   "tm_state": "7x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "upgrades",
+  "stars",
+  "goals",
+  "achievements",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "unlocks",
+   "upgrades",
+   "goals",
+   "achievements",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, unlocks, upgrades, goals, achievements, daily, cosmetics); systems seen: levels, unlocks, upgrades, stars, goals, achievements, daily, cosmetics; sinks unlocks/upgrades/cosmetics fed by levels/stars/goals/achievements/daily/currency",
+ "expected": [
+  "upgrades",
+  "unlocks",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "lacks": [],
+ "pageErrors": []
+}

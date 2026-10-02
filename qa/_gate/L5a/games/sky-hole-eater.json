@@ -13,7 +13,7 @@
   "JANK"
  ],
  "evidence": {
-  "JANK": "p95 JS frame cost 45.3 ms over 33 ms (unthrottled, divided by machine slowdown x1; raw p95 45.3, median 2.4, p99 55.4, max 98.3; time inside WebGL calls excluded, p95 of it 0.5)"
+  "JANK": "p95 JS frame cost 55.4 ms over 33 ms (unthrottled, divided by machine slowdown x1; raw p95 55.4, median 2, p99 72.4, max 165.8; time inside WebGL calls excluded, p95 of it 0.4)"
  },
  "notes": [
   "unthrottled run"
@@ -30,21 +30,21 @@
   "contention": 1,
   "contentionSamples": [
    1,
-   1.11,
    1,
    1,
+   15.14,
    1,
-   1,
+   1.61,
    1
   ]
  },
- "loadMs": 119,
+ "loadMs": 202,
  "loaded": true,
  "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
  "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 19.9,
+  "benchMs": 35.8,
   "bench1Ms": null,
   "effectiveSlowdown": null
  },
@@ -55,62 +55,78 @@
  },
  "block": {
   "c": 1,
-  "loadMs": 72,
-  "playMs": 188,
-  "loadRawMs": 81,
-  "playRawMs": 188,
-  "playGlMs": 0,
-  "loadGlMs": 9,
-  "longTasksPlay": 50,
-  "longTasks100Play": 0,
-  "tbtLoadMs": 22,
-  "tbtPlayMs": 683,
+  "loadMs": 120,
+  "playMs": 672,
+  "loadRawMs": 134,
+  "playRawMs": 672,
+  "playGlMs": 1,
+  "loadGlMs": 14,
+  "longTasksPlay": 98,
+  "longTasks100Play": 4,
+  "tbtLoadMs": 119,
+  "tbtPlayMs": 1777,
   "longtaskApi": true,
-  "heartbeatOver100Play": 8,
-  "slowestPollMs": 1120,
+  "heartbeatOver100Play": 9,
+  "slowestPollMs": 2819,
   "pollTimeouts": 0,
   "shaderCompileMs": 0,
   "shaderCompileMaxCallMs": 0
  },
  "loafTop": [
   {
-   "ms": 157.4,
-   "blocking": 100.3,
+   "ms": 698.3,
+   "blocking": 648.1,
+   "scripts": [
+    [
+     "skywalker-playables/hole-eater.html",
+     "CANVAS#ov.onpointerdown",
+     671
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     25
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 242.8,
+   "blocking": 184.2,
    "scripts": [
     [
      "three/three.core.min.js",
      "Promise.resolve",
-     147
+     224
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     8
     ]
    ],
    "phase": "load"
   },
   {
-   "ms": 133.7,
-   "blocking": 43.2,
-   "scripts": [
-    [
-     "",
-     "FrameRequestCallback",
-     93
-    ]
-   ],
-   "phase": "play"
+   "ms": 180.3,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
   }
  ],
  "rafStalls": [],
  "frames": {
-  "n": 1221,
-  "jsMedian": 2.4,
-  "jsP95": 45.3,
-  "jsP99": 55.4,
-  "jsMax": 98.3,
-  "jsP95Raw": 45.3,
-  "rawWithGlP95": 46.1,
-  "glP95": 0.5,
-  "gapP95": 50.1,
+  "n": 994,
+  "jsMedian": 2,
+  "jsP95": 55.4,
+  "jsP99": 72.4,
+  "jsMax": 165.8,
+  "jsP95Raw": 55.4,
+  "rawWithGlP95": 57.4,
+  "glP95": 0.4,
+  "gapP95": 66.7,
   "gapMedian": 16.7,
-  "over100": 0,
+  "over100": 2,
   "limit": 33
  },
  "errors": [],
@@ -118,21 +134,21 @@
  "consoleErrors": [],
  "failed": [],
  "resources": {
-  "heap0MB": 5.2,
-  "heap1MB": 6,
-  "heapGrowthPct": 14,
+  "heap0MB": 5.4,
+  "heap1MB": 5.6,
+  "heapGrowthPct": 4,
   "heapMeasured": true,
-  "nodesStart": 35,
-  "nodesEnd": 35,
-  "nodesMax": 35,
-  "listeners0": 66,
-  "listeners1": 66,
+  "nodesStart": 36,
+  "nodesEnd": 36,
+  "nodesMax": 36,
+  "listeners0": 67,
+  "listeners1": 67,
   "audioContexts": 1,
   "audioElements": 0,
   "webglContexts": 2,
   "canvases": {
    "n": 7,
-   "totalMB": 6.2,
+   "totalMB": 6.9,
    "biggest": [
     {
      "w": 780,
@@ -152,11 +168,14 @@
      "css": null
     },
     {
-     "w": 256,
-     "h": 256,
-     "mpx": 0.07,
-     "dom": false,
-     "css": null
+     "w": 374,
+     "h": 637,
+     "mpx": 0.24,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
     },
     {
      "w": 256,
@@ -172,8 +191,8 @@
   "sdkTimers": 0
  },
  "cpu": {
-  "mainThreadBusyPct": 59,
-  "scriptPct": 42,
+  "mainThreadBusyPct": 75,
+  "scriptPct": 55,
   "layoutPerSec": 0.1
  },
  "risks": [],
@@ -188,23 +207,23 @@
   "restartsAfterOver": 0
  },
  "bot": {
-  "taps": 18,
-  "swipes": 6,
-  "holds": 2,
+  "taps": 8,
+  "swipes": 3,
+  "holds": 1,
   "keys": 1,
   "buttonPresses": 0,
   "resumes": 0,
   "touchApi": null,
-  "inputLatencyMedianMs": 49,
-  "inputLatencyP95Ms": 1593,
-  "inputLatencyMaxMs": 2019,
+  "inputLatencyMedianMs": 91,
+  "inputLatencyP95Ms": 3150,
+  "inputLatencyMaxMs": 3150,
   "inputTimeouts": 0
  },
  "screen": {
   "longestStaticS": 0,
   "changeTitleToPlayPct": 98.7,
-  "maxChangeFromStartPct": 67,
-  "samples": 8
+  "maxChangeFromStartPct": 67.7,
+  "samples": 5
  },
- "severity": 42.2
+ "severity": 42.7
 }

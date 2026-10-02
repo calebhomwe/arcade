@@ -70,7 +70,7 @@
   }
   function toast(o) {
     var b = toastBox(), t = doc.createElement('div');
-    t.className = 'pf-toast ' + (o.kind || '') + (o.actions ? ' has-actions' : '');
+    t.className = 'pf-toast ' + (o.kind || '') + (o.cls ? ' ' + o.cls : '') + (o.actions ? ' has-actions' : '');
     t.innerHTML = (o.art ? '<span class="pt-art">' + o.art + '</span>' : '') + '<span class="pt-tx"><b>' + esc(o.title) + '</b>' + (o.sub ? '<span>' + esc(o.sub) + '</span>' : '') + '</span>' +
       (o.actions ? '<span class="pt-acts">' + o.actions.map(function (a, i) { return '<button type="button" class="pf-btn sm ' + (a.cls || '') + '" data-i="' + i + '">' + esc(a.label) + '</button>'; }).join('') + '</span>' : '');
     var kill = function () { t.classList.remove('in'); setTimeout(function () { t.remove(); }, 300); };
@@ -99,8 +99,14 @@
     else if (/^Streak: day/.test(d.why)) toast({ kind: 'xp', art: Art.flame(true, 26), title: '+' + d.xp + ' XP', sub: d.why.replace('Streak: day', 'Streak day'), ms: 3200 });
     if (chipEl) { chipEl.classList.remove('bump'); void chipEl.offsetWidth; chipEl.classList.add('bump'); }
   });
+  function chipPulse(cls, ms) {
+    if (!chipEl) return;
+    chipEl.classList.remove(cls); void chipEl.offsetWidth; chipEl.classList.add(cls);
+    setTimeout(function () { chipEl.classList.remove(cls); }, ms || 1500);
+  }
   Store.on('levelup', function (d) {
-    if (tracker && tracker.busy()) toast({ kind: 'level', art: Art.levelBadge(d.level, 40), title: 'Level ' + d.level + '!', sub: d.unlocks.length ? 'New: ' + d.unlocks.map(function (u) { return u.name; }).join(', ') : 'Keep going!', ms: 5200 });
+    chipPulse('levelup', 1700);   // the chip glows gold where the celebration is waiting
+    if (tracker && tracker.busy()) toast({ kind: 'level', cls: 'cheer', art: Art.levelBadge(d.level, 44), title: 'Level ' + d.level + '!', sub: d.unlocks.length ? 'New to try: ' + d.unlocks.map(function (u) { return u.name; }).join(', ') : 'Keep going! The party waits for you at the arcade.', ms: 5200 });
     else setTimeout(showLevelUp, 500);
   });
   Store.on('change', function () { paintChip(); refreshViews(); if (tracker) tracker.push(); });
@@ -125,13 +131,16 @@
   function questUnit(q) { return /^(min|learn-5|cat-min)/.test(q.kind) ? ' min' : ''; }
   function questRow(q) {
     var pct = q.target ? q.prog / q.target : 0, done = !!q.done;
-    return '<li class="qrow ' + (q.tier || 'game') + (done ? ' done' : '') + '"><span class="qico">' + (done ? ico('check') : ico(q.glyph || 'star')) + '</span>' +
+    return '<li class="qrow ' + (q.tier || 'game') + (done ? ' done' : '') + '" data-kind="' + esc(q.k || q.kind || '') + '"><span class="qico">' + (done ? ico('check') : ico(q.glyph || 'star')) + '</span>' +
       '<span class="qtx"><b>' + esc(q.title) + '</b><span class="qsub">' + (done ? 'Done! Nice one.' : esc(q.desc || '')) + '</span><span class="qbar">' + bar(done ? 1 : pct) + '<span class="qprog">' + (done ? '' : (Math.floor(q.prog) + '/' + q.target + questUnit(q))) + '</span></span></span>' +
       '<span class="qrw"><span class="qxp">+' + q.xp + ' XP</span>' + (q.stars ? starsHtml(q.stars) : '') + '</span></li>';
   }
   function homeCard() {
     var el = doc.createElement('section'); el.className = 'qcard'; el.setAttribute('aria-labelledby', 'qc-h');
     function draw() {
+      // remember the widths the quest bars had, so the redraw can animate them to their new values
+      var prev = {};
+      $$('.qrow', el).forEach(function (r) { var i = $('.pf-bar > i', r); if (i && r.dataset.kind) prev[r.dataset.kind] = i.style.width; });
       var p = Store.get(), li = Core.levelInfo(p.xp), Q = Store.quests(), n = Q.list.filter(function (q) { return q.done; }).length, lit = streakLit(p), ach = Store.achievements(), got = ach.filter(function (a) { return a.done; }).length;
       var nr = nextReward(li.level);
       el.innerHTML =
@@ -140,8 +149,16 @@
         '<div class="qc-stats"><span class="qc-st ' + (lit ? 'lit' : '') + '" title="Days in a row. One rest day a week is free.">' + Art.flame(lit, 18) + '<b>' + p.streak.n + '</b><small>' + (p.streak.n === 1 ? 'day' : 'days') + '</small></span><span class="qc-st">' + Art.star(18) + '<b>' + fmt(p.stars) + '</b><small>stars</small></span>' +
         '<a class="qc-st link" href="./?view=trophies">' + ico('trophy') + '<b>' + got + '</b><small>badges</small></a></div></div>' +
         '<div class="qc-q"><div class="qc-head"><h2 id="qc-h">Daily quests</h2><span class="qc-count" aria-label="' + n + ' of 3 done">' + [0, 1, 2].map(function (i) { return '<i class="' + (i < n ? 'on' : '') + '"></i>'; }).join('') + '</span></div>' +
-        '<ul class="qlist">' + Q.list.map(questRow).join('') + Q.extra.map(function (g) { return questRow({ title: g.title, desc: byId[g.game] ? 'From ' + byId[g.game].title : 'From a game', prog: g.p, target: 1, done: g.done, xp: g.xp, stars: g.stars, glyph: 'medal', kind: 'game' }); }).join('') + '</ul>' +
+        '<ul class="qlist">' + Q.list.map(questRow).join('') + Q.extra.map(function (g) { return questRow({ k: 'gq:' + g.key, title: g.title, desc: byId[g.game] ? 'From ' + byId[g.game].title : 'From a game', prog: g.p, target: 1, done: g.done, xp: g.xp, stars: g.stars, glyph: 'medal', kind: 'game' }); }).join('') + '</ul>' +
         '<p class="qc-foot">' + (n === 3 ? 'All done for today! New quests tomorrow.' : n ? 'Nice! ' + (3 - n) + ' to go. Finish all three for +' + Q.setXp + ' XP and a star.' : 'Three new quests every day. No rush: they refresh tomorrow.') + (nr && !li.max ? '<span class="qc-next">Next reward: ' + esc(nr.name) + ' at level ' + nr.level + '</span>' : '') + '</p></div>';
+      // progress bars that visibly move: start each fill at its old width and let the CSS transition slide to the new one
+      var pend = [];
+      $$('.qrow', el).forEach(function (r) {
+        var i = $('.pf-bar > i', r); if (!i || !r.dataset.kind) return;
+        var old = prev[r.dataset.kind];
+        if (old && old !== i.style.width) { pend.push([i, i.style.width]); i.style.width = old; }
+      });
+      if (pend.length) { void el.offsetWidth; pend.forEach(function (m) { m[0].style.width = m[1]; }); }
     }
     draw(); live.push({ el: el, draw: draw });
     return el;
@@ -170,15 +187,29 @@
     function draw() {
       var list = Store.achievements(), done = list.filter(function (a) { return a.done; }), p = Store.get();
       var fams = Object.keys(Core.FAMS).filter(function (f) { return list.some(function (a) { return a.fam === f; }); });
+      var famN = {}; list.forEach(function (a) { var m = famN[a.fam] || (famN[a.fam] = { t: 0, g: 0 }); m.t++; if (a.done) m.g++; });
       var next = list.filter(function (a) { return !a.done && a.need > 1 && a.have > 0; }).sort(function (a, b) { return b.have / b.need - a.have / a.need; }).slice(0, 3);
       if (next.length < 3) list.filter(function (a) { return !a.done && a.have === 0 && a.need <= 5 && next.indexOf(a) < 0; }).slice(0, 3 - next.length).forEach(function (a) { next.push(a); });
-      var shown = list.filter(function (a) { return filter === 'all' || a.fam === filter; });
+      // a brand-new shelf invites play instead of showing a wall of padlocks
+      var invite = done.length ? '' :
+        '<section class="sec th-invite" aria-label="Your first badge"><span class="ti-art">' + Art.badge({ fam: 'start', tier: 'bronze', glyph: 'play', title: 'First Steps', done: false }, { size: 92 }) + '</span>' +
+        '<div class="ti-tx"><h2>Your first trophy is 30 seconds away</h2><p>Open any game and play a little — badges arrive on their own while you play. No timers, nothing to buy, and a badge once earned never goes away.</p>' +
+        '<a class="pf-btn green sm" href="play.html?g=random">' + ico('dice') + 'Surprise me a game</a></div></section>';
+      // "All" groups the wall by family with a section header each, so it reads at a glance
+      var body = filter === 'all'
+        ? fams.map(function (f) {
+            var g = list.filter(function (a) { return a.fam === f; });
+            return '<section class="sec th-fam" aria-label="' + esc(Core.FAMS[f]) + '"><div class="sechead"><h2>' + esc(Core.FAMS[f]) + '</h2><span class="th-fam-n' + (famN[f].g ? '' : ' none') + '">' + (famN[f].g ? famN[f].g + ' of ' + famN[f].t + ' earned' : 'None yet — tap a medal to see what it needs') + '</span></div><div class="th-grid">' + g.map(badgeTile).join('') + '</div></section>';
+          }).join('')
+        : '<div class="th-grid">' + list.filter(function (a) { return a.fam === filter; }).map(badgeTile).join('') + '</div>';
       el.innerHTML =
         '<div class="phead trophy-head"><span class="big-ico">' + ico('trophy') + '</span><div class="t"><h1>Trophy room</h1><p>' + done.length + ' of ' + list.length + ' badges · ' + fmt(p.stars) + ' stars. Earned by playing: no timers, nothing to buy.</p></div>' +
         '<div class="side"><span class="th-ring">' + Art.ring(done.length / list.length, 64, 8) + '<b>' + Math.round(done.length / list.length * 100) + '%</b></span></div></div>' +
         (next.length ? '<section class="sec" aria-label="Next up"><div class="sechead"><h2>Next up</h2></div><div class="th-next">' + next.map(function (a) { return '<button type="button" class="pf-next" data-badge="' + esc(a.id) + '">' + Art.badge(a, { size: 52 }) + '<span><b>' + esc(a.title) + '</b><small>' + esc(a.desc) + '</small>' + (a.need > 1 ? bar(a.have / a.need) + '<em>' + Math.floor(a.have) + ' / ' + a.need + '</em>' : '') + '</span></button>'; }).join('') + '</div></section>' : '') +
-        '<div class="th-filters" role="tablist" aria-label="Badge groups"><button type="button" role="tab" class="chip' + (filter === 'all' ? ' on' : '') + '" data-f="all" aria-selected="' + (filter === 'all') + '">All</button>' + fams.map(function (f) { return '<button type="button" role="tab" class="chip' + (filter === f ? ' on' : '') + '" data-f="' + f + '" aria-selected="' + (filter === f) + '">' + esc(Core.FAMS[f]) + '</button>'; }).join('') + '</div>' +
-        '<div class="th-grid">' + shown.map(badgeTile).join('') + '</div>';
+        invite +
+        '<div class="th-filters" role="tablist" aria-label="Badge groups"><button type="button" role="tab" class="chip' + (filter === 'all' ? ' on' : '') + '" data-f="all" aria-selected="' + (filter === 'all') + '">All<b class="th-cn">' + done.length + '/' + list.length + '</b></button>' +
+        fams.map(function (f) { return '<button type="button" role="tab" class="chip' + (filter === f ? ' on' : '') + '" data-f="' + f + '" aria-selected="' + (filter === f) + '">' + esc(Core.FAMS[f]) + '<b class="th-cn">' + famN[f].g + '/' + famN[f].t + '</b></button>'; }).join('') + '</div>' +
+        body;
     }
     el.addEventListener('click', function (e) {
       var f = e.target.closest('[data-f]'); if (f) { filter = f.dataset.f; draw(); var c = $('.th-filters .on', el); if (c) c.scrollIntoView({ block: 'nearest', inline: 'center' }); return; }
@@ -362,7 +393,7 @@
       var t = Store.get().today.sec, mark = jget('ca_break', { day: '', n: 0 }); if (mark.day !== today()) mark = { day: today(), n: 0 };
       if (mark.n < BREAKS.length && t >= BREAKS[mark.n]) {
         mark.n++; jset('ca_break', mark);
-        toast({ kind: 'calm', art: '<span class="pt-ico">' + ico('sun') + '</span>', title: mark.n === 1 ? 'Great session! Time for a stretch?' : 'That was a long one. Rest your eyes?', sub: 'A drink of water and a stretch feel good. Your game will wait.', ms: 12000,
+        toast({ kind: 'calm', cls: 'stretch', art: '<span class="pt-ico">' + ico('sun') + '</span>', title: mark.n === 1 ? 'Great session! Time for a stretch?' : 'That was a long one. Rest your eyes?', sub: 'A drink of water and a stretch feel good. Your game will wait.', ms: 12000,
           actions: [{ label: "I'll take a break", cls: 'green', run: function () { Store.noteFlag('stretch'); if (o.pause) o.pause(); } }, { label: 'Keep playing', run: function () {} }] });
       }
     }

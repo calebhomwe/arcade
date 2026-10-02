@@ -1,0 +1,479 @@
+{
+ "summary": {
+  "games": 1,
+  "checks": 26,
+  "generated": "2026-10-02T20:04:53.406Z",
+  "byCheck": {
+   "U01": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U02": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U03": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U04": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U05": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U06": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U07": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U08": [
+    0,
+    0,
+    1,
+    0
+   ],
+   "U09": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U10": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U11": [
+    0,
+    0,
+    1,
+    0
+   ],
+   "U12": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U13": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U14": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U15": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U16": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U17": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "U18": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "H01": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "H02": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "H03": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "C01": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "G01": [
+    0,
+    0,
+    1,
+    0
+   ],
+   "T01": [
+    0,
+    0,
+    0,
+    1
+   ],
+   "X01": [
+    0,
+    0,
+    1,
+    0
+   ],
+   "P01": [
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "totals": {
+   "PASS": 20,
+   "FAIL": 0,
+   "REVIEW": 5,
+   "N/A": 1
+  }
+ },
+ "standard": [
+  {
+   "id": "U01",
+   "name": "Title screen",
+   "how": "observe",
+   "pass": "The game reports a title scene (ArcadeSDK.state({scene:'title'})) or the first frame is not blank."
+  },
+  {
+   "id": "U02",
+   "name": "How to play",
+   "how": "observe+meta",
+   "pass": "At least 2 steps in meta, and the arcade's Help button opens them inside the game."
+  },
+  {
+   "id": "U03",
+   "name": "Controls",
+   "how": "meta",
+   "pass": "Keyboard and touch controls written in meta."
+  },
+  {
+   "id": "U04",
+   "name": "Pause",
+   "how": "observe",
+   "pass": "On-screen pause button; the arcade's Pause freezes the canvas, the clock and audio; P or Esc pauses where free; a hidden tab pauses."
+  },
+  {
+   "id": "U05",
+   "name": "Resume",
+   "how": "observe",
+   "pass": "After a 2 s pause the game clock has not jumped and the game moves again."
+  },
+  {
+   "id": "U06",
+   "name": "Restart",
+   "how": "observe",
+   "pass": "The game restarts the run itself (ArcadeSDK onRestart), without reloading the page."
+  },
+  {
+   "id": "U07",
+   "name": "Exit to title",
+   "how": "observe",
+   "pass": "The game returns to its title itself (ArcadeSDK onExit)."
+  },
+  {
+   "id": "U08",
+   "name": "Sound",
+   "how": "observe",
+   "pass": "The arcade's Mute silences every audio context and media element, and the choice is remembered."
+  },
+  {
+   "id": "U09",
+   "name": "Settings",
+   "how": "meta+scan",
+   "pass": "Sound always; 3D tiers also list a graphics-quality setting in meta.settings."
+  },
+  {
+   "id": "U10",
+   "name": "Tips",
+   "how": "observe+meta",
+   "pass": "At least 3 tips in meta, shown on the pause menu."
+  },
+  {
+   "id": "U11",
+   "name": "Results screen",
+   "how": "observe",
+   "pass": "The game reports scene 'over' with a score or outcome during the scripted session, or meta.features.results says where it is (REVIEW)."
+  },
+  {
+   "id": "U12",
+   "name": "Saving",
+   "how": "observe+scan",
+   "pass": "A key named in meta.saves (the best score or progress, not a first-run flag or setting) is in localStorage or IndexedDB after the session."
+  },
+  {
+   "id": "U13",
+   "name": "Phone",
+   "how": "observe",
+   "pass": "At 390x844 with touch: no sideways scroll, DOM text at least 12 px, DOM tap targets at least 40 px."
+  },
+  {
+   "id": "U14",
+   "name": "Stability",
+   "how": "observe",
+   "pass": "0 page errors, 0 console errors and 0 failed requests from the game."
+  },
+  {
+   "id": "U15",
+   "name": "Loading",
+   "how": "observe",
+   "pass": "Something visible within 1 s of the game frame loading, and the SDK ready within 20 s."
+  },
+  {
+   "id": "U16",
+   "name": "Accessibility",
+   "how": "scan",
+   "pass": "The game respects prefers-reduced-motion."
+  },
+  {
+   "id": "U17",
+   "name": "Arcade SDK",
+   "how": "observe",
+   "pass": "The SDK loads and says ready; the game calls ArcadeSDK.init to declare what it supports."
+  },
+  {
+   "id": "U18",
+   "name": "Catalogue",
+   "how": "meta",
+   "pass": "Category, genre, 2+ tags, blurb, howto, tips, controls, a 480x300 tile and a 960x600 tile."
+  },
+  {
+   "id": "H01",
+   "name": "Tutorial",
+   "how": "observe",
+   "pass": "The game can replay its tutorial (ArcadeSDK onTutorial)."
+  },
+  {
+   "id": "H02",
+   "name": "Hints",
+   "how": "observe",
+   "pass": "Required for puzzle and learning games: the arcade's hint request returns a hint."
+  },
+  {
+   "id": "H03",
+   "name": "Difficulty",
+   "how": "meta",
+   "pass": "meta.difficulty says how difficulty works (modes, adaptive curve or age bands)."
+  },
+  {
+   "id": "C01",
+   "name": "Cheat codes",
+   "how": "observe+meta",
+   "pass": "Eligible games list 3+ codes in meta and the game accepts each one through the SDK."
+  },
+  {
+   "id": "G01",
+   "name": "Genre module",
+   "how": "meta+review",
+   "pass": "Every feature of the genre module is described in meta.features (REVIEW until a person confirms it)."
+  },
+  {
+   "id": "T01",
+   "name": "Tricks",
+   "how": "observe+meta",
+   "pass": "Board-sports games: 6+ named tricks with inputs, shown in the pause menu's Trick list."
+  },
+  {
+   "id": "X01",
+   "name": "Graphics tier",
+   "how": "observe+scan",
+   "pass": "3D tiers render in 3D (WebGL context plus a 3D engine); 2D-HD canvases are crisp at the device pixel ratio."
+  },
+  {
+   "id": "P01",
+   "name": "Progression",
+   "how": "observe+meta+review",
+   "pass": "Progress that persists (meta.saves names a key that is written) and real goals to come back for: levels, worlds, unlocks, stars or upgrades. The game tells the arcade profile where the player is with ArcadeSDK.state({scene, score, level, stars}). Always REVIEW for now: the harness lists what it saw and a person (or the progression checker) confirms the goals are real."
+  }
+ ],
+ "games": [
+  {
+   "id": "chili-firm",
+   "title": "Chili Firm 2: Replanted",
+   "cat": "idle",
+   "genre": "idle",
+   "tier": "2D-HD",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": false,
+   "render": "dom",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "PASS",
+     "note": "The arcade Help button opened 3 steps inside the game."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "PASS",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P pauses."
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (1 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "REVIEW",
+     "note": "Mute works, but the game made no sound in the scripted session."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "6 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: Level-up, trophy, new-business and WELCOME BACK celebration cards; Trophies > Ledger keeps the farm's totals"
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under chili_firm2_save."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 0.2 s, SDK ready 0.1 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"12 pots are empty: PLANT ALL fills them with Jalapeño.\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "No difficulty modes: it is an idle farm that paces itself. Costs and prices climb with each strain, room and business, the story missions set the next goal, and the 1x / 2x / 4x button sets the pace."
+    },
+    "C01": {
+     "s": "PASS",
+     "note": "All 3 codes accepted; a wrong code is refused."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Idle / tycoon: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "REVIEW",
+     "note": "No canvas on the phone screen (DOM game); a person should judge the art."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves chili_firm2_save (written); reports scene; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\chili-firm-1-first-second.jpg",
+    "2-playing-a": "shots\\chili-firm-2-playing-a.jpg",
+    "2-playing-b": "shots\\chili-firm-2-playing-b.jpg",
+    "4-paused": "shots\\chili-firm-4-paused.jpg",
+    "5-paused-later": "shots\\chili-firm-5-paused-later.jpg",
+    "6-resumed-a": "shots\\chili-firm-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\chili-firm-6-resumed-b.jpg",
+    "8-how-to-play": "shots\\chili-firm-8-how-to-play.jpg",
+    "phone": "shots\\chili-firm-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": null,
+    "dpr": 3,
+    "dom": 14,
+    "shot": "shots\\chili-firm-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 198,
+    "ready": 64
+   },
+   "gl": [],
+   "seconds": 35
+  }
+ ]
+}

@@ -11,5 +11,77 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+    /* Academy layer: keeps a compact, always-parseable mirror of the academy record
+       (level / stars / badges / daily), pays practice XP for every round you open,
+       and shows stars + XP on screen without opening any menu. */
+    (function () {
+      'use strict';
+      var K = 'rap-academy-progress-v1', M = 'rap-academy-stars';
+      var st = { plays: 0, xpBonus: 0, day: new Date().toDateString() };
+      var pill = null, lastText = '';
+      function num(v) { v = Number(v); return isFinite(v) ? v : 0; }
+      function base() { try { return JSON.parse(localStorage.getItem(K) || '{}') || {}; } catch (e) { return {}; } }
+      function writeMirror() {
+        var p = base();
+        var xp = num(p.xp) + st.xpBonus;
+        var hs = p.highScores || {}, best = num(p.bestCombo);
+        for (var k in hs) best = Math.max(best, num(hs[k]));
+        var out = {
+          level: 1 + Math.floor(xp / 60), xp: xp,
+          stars: Math.max(num(p.stars), (p.completedLessons || []).length) + Math.floor(st.xpBonus / 120),
+          badges: (p.achievements || []).length,
+          daily: (p.dailyDone && Object.keys(p.dailyDone).length) || st.plays ? 1 : 0,
+          best: best, plays: st.plays
+        };
+        try { localStorage.setItem(M, JSON.stringify(out)); } catch (e) {}
+        paint(out);
+      }
+      function paint(o) {
+        if (!pill) {
+          pill = document.createElement('div');
+          pill.id = 'academyProg';
+          pill.setAttribute('aria-label', 'Your stars and XP');
+          pill.style.cssText = 'position:fixed;top:12px;right:56px;z-index:60;pointer-events:none;white-space:nowrap;' +
+            "font:700 12px/1 system-ui,-apple-system,'Segoe UI',sans-serif;color:#c8f542;background:#141414;" +
+            'border:1.5px solid #c8f542;border-radius:999px;padding:5px 10px;' +
+            'box-shadow:0 1px 6px rgba(0,0,0,.5);transition:transform .18s ease';
+          document.body.appendChild(pill);
+        }
+        var t = '\u2B50 ' + o.stars + ' stars \u00B7 ' + o.xp + ' XP';
+        if (t !== lastText) {
+          lastText = t;
+          pill.textContent = t;
+          if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            pill.style.transform = 'scale(1.12)';
+            setTimeout(function () { pill.style.transform = 'scale(1)'; }, 180);
+          }
+        }
+      }
+      var si = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        si.apply(this, arguments);
+        if (k === K) writeMirror();
+      };
+      function hookSDK() {
+        if (!window.ArcadeSDK || typeof ArcadeSDK.state !== 'function') return false;
+        var report = ArcadeSDK.state.bind(ArcadeSDK);
+        ArcadeSDK.state = function (u) {
+          try {
+            if (u && u.scene === 'play') {
+              var today = new Date().toDateString();
+              if (st.day !== today) { st.day = today; st.plays = 0; st.xpBonus = 0; }
+              if (st.plays < 8) { st.plays++; st.xpBonus += 10; }   // practice XP: +10 per round, 8 rounds a day
+              writeMirror();
+            }
+          } catch (e) {}
+          return report(u);
+        };
+        return true;
+      }
+      if (!hookSDK()) addEventListener('load', hookSDK);
+      writeMirror();
+    })();
+    </script>
   </body>
 </html>

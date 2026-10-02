@@ -1,0 +1,13 @@
+4 games, chromium x0 CPU throttle, 25 s each, 2 worker(s), load 0.0 on 24 cores
+  1/4 FREEZE+JANK    neon-dash                    main thread blocked 4667 ms (during load), 275 ms of it inside WebGL calls (software GL), machine slowdown x1  [NOT reproduced on re-run]
+  2/4 FREEZE+JANK    surviv-royale                main thread blocked 2235 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1  [reproduced]
+  3/4 OK             chili-firm                   .playbtn
+  4/4 FREEZE+STALL   critter-rush-2d              main thread blocked 4643 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1  [NOT reproduced on re-run]
+-> qa\_b4h\health.md
+surviv-royale                PASS 21  FAIL  0  REVIEW  4  94s
+neon-dash                    PASS 19  FAIL  0  REVIEW  6  104s
+chili-firm                   PASS 19  FAIL  1  REVIEW  5  114s
+critter-rush-2d              PASS 18  FAIL  0  REVIEW  7  148s
+
+4 games: PASS 77, FAIL 1, REVIEW 22, N/A 4
+-> qa\_b4s\matrix.json

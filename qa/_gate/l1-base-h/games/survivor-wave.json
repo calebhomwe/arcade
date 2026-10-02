@@ -1,0 +1,226 @@
+{
+ "id": "survivor-wave",
+ "title": "Survivor Wave",
+ "cat": "arcade",
+ "genre": "arcade",
+ "src": "SurvivorWave/index.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "memory risks: 25 Audio elements created",
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\survivor-wave-1-title.jpg",
+  "2-mid": null,
+  "3-end": "shots\\survivor-wave-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   1,
+   7.85,
+   1,
+   1,
+   2.72,
+   1,
+   1
+  ]
+ },
+ "loadMs": 779,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:63425/SurvivorWave/index.html",
+ "startPath": "http://127.0.0.1:63425/SurvivorWave/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 22.6,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre + ▶ PLAY",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 129,
+  "playMs": 1089,
+  "loadRawMs": 129,
+  "playRawMs": 1089,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 21,
+  "longTasks100Play": 5,
+  "tbtLoadMs": 79,
+  "tbtPlayMs": 1256,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 5,
+  "slowestPollMs": 1113,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 1076.2,
+   "blocking": 0,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     11
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 1008.8,
+   "blocking": 0,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "TimerHandler:setTimeout",
+     10
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 787.5,
+   "blocking": 736.7,
+   "scripts": [
+    [
+     "SurvivorWave/index.html",
+     "BUTTON#swQuickPlay.onclick",
+     537
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     247
+    ]
+   ],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 844,
+  "jsMedian": 1.1,
+  "jsP95": 21.4,
+  "jsP99": 34.2,
+  "jsMax": 247.5,
+  "jsP95Raw": 21.4,
+  "rawWithGlP95": 21.4,
+  "glP95": 0,
+  "gapP95": 150,
+  "gapMedian": 16.7,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 3.8,
+  "heap1MB": 4.3,
+  "heapGrowthPct": 13,
+  "heapMeasured": true,
+  "nodesStart": 361,
+  "nodesEnd": 353,
+  "nodesMax": 361,
+  "listeners0": 289,
+  "listeners1": 289,
+  "audioContexts": 1,
+  "audioElements": 25,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 76,
+   "totalMB": 22.4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 600,
+     "h": 600,
+     "mpx": 0.36,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 40
+ },
+ "cpu": {
+  "mainThreadBusyPct": 33,
+  "scriptPct": 13,
+  "layoutPerSec": 1.7
+ },
+ "risks": [
+  "25 Audio elements created"
+ ],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 2,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 700,
+  "inputLatencyP95Ms": 791,
+  "inputLatencyMaxMs": 791,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 76.8,
+  "maxChangeFromStartPct": null,
+  "samples": 1
+ },
+ "severity": 4.1
+}

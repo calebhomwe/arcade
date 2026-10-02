@@ -1,0 +1,205 @@
+{
+ "id": "hub-brick-breaker",
+ "title": "Brick Breaker",
+ "cat": "arcade",
+ "genre": "arcade",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/brick-breaker.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\hub-brick-breaker-1-title.jpg",
+  "2-mid": "shots\\hub-brick-breaker-2-mid.jpg",
+  "3-end": "shots\\hub-brick-breaker-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   1,
+   1.68,
+   7.51,
+   2.58,
+   1,
+   1,
+   1
+  ]
+ },
+ "loadMs": 119,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/brick-breaker.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/brick-breaker.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 21.3,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 66,
+  "playMs": 338,
+  "loadRawMs": 66,
+  "playRawMs": 338,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 5,
+  "longTasks100Play": 1,
+  "tbtLoadMs": 16,
+  "tbtPlayMs": 138,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 1,
+  "slowestPollMs": 199,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 127.3,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 1407,
+  "jsMedian": 0.3,
+  "jsP95": 4.8,
+  "jsP99": 17.5,
+  "jsMax": 56.1,
+  "jsP95Raw": 4.8,
+  "rawWithGlP95": 4.8,
+  "glP95": 0,
+  "gapP95": 33.4,
+  "gapMedian": 16.7,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2,
+  "heap1MB": 2.3,
+  "heapGrowthPct": 13,
+  "heapMeasured": true,
+  "nodesStart": 59,
+  "nodesEnd": 61,
+  "nodesMax": 63,
+  "listeners0": 53,
+  "listeners1": 60,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 24,
+   "totalMB": 9.4,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 420,
+     "h": 715,
+     "mpx": 0.3,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 104,
+     "h": 104,
+     "mpx": 0.01,
+     "dom": true,
+     "css": [
+      52,
+      52
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 18,
+  "scriptPct": 6,
+  "layoutPerSec": 4.4
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 790,
+  "last": 790,
+  "max": 790,
+  "trajectory": [
+   [
+    26,
+    790
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 20,
+  "swipes": 2,
+  "holds": 2,
+  "keys": 1,
+  "buttonPresses": 5,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 48,
+  "inputLatencyP95Ms": 1406,
+  "inputLatencyMaxMs": 1490,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 62.6,
+  "maxChangeFromStartPct": 26.5,
+  "samples": 7
+ },
+ "severity": 0.3
+}

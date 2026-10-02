@@ -1,0 +1,179 @@
+{
+ "id": "sky-breakout",
+ "title": "Brick Breaker",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/breakout.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "sky-breakout-best",
+  "sky-PK-breakout"
+ ],
+ "session1": {
+  "start": "tap centre",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 2,
+  "score": {
+   "first": 80,
+   "last": 40,
+   "max": 80
+  },
+  "botTaps": 110,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "sky-breakout-tut",
+   "sky-PK-breakout",
+   "sky-breakout-best"
+  ],
+  "savedKeysWrittenInSession1": 3,
+  "titleTextChanged": true,
+  "title1": "Easy Normal Hard LVL 1 █░░░░ · coins 0 · ★ 0 stars Daily: reach 180 pts · +10 coins Best 0 pts · LVL 1 · ★ 0 · coins 0 ☀ Daily: reach 180 pt",
+  "title2": "Easy Normal Hard LVL 5 █░░░░ · coins 149 · ★ 4 stars Daily: reach 180 pts · +10 coins Best 90 pts · LVL 5 · ★ 4 · coins 149 ☀ Daily: reach 1",
+  "keysUpdatedAgain": [
+   "sky-PK-breakout"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 3,
+  "added": [
+   "sky-breakout-tut",
+   "sky-PK-breakout",
+   "sky-breakout-best"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "sky-breakout-tut": "1",
+   "sky-PK-breakout": "{\"best\":90,\"coins\":149,\"xp\":210,\"stars\":4,\"plays\":3,\"wins\":0,\"skins\":[",
+   "sky-breakout-best": "90"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "score",
+   "currency",
+   "levels",
+   "stars",
+   "cosmetics",
+   "daily"
+  ],
+  "categoriesPresent": [
+   "other",
+   "score",
+   "currency",
+   "levels",
+   "stars",
+   "cosmetics",
+   "daily"
+  ],
+  "writesDuringPlay": {
+   "sky-breakout-tut": "1x",
+   "sky-PK-breakout": "16x",
+   "sky-breakout-best": "2x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "stars",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "unlocks",
+  "upgrades",
+  "goals",
+  "achievements"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, daily, cosmetics); systems seen: levels, stars, daily, cosmetics; sinks cosmetics fed by levels/stars/daily/currency",
+ "expected": [
+  "unlocks",
+  "cosmetics",
+  "daily",
+  "achievements",
+  "goals"
+ ],
+ "lacks": [
+  "unlocks",
+  "achievements",
+  "goals"
+ ],
+ "pageErrors": []
+}

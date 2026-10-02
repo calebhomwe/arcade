@@ -1,0 +1,150 @@
+{
+ "id": "sneaker-drop",
+ "title": "SneakerDrop — Hype Market Tycoon",
+ "cat": "sim",
+ "genre": "management",
+ "src": "SneakerDrop/index.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "sneakerdrop_save"
+ ],
+ "session1": {
+  "start": "#startBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 18,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "sneakerdrop_save"
+  ],
+  "savedKeysWrittenInSession1": 1,
+  "titleTextChanged": false,
+  "title1": "TAP TO START EASY NORMAL HARD SOUND: ON HOW TO PLAY",
+  "title2": "TAP TO START EASY NORMAL HARD SOUND: ON HOW TO PLAY",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [],
+  "changed": [
+   "sneakerdrop_save"
+  ],
+  "removed": [],
+  "sample": {
+   "sneakerdropProg": "{\"level\":1,\"coins\":0,\"stars\":0,\"daily\":\"2026-10-3\",\"streak\":1,\"upgrade",
+   "sneakerdrop_save": "{\"dayStreak\":1,\"lastDay\":\"2026-10-3\",\"tut\":1}"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "levels",
+   "daily"
+  ],
+  "categoriesPresent": [
+   "levels",
+   "currency",
+   "stars",
+   "daily",
+   "upgrades",
+   "achievements"
+  ],
+  "writesDuringPlay": {
+   "sneakerdrop_save": "2x",
+   "sneakerdropProg": "2x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "upgrades": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": false,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "upgrades",
+  "stars",
+  "achievements",
+  "daily"
+ ],
+ "claimedOnly": [
+  "goals"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "daily"
+  ],
+  "unclassifiedBlob": false
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, daily); systems seen: levels, upgrades, stars, achievements, daily; sinks upgrades fed by levels/stars/achievements/daily/currency",
+ "expected": [
+  "goals",
+  "upgrades",
+  "unlocks",
+  "stars",
+  "levels"
+ ],
+ "lacks": [
+  "goals",
+  "unlocks"
+ ],
+ "pageErrors": []
+}

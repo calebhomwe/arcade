@@ -17,7 +17,7 @@
   <div class="row"><button class="btn ghost" id="coachSkip">Skip</button><button class="btn go" id="coachGo">Next</button></div></div></div>
 
 <script type="module">
-import { $, el, Progress, Sound, toast } from './js/core.js';
+import { $, el, Progress, Sound, toast, THEMES, applyTheme } from './js/core.js';
 
 /* ── module registry ──────────────────────────────────────
    Each game is an ES module exporting { meta, start(root, api) }.
@@ -167,6 +167,26 @@ function renderHub() {
     el('span', { class:'lbl' }, 'Year group'),
     BANDS.map(B => el('button', { class:'chip' + (B.id === band ? ' on' : ''), 'aria-pressed': String(B.id === band),
       onclick: () => { band = B.id; try { localStorage.setItem('fieldstation.band', band); } catch (e) {} renderHub(); } }, B.label))));
+
+  /* Station shop: earned coins buy notebook themes; certifications unlock the premium ones. */
+  const owned = Progress.ownedThemes(), using = Progress.theme();
+  app.append(el('div', { class:'panel', id:'shop', style:'margin-top:18px' },
+    el('h3', {}, 'Station shop · themes'),
+    el('div', { class:'note' }, 'Coins are earned by answering questions and clearing the daily goal. Certified instruments unlock the premium notebooks.'),
+    el('div', { class:'row', style:'margin-top:10px' },
+      THEMES.map(t => {
+        const isOwned = owned.includes(t.id), isInUse = using === t.id;
+        const dots = el('span', { style:'display:inline-flex;gap:3px;margin-left:6px;vertical-align:-2px' },
+          Object.values(t.vars).slice(0, 4).map(c => el('i', { style:`display:inline-block;width:11px;height:11px;border:1.5px solid var(--line);background:${c};border-radius:50%` })));
+        const state = isInUse ? 'In use' : isOwned ? 'Owned' : t.req && Progress.certifiedCount() < t.req ? `🔒 certify ${t.req}` : `🪙 ${t.price}`;
+        return el('button', { class:'chip' + (isInUse ? ' on' : ''), 'aria-pressed': String(isInUse),
+          onclick: () => {
+            const r = Progress.buyTheme(t.id);
+            if (!r.ok) { toast(r.why, 'err'); Sound.no(); return; }
+            toast(r.bought ? `${t.label} unlocked and applied!` : `${t.label} applied`, r.bought ? 'win' : '');
+            Sound.click(); renderHub();
+          } }, t.label + ' — ' + state, dots);
+      }))));
 
   const grid = el('div', { class:'grid' });
   MODULES.filter(inBand).forEach(m => {
@@ -328,6 +348,7 @@ async function open(m) {
 }
 
 renderHub();
+applyTheme(Progress.theme());
 addEventListener('pointerdown', () => Sound.init(), { once:true });
 if (window.ArcadeSDK) ArcadeSDK.init({
   onRestart: () => { if (current) open(current); else open(nextModule()); },   // run the current instrument again from its first item

@@ -1,0 +1,242 @@
+{
+ "id": "neon-dash",
+ "title": "Neon Dash",
+ "cat": "arcade",
+ "genre": "arcade",
+ "src": "NeonDash/index.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 4667 ms (during load), 275 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 4392 ms of JS; long-task API + timer heartbeat; longest frame 6893.5 ms: vendor/three.classic.js http://127.0.0.1:57844/NeonDash/vendor/three.classic.js 552 | page did not answer the harness for 6 s (3 poll timeout(s))",
+  "JANK": "p95 JS frame cost 233.6 ms over 33 ms (unthrottled, divided by machine slowdown x1; raw p95 233.6, median 37.1, p99 354.9, max 449.1; time inside WebGL calls excluded, p95 of it 51.8)"
+ },
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\neon-dash-1-title.jpg",
+  "3-end": "shots\\neon-dash-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   9.37,
+   1,
+   1,
+   1,
+   1
+  ]
+ },
+ "loadMs": 19342,
+ "loaded": true,
+ "startUrl": "http://127.0.0.1:57844/NeonDash/index.html",
+ "startPath": "http://127.0.0.1:57844/NeonDash/index.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 247.6,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "declared start button not tappable -> Play/Start button",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 4392,
+  "playMs": 3198,
+  "loadRawMs": 4667,
+  "playRawMs": 3209,
+  "playGlMs": 12,
+  "loadGlMs": 275,
+  "longTasksPlay": 188,
+  "longTasks100Play": 113,
+  "tbtLoadMs": 20688,
+  "tbtPlayMs": 21293,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 81,
+  "slowestPollMs": 10845,
+  "pollTimeouts": 3,
+  "shaderCompileMs": 0.2,
+  "shaderCompileMaxCallMs": 0.1
+ },
+ "loafTop": [
+  {
+   "ms": 6893.5,
+   "blocking": 3014.9,
+   "scripts": [
+    [
+     "vendor/three.classic.js",
+     "http://127.0.0.1:57844/NeonDash/vendor/three.classic.js",
+     552
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 4766.2,
+   "blocking": 4715.2,
+   "scripts": [
+    [
+     "NeonDash/index.html",
+     "http://127.0.0.1:57844/NeonDash/index.html",
+     4584
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     115
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 3046.6,
+   "blocking": 2996.4,
+   "scripts": [
+    [
+     "NeonDash/index.html",
+     "BUTTON#play-btn.onclick",
+     2503
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     139
+    ]
+   ],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 272,
+  "jsMedian": 37.1,
+  "jsP95": 233.6,
+  "jsP99": 354.9,
+  "jsMax": 449.1,
+  "jsP95Raw": 233.6,
+  "rawWithGlP95": 243.4,
+  "glP95": 51.8,
+  "gapP95": 416.6,
+  "gapMedian": 116.6,
+  "over100": 87,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 6,
+  "heap1MB": 6.4,
+  "heapGrowthPct": 6,
+  "heapMeasured": true,
+  "nodesStart": 8,
+  "nodesEnd": 85,
+  "nodesMax": 85,
+  "listeners0": 72,
+  "listeners1": 72,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 1,
+  "canvases": {
+   "n": 7,
+   "totalMB": 4.1,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 64,
+     "h": 128,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 128,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 128,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 91,
+  "scriptPct": 56,
+  "layoutPerSec": 11.5
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 0,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": null,
+  "inputLatencyP95Ms": null,
+  "inputLatencyMaxMs": null,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 41.3,
+  "maxChangeFromStartPct": null,
+  "samples": 1
+ },
+ "severity": 108.4,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [
+   "JANK"
+  ],
+  "evidence": null,
+  "blockPlayMs": 1447,
+  "blockLoadMs": 401,
+  "load1": 0
+ }
+}

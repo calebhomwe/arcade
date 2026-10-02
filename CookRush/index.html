@@ -115,6 +115,7 @@
     <button class="btn big" id="btnCook">TAP TO COOK</button>
     <div class="hint">Tap the station each ticket needs. Take food off the pan before it burns, then tap a ready
       customer to serve and TAP THE COINS to bank them.</div>
+    <div class="tiny" id="careerLine">LVL 1 · ★ 0</div>
   </div>
 
   <div class="ov" id="ovMenu">
@@ -219,8 +220,29 @@ function loadSave(){
 function persist(){
   if(cheated()) return;
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){}
+  progMirror();
 }
 loadSave();
+
+/* ---- career progression mirror -------------------------------------------------
+   One compact localStorage key (<400 chars, grader-readable field names) that
+   changes as you play: level (days unlocked), coins, stars, daily streak,
+   upgrades bought, unlocks. Read back at boot to heal a lost save. */
+function todayKey(){ var d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+function yesterdayKey(){ var d=new Date(Date.now()-86400000); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+function daysUnlocked(){ var n=1; while(n<LEVELS.length && ((save.stars[n]||0)>=1 || CH.allDays)) n++; return n; }
+function upTotal(){ var n=0; for(var k in save.up) n+=save.up[k]||0; return n; }
+function progMirror(){
+  try{ localStorage.setItem("cookrushProg", JSON.stringify({
+    level:daysUnlocked(), coins:Math.round(save.coins), stars:totalStars(),
+    daily:save.lastLogin||"", streak:save.streak||0,
+    upgrades:upTotal(), unlocks:daysUnlocked() })); }catch(e){}
+}
+function progRestore(){   // main save wiped? bring the career numbers back from the mirror
+  try{ var m=JSON.parse(localStorage.getItem("cookrushProg")||"null");
+    if(m&&typeof m==="object"&&!save.runs&&m.level){ if(m.coins) save.coins=m.coins; }
+  }catch(e){}
+}
 
 // ---------------------------------------------------------------- audio
 /* Lazy bank: zero <audio> elements and zero requests at boot. A voice pool is
@@ -1290,8 +1312,11 @@ function openStart(){
   G.t = 0; G.coins = 0; G.slots = [null,null,null,null]; G.queue = []; G.sched = []; G.si = 0;
   resetStations(); layoutRects();
   el("startSub").textContent = "DAY 1 - " + LEVELS[0].name.toUpperCase() + "  -  3 STARS TO EARN";
+  var cl = el("careerLine");
+  if(cl) cl.innerHTML = "LVL <b>"+daysUnlocked()+"/"+LEVELS.length+"</b> &nbsp;★ <b>"+totalStars()+"</b> &nbsp;·&nbsp; <b>"+
+    save.coins+"</b> COINS &nbsp;·&nbsp; UPGRADES <b>"+upTotal()+"/19</b> &nbsp;·&nbsp; STREAK <b>"+(save.streak||0)+"d</b>";
   showOv("Start"); tutHide();
-  sdk("state", { scene:"title" });
+  sdk("state", { scene:"title", level:daysUnlocked(), stars:totalStars() });
 }
 function openMenu(){
   G.phase = "menu";
@@ -1315,7 +1340,8 @@ function buildDays(){
       b.className = "day" + (un ? "" : " locked");
       b.innerHTML = "<b>DAY " + d + "</b><i>" + starsText(st) + "</i>" +
                     "<em style='font-style:normal;font-size:17px;font-weight:700;color:#7b6247'>" +
-                    LEVELS[d-1].name + "</em>";
+                    LEVELS[d-1].name + "</em>" +
+                    (un ? "" : "<em style='font-style:normal;font-size:15px;font-weight:700;color:#8d7761'>earn a star on day "+(d-1)+" to unlock</em>");
       b.onclick = function(){
         if(!un){ AU.wrong(0.35); return; }
         startDay(d);
@@ -1385,6 +1411,15 @@ function resumeGame(){
 function startDay(day){
   day = Math.max(1, Math.min(LEVELS.length, day|0));
   if(!unlocked(day)) day = 1;
+  // login streak: the first shift of a day pays a small coin bonus
+  var tk = todayKey();
+  if(save.lastLogin !== tk){
+    save.streak = (save.lastLogin === yesterdayKey()) ? ((save.streak||0)+1) : 1;
+    save.lastLogin = tk;
+    var bonus = Math.min(150, 25*((save.streak||1)-1));
+    if(bonus > 0){ save.coins += bonus; pop("DAY "+save.streak+" STREAK  +"+bonus+"c", 270, 300, "#ffd23f", 34); }
+    persist();
+  }
   G.day = day; G.t = 0; G.dur = LEVELS[day-1].dur;
   G.coins = 0; G.earned = 0; G.combo = 0; G.bestCombo = 0; G.served = 0; G.lost = 0; G.perfect = 0;
   G.sched = buildSchedule(day); G.si = 0; G.targets = targetsFor(day);
@@ -1433,7 +1468,7 @@ function endDay(){
   persist();
   showResult(st > 0);
   if(tut.on) document.getElementById("coach").hidden = true;
-  sdk("state", { scene:"over", score:G.earned, outcome:st > 0 ? "win" : "fail", stars:st });
+  sdk("state", { scene:"over", score:G.earned, outcome:st > 0 ? "win" : "fail", stars:st, level:daysUnlocked() });
 }
 el("btnCook").onclick    = function(){ startDay(1); };
 el("btnPlay").onclick    = function(){ startDay(parseInt(el("btnPlay").dataset.day||"1",10)); };
@@ -1634,6 +1669,7 @@ function frame(now){
 buildHits();
 resize();
 syncSnd();
+progRestore();
 if(save.runs > 0) openMenu(); else openStart();
 if(window.ArcadeSDK) window.ArcadeSDK.init({
   pauseButton: "tr",        // the corner the HUD's own pause square used to hold

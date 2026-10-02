@@ -1,0 +1,186 @@
+{
+ "id": "hub-farm-harvest",
+ "title": "Farm Harvest",
+ "cat": "sim",
+ "genre": "life-sim",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/farm-harvest.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "farmHarvestSave_v2"
+ ],
+ "session1": {
+  "start": "#btnPlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 29,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "farmHarvestSave_v2",
+   "fh_muted",
+   "farm-harvest_prog"
+  ],
+  "savedKeysWrittenInSession1": 4,
+  "titleTextChanged": true,
+  "title1": "1 Level 0/10 XP 30 Level 1 farmer 0/24 Your daily gift is waiting Free coins, every day Badges 0/16 Harvest 0 ready Plant all 4 · 8 Water al",
+  "title2": "1 Level 0/10 XP 22 Level 1 farmer 0/24 Your daily gift is waiting Free coins, every day Goals today 0/3 · Streak 1 · Badges 0/16 Harvest 4 r",
+  "keysUpdatedAgain": [
+   "farmHarvestSave_v2",
+   "farm-harvest_prog"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 4,
+  "added": [
+   "farmHarvestSave_v2",
+   "fh_muted",
+   "ik_coach_farm-harvest"
+  ],
+  "changed": [
+   "farm-harvest_prog"
+  ],
+  "removed": [],
+  "sample": {
+   "farmHarvestSave_v2": "{\"v\":2,\"coins\":22,\"lifetime\":0,\"alltime\":0,\"owned\":[],\"ups\":{},\"prem\":",
+   "fh_muted": "1",
+   "farm-harvest_prog": "{\"level\":1,\"xp\":0,\"coins\":22,\"stars\":0,\"daily\":1,\"unlocks\":0,\"upgrades",
+   "ik_coach_farm-harvest": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "settings",
+   "levels",
+   "currency",
+   "stars",
+   "daily",
+   "unlocks",
+   "upgrades",
+   "goals",
+   "achievements",
+   "cosmetics"
+  ],
+  "categoriesPresent": [
+   "other",
+   "settings",
+   "levels",
+   "currency",
+   "stars",
+   "daily",
+   "unlocks",
+   "upgrades",
+   "goals",
+   "achievements",
+   "cosmetics"
+  ],
+  "writesDuringPlay": {
+   "farm-harvest_prog": "8x",
+   "ik_coach_farm-harvest": "1x",
+   "farmHarvestSave_v2": "7x",
+   "fh_muted": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "upgrades",
+  "stars",
+  "goals",
+  "achievements",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "unlocks",
+   "upgrades",
+   "goals",
+   "achievements",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, unlocks, upgrades, goals, achievements, daily, cosmetics); systems seen: levels, unlocks, upgrades, stars, goals, achievements, daily, cosmetics; sinks unlocks/upgrades/cosmetics fed by levels/stars/goals/achievements/daily/currency",
+ "expected": [
+  "goals",
+  "unlocks",
+  "cosmetics",
+  "achievements",
+  "daily"
+ ],
+ "lacks": [],
+ "pageErrors": []
+}

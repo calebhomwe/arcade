@@ -462,10 +462,12 @@
       return out;
     }
     function syncQuests(p) {
-      var c = null;
-      p.today.quests.forEach(function (q) {
+      var c = null, T = p.today, qualified = T.sec >= XP.streakSec || T.runs > 0;   // the day counts from 20 s of play or a finished round — same rule as the streak
+      T.quests.forEach(function (q) {
         var d = QUEST_BY[q.kind]; if (!d) return; c = c || ctx(p);
-        q.prog = Math.min(q.target, Math.round(d.prog(p.today, p, c, q) * 100) / 100);
+        // minute-shaped quests read the day's seconds, so they stay at zero until the day qualifies: opening a game and leaving earns no quest credit
+        var raw = (qualified || !/^(min|learn-5|cat-min)/.test(q.kind)) ? d.prog(T, p, c, q) : 0;
+        q.prog = Math.min(q.target, Math.round(raw * 100) / 100);
         if (!q.done && q.prog >= q.target) {
           q.done = now(); var r = XP.quest[q.tier]; p.stats.quests++; addXp(p, r[0], 'Quest: ' + q.title); addStars(p, r[1]);
           emit('quest', { kind: q.kind, title: q.title, tier: q.tier, xp: r[0], stars: r[1] });
@@ -509,7 +511,9 @@
         g.sec = Math.round((g.sec + dt) * 10) / 10; g.last = ms;
         t.sec += dt; t.games[id] = (t.games[id] || 0) + dt; p.stats.sec += dt;
         if (cat) { t.cats[cat] = (t.cats[cat] || 0) + dt; if (cat === 'learning') { t.learnSec += dt; p.stats.learnSec += dt; } }
-        if (hour >= 19 && hour < 22) p.flags.owl = 1; if (hour < 8) p.flags.bird = 1;
+        // the time-of-day flags need a qualified day (the same 20 s that makes a day count), so opening a
+        // game and leaving straight away earns nothing at any hour: no XP, no badge, no quest credit
+        if (t.sec >= XP.streakSec) { if (hour >= 19 && hour < 22) p.flags.owl = 1; if (hour < 8) p.flags.bird = 1; }
         var whole = Math.floor(t.sec / 60);
         while (t.minSeen < whole) { t.minSeen++; if (t.minCred < XP.minuteCap) { t.minCred++; addXp(p, XP.minute, 'Played a minute'); } }
         if (t.sec >= XP.streakSec) touchStreak(p, t.date);

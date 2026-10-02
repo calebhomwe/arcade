@@ -1,0 +1,153 @@
+{
+ "id": "sky-key-unlock",
+ "title": "Pull the Pin",
+ "cat": "hyper",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/key-unlock.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "sky-key-unlock-stars"
+ ],
+ "session1": {
+  "start": "tap centre",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 1,
+  "score": {
+   "first": 1,
+   "last": 1,
+   "max": 1
+  },
+  "botTaps": 59,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "sky-key-unlock-stars",
+   "sky-key-unlock-tut"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": false,
+  "title1": "",
+  "title2": "",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "sky-key-unlock-stars",
+   "sky-key-unlock-tut"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "sky-key-unlock-stars": "[1]",
+   "sky-key-unlock-tut": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "unlocks",
+   "stars"
+  ],
+  "categoriesPresent": [
+   "unlocks",
+   "stars"
+  ],
+  "writesDuringPlay": {
+   "sky-key-unlock-tut": "1x",
+   "sky-key-unlock-stars": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": false,
+  "meta": true
+ },
+ "observedSystems": [
+  "unlocks",
+  "stars"
+ ],
+ "claimedOnly": [
+  "levels",
+  "goals"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "stars",
+   "unlocks"
+  ],
+  "unclassifiedBlob": false
+ },
+ "level": 2,
+ "label": "P2",
+ "why": "progress persists (stars, unlocks) with unlocks, stars",
+ "expected": [
+  "levels",
+  "stars",
+  "daily",
+  "goals",
+  "unlocks"
+ ],
+ "lacks": [
+  "levels",
+  "daily",
+  "goals"
+ ],
+ "pageErrors": []
+}

@@ -1,0 +1,161 @@
+{
+ "id": "hub-hangman",
+ "title": "Hangman",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/hangman.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "hg_best",
+  "hg_stats_v1",
+  "hg_progress"
+ ],
+ "session1": {
+  "start": ".cat-btn[data-cat=animals]",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 31,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "hg_progress",
+   "hg_stats_v1"
+  ],
+  "savedKeysWrittenInSession1": 3,
+  "titleTextChanged": false,
+  "title1": "← Hub 🔊 🪢 HANGMAN Guess the hidden word letter by letter. 7 wrong guesses and the hangman is complete! Fewer mistakes = more points. CHOOS",
+  "title2": "← Hub 🔊 🪢 HANGMAN Guess the hidden word letter by letter. 7 wrong guesses and the hangman is complete! Fewer mistakes = more points. CHOOS",
+  "keysUpdatedAgain": [
+   "hg_progress",
+   "hg_stats_v1"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 5,
+  "added": [
+   "hg_progress",
+   "hg_tut",
+   "hg_stats_v1"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "hg_daily": "{\"d\":\"2026-10-3\",\"cat\":\"animals\",\"done\":0}",
+   "hg_prog": "{\"level\":\"S\",\"coins\":0,\"stars\":0,\"daily\":0,\"badges\":0,\"lastday\":\"2026-",
+   "hg_progress": "{\"bands\":{\"S\":{\"n\":1,\"ok\":0}},\"miss\":{\"owl\":1},\"days\":[\"2026-10-3\"],\"s",
+   "hg_tut": "1",
+   "hg_stats_v1": "{\"wins\":0,\"gold\":0,\"perfect\":0,\"games\":1,\"cats\":{}}"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "levels",
+   "other",
+   "currency"
+  ],
+  "categoriesPresent": [
+   "save-blob",
+   "levels",
+   "currency",
+   "stars",
+   "daily",
+   "achievements",
+   "other"
+  ],
+  "writesDuringPlay": {
+   "hg_daily": "1x",
+   "hg_prog": "3x",
+   "hg_stats_v1": "1x",
+   "hg_progress": "2x",
+   "hg_tut": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": false
+  },
+  "achievements": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": false,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "stars",
+  "goals",
+  "achievements",
+  "daily"
+ ],
+ "claimedOnly": [],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "currency"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 2,
+ "label": "P2",
+ "why": "progress persists (levels, currency) with levels, stars, goals, achievements, daily",
+ "expected": [
+  "levels",
+  "stars",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "lacks": [],
+ "pageErrors": []
+}

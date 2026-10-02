@@ -1,0 +1,176 @@
+{
+ "id": "hub-math-run",
+ "title": "Math Run",
+ "cat": "learning",
+ "genre": "learning",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/math-run.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "mathRunBest",
+  "mathRunProg",
+  "mathRunReport"
+ ],
+ "session1": {
+  "start": "#playBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 20,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "mathRunMuted",
+   "mathRunReport",
+   "mathRunDaily",
+   "mathRunProg"
+  ],
+  "savedKeysWrittenInSession1": 5,
+  "titleTextChanged": true,
+  "title1": "← Hub 🔊 🏃 MATH RUN 3 × 4 = ? Score 0 Streak ×1 ❤️❤️❤️ – 💎 0 Speed 1.0 🏃 Math Run Swipe or tap a lane to run through the correct answer g",
+  "title2": "← Hub 🔊 🏃 MATH RUN 3 × 4 = ? Score 0 Streak ×1 ❤️❤️❤️ – 💎 0 Speed 1.0 🏃 Math Run Swipe or tap a lane to run through the correct answer g",
+  "keysUpdatedAgain": [
+   "mathRunReport"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 5,
+  "added": [
+   "mathRunMuted",
+   "mr_tut",
+   "mathRunReport"
+  ],
+  "changed": [
+   "mathRunDaily",
+   "mathRunProg"
+  ],
+  "removed": [],
+  "sample": {
+   "mathRunDaily": "{\"d\":\"2026-10-3\",\"op\":\"×\",\"goal\":8,\"done\":0,\"prog\":1}",
+   "mathRunMuted": "0",
+   "mathRunProg": "{\"level\":1,\"xp\":4,\"coins\":0,\"stars\":0,\"daily\":0,\"dailyop\":\"×\"}",
+   "mr_tut": "1",
+   "mathRunReport": "{\"bands\":{\"easy\":{\"n\":4,\"ok\":2}},\"miss\":{\"3 × 5\":1,\"6 + 9\":1},\"days\":["
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "settings",
+   "other",
+   "levels",
+   "goals",
+   "currency",
+   "stars",
+   "daily"
+  ],
+  "categoriesPresent": [
+   "goals",
+   "settings",
+   "levels",
+   "currency",
+   "stars",
+   "daily",
+   "other"
+  ],
+  "writesDuringPlay": {
+   "mathRunDaily": "2x",
+   "mathRunProg": "3x",
+   "mathRunReport": "5x",
+   "mr_tut": "1x",
+   "mathRunMuted": "4x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "daily"
+ ],
+ "claimedOnly": [
+  "upgrades"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "goals",
+   "daily"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, goals, daily); systems seen: levels, unlocks, stars, goals, daily; sinks unlocks fed by levels/stars/goals/daily/currency",
+ "expected": [
+  "levels",
+  "stars",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "lacks": [
+  "achievements"
+ ],
+ "pageErrors": []
+}

@@ -1,0 +1,235 @@
+{
+ "id": "sky-breakout",
+ "title": "Brick Breaker",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/breakout.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 1576 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 1576 ms of JS; long-task API + timer heartbeat; longest frame 5041 ms: unattributed",
+  "JANK": "p95 JS frame cost 45.9 ms over 33 ms (unthrottled, divided by machine slowdown x1; raw p95 45.9, median 0.3, p99 200.2, max 321.4; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-breakout-1-title.jpg",
+  "2-mid": "shots\\sky-breakout-2-mid.jpg",
+  "3-end": "shots\\sky-breakout-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   8.13,
+   1,
+   1,
+   1,
+   34.41,
+   1,
+   1
+  ]
+ },
+ "loadMs": 1336,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/breakout.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/breakout.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 738.6,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 552,
+  "playMs": 1576,
+  "loadRawMs": 552,
+  "playRawMs": 1576,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 72,
+  "longTasks100Play": 44,
+  "tbtLoadMs": 2560,
+  "tbtPlayMs": 8630,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 48,
+  "slowestPollMs": 3267,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 5041,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 1578,
+   "blocking": 1504.4,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     316
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 645.4,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 814,
+  "jsMedian": 0.3,
+  "jsP95": 45.9,
+  "jsP99": 200.2,
+  "jsMax": 321.4,
+  "jsP95Raw": 45.9,
+  "rawWithGlP95": 45.9,
+  "glP95": 0,
+  "gapP95": 150,
+  "gapMedian": 16.7,
+  "over100": 20,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 5,
+  "heapMeasured": true,
+  "nodesStart": 31,
+  "nodesEnd": 32,
+  "nodesMax": 32,
+  "listeners0": 59,
+  "listeners1": 59,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 13,
+   "totalMB": 3.8,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 170,
+     "h": 32,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 170,
+     "h": 32,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 170,
+     "h": 32,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 47,
+  "scriptPct": 22,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 80,
+  "last": 80,
+  "max": 80,
+  "trajectory": [
+   [
+    38,
+    80
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 8,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 34,
+  "inputLatencyP95Ms": 2084,
+  "inputLatencyMaxMs": 2084,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 22.6,
+  "maxChangeFromStartPct": 23.5,
+  "samples": 4
+ },
+ "severity": 105.6,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [
+   "JANK"
+  ],
+  "evidence": null,
+  "blockPlayMs": 601,
+  "blockLoadMs": 244,
+  "load1": 0
+ }
+}

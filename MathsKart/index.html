@@ -1069,8 +1069,7 @@ const hudLast={};
 function setTxt(id,v,html){if(hudLast[id]===v)return;hudLast[id]=v;const e=$(id);if(html)e.innerHTML=v;else e.textContent=v;}
 function hud(){
   const racing=G.phase==='playing'||G.phase==='countdown';
-  document.body.classList.toggle('racing',racing);
-  $('hud').classList.toggle('hidden',!racing);
+  if(hudLast.racing!==racing){hudLast.racing=racing;document.body.classList.toggle('racing',racing);$('hud').classList.toggle('hidden',!racing);}
   if(!racing)return;
   /* countdown */
   if(G.phase==='countdown'){const n=Math.max(1,Math.ceil((2.2-G.t)/.7334));
@@ -1114,23 +1113,27 @@ function tags(){
       const d=K.camera.position.distanceTo(v.root.position);if(d>70||d<3)p=null;}
     if(p){el.style.display='';el.style.left=p.x+'px';el.style.top=p.y+'px';}else el.style.display='none';}
 }
-/* minimap: the loop, the rivals and you */
-let mapFor=-1,mapPath=null,mapBox=null;
+/* minimap: the loop, the rivals and you. The track ring is painted once into an
+   offscreen canvas; each frame only stamps it and moves the four dots. */
+let mapFor=-1,mapPath=null,mapBox=null,mapRing=null;
 function drawMap(){
   const c=$('hMap');if(c.offsetParent===null)return;
   const dpr=Math.min(devicePixelRatio||1,2),S=150;
-  if(c.width!==S*dpr){c.width=c.height=S*dpr;mapFor=-1;}
+  if(c.width!==S*dpr){c.width=c.height=S*dpr;mapFor=-1;mapRing=null;}
   const g=c.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);
   const tr=G.tr;
-  if(mapFor!==G.trackIdx){mapFor=G.trackIdx;let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+  if(mapFor!==G.trackIdx){mapFor=G.trackIdx;mapRing=null;let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
     tr.pts.forEach(function(p){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y);});
     const k=(S-28)/Math.max(x1-x0,y1-y0);mapBox={x0,y0,k,ox:(S-(x1-x0)*k)/2,oy:(S-(y1-y0)*k)/2};}
   const m=mapBox,P=function(x,y){return[m.ox+(x-m.x0)*m.k,m.oy+(y-m.y0)*m.k];};
-  g.clearRect(0,0,S,S);g.lineJoin='round';g.lineCap='round';
-  g.beginPath();tr.pts.forEach(function(p,i){const q=P(p.x,p.y);i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]);});g.closePath();
-  g.strokeStyle='rgba(26,16,48,.9)';g.lineWidth=11;g.stroke();g.strokeStyle='#f2efff';g.lineWidth=6;g.stroke();
-  const s0=worldOf(tr,0,-ROAD_HALF),s1=worldOf(tr,0,ROAD_HALF),a0=P(s0.x,s0.y),a1=P(s1.x,s1.y);
-  g.strokeStyle='#1a1030';g.lineWidth=3;g.beginPath();g.moveTo(a0[0],a0[1]);g.lineTo(a1[0],a1[1]);g.stroke();
+  if(!mapRing){mapRing=document.createElement('canvas');mapRing.width=mapRing.height=S*dpr;
+    const rg=mapRing.getContext('2d');rg.setTransform(dpr,0,0,dpr,0,0);
+    rg.lineJoin='round';rg.lineCap='round';
+    rg.beginPath();tr.pts.forEach(function(p,i){const q=P(p.x,p.y);i?rg.lineTo(q[0],q[1]):rg.moveTo(q[0],q[1]);});rg.closePath();
+    rg.strokeStyle='rgba(26,16,48,.9)';rg.lineWidth=11;rg.stroke();rg.strokeStyle='#f2efff';rg.lineWidth=6;rg.stroke();
+    const s0=worldOf(tr,0,-ROAD_HALF),s1=worldOf(tr,0,ROAD_HALF),a0=P(s0.x,s0.y),a1=P(s1.x,s1.y);
+    rg.strokeStyle='#1a1030';rg.lineWidth=3;rg.beginPath();rg.moveTo(a0[0],a0[1]);rg.lineTo(a1[0],a1[1]);rg.stroke();}
+  g.clearRect(0,0,S,S);g.drawImage(mapRing,0,0,S,S);
   const dot=function(k,col,r){const w=worldOf(tr,k.s,k.lat),q=P(w.x,w.y);g.beginPath();g.arc(q[0],q[1],r,0,TAU);g.fillStyle=col;g.fill();g.lineWidth=2;g.strokeStyle='#1a1030';g.stroke();};
   ais.forEach(function(a,i){dot(a,AI_COLORS[i],5);});dot(player,'#ffd257',7);
 }

@@ -1,0 +1,158 @@
+{
+ "id": "hub-tic-tac-toe",
+ "title": "Tic Tac Toe",
+ "cat": "classic",
+ "genre": "board",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/tic-tac-toe.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "tttBest",
+  "tttRecW",
+  "ttt_ladder",
+  "pz_ttt"
+ ],
+ "session1": {
+  "start": "#mPlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 2,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 64,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "tttTut",
+   "pz_ttt"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": false,
+  "title1": "‹ Hub Tic Tac Toe Goals You Your move! Mousey Undo Hint Menu TIC TAC TOE Beat six critters on the ladder. Win rounds, earn stars, unlock new",
+  "title2": "‹ Hub Tic Tac Toe Goals You Your move! Mousey Undo Hint Menu TIC TAC TOE Beat six critters on the ladder. Win rounds, earn stars, unlock new",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "tttTut"
+  ],
+  "changed": [
+   "pz_ttt"
+  ],
+  "removed": [],
+  "sample": {
+   "pz_ttt": "{\"xp\":6,\"days\":[\"2026-10-03\"],\"theme\":\"oak\",\"seenLevel\":1,\"chest\":\"\",\"",
+   "tttTut": "\"1\""
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "levels",
+   "cosmetics"
+  ],
+  "categoriesPresent": [
+   "levels",
+   "cosmetics",
+   "other"
+  ],
+  "writesDuringPlay": {
+   "pz_ttt": "5x",
+   "tttTut": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, cosmetics); systems seen: levels, unlocks, stars, goals, cosmetics; sinks unlocks/cosmetics fed by levels/stars/goals/currency",
+ "expected": [
+  "levels",
+  "stars",
+  "achievements",
+  "unlocks"
+ ],
+ "lacks": [
+  "achievements"
+ ],
+ "pageErrors": []
+}

@@ -45,7 +45,7 @@ WHAT THE VISITOR CAN CHANGE (gear button, or press ,)
   play history, bests and settings as one JSON file, or clears them.
   Everything is localStorage under ca_*; nothing leaves the browser.
 
-  Shortcuts: / search, Esc clear, S random game, , settings; on a play page
+  Shortcuts: / search, Esc clear, S random game, 1-9 jump to a card, , settings; on a play page
   P play, F fullscreen (Theatre mode where the browser has no fullscreen
   API), R restart, N next game, L like.
 

@@ -1,0 +1,231 @@
+{
+ "id": "hub-dino-dash",
+ "title": "Dino Dash",
+ "cat": "arcade",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/dino-dash.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "animation loop paused 1x (over 3 s) but the screen kept changing, so it is not counted (DOM game or idle loop)",
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\hub-dino-dash-1-title.jpg",
+  "2-mid": "shots\\hub-dino-dash-2-mid.jpg",
+  "3-end": "shots\\hub-dino-dash-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 7.96,
+  "contentionSamples": [
+   8.99,
+   1,
+   9.09,
+   1.28,
+   3.89,
+   7.96,
+   9.1
+  ]
+ },
+ "loadMs": 122,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/dino-dash.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/dino-dash.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 30.9,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#playBtn",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 4,
+  "loadMs": 47,
+  "playMs": 32,
+  "loadRawMs": 188,
+  "playRawMs": 130,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 4,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 0,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 0,
+  "slowestPollMs": 86,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 4746.3,
+   "blocking": 6.4,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 444.3,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "load"
+  },
+  {
+   "ms": 323.2,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [
+  {
+   "atMs": 1255,
+   "scene": "title",
+   "seconds": 4.7,
+   "recovered": true,
+   "errorAtStall": false,
+   "screenStatic": null,
+   "counted": false
+  }
+ ],
+ "frames": {
+  "n": 575,
+  "jsMedian": 0.07,
+  "jsP95": 0.13,
+  "jsP99": 0.82,
+  "jsMax": 7.5,
+  "jsP95Raw": 0.5,
+  "rawWithGlP95": 0.5,
+  "glP95": 0,
+  "gapP95": 83.3,
+  "gapMedian": 50,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.2,
+  "heap1MB": 2.4,
+  "heapGrowthPct": 12,
+  "heapMeasured": true,
+  "nodesStart": 56,
+  "nodesEnd": 71,
+  "nodesMax": 121,
+  "listeners0": 54,
+  "listeners1": 61,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 34,
+   "totalMB": 19.9,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 1560,
+     "h": 557,
+     "mpx": 0.87,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1560,
+     "h": 371,
+     "mpx": 0.58,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 1560,
+     "h": 371,
+     "mpx": 0.58,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 6,
+  "scriptPct": 1,
+  "layoutPerSec": 2.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 2,
+  "restartsAfterOver": 1
+ },
+ "gameScore": {
+  "updates": 2,
+  "first": 18,
+  "last": 13,
+  "max": 18,
+  "trajectory": [
+   [
+    21,
+    18
+   ],
+   [
+    40,
+    13
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 4,
+  "swipes": 0,
+  "holds": 2,
+  "keys": 1,
+  "buttonPresses": 3,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 277,
+  "inputLatencyP95Ms": 2160,
+  "inputLatencyMaxMs": 2160,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 80.8,
+  "maxChangeFromStartPct": 88.3,
+  "samples": 5
+ },
+ "severity": 0
+}

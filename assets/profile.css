@@ -62,6 +62,11 @@
 .pc-dot{position:absolute;top:2px;right:2px;width:12px;height:12px;border-radius:50%;background:var(--pf-red);border:2px solid var(--surface)}
 .pchip:not(.ready) .pc-av{background:var(--surface-3);border-radius:50%}
 @keyframes pf-bump{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
+/* where the celebration waits: the chip glows gold while a level-up is queued */
+.pchip.levelup{animation:pf-glow 1.6s var(--ease)}
+@keyframes pf-glow{0%{box-shadow:0 3px 0 var(--pf-edge)}25%{box-shadow:0 0 0 5px rgba(255,194,26,.5),0 3px 0 var(--pf-edge);transform:scale(1.05)}60%{transform:scale(.99)}100%{box-shadow:0 3px 0 var(--pf-edge);transform:none}}
+/* instant-feeling taps on phones: no double-tap-zoom wait on any profile control */
+.pchip,.pf-btn,.pf-bd,.pf-next,.pk,.pk-t,.qc-me,.pf-x,.th-filters .chip{touch-action:manipulation}
 @media(max-width:760px){#theme-btn{display:none}.pchip{height:48px;padding:0 9px 0 4px;gap:6px;margin-right:2px}.pc-av{width:40px;height:40px}.pc-tx b{font-size:14px}}
 @media(max-width:389px){.top .brand .word{display:none}}   /* small phones (375): the logo mark is enough, the profile chip needs the room */
 @media(max-width:340px){.pc-tx{display:none}.pchip{padding:0 4px}}
@@ -84,6 +89,14 @@
 .pf-toast.best .pt-ico{background:linear-gradient(#c19cff,#7d4de0)}
 .pf-toast.xp .pt-ico{background:linear-gradient(#ffb03a,#f2711c)}
 .pf-toast.calm .pt-ico{background:linear-gradient(#7cc4ff,#4a90e8)}
+/* level-up toast: the new level sits on a gold coin and does a little bow, so the moment reads as a reward */
+.pf-toast.level .pt-art{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(#ffd84a,#f0a000);box-shadow:0 3px 0 #b87a00;border:2px solid rgba(255,255,255,.35)}
+.pf-toast.level .pt-art .pf-lvl{width:40px;height:auto}
+.pf-toast.cheer .pt-art{animation:pf-cheer .8s var(--ease) both}
+@keyframes pf-cheer{0%{transform:scale(.4) rotate(-14deg)}55%{transform:scale(1.12) rotate(6deg)}80%{transform:scale(.97) rotate(-2deg)}100%{transform:none}}
+/* stretch reminder: the sun rocks slowly for 12 s, then fades — never a countdown, never a second nag */
+.pf-toast.stretch .pt-ico{animation:pf-sway 3.2s ease-in-out 2}
+@keyframes pf-sway{0%,100%{transform:none}25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
 .pt-tx{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}
 .pt-tx b{font:800 15.5px/1.2 var(--pf-font)}
 .pt-tx span{font:700 12.5px/1.3 var(--sans);opacity:.82}
@@ -164,6 +177,14 @@
 .th-filters::-webkit-scrollbar{display:none}
 .th-filters .chip{min-height:44px;height:44px;padding:0 16px;font-size:14.5px;font-weight:800;box-shadow:0 3px 0 var(--pf-edge)}
 .th-filters .chip.on{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.th-filters .chip .th-cn{margin-left:7px;font:800 11.5px/1 var(--sans);background:color-mix(in srgb,currentColor 15%,transparent);padding:3px 7px;border-radius:99px}
+.th-fam-n{font:800 12.5px/1.3 var(--sans);color:var(--ink-3)}
+.th-fam-n.none{color:var(--accent-ink)}
+.th-invite{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:16px 18px;margin:0 0 6px;border-radius:24px;background:linear-gradient(135deg,color-mix(in srgb,var(--pf-gold) 16%,var(--surface)),var(--surface));border:2px solid var(--line-2);box-shadow:0 4px 0 var(--pf-edge)}
+.th-invite .ti-art{flex:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.2))}
+.th-invite .ti-tx{flex:1;min-width:230px}
+.th-invite h2{font:800 20px/1.2 var(--pf-font);margin:0 0 4px;letter-spacing:0}
+.th-invite p{margin:0 0 10px;font:700 13.5px/1.5 var(--sans);color:var(--ink-2);max-width:52ch}
 .th-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px}
 .pf-bd{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px 10px;border-radius:20px;background:var(--surface);border:2px solid var(--line);box-shadow:0 3px 0 var(--pf-edge);text-align:center;color:var(--ink);-webkit-tap-highlight-color:transparent;transition:transform .08s}
 .pf-bd:active{transform:translateY(2px)}
@@ -336,9 +357,14 @@ dialog.pf-lvlup::backdrop{background:radial-gradient(circle at 50% 38%,rgba(96,5
 .lu-btns{display:grid;gap:10px}
 .lu-btns .pf-btn{min-height:56px;font-size:18px}
 
-@media(prefers-reduced-motion:reduce){:root:not([data-motion=on]) .lu-conf,:root:not([data-motion=on]) .lu-rays{display:none}}
+@media(prefers-reduced-motion:reduce){
+  :root:not([data-motion=on]) .lu-conf,:root:not([data-motion=on]) .lu-rays{display:none}
+  :root:not([data-motion=on]) dialog.psheet[open],:root:not([data-motion=on]) .lu-card,:root:not([data-motion=on]) .lu-badge,:root:not([data-motion=on]) .lu-new li,
+  :root:not([data-motion=on]) .pchip.levelup,:root:not([data-motion=on]) .pf-toast.cheer .pt-art,:root:not([data-motion=on]) .pf-toast.stretch .pt-ico,:root:not([data-motion=on]) .pchip.bump .pc-av,:root:not([data-motion=on]) .pf-bar>i{animation:none;transition:none}
+}
 :root[data-motion=off] .lu-conf,:root[data-motion=off] .lu-rays{display:none}
-:root[data-motion=off] dialog.psheet[open],:root[data-motion=off] .lu-card,:root[data-motion=off] .lu-badge{animation:none}
+:root[data-motion=off] dialog.psheet[open],:root[data-motion=off] .lu-card,:root[data-motion=off] .lu-badge,:root[data-motion=off] .lu-new li,
+:root[data-motion=off] .pchip.levelup,:root[data-motion=off] .pf-toast.cheer .pt-art,:root[data-motion=off] .pf-toast.stretch .pt-ico,:root[data-motion=off] .pchip.bump .pc-av,:root[data-motion=off] .pf-bar>i{animation:none;transition:none}
 
 /* the settings sheet: locked options */
 .seg button[data-locked]{position:relative;opacity:.6}

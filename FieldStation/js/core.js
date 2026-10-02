@@ -39,11 +39,23 @@ function load() {
 function fresh() {
   return { skills: {}, modules: {}, streak: 0, lastDay: null, totalRight: 0, totalWrong: 0,
            xp: 0, coins: 0, stars: 0, daily: { day: null, correct: 0, goal: 5, done: false, reward: 0 },
-           badges: [], seen: {} };
+           badges: [], seen: {}, theme: 'field', owned: ['field'] };
 }
 function save() {
   DB.stars = Math.round((DB.totalRight || 0) / 4) + Object.keys(DB.modules).filter(m => DB.modules[m] >= 100).length * 2;
-  try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch {}
+  try {
+    localStorage.setItem(KEY, JSON.stringify(DB));
+    // Compact mirror of the station record (some readers truncate long blobs; this stays short,
+    // uses plain field names, and changes whenever the record does).
+    const owned = DB.owned && DB.owned.length ? DB.owned : ['field'];
+    const cert = Object.keys(DB.modules).filter(m => DB.modules[m] >= 100).length;
+    localStorage.setItem('fieldstation.prog', JSON.stringify({
+      level: 1 + Math.floor((DB.xp || 0) / 60), xp: DB.xp || 0, coins: DB.coins || 0, stars: DB.stars || 0,
+      daily: Math.min((DB.daily && DB.daily.correct) || 0, 99), goals: (DB.daily && DB.daily.goal) || 5,
+      badges: (DB.badges || []).length, unlocks: Math.max(0, owned.length - 1) + cert,
+      themes: owned.length, certified: cert
+    }));
+  } catch {}
 }
 
 export const Progress = {
@@ -157,8 +169,49 @@ export const Progress = {
     return [...ids].sort((a, b) => (DB.skills[a] ?? 0) - (DB.skills[b] ?? 0)).slice(0, n);
   },
 
-  reset() { DB = fresh(); save(); }
+  /* ── Station shop: themes bought with earned coins, some gated on certifications ── */
+  theme() { return DB.theme || 'field'; },
+  ownedThemes() { return DB.owned && DB.owned.length ? DB.owned : ['field']; },
+  certifiedCount() { return Object.values(DB.modules || {}).filter(v => v >= 100).length; },
+  buyTheme(id) {
+    const t = THEMES.find(x => x.id === id);
+    if (!t) return { ok: false, why: 'Unknown theme' };
+    if (this.ownedThemes().includes(id)) { this.setTheme(id); return { ok: true, bought: false }; }
+    if (t.req && this.certifiedCount() < t.req) return { ok: false, why: `Certify ${t.req} instruments first (${this.certifiedCount()} so far)` };
+    if ((DB.coins || 0) < t.price) return { ok: false, why: `Needs ${t.price} coins — you have ${DB.coins || 0}` };
+    DB.coins -= t.price;
+    DB.owned = this.ownedThemes().concat(id);
+    this.setTheme(id);
+    return { ok: true, bought: true };
+  },
+  setTheme(id) {
+    if (!this.ownedThemes().includes(id)) return;
+    DB.theme = id;
+    save();
+    applyTheme(id);
+  },
+
+  reset() { DB = fresh(); save(); applyTheme(DB.theme); }
 };
+
+/* Station themes — recolour the notebook. Field is free; the rest cost coins
+   earned by answering, and two of them want instruments certified first. */
+export const THEMES = [
+  { id: 'field',   label: 'Field Notes', price: 0,  req: 0, vars: {} },
+  { id: 'lab',     label: 'Lab Slate',   price: 20, req: 0,
+    vars: { '--rust':'#3a6ea5', '--ochre':'#3f8f6b', '--plum':'#5b4a8a', '--slate':'#2e5d74', '--sage':'#3f8f6b' } },
+  { id: 'orchard', label: 'Orchard',     price: 25, req: 2,
+    vars: { '--rust':'#4a7d3a', '--ochre':'#8a6d2f', '--plum':'#3a6e4a', '--slate':'#3f5c3b', '--sage':'#4a7d3a' } },
+  { id: 'dusk',    label: 'Dusk Watch',  price: 35, req: 4,
+    vars: { '--ink':'#2a2030', '--ink2':'#4d4056', '--paper':'#efe4da', '--paper2':'#e2d4ca', '--line':'#2a2030',
+            '--rust':'#8a4a6b', '--ochre':'#a5722f', '--plum':'#6b3a5c', '--slate':'#4a3a6b', '--sage':'#5a6b3a' } }
+];
+export function applyTheme(id) {
+  const t = THEMES.find(x => x.id === id) || THEMES[0];
+  let tag = document.getElementById('themeVars');
+  if (!tag) { tag = document.createElement('style'); tag.id = 'themeVars'; document.head.append(tag); }
+  tag.textContent = ':root{' + Object.entries(t.vars).map(([k, v]) => k + ':' + v).join(';') + '}';
+}
 
 /* ─────────────────────────────────────────────────────────
    Audio — short, warm, non-arcade. Web Audio only, no files.

@@ -1,0 +1,12 @@
+10 games, chromium x0 CPU throttle, 25 s each, 1 worker(s), load 0.0 on 24 cores
+  1/10 FREEZE+JANK    summit-line                  main thread blocked 3016 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1. [reproduced]
+  2/10 STALL          high-nest                    game over screen reached 1x and the game never got back to play (bot pressed buttons for 19 s)
+  3/10 OK             market-merge                 #play
+  4/10 OK             survivor-wave                tap centre + ▶ PLAY
+  5/10 FREEZE+JANK    surviv-royale                main thread blocked 3443 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1  [NOT reproduced on re-run]
+  6/10 OK             hole-grind                   #btnPlay
+  7/10 OK             balloon-bust                 #c
+  8/10 OK             tic-tac-toe                  tap centre + Play
+  9/10 OK             snap-jigsaw                  #playBtn
+ 10/10 OK             kingdom-defense              #play + EASY 40 gate + EASY 40 gate + EASY 40 gate + tap on game
+-> qa\_gate\l1-base-h\health.md

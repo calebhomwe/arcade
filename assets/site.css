@@ -156,7 +156,8 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 /* chips (phones + category heads) */
 .chips{display:none;gap:8px;overflow-x:auto;scrollbar-width:none;padding:10px var(--gut);position:sticky;top:var(--top-h);z-index:40;background:var(--top-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .chips::-webkit-scrollbar{display:none}
-.chip{display:inline-flex;align-items:center;gap:7px;flex:none;height:36px;padding:0 14px 0 10px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-weight:800;font-size:13.5px;color:var(--ink-2);white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
+.chip{display:inline-flex;align-items:center;gap:7px;flex:none;height:36px;padding:0 14px 0 10px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-weight:800;font-size:13.5px;color:var(--ink-2);white-space:nowrap;transition:background .15s,border-color .15s,color .15s,transform .12s}
+.chip:active{transform:scale(.94)}
 .chip .i{width:16px;height:16px;color:var(--cc,var(--accent))}
 .chip[aria-current=page],.chip.on{background:color-mix(in srgb,var(--cc,var(--accent)) 74%,#000);border-color:transparent;color:#fff}
 .chip[aria-current=page] .i,.chip.on .i{color:#fff}
@@ -181,7 +182,9 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 /* ---------- tiles ---------- */
 .tile{position:relative;border-radius:var(--r);isolation:isolate;transition:transform .22s var(--ease),z-index 0s .22s}
 .tile>a{display:block;height:100%;border-radius:inherit;outline-offset:3px}
-.tile .art{position:relative;height:100%;border-radius:inherit;overflow:hidden;background:var(--surface-3);box-shadow:var(--tile-shadow);transition:box-shadow .22s}
+.tile .art{position:relative;height:100%;border-radius:inherit;overflow:hidden;background:var(--surface-3);box-shadow:var(--tile-shadow);transition:box-shadow .22s,transform .12s}
+/* press feedback: the card settles under the finger/cursor, then springs back on release */
+.tile>a:active .art{transform:scale(.985)}
 .tile .art img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s,transform .5s var(--ease)}
 .tile .art img.in{opacity:1}
 .tile .art .pv{position:absolute;inset:0;z-index:1}
@@ -311,6 +314,10 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .player[data-mode=fill]{--h:calc(100vh - var(--top-h) - 90px)}
 .player[data-mode=tall]{--h:calc(100vh - var(--top-h) - 150px)}
 .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+/* iOS theatre/fullscreen: with viewport-fit=cover the notch must not sit on the game.
+   env() is 0 everywhere else, so this only moves on devices with a cutout. */
+body.theatre .player iframe,.player:fullscreen iframe{top:env(safe-area-inset-top,0px);height:auto}
+body.theatre .player .exit{top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px))}
 .player .backdrop{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(28px) saturate(1.4) brightness(.55);transform:scale(1.1)}
 .splash{position:absolute;inset:0;z-index:4;display:grid;place-items:center;overflow:hidden;transition:opacity .35s,visibility .35s}
 .splash.gone{opacity:0;visibility:hidden}
@@ -501,6 +508,11 @@ dialog.sheet::backdrop{background:var(--scrim);backdrop-filter:blur(4px)}
   .player[data-mode=wide]{--h:calc((100vw - 24px) * .5625)}
   .splash .shot{display:none}
   .player .backdrop{inset:0;filter:blur(1.5px) saturate(1.2) brightness(.5);transform:none}
+  /* the top bar + chips stack is ~52px taller than the bar alone; anchored content (skip link,
+     1-9 focus jump) must clear both so the controls never sit on the game */
+  html{scroll-padding-top:calc(var(--top-h) + 56px)}
+  .player{scroll-margin-top:calc(var(--top-h) + 56px)}
+  .search kbd{display:none}
   .splash .inner{gap:10px}
   .playbtn{height:52px;font-size:19px;padding:0 28px 0 22px}
   .gbar{border-radius:0 0 16px 16px;padding:10px 12px}
@@ -525,6 +537,8 @@ dialog.sheet::backdrop{background:var(--scrim);backdrop-filter:blur(4px)}
 @media (prefers-reduced-motion:reduce){
   :root:not([data-motion=on]) *,:root:not([data-motion=on]) *::before,:root:not([data-motion=on]) *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
   :root:not([data-motion=on]) .tile:hover,:root:not([data-motion=on]) .tile:focus-within{transform:none}
+  :root:not([data-motion=on]) .tile>a:active .art,:root:not([data-motion=on]) .chip:active{transform:none}
 }
 :root[data-motion=off] *,:root[data-motion=off] *::before,:root[data-motion=off] *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 :root[data-motion=off] .tile:hover,:root[data-motion=off] .tile:focus-within{transform:none}
+:root[data-motion=off] .tile>a:active .art,:root[data-motion=off] .chip:active{transform:none}

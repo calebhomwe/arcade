@@ -1,0 +1,163 @@
+-- XP curve
+PASS  level 1 to 2 needs 40 XP  (40)
+PASS  each level needs at least as much XP as the last
+PASS  the curve is gentle: every level needs under 1,200 XP  (1115)
+PASS  levelOf inverts the table for all 50 levels
+PASS  level is capped at 50
+PASS  levelInfo at the start
+PASS  levelInfo halfway to level 2
+PASS  pace: level 2 at 40 XP, level 10 by 800, level 30 by 7,000, level 50 by 23,000  (40/710/6730/22790)
+PASS  docs/PROGRESSION.md level table matches the code (all 50 rows)  (50 rows)
+PASS  docs/PROGRESSION.md states the XP numbers in use
+PASS  negative and junk XP read as level 1
+-- new and migrated profiles
+PASS  an empty store gives a valid new profile
+PASS  the profile is written to ca_profile
+PASS  a new profile has three quests: one easy, one medium, one hard  (min-s,try-cat,min-l)
+PASS  level 1, no title yet beyond Newcomer
+PASS  migration: earlier plays count as tried, unknown games are dropped  (run1,lr1)
+PASS  migration: bests and favourites carry over, welcome-back XP given once  (xp=30)
+PASS  migration runs once
+PASS  corrupt storage does not throw and starts fresh
+PASS  hostile stored data is cleaned: name, XP, cosmetics, keys  (img srcx onerror)
+-- earning XP with no game changes
+PASS  25 s of play earns nothing yet, and the game is not "tried"
+PASS  30 s: first play of the game (+15) and of the category (+20)  (log=15 First time playing LR1; 20 New category: Learning; 10 Badge: First Steps)
+PASS  ...and the First Steps badge (bronze: 10 XP, 1 star) lands with them  (xp=45)
+PASS  a full minute adds 2 XP; streak day 1 has no bonus  (xp=47)
+PASS  minute XP stops after 15 minutes in a day (30 XP)  (minutes seen=21, XP=30)
+PASS  a hidden tab or a paused game earns nothing
+PASS  opening a game again does not repeat first-play XP
+PASS  a new category is worth 20 once: two arcade/hyper games = two categories
+-- game-over XP
+PASS  first scored round: base + half the score scale + first-round bonus  (11)
+PASS  a personal best: base + full scale + best bonus  (18)
+PASS  a weaker round scales by score/best: base + round(scale*0.4)  (7)
+PASS  the same result reported twice counts once  (4)
+PASS  a round that ends before 6 s of play earns nothing
+PASS  ...and two rounds 4 s apart are not both counted
+PASS  at most 10 rounds a day earn XP; the counters go on  (rewarded=10 runs=16)
+PASS  lower-is-better scores (times, ranks): 25 beats 30
+PASS  a game-over with no score still counts as a round (base XP)  (11)
+PASS  junk scores never poison the best
+PASS  state level and stars are read: game-lvl and game-stars badges
+-- cheat codes
+PASS  a run with codes on earns no XP and sets no best  (xp=0)
+PASS  ...and no minutes, no first-play, no quest progress
+PASS  opt-in calls are blocked too: award, badge, quest
+PASS  the day still counts for the streak (kind), just without XP
+PASS  a normal session on the same profile is unaffected
+-- streak and the rest day
+PASS  day 1: streak 1
+PASS  more play the same day changes nothing
+PASS  day 2: streak 2, +6 XP streak bonus
+PASS  day 3: streak 3, badge Three-Peat
+PASS  missing exactly one day keeps the streak going (rest day)  ({"n":4,"best":4,"last":"2026-10-03","grace":"2026-10-02","rest":["2026-10-02"]})
+PASS  a second missed day within a week is not forgiven: streak restarts at 1, best kept  ({"n":1,"best":4})
+PASS  the rest day comes back after a week  ({"n":9,"best":9,"last":"2026-10-14","grace":"2026-10-13","rest":["2026-10-02","2026-10-13"]})
+PASS  three days away starts a new streak; the best is kept and never shown as a loss
+PASS  New Year: 31 Dec to 1 Jan is consecutive
+PASS  days are calendar dates, so daylight-saving changes cannot break a streak
+PASS  a clock that goes backwards keeps the streak
+PASS  10 s is not enough for the day to count; 20 s is
+-- daily quests
+PASS  three quests a day, easy + medium + hard, each with XP and stars  (min-s,try-cat,min-l)
+PASS  all three are different kinds
+PASS  the same player and day give the same quests every time
+PASS  different players get different sets  (26 distinct sets in 40 players)
+PASS  quests rotate: no kind repeats two days in a row over 60 days  (repeats=0)
+PASS  a new player only gets quests any game can complete (no rounds/best-score quests)  (min-s,try-cat,min-l,new-1,min-m,games-4,games-2,learn-try,new-2,learn-5,heart,cats-3)
+PASS  over 60 days the pool shows variety  (12 kinds)
+PASS  once a game has reported rounds, round and best-score quests can appear  (heart,runs-3,beat,min-s,learn-5,min-l,learn-try,new-2,games-2,games-4,new-1,min-m,cats-3,try-cat,runs-2)
+PASS  progress bars fill from real play: 1 of 3 minutes  (1)
+PASS  a quest completes at its target and pays XP and stars once
+PASS  no double payment
+PASS  two different games satisfy "play 2 different games"; a game not tried before satisfies "try something new"
+PASS  all three done: bonus paid once, badge Triple Play
+PASS  next day: fresh quests, none repeating yesterday's kinds  (heart,cat-min,min-l)
+PASS  yesterday's completed set is remembered for Quest Week
+PASS  "play a learning game for 5 minutes" counts only learning games' minutes
+PASS  a game can offer an extra goal: it shows progress, then pays once when done
+PASS  ...at most three game goals a day
+-- badges
+PASS  at least 40 badges, ids unique  (57)
+PASS  badges across 10 families, all named  (start,streak,explore,learn,score,time,quest,level,style,game)
+PASS  every badge has a tier, a title, a description and a glyph
+PASS  every badge and quest glyph is in the portal icon sprite  (61 icons)
+PASS  First Steps unlocks after 30 s of play, and pays its tier (bronze = 10 XP + 1 star)
+PASS  a badge is only ever earned once
+PASS  unseen badges are listed for the NEW ribbon until the Trophy Room is opened
+PASS  trying every category: Genre Tourist and Every Corner, plus the Space helmet unlocks
+PASS  trying 5 learning games: Well Rounded
+PASS  Night Owl (7 to 10 pm) unlocks at 8 pm and not at 10 am
+PASS  Early Bird unlocks before 8 am
+PASS  Weekend Warrior: Saturday and Sunday of one weekend
+PASS  Level 5 badge at level 5
+PASS  games can award their own badge (once, capped at 5 a day, ids checked)
+PASS  ...a game cannot flood the trophy room
+PASS  game badges appear in the badge list under Game badges
+-- cosmetics
+PASS  a new player has the free ones only
+PASS  a locked hat cannot be worn
+PASS  level 8 unlocks the party hat, cap, beanie, headphones, coral + sky accents, the Ocean theme
+PASS  an unlocked hat can be worn and taken off
+PASS  badge-gated cosmetics say how to get them
+PASS  avatars are all free
+PASS  titles: by level to start, an earned one can be chosen
+PASS  every cosmetic unlock names a real badge
+PASS  level gates are between 2 and 30 (no cosmetic is out of reach)  (2..30)
+PASS  names: the pool is friendly and short
+PASS  names: markup is stripped, contact details refused
+PASS  setName saves a good name and refuses a bad one
+-- opt-in calls from games
+PASS  award is clamped to 30 XP
+PASS  ...60 XP a day per game at most
+PASS  ...junk is ignored
+PASS  ...the reason is trimmed
+PASS  ...and the allowance renews the next day
+-- export and import
+PASS  a code looks like CAP1-…-checksum and is plain text  (2113 chars after 20 busy days)
+PASS  a new device gets the same level, XP, stars, streak and name from the code  (xp 3377 vs 3377)
+PASS  importing the same code again changes nothing (no double counting)
+PASS  a typo in the code is caught
+PASS  garbage, empty, other JSON and truncated codes are refused
+PASS  the JSON backup round-trips too
+PASS  hostile imports are cleaned: XP capped, unknown games/badges/days dropped, hats stay locked-by-rule  (scriptalert1scri xp=1000000)
+PASS  ...and an unlocked-by-level hat from a hostile import still needs its level to be worn  (cosmetic ids are valid; wearing checks the unlock in the UI)
+PASS  replace mode swaps the profile; merge mode keeps the best of both
+PASS  merge keeps games only one side has
+PASS  a brand new profile makes a short code  (332 chars)
+PASS  what a game may see has no name: level, xp, streak, stars, avatar and title only
+PASS  reset starts a new profile
+-- pace (simulated children, the real catalogue)
+PASS  a child who plays 12 minutes a day levels up in the first visit and is around level 10 to 14 after a week  ({"1":4,"7":12,"30":22,"60":29})
+PASS  ...and is around level 18 to 26 after a month
+PASS  a keen child (30 minutes, 8 rounds a day) is not through the levels in two months  ({"1":8,"7":18,"30":33,"60":43})
+-- storage that fails
+PASS  a browser that refuses storage (private window) still earns in memory, without errors
+PASS  a full disk is survived too
+-- level-ups and events
+PASS  level-ups are announced with what they unlock  (2,4)
+PASS  unlocks at level 4 list the Cap, the Mint ring and the Coral accent  ([{"kind":"hat","id":"cap","name":"Cap"},{"kind":"frame","id":"mint","name":"Mint ring"},{"kind":"accent","id":"coral","name":"Coral"}])
+PASS  celebrations wait in a queue until the player is back on the portal, then clear  (2,4)
+PASS  several level-ups at once are each reported
+
+129 passed (logic)
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+browserType.launch: Executable doesn't exist at C:\Users\caleb\AppData\Local\ms-playwright\webkit-2248\Playwright.exe
+╔═════════════════════════════════════════════════════════════════════════╗
+║ Looks like Playwright Test or Playwright was just installed or updated. ║
+║ Please run the following command to download new browsers:              ║
+║                                                                         ║
+║     npx playwright install                                              ║
+║                                                                         ║
+║ <3 Playwright Team                                                      ║
+╚═════════════════════════════════════════════════════════════════════════╝
+    at C:\Users\caleb\ZCodeProject\arcade\qa\harness\profile-test.mjs:372:52 {
+  name: 'Error'
+}
+
+Node.js v24.18.0

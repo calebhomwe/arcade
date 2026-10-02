@@ -1,0 +1,144 @@
+{
+ "id": "hub-tap-monsters",
+ "title": "Tap Monsters",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/tap-monsters.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "tm_state"
+ ],
+ "session1": {
+  "start": "#btnPlay",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 41,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "tm_state"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": true,
+  "title1": "1 Level 0/8 XP 0 0 dmg/s Build your first Kitty 15 gold · tap the monster to earn Badges 0/20 · Upgrades at level 2 +XP ×1 ×10 ×25 MAX Kitty",
+  "title2": "1 Level 0/8 XP 0 0 dmg/s Build your first Kitty 15 gold · tap the monster to earn Goals today 0/3 · Streak 1 · Goals tab at level 3 · Badges",
+  "keysUpdatedAgain": [
+   "tm_state"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "ik_coach_tap-monsters",
+   "tm_state"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "ik_coach_tap-monsters": "1",
+   "tm_state": "{\"v\":2,\"coins\":0,\"lifetime\":0,\"alltime\":0,\"owned\":[0,0,0,0,0,0,0,0],\"u"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other"
+  ],
+  "categoriesPresent": [
+   "other"
+  ],
+  "writesDuringPlay": {
+   "tm_state": "10x",
+   "ik_coach_tap-monsters": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "stars": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "daily": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "upgrades",
+  "goals",
+  "achievements",
+  "daily"
+ ],
+ "claimedOnly": [],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [],
+  "unclassifiedBlob": true
+ },
+ "level": 1,
+ "label": "P1",
+ "why": "saves some state but shows no unlock, upgrade, goal or level system",
+ "expected": [
+  "upgrades",
+  "unlocks",
+  "achievements",
+  "daily",
+  "goals"
+ ],
+ "lacks": [],
+ "pageErrors": []
+}

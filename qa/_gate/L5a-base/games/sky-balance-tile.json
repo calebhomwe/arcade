@@ -1,0 +1,182 @@
+{
+ "id": "sky-balance-tile",
+ "title": "Balance Tile",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/balance-tile.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "sky-balance-tile-best",
+  "sky-PK-balance-tile"
+ ],
+ "session1": {
+  "start": "tap centre",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 19,
+  "score": {
+   "first": 10,
+   "last": 85,
+   "max": 100
+  },
+  "botTaps": 107,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "sky-PK-balance-tile",
+   "sky-balance-tile-tut",
+   "sky-balance-tile-best"
+  ],
+  "savedKeysWrittenInSession1": 3,
+  "titleTextChanged": true,
+  "title1": "Easy Normal Hard LVL 1 █░░░░ · coins 0 · ★ 0 stars Daily: reach 50% · +10 coins Best 0% · LVL 1 · ★ 0 · coins 0 ☀ Daily: reach 50% → +10 coi",
+  "title2": "Easy Normal Hard LVL 8 ████░ · coins 458 · ★ 7 stars Daily: done today ✓ Best 100% · LVL 8 · ★ 7 · coins 458 Daily challenge ✓ done today Cl",
+  "keysUpdatedAgain": [
+   "sky-PK-balance-tile"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 3,
+  "added": [
+   "sky-PK-balance-tile",
+   "sky-balance-tile-tut",
+   "sky-balance-tile-best"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "sky-PK-balance-tile": "{\"best\":100,\"coins\":458,\"xp\":727,\"stars\":7,\"plays\":19,\"wins\":2,\"skins\"",
+   "sky-balance-tile-tut": "1",
+   "sky-balance-tile-best": "100"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "currency",
+   "score",
+   "levels",
+   "stars",
+   "cosmetics",
+   "daily"
+  ],
+  "categoriesPresent": [
+   "currency",
+   "score",
+   "levels",
+   "stars",
+   "cosmetics",
+   "daily"
+  ],
+  "writesDuringPlay": {
+   "sky-balance-tile-tut": "1x",
+   "sky-balance-tile-best": "5x",
+   "sky-PK-balance-tile": "45x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "stars",
+  "goals",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "unlocks",
+  "upgrades",
+  "achievements"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": false
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, daily, cosmetics); systems seen: levels, stars, goals, daily, cosmetics; sinks cosmetics fed by levels/stars/goals/daily/currency",
+ "expected": [
+  "unlocks",
+  "cosmetics",
+  "daily",
+  "achievements",
+  "goals"
+ ],
+ "lacks": [
+  "unlocks",
+  "achievements"
+ ],
+ "pageErrors": []
+}

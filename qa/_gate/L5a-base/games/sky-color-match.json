@@ -1,0 +1,179 @@
+{
+ "id": "sky-color-match",
+ "title": "Color Match",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/color-match.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "sky-color-match-best",
+  "sky-PK-color-match"
+ ],
+ "session1": {
+  "start": "tap centre",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 4,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 68,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "sky-PK-color-match",
+   "sky-color-match-tut"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": true,
+  "title1": "Easy Normal Hard LVL 1 █░░░░ · coins 0 · ★ 0 stars Daily: reach 12 catches · +10 coins Best 0 catches · LVL 1 · ★ 0 · coins 0 ☀ Daily: reach",
+  "title2": "Easy Normal Hard LVL 1 ██░░░ · coins 8 · ★ 1 stars Daily: reach 12 catches · +10 coins Best 0 catches · LVL 1 · ★ 1 · coins 8 ☀ Daily: reach",
+  "keysUpdatedAgain": [
+   "sky-PK-color-match"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "sky-PK-color-match",
+   "sky-color-match-tut"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "sky-PK-color-match": "{\"best\":0,\"coins\":8,\"xp\":4,\"stars\":1,\"plays\":4,\"wins\":0,\"skins\":[\"Clas",
+   "sky-color-match-tut": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "score",
+   "currency",
+   "levels",
+   "stars",
+   "cosmetics",
+   "daily",
+   "other"
+  ],
+  "categoriesPresent": [
+   "score",
+   "currency",
+   "levels",
+   "stars",
+   "cosmetics",
+   "daily",
+   "other"
+  ],
+  "writesDuringPlay": {
+   "sky-color-match-tut": "1x",
+   "sky-PK-color-match": "4x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "stars",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "unlocks",
+  "upgrades",
+  "goals",
+  "achievements"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, daily, cosmetics); systems seen: levels, stars, daily, cosmetics; sinks cosmetics fed by levels/stars/daily/currency",
+ "expected": [
+  "unlocks",
+  "cosmetics",
+  "daily",
+  "achievements",
+  "goals"
+ ],
+ "lacks": [
+  "unlocks",
+  "achievements",
+  "goals"
+ ],
+ "pageErrors": []
+}

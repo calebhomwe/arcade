@@ -1,0 +1,183 @@
+{
+ "id": "hub-sudoku",
+ "title": "Sudoku",
+ "cat": "puzzle",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/sudoku.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "sudoBest_easy",
+  "sudoBest_medium",
+  "sudoBest_hard",
+  "sudo_solved"
+ ],
+ "session1": {
+  "start": "#playBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play",
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 99,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "sudoPick",
+   "sudoTut",
+   "sudokuMuted",
+   "sudo_prog_v1"
+  ],
+  "savedKeysWrittenInSession1": 4,
+  "titleTextChanged": true,
+  "title1": "← Hub 🔊 Sudoku ❌ 0 ⏱ 0:00 Easy LV 1 🪙 0 1 2 3 4 5 6 7 8 9 ⌫ ✎ ↶ 💡 New Sudoku Fill the grid so every row, column and 3×3 box holds 1 to 9 ",
+  "title2": "← Hub 🔇 Sudoku ❌ 0 ⏱ 0:00 Easy LV 1 🪙 0 1 2 3 4 5 6 7 8 9 ⌫ ✎ ↶ 💡 New Sudoku Fill the grid so every row, column and 3×3 box holds 1 to 9 ",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 4,
+  "added": [
+   "sudoPick",
+   "sudoTut",
+   "sudokuMuted",
+   "sudo_prog_v1"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "sudoPick": "easy",
+   "sudoTut": "1",
+   "sudokuMuted": "1",
+   "sudo_prog_v1": "{\"best\":0,\"coins\":0,\"xp\":0,\"level\":1,\"stars\":0,\"streak\":1,\"lastDay\":\"2"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "settings",
+   "score",
+   "currency",
+   "levels",
+   "stars",
+   "daily",
+   "unlocks",
+   "cosmetics",
+   "achievements"
+  ],
+  "categoriesPresent": [
+   "other",
+   "settings",
+   "score",
+   "currency",
+   "levels",
+   "stars",
+   "daily",
+   "unlocks",
+   "cosmetics",
+   "achievements"
+  ],
+  "writesDuringPlay": {
+   "sudo_prog_v1": "4x",
+   "sudoTut": "1x",
+   "sudoPick": "2x",
+   "sudokuMuted": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": false
+  },
+  "achievements": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "daily": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": true,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": true,
+  "meta": false
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "achievements",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "unlocks",
+   "achievements",
+   "daily",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, unlocks, achievements, daily, cosmetics); systems seen: levels, unlocks, stars, goals, achievements, daily, cosmetics; sinks unlocks/cosmetics fed by levels/stars/goals/achievements/daily/currency",
+ "expected": [
+  "levels",
+  "stars",
+  "daily",
+  "goals",
+  "unlocks"
+ ],
+ "lacks": [],
+ "pageErrors": []
+}

@@ -92,11 +92,30 @@ async function boot() {
   world.scene.add(fx.crystals.points);
   resize();
   setLoad(1, 'Ready');
-  // warm up shaders once so the title does not hitch
+  // warm up shaders once so the title does not hitch, then render one frame from the race's
+  // chase-camera pose (with the light following the gate) so the first frames after Drop in
+  // have no first-use uploads or shader variants left — all of it lands behind the loading card.
   placeRiders(0);
   titleCam(0);
   renderer.compile(world.scene, camera);
   renderer.render(world.scene, camera);
+  try {
+    if (params.get('nowarm') === '1') throw new Error('skip');   // QA: compare with/without the warm-up
+    world.follow(player.pos);
+    chaseCam(1 / 60, player);
+    fx.parts.emit(player.pos.x, player.pos.y + 0.1, player.pos.z, 0, 1, 0, 0.4, 0.5, {});
+    fx.parts.update(1 / 60);
+    trails[0].add(player.pos, new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), 0.3, 0.4);
+    trails[0].update(1 / 60);
+    fx.crystals.update(0, camera.position, innerHeight * renderer.getPixelRatio());
+    renderer.render(world.scene, camera);
+    titleCam(0);
+    renderer.render(world.scene, camera);
+    resetRace();   // clear the warm-up trail and poses so the race starts clean
+  } catch (e) { /* warm-up is best effort */ }
+  // programs are built and verified above; per-program sync error checks from here on are
+  // pure overhead (gl.getProgramInfoLog for every program) and stall the race's first frames
+  renderer.debug.checkShaderErrors = false;
   $('loading').classList.remove('show');
   booted = true;
   toTitle();
@@ -225,7 +244,10 @@ function resetRace() {
 
 function startRace() {
   if (!booted) return;   // the mountain is still building: ignore taps so a race is never set up and then cancelled
-  audio.start(); audio.click();
+  // the AudioContext (and its audio-service spin-up) is built off the tap task: the button
+  // answers in one frame, and the browser's sticky user activation keeps the sound allowed
+  if (audio.started) audio.click();
+  else setTimeout(() => { audio.start(); audio.click(); }, 0);
   paused=false;show('pause',false);
   show('title', false); show('results', false); show('help', false);
   $('hud').classList.remove('hidden');
