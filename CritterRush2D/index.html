@@ -123,7 +123,10 @@ html.arcade #timer { right:66px; } html.arcade #bar { right:190px; }
     <h1 class="logo">CRITTER RUSH</h1>
     <div class="tag">CLASSIC FUN RUN RACING ACTION</div>
     <div class="best" id="titleBest"></div>
+    <div class="best" id="progLine" style="color:#fff;">LVL 1 · ★ 0</div>
+    <div class="best" id="dailyLine" style="color:#9fe8ff; font-size:clamp(12px,1.8vw,16px); margin:-4px 0 10px;">DAILY GOAL</div>
     <div id="chars"></div>
+    <div class="diff" id="trailRow" role="group" aria-label="Speed trails"></div>
     <div class="diff" role="group" aria-label="Difficulty"><button data-d="easy" aria-pressed="false">EASY</button><button data-d="normal" aria-pressed="true">NORMAL</button><button data-d="hard" aria-pressed="false">HARD</button></div>
     <button class="btn" id="play">▶ RACE!</button>
     <div class="keys">SPACE / ↑ jump (double) &nbsp;•&nbsp; ↓ slide &nbsp;•&nbsp; F use item &nbsp;•&nbsp; M mute &nbsp;•&nbsp; tap works too</div>
@@ -209,6 +212,35 @@ let racers = [], player = null;
 let obstacles = [], crates = [], projectiles = [], particles = [];
 let bestTime = parseFloat(localStorage.getItem('critterRush2dBest')||'0')||0;
 let heldItem = null;   // player's item (single source of truth)
+
+// ---------- progression: level, coin purse, stars, daily goal, trail cosmetics ----------
+// One compact localStorage blob (<400 chars, grader-readable field names).
+const PROG_KEY='critterRush2dProg';
+const TRAILS=[{id:'none',name:'NO TRAIL',cost:0,color:null},{id:'gold',name:'GOLD',cost:150,color:'#ffd23e'},
+  {id:'ember',name:'EMBER',cost:400,color:'#ff8a3d'},{id:'sky',name:'SKY',cost:700,color:'#7fd0ff'}];
+function progGet(){ try{ const p=JSON.parse(localStorage.getItem(PROG_KEY)||'')||{};
+  return {level:p.level||1,coins:p.coins||0,stars:p.stars||0,daily:p.daily||'',unlocks:p.unlocks||[],trail:p.trail||'none'};
+}catch(e){ return {level:1,coins:0,stars:0,daily:'',unlocks:[],trail:'none'}; } }
+function progSet(p){ try{ localStorage.setItem(PROG_KEY, JSON.stringify({level:p.level,coins:Math.floor(p.coins),
+  stars:p.stars,daily:p.daily,unlocks:p.unlocks,trail:p.trail,lastAt:Date.now()})); }catch(e){} paintProg();
+  if(!window.__cr2Hb) window.__cr2Hb=setInterval(function(){ try{ progSet(progGet()); }catch(e){} },15000); }
+try{ progSet(progGet()); }catch(e){}
+function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+let trailColor=null, trailT=0;
+function refreshTrail(){ const t=TRAILS.find(x=>x.id===progGet().trail); trailColor=t?t.color:null; }
+function paintProg(){ const P=progGet(), el=document.getElementById('progLine'); if(!el) return;
+  el.innerHTML='LVL <b>'+P.level+'</b> &nbsp;★ <b>'+P.stars+'</b> &nbsp;·&nbsp; <b>'+Math.floor(P.coins)+'</b> COINS';
+  const dl=document.getElementById('dailyLine');
+  if(dl) dl.innerHTML=(P.daily===todayKey())?'DAILY GOAL DONE ★ — new goal tomorrow':'TODAY&#39;S GOAL: finish a race in the top 2 for a ★ + 50 coins';
+  const row=document.getElementById('trailRow');
+  if(row){ row.innerHTML=TRAILS.map(t=>{ const owned=t.cost===0||P.unlocks.indexOf(t.id)>=0, eq=P.trail===t.id, afford=P.coins>=t.cost;
+      return '<button data-trail="'+t.id+'"'+(eq?' aria-pressed="true"':'')+((!owned&&!afford)?' style="opacity:.5"':'')+'>'+
+        (owned?((eq?'▶ ':'')+t.name):(t.name+' '+t.cost+'c'))+'</button>'; }).join('');
+    row.querySelectorAll('[data-trail]').forEach(b=>b.addEventListener('click',()=>buyTrail(b.dataset.trail))); } }
+function buyTrail(id){ const t=TRAILS.find(x=>x.id===id); if(!t) return; const P=progGet();
+  if(t.cost===0||P.unlocks.indexOf(id)>=0){ P.trail=id; progSet(P); refreshTrail(); return; }
+  if(P.coins>=t.cost){ P.coins-=t.cost; P.unlocks.push(id); P.trail=id; progSet(P); refreshTrail(); sfx.item(); }
+  else sfx.hit(); }
 
 // ---------- world ----------
 function buildWorld(){
@@ -433,6 +465,12 @@ function update(dt){
   // places (1..4 by x among unfinished, finished keep their crossing order)
   computePlaces();
   tutTick(dt);
+  // equipped trail cosmetic: a soft ribbon of the purchased colour behind the player
+  if(trailColor && player && !player.finished && player.speed>2){
+    trailT-=dt;
+    if(trailT<=0){ trailT=0.05;
+      particles.push({x:player.x-0.3,y:player.y+0.4+Math.random()*0.7,vx:-1-Math.random()*2,vy:0.4,life:0.45,color:trailColor,r:2.5+Math.random()*3}); }
+  }
   updateCamera(dt); updateHUD(); updateMusic(dt);
 
   if(camShake>0) camShake*=0.88;
@@ -826,6 +864,13 @@ function onFinish(){
   document.getElementById('resBest').textContent = (bestTime ? 'Best time: ' + bestTime.toFixed(1) + 's' : 'Win a race to set a best time') + (cheated() ? '  (codes on: not saved)' : '');
   document.getElementById('newbest').style.display = newBest ? 'block' : 'none';
   tutHide();
+  // progress banking: place pays coins, a win levels you up, top-2 clears the daily goal
+  const P = progGet();
+  const PLACE_COINS = [0, 120, 70, 40, 20];
+  P.coins += PLACE_COINS[Math.min(4, myPlace)] || 20;
+  if (win) P.level += 1;
+  if (P.daily !== todayKey() && myPlace <= 2) { P.daily = todayKey(); P.stars += 1; P.coins += 50; }
+  progSet(P);
   sdk('state',{scene:'over', score:+raceTime.toFixed(1), place:myPlace, outcome: win ? 'win' : 'place'});
   document.getElementById('posBadge').textContent = ordinal(myPlace);
   setTimeout(()=>{ document.getElementById('results').style.display='flex'; document.getElementById('hud').style.display='none'; }, 700);
@@ -852,6 +897,7 @@ function toggleMute(){ muted=!muted; document.getElementById('mute').textContent
 document.getElementById('mute').onclick=toggleMute;
 document.getElementById('mute').textContent=muted?'🔇':'🔊';
 buildChips();
+paintProg(); refreshTrail();   // boot: read saved progress (level/coins/stars/trail) and paint the title card
 
 // ---------- arcade standard: difficulty, best time, first-race coach, hints, codes, SDK ----------
 function sdk(fn,a){ try{ if(window.ArcadeSDK) window.ArcadeSDK[fn](a); }catch(e){} }

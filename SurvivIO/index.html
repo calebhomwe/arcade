@@ -94,6 +94,7 @@
     <div><b id="m-kills">0</b><span>KILLS</span></div>
     <div><b id="m-matches">0</b><span>MATCHES</span></div>
     <div><b id="m-best">-</b><span>BEST PLACE</span></div>
+    <div id="m-car" style="grid-column:1/-1;text-align:left"><b>RANK 1</b><span>0 XP</span></div>
   </div>
   <div id="metaHost" style="width:100%;margin-top:12px"></div>
   <div class="diff" role="group" aria-label="Difficulty">
@@ -204,6 +205,32 @@ function loadMeta(){
   return {bestPlace:null, wins:0, kills:0, matches:0};
 }
 function saveMeta(m){ try { localStorage.setItem(METakey, JSON.stringify(m)); } catch(e){} }
+
+/* ── operator career: rank earned from real match stats, a date-seeded daily op, stars ──
+   Compact blob (surviv_career_v1) so the arcade profile and the player always see progress. */
+const CAR_KEY = "surviv_career_v1";
+function carDef(){ return {xp:0,level:1,stars:0,daily:"",dailyOK:false,goal:0,goalKind:"kills",dayVal:0,lastAt:0}; }
+function carGet(){ try{ const c=JSON.parse(localStorage.getItem(CAR_KEY)||"null"); if(c&&typeof c==="object") return Object.assign(carDef(),c); }catch(e){} return carDef(); }
+let CAR = carGet();
+function carSave(){ CAR.lastAt=Date.now(); try{ localStorage.setItem(CAR_KEY,JSON.stringify(CAR)); }catch(e){} }
+function carDay(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+const DAILY_OPS=[[6,"kills"],[3,"matches"],[1,"wins"]];
+function carRoll(){ const k=carDay(); if(CAR.daily===k) return;
+  let h=0; for(let i=0;i<k.length;i++) h=(h*31+k.charCodeAt(i))>>>0;
+  const op=DAILY_OPS[h%DAILY_OPS.length];
+  CAR.daily=k; CAR.goal=op[0]; CAR.goalKind=op[1]; CAR.dailyOK=false; CAR.dayVal=0; carSave(); }
+function carLevel(){ return Math.max(1,Math.floor(Math.sqrt(CAR.xp/40))+1); }
+function carDailyProgress(v){ if(!CAR.dailyOK){ CAR.dayVal=(CAR.dayVal||0)+v;
+    if(CAR.dayVal>=CAR.goal){ CAR.dailyOK=true; CAR.stars++; CAR.xp+=40; } } }
+function carAward(kills,won,placed){ if(cheated()) return; carRoll();
+  CAR.xp += kills*3 + (won?60:10) + Math.max(0,10-placed)*2;
+  carDailyProgress(CAR.goalKind==="kills"?kills:(CAR.goalKind==="wins"&&won?1:0));
+  if(won) CAR.stars++;
+  CAR.level=carLevel(); carSave(); paintCar(); }
+function paintCar(){ const el=document.getElementById("m-car"); if(!el) return; carRoll();
+  el.innerHTML="<b>RANK "+CAR.level+"</b><span>"+CAR.xp+" XP · "+CAR.stars+"★ · daily: "+(CAR.dailyOK?"done ✓":(CAR.dayVal||0)+"/"+CAR.goal+" "+CAR.goalKind)+"</span>"; }
+carRoll(); carSave();
+if(!window.__svHb) window.__svHb=setInterval(function(){ try{ carSave(); }catch(e){} },20000);
 let meta = loadMeta();
 /* ------------------------------------------------ progression: outfits, daily goals, medals, week stamps (kit/metakit.js, saved as "hm-surviv") */
 const OUTFITS = [
@@ -329,7 +356,7 @@ function newMatch(){
   HM.begin();
   showOverlay(null);
   // a match counts as played the moment you drop in (codes-on matches are never recorded)
-  if (!cheated()){ meta.matches++; saveMeta(meta); }
+  if (!cheated()){ meta.matches++; saveMeta(meta); carRoll(); carDailyProgress(CAR.goalKind==="matches"?1:0); CAR.level=carLevel(); carSave(); }
   tutMatch();
   sdk("state", {scene:"play"});
 }
@@ -348,6 +375,7 @@ function endMatch(won){
     top.sort((a,b)=>a.p-b.p || b.k-a.k || a.t-b.t);
     if (top.length > 5) top.length = 5;
     saveMeta(meta);
+    carAward(player.kills, won, place);
   }
   tutHide();
   sdk("state", {scene:"over", score:player.kills, place, outcome: won ? "win" : "eliminated"});
@@ -1012,6 +1040,7 @@ function showOverlay(which){
     document.getElementById("m-kills").textContent = meta.kills;
     document.getElementById("m-matches").textContent = meta.matches;
     document.getElementById("m-best").textContent = meta.bestPlace ? "#"+meta.bestPlace : "-";
+    paintCar();
   }
 }
 document.getElementById("btn-play").addEventListener("click", ()=>newMatch());

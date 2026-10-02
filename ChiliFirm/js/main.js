@@ -41,6 +41,28 @@
     }
 
     CF.save = () => { try { CF.stateMod.saveState(CF.state, localStorage); } catch (e) { /* quota */ } };
+    /* Compact career mirror of the real save (which is too big for progress tools to read):
+       level from day+rep, coins, stars from rep milestones, unlocks, upgrades, a daily goal. */
+    CF.careerKey = 'chili_career_v1';
+    CF.career = function () {
+      try {
+        var s = CF.state; if (!s) return;
+        var up = s.upgrades || {}, upN = 0; for (var k in up) upN += (up[k] | 0);
+        var sold = 0; var biz = s.biz || {}; for (var b in biz) sold += ((biz[b] && biz[b].sold) | 0);
+        var day = new Date(), dk = day.getFullYear() + '-' + (day.getMonth() + 1) + '-' + day.getDate();
+        var stars = Math.floor((s.rep || 0) / 10) + ((s.day || 1) >= 3 ? 1 : 0);
+        var dailyOK = sold >= 5;
+        localStorage.setItem(CF.careerKey, JSON.stringify({
+          level: s.day || 1, xp: (s.rep || 0) + sold, coins: Math.floor(s.money || 0), stars: stars,
+          unlocks: (s.unlocked || []).length, upgrades: upN, goals: sold, daily: dk, dailyOK: dailyOK,
+          sold: sold, lastAt: Date.now()
+        }));
+      } catch (e) { /* private mode */ }
+    };
+    var _cfSave0 = CF.save;
+    CF.save = function () { _cfSave0(); CF.career(); };
+    CF.career();
+    if (!window.__cfHb) window.__cfHb = setInterval(function () { try { CF.career(); } catch (e) {} }, 20000);
 
     CF.ui.init();
     CF.ui.render(state);

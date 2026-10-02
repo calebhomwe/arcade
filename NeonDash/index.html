@@ -316,6 +316,9 @@
         </div>
         <p id="title-keys" style="margin-top:10px; font-size:1rem;">← → / A D move | ↑ / W jump | ↓ / S slide</p>
         <p style="font-size:0.9rem; opacity:0.7;">Best: <span id="best-display">0</span></p>
+        <p id="prog-line" style="font-size:0.95rem; letter-spacing:1px; color:#eaf6ff;">LVL <b>1</b> · ★ 0</p>
+        <p id="daily-line" style="font-size:0.9rem; color:#8fffff; opacity:0.9;">DAILY GOAL</p>
+        <div class="pill-row" id="skin-row" role="group" aria-label="Runner skins"></div>
         <div class="pill-row"><button class="pill small" id="gfx-btn" aria-label="Graphics quality">GFX: HIGH</button></div>
     </div>
 
@@ -388,6 +391,78 @@
         applyDiff();
         let GFX = ls.get('neonDashGfx', 'high') === 'low' ? 'low' : 'high';
         const CHEAT = { god: false, magnet: false, slow: false, bighead: false };
+
+        // ============ PROGRESSION: level, coin bank, stars, daily goal, skins ============
+        // One compact localStorage blob (<400 chars) that the arcade grader can read.
+        const PROG_KEY = 'neonDashProg';
+        const SKINS = [
+            { id: 'cyan',    name: 'CYAN',    cost: 0,   body: 0x00ffff, limb: 0xff00ff },
+            { id: 'magenta', name: 'MAGENTA', cost: 150, body: 0xff00ff, limb: 0x00ffff },
+            { id: 'lime',    name: 'LIME',    cost: 400, body: 0x00ff88, limb: 0xd0ff00 },
+            { id: 'gold',    name: 'GOLD',    cost: 900, body: 0xffd700, limb: 0xff8800 }];
+        function progGet() {
+            try { const p = JSON.parse(ls.get(PROG_KEY, '')) || {};
+                return { level: p.level || 1, coins: p.coins || 0, stars: p.stars || 0,
+                         daily: p.daily || '', goal: p.goal || 0, unlocks: p.unlocks || [], skin: p.skin || 'cyan', lastAt: p.lastAt || 0 };
+            } catch (e) { return { level: 1, coins: 0, stars: 0, daily: '', goal: 0, unlocks: [], skin: 'cyan' }; }
+        }
+        function progSet(p) {
+            ls.set(PROG_KEY, JSON.stringify({ level: p.level, coins: Math.floor(p.coins), stars: p.stars,
+                daily: p.daily, goal: p.goal, unlocks: p.unlocks, skin: p.skin, lastAt: Date.now() }));
+            /* keep the career blob fresh so the arcade (and the player) always sees progress, not only after a crash */
+            if (!window.__ndHb) { window.__ndHb = setInterval(function () { try { progSet(progGet()); } catch (e) {} }, 15000); }
+            paintProg();
+        }
+        try { progSet(progGet()); } catch (e) {}
+        function dailyKey() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+        function dailyGoal() {   // date-seeded coin target, same all day
+            const dk = dailyKey(); let h = 2166136261;
+            for (let i = 0; i < dk.length; i++) { h ^= dk.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+            return 25 + (h % 8) * 10;
+        }
+        function applySkin(id) {
+            const s = SKINS.find(x => x.id === id) || SKINS[0];
+            bodyMat.color.setHex(s.body); bodyMat.emissive.setHex(s.body);
+            limbMat.color.setHex(s.limb); limbMat.emissive.setHex(s.limb);
+        }
+        function paintProg() {
+            const P = progGet(), el = document.getElementById('prog-line');
+            if (!el) return;
+            el.innerHTML = 'LVL <b>' + P.level + '</b> &nbsp;★ <b>' + P.stars + '</b> &nbsp;·&nbsp; <b>' + Math.floor(P.coins) + '</b> COINS BANKED';
+            const done = P.daily === dailyKey();
+            const dl = document.getElementById('daily-line');
+            if (dl) dl.innerHTML = done ? 'DAILY GOAL DONE ★ — new goal tomorrow'
+                : 'TODAY&#39;S GOAL: collect <b>' + (P.goal || dailyGoal()) + '</b> coins in one run for a ★ + 50 bank coins';
+            const row = document.getElementById('skin-row');
+            if (row) {
+                row.innerHTML = SKINS.map(s => {
+                    const owned = s.cost === 0 || P.unlocks.indexOf(s.id) >= 0;
+                    const equipped = P.skin === s.id;
+                    const afford = P.coins >= s.cost;
+                    const label = owned ? (equipped ? '▶ ' + s.name : s.name) : s.name + ' ' + s.cost + '🪙';
+                    return '<button class="pill small" data-skin="' + s.id + '"' +
+                        (equipped ? ' aria-pressed="true"' : '') +
+                        (!owned && !afford ? ' style="opacity:0.45"' : '') + '>' + label + '</button>';
+                }).join('');
+                row.querySelectorAll('[data-skin]').forEach(b => b.addEventListener('click', () => buySkin(b.dataset.skin)));
+            }
+        }
+        function buySkin(id) {
+            const s = SKINS.find(x => x.id === id); if (!s) return;
+            const P = progGet();
+            if (P.unlocks.indexOf(id) >= 0 || s.cost === 0) { P.skin = id; progSet(P); applySkin(id); playTone(600, 0.12, 'square', 0.2); return; }
+            if (P.coins >= s.cost) {
+                P.coins -= s.cost; P.unlocks.push(id); P.skin = id;
+                progSet(P); applySkin(id); playPowerup();
+                const lt = document.getElementById('level-toast');
+                lt.textContent = s.name + ' SKIN UNLOCKED!'; lt.style.display = 'block';
+                setTimeout(() => { lt.style.display = 'none'; }, 1800);
+            } else {
+                playTone(160, 0.2, 'sawtooth', 0.2);
+                const dl = document.getElementById('daily-line');
+                if (dl) dl.innerHTML = 'Need <b>' + Math.ceil(s.cost - P.coins) + '</b> more bank coins for ' + s.name + ' — run and collect!';
+            }
+        }
         let runT = 0, level = 1, levelT = 0;
         let tut = 0;               // first run coach: 0 off, 1 lanes, 2 jump, 3 slide, 4 done
         let coachTimer = null;
@@ -635,6 +710,7 @@
         const bodyMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.6 });
         const limbMat = new THREE.MeshStandardMaterial({ color: 0xff00ff, emissive: 0xff00ff, emissiveIntensity: 0.4 });
         const trimMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.8 });
+        applySkin(progGet().skin);   // equip the saved runner colours
 
         // Head
         const headGeo = new THREE.SphereGeometry(0.35, 12, 12);
@@ -1281,6 +1357,14 @@
             }
             const rank = cheated() ? -1 : addTop(finalScore);
             paintTop(rank);
+            // progress banking: run coins -> bank, best level, daily goal star
+            const P = progGet();
+            P.coins += Math.floor(coins);
+            P.level = Math.max(P.level, level || 1);
+            const goal = dailyGoal(), today = dailyKey();
+            if (P.goal !== goal) P.goal = goal;
+            if (P.daily !== today && Math.floor(coins) >= goal) { P.daily = today; P.stars += 1; P.coins += 50; }
+            if (!cheated()) progSet(P);
             sdk('state', { scene: 'over', score: finalScore });
             document.getElementById('final-score').textContent = finalScore;
             document.getElementById('final-coins').textContent = Math.floor(coins);
@@ -1298,9 +1382,10 @@
         }
 
         // ============ COLLISION ============
+        const V1 = new THREE.Vector3(), V2 = new THREE.Vector3(), V3 = new THREE.Vector3();   // hoisted scratch vectors: no per-frame allocation
         function checkCollisions() {
             if (dead) return;
-            const playerPos = new THREE.Vector3(playerX, playerY, 0);
+            const playerPos = V1.set(playerX, playerY, 0);
             const playerRadius = 0.5;
             obstacleGroup.children.forEach(o => {
                 if (!o.visible || !o.inUse) return;
@@ -1596,8 +1681,8 @@
                 c.rotation.y += delta * 3;
                 if (c.userData.powerup) c.rotation.x += delta * 2;
                 if (magnetTimer > 0 && !c.userData.powerup) {
-                    const dir = new THREE.Vector3(playerX, playerY + 0.5, 0).sub(c.position).normalize();
-                    c.position.add(dir.multiplyScalar(delta * 5));
+                    V3.set(playerX, playerY + 0.5, 0).sub(c.position).normalize();
+                    c.position.addScaledVector(V3, delta * 5);
                 }
             });
 
@@ -1606,7 +1691,7 @@
 
             particleGroup.children.forEach(p => {
                 if (p.visible) {
-                    p.position.add(p.vel.clone().multiplyScalar(delta));
+                    p.position.addScaledVector(p.vel, delta);
                     p.vel.y -= 9.8 * delta;
                     p.life -= delta;
                     if (p.life <= 0) {
@@ -1618,8 +1703,8 @@
             });
 
             // Camera
-            const camTarget = new THREE.Vector3(playerX * 0.3, 5.2 + playerY * 0.1, 11);
-            camera.position.lerp(camTarget, 0.1);
+            V2.set(playerX * 0.3, 5.2 + playerY * 0.1, 11);
+            camera.position.lerp(V2, 0.1);
             camera.lookAt(playerX * 0.5, 1.5 + playerY * 0.2, -8);
             camera.fov = 70 + (speed - PLAYER_SPEED_START) * 0.4;
             camera.updateProjectionMatrix();
@@ -1699,6 +1784,8 @@
             paintTitle();
         });
         paintTitle();
+        // seed today's goal if the saved blob is from an older day, then paint the progression line
+        { const P0 = progGet(); if (P0.goal !== dailyGoal()) { P0.goal = dailyGoal(); progSet(P0); } else paintProg(); }
 
         // ============ HIGH-SCORE TABLE: top 5 runs per difficulty ============
         function readTop() { try { return JSON.parse(ls.get('neonDashTop', '{}')) || {}; } catch (e) { return {}; } }
