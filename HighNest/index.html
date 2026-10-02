@@ -62,6 +62,24 @@
   .seg button:focus-visible,.btn:focus-visible{outline:3px solid var(--rust);outline-offset:2px}
   .seglab{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dust);font-weight:700;margin-top:16px}
 
+  /* foreman's log: the career strip on the title card (level, XP, stars, coins, daily goal, wood skins) */
+  #hnlog{margin-top:14px;text-align:left}
+  #hnlog .row{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+  #hnlog .lv{font-family:var(--display);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;
+    background:var(--ochre);border:2px solid var(--ink);box-shadow:3px 3px 0 rgba(43,33,23,.35);padding:5px 10px}
+  #hnlog .xp{flex:1 1 110px;height:10px;border:2px solid var(--ink);background:var(--paper);overflow:hidden}
+  #hnlog .xp i{display:block;height:100%;width:0;background:var(--sage);transition:width .4s}
+  #hnlog .pill{font-size:.8rem;font-weight:700;border:2px solid var(--ink);background:var(--paper);
+    padding:4px 10px;box-shadow:3px 3px 0 rgba(43,33,23,.35)}
+  #hnlog .daily{flex:1 1 100%;font-size:.8rem;color:var(--rust);font-weight:700;min-height:26px}
+  #hnlog .daily.done{color:var(--sage)}
+  #hnwood{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+  #hnwood button{min-height:40px;cursor:pointer;font-size:.72rem;font-weight:800;letter-spacing:.04em;
+    text-transform:uppercase;font-family:var(--display);color:var(--ink);border:2px solid var(--ink);
+    background:var(--paper);box-shadow:2px 2px 0 rgba(43,33,23,.35);padding:2px}
+  #hnwood button.on{background:var(--ochre)}
+  #hnearn{margin-top:10px;font-weight:700;font-size:.9rem;color:var(--rust)}
+
   /* codes-on tag: a paper tab under the scoreboard */
   .codes-on{display:inline-block;margin-top:8px;padding:3px 10px;border:2px solid var(--ink);background:var(--ochre);
     color:var(--ink);font-family:var(--display);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;
@@ -113,6 +131,7 @@
     <div class="cell"><span class="lab">Height</span><span class="val" id="height">0m</span></div>
     <div class="cell"><span class="lab">Combo</span><span class="val" id="combo">—</span></div>
     <div class="cell"><span class="lab">Best</span><span class="val" id="best">0</span></div>
+    <div class="cell"><span class="lab">Crew</span><span class="val" id="hudLv">LV 1</span></div>
   </div>
   <div class="codes-on" id="codesOn" hidden>Codes on</div>
   </div>
@@ -140,6 +159,12 @@
     <button type="button" data-diff="normal" aria-pressed="true">Normal</button>
     <button type="button" data-diff="hard" aria-pressed="false">Hard</button>
   </div>
+  <div id="hnlog">
+    <div class="row"><span class="lv" id="hnLv">Crew LV 1</span><span class="xp"><i id="hnXp"></i></span>
+      <span class="pill">★ <b id="hnStars">0</b></span><span class="pill">🪙 <b id="hnCoins">0</b></span></div>
+    <div class="daily" id="hnDaily"></div>
+    <div id="hnwood"></div>
+  </div>
   <p class="hint">Tap · click · space — anywhere drops the plank</p>
 </div></div>
 
@@ -148,6 +173,7 @@
   <div class="title" style="font-size:2.2rem;margin-top:6px">Holding</div>
   <div class="rule"></div>
   <button class="btn" id="resume">Back to work</button>
+  <button class="btn quiet" id="pauseHelp">How to play</button>
   <button class="btn quiet" id="abandon">Knock it down</button>
 </div></div>
 
@@ -157,6 +183,7 @@
   <div class="rule"></div>
   <div id="newbest">★ NEW BEST ★</div>
   <div id="overStats" style="text-align:left"></div>
+  <div id="hnearn"></div>
   <button class="btn" id="again">Build another</button>
   <button class="btn quiet" id="menu2">Back to the shed</button>
 </div></div>
@@ -176,6 +203,64 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
              set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let REC=store.get('hn_rec',{games:0,best:0,planks:0,perfects:0});
 
+/* ═══ foreman's log: career levels, stars, coins, wood skins, a daily job and badges ═══
+   Saved in hn_career (written at load and after every build). Skins repaint the planks. */
+const CAR=Object.assign({lvl:1,xp:0,stars:0,coins:0,builds:0,
+  wood:{owned:['pine'],cur:'pine'},daily:{d:'',goal:0,done:false},ach:{}},
+  store.get('hn_career',{}));
+const saveCar=()=>store.set('hn_career',CAR);
+saveCar();   /* the save exists from the first load */
+const WOODS=[{id:'pine',name:'Pine',cost:0,wood:['#c99a5f','#b98a54','#a1743f']},
+  {id:'cherry',name:'Cherry',cost:60,wood:['#d98a6a','#c1543a','#8f3a2a']},
+  {id:'walnut',name:'Walnut',cost:120,wood:['#8a6a4a','#5e4226','#3f2c1a']},
+  {id:'frost',name:'Frost',cost:200,wood:['#bcd9e8','#9dbfd4','#7ba3bd']}];
+function woodNow(){return (WOODS.find(w=>w.id===CAR.wood.cur)||WOODS[0]).wood;}
+const carXpNeed=l=>70+(l-1)*50;
+const DAILY_JOBS=['Stack 10 planks in one build','Stack 20 planks in one build','Land 6 PERFECTs in one build'];
+function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function rollDaily(){const t=todayKey();if(CAR.daily.d===t)return;
+  let s=0;for(let i=0;i<t.length;i++)s=(s*31+t.charCodeAt(i))>>>0;
+  CAR.daily={d:t,goal:s%DAILY_JOBS.length,done:false};saveCar()}
+rollDaily();
+function carAch(id,title){if(CAR.ach[id])return;CAR.ach[id]=1;saveCar();
+  try{if(SDK&&SDK.profile)SDK.profile.achievement('hn-'+id,{title,desc:title,tier:'bronze'})}catch(e){}}
+function carAward(planks,perfects,combo){ /* one finished build -> coins, stars, xp, daily, badges */
+  rollDaily();
+  const coins=Math.round(planks*2+perfects*3), stars=Math.min(3,Math.floor(planks/15)+(planks>=5?1:0)), xp=planks*3+perfects*4;
+  if(!cheated()){
+    CAR.coins+=coins;CAR.stars+=stars;CAR.xp+=xp;CAR.builds++;
+    while(CAR.xp>=carXpNeed(CAR.lvl)){CAR.xp-=carXpNeed(CAR.lvl);CAR.lvl++}
+    if(!CAR.daily.done){const g=CAR.daily.goal;
+      if((g===0&&planks>=10)||(g===1&&planks>=20)||(g===2&&perfects>=6)){CAR.daily.done=true;CAR.coins+=50;}}
+    carAch('frame10',planks>=10,'Ten-plank frame');
+    carAch('combo4',combo>=4,'Four PERFECTs in a row');
+    carAch('planks100',REC.planks>=100,'A hundred planks stacked');
+    carAch('lvl5',CAR.lvl>=5,'Crew level 5');
+  }
+  saveCar();renderCar();
+  return {coins:cheated()?0:coins,stars:cheated()?0:stars,xp:cheated()?0:xp};
+}
+function renderCar(){
+  const lv=$('#hnLv');if(!lv)return;
+  lv.textContent='Crew LV '+CAR.lvl;
+  $('#hnXp').style.width=Math.min(100,CAR.xp/carXpNeed(CAR.lvl)*100)+'%';
+  $('#hnStars').textContent=CAR.stars;$('#hnCoins').textContent=CAR.coins;
+  const d=$('#hnDaily');
+  d.textContent=(CAR.daily.done?'Daily job done ✓ ':'Today\'s job: ')+DAILY_JOBS[CAR.daily.goal];
+  d.classList.toggle('done',!!CAR.daily.done);
+  const shop=$('#hnwood');
+  shop.innerHTML=WOODS.map(w=>{const owned=CAR.wood.owned.indexOf(w.id)>=0,on=CAR.wood.cur===w.id;
+    return `<button type="button" data-w="${w.id}" class="${on?'on':''}">${w.name}${owned?'':`<br>${w.cost}🪙`}</button>`}).join('');
+  shop.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    const w=WOODS.find(x=>x.id===b.dataset.w),owned=CAR.wood.owned.indexOf(w.id)>=0;
+    if(!owned){if(CAR.coins<w.cost)return;CAR.coins-=w.cost;CAR.wood.owned.push(w.id)}
+    CAR.wood.cur=w.id;saveCar();P.wood=woodNow();renderCar();AU.init();AU.click();});
+}
+function paintLog(){
+  const lv=$('#hnLv');if(!lv)return; rollDaily(); renderCar();
+}
+paintLog();
+
 /* ═══ arcade wiring, difficulty, codes, reduced motion ═══ */
 const SDK=window.ArcadeSDK||null;
 const sdk=(fn,a)=>{try{if(SDK)SDK[fn](a)}catch(e){}};
@@ -194,6 +279,7 @@ let tut=0;   /* first-run coach: 0 off, 1 waiting for the first drop, 2 praising
 const P={ink:'#2b2117',paper:'#f4ead8',bone:'#cbb99b',rust:'#c1543a',ochre:'#d99a3c',
          sage:'#7d9470',dust:'#a8846b',wood:['#c99a5f','#b98a54','#a1743f'],
          bark:'#7a5733',barkD:'#5e4226'};
+P.wood=woodNow();   /* the equipped wood skin (foreman's log) repaints the planks */
 
 /* ═══ audio: mallet thocks and bottle chimes. wood, not synths. ═══ */
 const AU={ctx:null,on:store.get('hn_snd',true),
@@ -304,6 +390,7 @@ function gameOver(){
     REC.planks+=state.count;REC.perfects+=state.perfects;store.set('hn_rec',REC);}
   state.best=bestOf();
   AU.over();
+  const earn=carAward(state.count,state.perfects,state.bestCombo);   /* crew log: xp, coins, stars, the daily job */
   $('#overKick').textContent=state.count>=bestOf()*0.9?'Solid frame work':'The foreman whistles';
   $('#overTitle').textContent=state.count<8?'Kindling':state.count<25?'Timber!':state.count<60?'A Proper Nest':'Sky Roost';
   $('#newbest').style.display=nb?'block':'none';
@@ -311,12 +398,14 @@ function gameOver(){
     ['Perfects',state.perfects],['Best combo','×'+state.bestCombo],['Best · '+DIFF[diff].name,bestOf()]]
     .concat(codes?[['Codes on','best not saved']]:[])
     .map(([a,b])=>`<div class="log"><span>${a}</span><b>${b}</b></div>`).join('');
+  $('#hnearn').textContent=codes?'Codes on: the log is not updated':`Log: +${earn.xp} XP · +${earn.coins}🪙 · +${earn.stars}★ · Crew LV ${CAR.lvl}`;
   show('#s-over');$('#hud').style.display='none';
-  sdk('state',{scene:'over',score:state.count});
+  sdk('state',{scene:'over',score:state.count,level:CAR.lvl,stars:CAR.stars});
 }
 function hud(){
   $('#score').textContent=state.count;$('#height').textContent=(state.count*.5).toFixed(1)+'m';
   $('#best').textContent=cheated()?bestOf():Math.max(bestOf(),state.count);
+  $('#hudLv').textContent='LV '+CAR.lvl;
   $('#codesOn').hidden=!cheated();
   const c=$('#combo');c.textContent=state.combo>0?'×'+state.combo:'—';
   c.classList.toggle('hot',state.combo>1);
@@ -566,6 +655,7 @@ document.addEventListener('visibilitychange',()=>{   /* the SDK freezes everythi
   if(!SDK&&document.hidden&&state.phase==='play'&&!state.paused)togglePause();});
 $('#play').onclick=()=>startGame();
 $('#resume').onclick=togglePause;
+$('#pauseHelp').onclick=()=>coachShow();   /* the foreman's lesson again, right over the pause card */
 $('#abandon').onclick=()=>{state.paused=false;gameOver();};
 $('#again').onclick=restart;
 $('#menu2').onclick=toMenu;

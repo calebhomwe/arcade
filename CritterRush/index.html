@@ -124,6 +124,12 @@
     </div>
     <script src="vendor/three.classic.js"></script>
 <script>
+/* FREEZE FIX: this used to be one synchronous top-level script - the WebGL context,
+   four critters, ~90 obstacles, 200 trees/bushes, 70 clouds and the first render all
+   built in ONE frame (a reproduced multi-second FREEZE during load). The same code now
+   runs inside an async boot that yields to the browser between build chunks. */
+(async () => {
+        const __y = () => new Promise(r => setTimeout(r, 0));
 
         // --- Setup ---
         const scene = new THREE.Scene();
@@ -141,6 +147,7 @@
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.2;
         document.body.appendChild(renderer.domElement);
+        await __y();   // chunk: GL context exists
 
         // --- Lights ---
         const sunLight = new THREE.DirectionalLight(0xfff5e0, 1.5);
@@ -160,6 +167,7 @@
         const fillLight = new THREE.DirectionalLight(0xbfe3ff, 0.75);
         fillLight.position.set(-10, 10, -10);
         scene.add(fillLight);
+        await __y();   // chunk: lights in
 
         // --- Audio ---
         let audioCtx = null;
@@ -498,8 +506,9 @@
             return g;
         }
 
-        RACER_DEFS.forEach((def, i) => {
-            const mesh = buildCritter(def.char);
+        for (let i = 0; i < RACER_DEFS.length; i++) {
+            const def = RACER_DEFS[i];
+            const mesh = buildCritter(def.char);   // one critter per frame chunk
             const zOff = (i === 0) ? 1.8 : (i === 1 ? 0.6 : (i === 2 ? -0.6 : -1.8));
             mesh.position.set(i * 3, groundY(i * 3), zOff);
             mesh.scale.set(kindScale(def.char), kindScale(def.char), kindScale(def.char));
@@ -530,7 +539,8 @@
                 baseSpeed: def.isPlayer ? 0 : BASE_SPEED * (0.94 + Math.random() * 0.12) * (0.92 + def.skill * 0.18),
                 shield: false
             });
-        });
+            await __y();   // chunk: one critter built
+        }
 
         function kindScale(kind) {
             if (kind === 'bear') return 1.35;
@@ -756,6 +766,7 @@
             createObstacle(type, x);
             lastObstacleX = x;
         }
+        await __y();   // chunk: obstacles placed
 
         // Crates
         for (let x = 15; x < TRACK_LENGTH - 10; x += 15 + rnd() * 10) {

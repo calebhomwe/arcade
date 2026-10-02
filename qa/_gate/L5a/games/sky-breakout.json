@@ -1,0 +1,226 @@
+{
+ "id": "sky-breakout",
+ "title": "Brick Breaker",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/breakout.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-breakout-1-title.jpg",
+  "2-mid": "shots\\sky-breakout-2-mid.jpg",
+  "3-end": "shots\\sky-breakout-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 4.31,
+  "contentionSamples": [
+   1.94,
+   1,
+   8.42,
+   26.02,
+   1,
+   4.38,
+   4.31
+  ]
+ },
+ "loadMs": 188,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/breakout.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/breakout.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.2,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 4,
+  "loadMs": 19,
+  "playMs": 232,
+  "loadRawMs": 76,
+  "playRawMs": 929,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 38,
+  "longTasks100Play": 2,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 291,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 2,
+  "slowestPollMs": 1592,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 943.8,
+   "blocking": 879.1,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     929
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 397.4,
+   "blocking": 330.3,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     207
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 354.7,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 1222,
+  "jsMedian": 0.07,
+  "jsP95": 6.38,
+  "jsP99": 13.28,
+  "jsMax": 232.3,
+  "jsP95Raw": 25.5,
+  "rawWithGlP95": 25.5,
+  "glP95": 0,
+  "gapP95": 50,
+  "gapMedian": 16.7,
+  "over100": 1,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2,
+  "heap1MB": 2,
+  "heapGrowthPct": 2,
+  "heapMeasured": true,
+  "nodesStart": 30,
+  "nodesEnd": 31,
+  "nodesMax": 31,
+  "listeners0": 58,
+  "listeners1": 58,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 13,
+   "totalMB": 3.8,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 170,
+     "h": 32,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 170,
+     "h": 32,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 170,
+     "h": 32,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 32,
+  "scriptPct": 17,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 1,
+  "restartsAfterOver": 1
+ },
+ "gameScore": {
+  "updates": 1,
+  "first": 80,
+  "last": 80,
+  "max": 80,
+  "trajectory": [
+   [
+    18,
+    80
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 5,
+  "swipes": 0,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 142,
+  "inputLatencyP95Ms": 349,
+  "inputLatencyMaxMs": 349,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 20.6,
+  "maxChangeFromStartPct": 1.5,
+  "samples": 2
+ },
+ "severity": 0.2
+}

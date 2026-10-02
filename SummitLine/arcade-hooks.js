@@ -247,8 +247,13 @@
   function aload(p) {
     if (SA.bufs[p] !== undefined) return Promise.resolve(SA.bufs[p]);
     if (!SA.loading[p]) SA.loading[p] = W.fetch('audio/' + p).then(function (r) { if (!r.ok) throw new Error(p); return r.arrayBuffer(); })
-      .then(function (b) { return new Promise(function (res, rej) { SA.a.ctx.decodeAudioData(b, res, rej); }); })
-      .then(function (buf) { SA.bufs[p] = buf; return buf; }, function () { SA.bufs[p] = null; return null; });   // a missing file stays silent
+      .then(function (b) {
+        // promise form, always caught: a codec-less engine stays silent instead of throwing an uncaught EncodingError
+        var dec = null;
+        try { dec = SA.a.ctx.decodeAudioData(b); } catch (e) { return null; }
+        return Promise.resolve(dec).catch(function () { return null; });
+      })
+      .then(function (buf) { SA.bufs[p] = buf || null; return SA.bufs[p]; }, function () { SA.bufs[p] = null; return null; });   // a missing file stays silent
     return SA.loading[p];
   }
   function level(bus, k, v) { if (bus && SA.lv[k] !== v) { SA.lv[k] = v; try { bus.gain.setTargetAtTime(v, SA.a.ctx.currentTime, 0.08); } catch (e) {} } }
@@ -358,7 +363,7 @@
       } else if (st === 'finish') crowd();
       else if (st === 'results') {
         var p = player() || {}, place = parseInt(($('resPlace') || {}).textContent, 10) || null;
-        SDK.state({ scene: 'over', score: p.score || 0, time: p.finishTime, place: place, rank: ($('resRank') || {}).textContent, codes: !!SDK.cheated });
+        SDK.state({ scene: 'over', score: p.score || 0, level: CAREER.lvl, stars: CAREER.stars, time: p.finishTime, place: place, rank: ($('resRank') || {}).textContent, codes: !!SDK.cheated });
       }
       lastState = st;
     }
@@ -379,4 +384,188 @@
     onCheat: cheat,
     tricks: TRICKS,
   });
+
+  /* ---------- career: levels, stars, coins, skins, a daily challenge and badges ----------
+   * Saved in summitline.career. The title shows the circuit strip (level + XP bar, stars, coins,
+   * the daily goal, a Skins shop); the results panel shows what a run earned. Skins re-colour the
+   * player's jacket, helmet and goggle lens before the riders are built. */
+  var CAREER = {
+    lvl: 1, xp: 0, stars: 0, coins: 0, races: 0, wins: 0, podiums: 0, bestScore: 0,
+    skins: { owned: ['ember'], cur: 'ember' },
+    daily: { d: '', kind: 0, prog: 0, done: false, streak: 0 },
+    ach: {},
+  };
+  try { var savedC = JSON.parse(localStorage.getItem('summitline.career') || 'null'); if (savedC) { for (var k in CAREER) if (savedC[k] !== undefined) CAREER[k] = savedC[k]; } } catch (e) {}
+  function saveCareer() { try { localStorage.setItem('summitline.career', JSON.stringify(CAREER)); } catch (e) {} }
+  saveCareer();   // written at boot too: the save exists even before the first race finishes
+  var SKINS = [
+    { id: 'ember',   name: 'Ember',   cost: 0,    jacket: 0xff5a1f, jacket2: 0x16213a, helmet: 0xf2f4f7, lens: 0xff8a1a, gaiter: 0x2a3a52 },
+    { id: 'glacier', name: 'Glacier', cost: 300,  jacket: 0x9fdcff, jacket2: 0x123a5e, helmet: 0xeaf6ff, lens: 0x2f8cff, gaiter: 0x123a5e },
+    { id: 'toxic',   name: 'Toxic',   cost: 600,  jacket: 0xa6ff3d, jacket2: 0x1c2a10, helmet: 0x14161a, lens: 0x7cff3d, gaiter: 0x33511a },
+    { id: 'royal',   name: 'Royal',   cost: 1000, jacket: 0x8b4dff, jacket2: 0xffd35a, helmet: 0xffd35a, lens: 0xff3d9a, gaiter: 0x4a2a80 },
+  ];
+  function curSkin() { var s = SKINS.find(function (x) { return x.id === CAREER.skins.cur; }); return s || SKINS[0]; }
+  function applySkin() {
+    var s = curSkin();
+    import('./js/rider.js').then(function (m) {
+      var p = m.PALETTES && m.PALETTES.player; if (!p) return;
+      p.jacket = s.jacket; p.jacket2 = s.jacket2; p.helmet = s.helmet; p.lens = s.lens; p.gaiter = s.gaiter;
+    }).catch(function () {});
+  }
+  applySkin();
+  function xpNeed(l) { return 220 + (l - 1) * 140; }
+  function addXp(n) {
+    CAREER.xp += n; var ups = 0;
+    while (CAREER.xp >= xpNeed(CAREER.lvl)) { CAREER.xp -= xpNeed(CAREER.lvl); CAREER.lvl++; ups++; }
+    if (ups) unlockAch('level5', CAREER.lvl >= 5, 'Rider level 5');
+    return ups;
+  }
+  function unlockAch(id, cond, title) {
+    if (!cond || CAREER.ach[id]) return false;
+    CAREER.ach[id] = 1; saveCareer();
+    try { SDK.profile && SDK.profile.achievement('sl-' + id, { title: title, desc: title, tier: 'silver' }); } catch (e) {}
+    return true;
+  }
+  var DAILY_GOALS = ['Finish a race', 'Finish 1st or 2nd', 'Score 4,000+ trick points'];
+  function todayKey() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function rollDaily() {
+    var t = todayKey(); if (CAREER.daily.d === t) return;
+    var seed = 0; for (var i = 0; i < t.length; i++) seed = (seed * 31 + t.charCodeAt(i)) >>> 0;
+    CAREER.daily = { d: t, kind: seed % DAILY_GOALS.length, prog: 0, done: false, streak: CAREER.daily.streak || 0 };
+    saveCareer();
+  }
+  function tickDaily(place, score, finished) {
+    rollDaily();
+    if (CAREER.daily.done || !finished) return;
+    if (CAREER.daily.kind === 0) CAREER.daily.prog = 1;
+    else if (CAREER.daily.kind === 1 && place <= 2) CAREER.daily.prog = 1;
+    else if (CAREER.daily.kind === 2 && score >= 4000) CAREER.daily.prog = 1;
+    if (CAREER.daily.prog >= 1) {
+      CAREER.daily.done = true; CAREER.daily.streak = (CAREER.daily.streak || 0) + 1;
+      CAREER.coins += 150; saveCareer();
+    }
+  }
+  function awardRun(place, score) {
+    rollDaily();
+    var coins = Math.round(score / 50) + [0, 120, 80, 50][Math.min(place, 4)] || 20;
+    if (place > 3) coins = Math.round(score / 50) + 20;
+    var stars = place === 1 ? 3 : place === 2 ? 2 : place === 3 ? 1 : 0;
+    var xp = Math.round(score / 100) + (4 - Math.min(place, 4)) * 20;
+    CAREER.races++; if (place === 1) CAREER.wins++; if (place <= 3) CAREER.podiums++;
+    if (score > CAREER.bestScore && !SDK.cheated) CAREER.bestScore = score;
+    CAREER.coins += SDK.cheated ? 0 : coins;
+    CAREER.stars += SDK.cheated ? 0 : stars;
+    var ups = SDK.cheated ? 0 : addXp(xp);
+    tickDaily(place, score, true);
+    unlockAch('firstwin', place === 1 && !SDK.cheated, 'First victory');
+    unlockAch('podium5', CAREER.podiums >= 5, 'Five podiums');
+    unlockAch('score8k', score >= 8000, '8,000 trick points in one run');
+    saveCareer();
+    return { coins: SDK.cheated ? 0 : coins, stars: SDK.cheated ? 0 : stars, xp: SDK.cheated ? 0 : xp, ups: ups };
+  }
+
+  /* ---------- career UI: title circuit strip + results earnings + skins shop ---------- */
+  var cCss = doc.createElement('style');
+  cCss.textContent =
+    '#circuit{margin:10px auto 0;max-width:340px;display:flex;flex-direction:column;gap:8px;font-family:var(--font)}' +
+    '#circuit .rowline{display:flex;align-items:center;gap:10px;font-weight:800;font-size:14px;letter-spacing:.02em;color:#fff}' +
+    '#circuit .lvl{font:800 italic 15px/1 var(--cond);letter-spacing:.06em;text-transform:uppercase;color:#0b1a30;background:linear-gradient(100deg,var(--accent2),#ffe08a);padding:6px 10px;border-radius:5px;transform:skewX(-8deg)}' +
+    '#circuit .xpbar{flex:1;height:9px;border-radius:5px;background:#12233d;border:1px solid #2c4a74;overflow:hidden}' +
+    '#circuit .xpbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:5px;transition:width .5s}' +
+    '#circuit .pill{font-size:13px;min-height:26px;display:flex;align-items:center;gap:4px;color:#dfeaff;background:#12233dbf;border:1px solid #2c4a74;border-radius:99px;padding:4px 11px}' +
+    '#circuit .daily{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;color:#ffe08a}' +
+    '#circuit .daily.done{color:#8dffb0}' +
+    '.sl-skins{display:none;flex-wrap:wrap;gap:8px;justify-content:center}' +
+    '.sl-skins.open{display:flex}' +
+    '.sl-skins button{font:700 13px var(--font);color:#fff;background:#12233dcc;border:1.5px solid #2c4a74;border-radius:99px;padding:9px 14px;min-height:40px;cursor:pointer;touch-action:manipulation}' +
+    '.sl-skins button .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}' +
+    '.sl-skins button.on{border-color:var(--accent);background:var(--accent);color:#0b1a30}' +
+    '.sl-earn{margin:12px 0 0;font-weight:800;font-size:14px;color:#33455e;text-align:center}' +
+    '.sl-earn b{color:var(--ink)}' +
+    '@media (prefers-reduced-motion:reduce){#circuit .xpbar i{transition:none}}';
+  (doc.head || doc.body).appendChild(cCss);
+  function fmt(n) { return n.toLocaleString('en-GB'); }
+  var circuit = null, shop = null;
+  function ensureCircuit() {
+    if (circuit) return circuit;
+    circuit = doc.createElement('div'); circuit.id = 'circuit';
+    circuit.innerHTML =
+      '<div class="rowline"><span class="lvl">Rider LV <b class="lv">1</b></span><span class="xpbar"><i></i></span></div>' +
+      '<div class="rowline"><span class="pill">★ <b class="st">0</b></span><span class="pill">🪙 <b class="co">0</b></span>' +
+      '<span class="pill daily"></span></div>' +
+      '<button type="button" class="pill skins-btn" style="cursor:pointer;width:100%;justify-content:center">🎨 Skins &amp; board wax</button>' +
+      '<div class="sl-skins"></div>';
+    var best = $('bestLbl'); if (best && best.parentNode) best.parentNode.insertBefore(circuit, best); else doc.body.appendChild(circuit);
+    shop = circuit.querySelector('.sl-skins');
+    circuit.querySelector('.skins-btn').addEventListener('click', function () { shop.classList.toggle('open'); renderShop(); });
+    return circuit;
+  }
+  function renderShop() {
+    if (!shop) return;
+    shop.innerHTML = SKINS.map(function (s) {
+      var owned = CAREER.skins.owned.indexOf(s.id) >= 0, on = CAREER.skins.cur === s.id;
+      var label = on ? s.name + ' ✓' : owned ? s.name : s.name + ' · 🪙 ' + s.cost;
+      return '<button type="button" data-skin="' + s.id + '" class="' + (on ? 'on' : '') + '"' + (owned ? '' : '') + '><span class="dot" style="background:#' + s.jacket.toString(16).padStart(6, '0') + '"></span>' + label + '</button>';
+    }).join('');
+    shop.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var s = SKINS.find(function (x) { return x.id === b.getAttribute('data-skin'); }); if (!s) return;
+        var owned = CAREER.skins.owned.indexOf(s.id) >= 0;
+        if (!owned) { if (CAREER.coins < s.cost) return; CAREER.coins -= s.cost; CAREER.skins.owned.push(s.id); }   // buy: coins are spent
+        CAREER.skins.cur = s.id; saveCareer(); applySkin(); renderShop(); renderCircuit();
+      });
+    });
+  }
+  function renderCircuit() {
+    var c = ensureCircuit();
+    c.querySelector('.lv').textContent = CAREER.lvl;
+    c.querySelector('.xpbar i').style.width = Math.min(100, CAREER.xp / xpNeed(CAREER.lvl) * 100).toFixed(1) + '%';
+    c.querySelector('.st').textContent = CAREER.stars;
+    c.querySelector('.co').textContent = fmt(CAREER.coins);
+    var d = c.querySelector('.daily');
+    d.textContent = (CAREER.daily.done ? 'Daily done · ' : 'Daily: ') + DAILY_GOALS[CAREER.daily.kind] + (CAREER.daily.done ? ' ✓' : '');
+    d.classList.toggle('done', !!CAREER.daily.done);
+    if (shop && shop.classList.contains('open')) renderShop();
+  }
+  renderCircuit();
+  var lastTitlePaint = '';
+  var circuitWatch = W.setInterval(function () {
+    var st = gstate();
+    var want = st === 'title' || st === 'results' ? '' : 'none';
+    if (want !== lastTitlePaint) { lastTitlePaint = want; var c = ensureCircuit(); c.style.display = want; }
+    if (st === 'title') { rollDaily(); renderCircuit(); }
+  }, 400);
+
+  /* ---------- results: earnings line + level/star reporting ---------- */
+  var resObserved = null;
+  var resultsWatch = W.setInterval(function () {
+    var st = gstate(); if (st !== 'results') { resObserved = null; return; }
+    var p = player(); if (!p || resObserved === p) return;
+    resObserved = p;
+    var place = parseInt(($('resPlace') || {}).textContent, 10) || 4;
+    var score = p.score || 0;
+    var earn = awardRun(place, score);
+    var box = doc.createElement('p'); box.className = 'sl-earn';
+    var skinNext = SKINS.find(function (s) { return CAREER.skins.owned.indexOf(s.id) < 0; });
+    box.innerHTML = '+<b>' + earn.xp + ' XP</b> · 🪙 +<b>' + earn.coins + '</b> · ★ +<b>' + earn.stars + '</b>' +
+      (earn.ups ? ' · <b>Level up!</b> Now LV ' + CAREER.lvl : '') +
+      (skinNext ? '<br>Next unlock: ' + skinNext.name + ' kit · 🪙 ' + skinNext.cost : '');
+    var panel = $('results') && $('results').querySelector('.panel');
+    if (panel && !panel.querySelector('.sl-earn')) panel.insertBefore(box, panel.querySelector('.menu'));
+    else if (panel) panel.querySelector('.sl-earn').outerHTML = box.outerHTML;
+    renderCircuit();
+  }, 300);
+
+  /* ---------- race HUD: a small level chip next to the trick score ---------- */
+  var hudChip = null;
+  var hudWatch = W.setInterval(function () {
+    var st = gstate(); if (st !== 'race' && st !== 'countdown') return;
+    if (!hudChip) {
+      var hud = $('hud'); if (!hud) return;
+      hudChip = doc.createElement('div');
+      hudChip.style.cssText = 'position:absolute;top:calc(52px + env(safe-area-inset-top,0px));right:14px;font:800 italic 14px var(--cond);letter-spacing:.06em;color:#fff;background:#12233dbf;border:1px solid #2c4a74;border-radius:99px;padding:5px 10px';
+      hud.appendChild(hudChip);
+    }
+    hudChip.textContent = 'LV ' + CAREER.lvl + ' · ★ ' + CAREER.stars + ' · 🪙 ' + CAREER.coins;
+  }, 500);
 })();

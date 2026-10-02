@@ -1,0 +1,155 @@
+{
+ "id": "hub-minesweeper",
+ "title": "Minesweeper",
+ "cat": "puzzle",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/minesweeper.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "minesBest",
+  "minesWins",
+  "mines_exp",
+  "pz_mines"
+ ],
+ "session1": {
+  "start": "#mClassic",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 15,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "minesTut",
+   "pz_mines"
+  ],
+  "savedKeysWrittenInSession1": 2,
+  "titleTextChanged": false,
+  "title1": "‹ Hub Minesweeper Goals 10 0:00 Undo 3 Hint 3 Dig Menu MINESWEEPER Dig safe. Numbers count the bombs next to them. Expeditions 18 boards · 3",
+  "title2": "‹ Hub Minesweeper Goals 10 0:00 Undo 3 Hint 3 Dig Menu MINESWEEPER Dig safe. Numbers count the bombs next to them. Expeditions 18 boards · 3",
+  "keysUpdatedAgain": [
+   "pz_mines"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 2,
+  "added": [
+   "minesTut"
+  ],
+  "changed": [
+   "pz_mines"
+  ],
+  "removed": [],
+  "sample": {
+   "pz_mines": "{\"xp\":0,\"days\":[\"2026-10-02\"],\"theme\":\"meadow\",\"seenLevel\":1,\"chest\":\"",
+   "minesTut": "\"1\""
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "levels",
+   "cosmetics"
+  ],
+  "categoriesPresent": [
+   "levels",
+   "cosmetics",
+   "other"
+  ],
+  "writesDuringPlay": {
+   "pz_mines": "3x",
+   "minesTut": "2x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": false,
+  "meta": false
+ },
+ "observedSystems": [
+  "levels",
+  "stars",
+  "goals",
+  "daily",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "unlocks"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [
+   "levels",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, cosmetics); systems seen: levels, stars, goals, daily, cosmetics; sinks cosmetics fed by levels/stars/goals/daily",
+ "expected": [
+  "levels",
+  "stars",
+  "daily",
+  "goals",
+  "unlocks"
+ ],
+ "lacks": [
+  "unlocks"
+ ],
+ "pageErrors": []
+}

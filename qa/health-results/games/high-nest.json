@@ -9,98 +9,111 @@
  "throttled": true,
  "durationS": 45,
  "orientation": "portrait",
- "verdicts": [],
- "evidence": {},
- "notes": [
-  "2 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.9)"
+ "verdicts": [
+  "FREEZE",
+  "JANK",
+  "STALL"
  ],
+ "evidence": {
+  "FREEZE": "main thread blocked 2648 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 2648 ms of JS; long-task API + timer heartbeat; longest frame 2441.2 ms: unattributed",
+  "JANK": "p95 JS frame cost 24.8 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1; raw p95 24.8, median 0.2, p99 252.1, max 772; time inside WebGL calls excluded, p95 of it 0)",
+  "STALL": "nothing on screen changed for 21 s while the bot kept tapping"
+ },
+ "notes": [],
  "shots": {
-  "1-title": "shots/high-nest-1-title.jpg",
-  "2-mid": "shots/high-nest-2-mid.jpg",
-  "3-end": "shots/high-nest-3-end.jpg"
+  "1-title": "shots\\high-nest-1-title.jpg",
+  "2-mid": "shots\\high-nest-2-mid.jpg",
+  "3-end": "shots\\high-nest-3-end.jpg"
  },
  "machine": {
-  "load1Start": 16.06,
-  "cores": 4,
-  "load1End": 16.01,
-  "contention": 1.85,
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
   "contentionSamples": [
-   1.16,
-   1.85,
-   2.18,
-   2.31,
-   1.33,
-   2.08,
-   1.37
+   1,
+   1.09,
+   7.81,
+   3.07,
+   1,
+   1,
+   1
   ]
  },
- "loadMs": 237,
+ "loadMs": 115,
  "loaded": true,
- "startUrl": "http://127.0.0.1:35287/HighNest/index.html",
- "startPath": "http://127.0.0.1:35287/HighNest/index.html",
+ "startUrl": "http://127.0.0.1:55504/HighNest/index.html",
+ "startPath": "http://127.0.0.1:55504/HighNest/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 138.8,
-  "bench1Ms": 38.1,
-  "effectiveSlowdown": 3.6
+  "benchMs": 84.6,
+  "bench1Ms": 19.1,
+  "effectiveSlowdown": 4.4
  },
  "start": {
   "how": "#play",
   "viaKey": false,
+  "detectedBy": "sdk",
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.85,
-  "loadMs": 333,
-  "playMs": 222,
-  "loadRawMs": 617,
-  "playRawMs": 410,
+  "c": 1,
+  "loadMs": 944,
+  "playMs": 2648,
+  "loadRawMs": 944,
+  "playRawMs": 2648,
   "playGlMs": 0,
   "loadGlMs": 0,
-  "longTasksPlay": 2,
-  "longTasks100Play": 0,
-  "tbtLoadMs": 0,
-  "tbtPlayMs": 46,
+  "longTasksPlay": 74,
+  "longTasks100Play": 44,
+  "tbtLoadMs": 777,
+  "tbtPlayMs": 11615,
   "longtaskApi": true,
-  "heartbeatOver100Play": 2,
-  "slowestPollMs": 124,
+  "heartbeatOver100Play": 66,
+  "slowestPollMs": 3103,
   "pollTimeouts": 0,
   "shaderCompileMs": 0,
   "shaderCompileMaxCallMs": 0
  },
  "loafTop": [
   {
-   "ms": 1099.8,
+   "ms": 2441.2,
    "blocking": 0,
    "scripts": [],
-   "phase": "load"
+   "phase": "play"
   },
   {
-   "ms": 993.9,
-   "blocking": 0,
-   "scripts": [],
-   "phase": "load"
+   "ms": 1537.7,
+   "blocking": 260.8,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     310
+    ]
+   ],
+   "phase": "play"
   },
   {
-   "ms": 878,
-   "blocking": 0,
+   "ms": 1399.9,
+   "blocking": 1336.7,
    "scripts": [],
    "phase": "play"
   }
  ],
  "rafStalls": [],
  "frames": {
-  "n": 156,
-  "jsMedian": 0.43,
-  "jsP95": 2.92,
-  "jsP99": 6.65,
-  "jsMax": 9.3,
-  "jsP95Raw": 5.4,
-  "rawWithGlP95": 5.4,
+  "n": 990,
+  "jsMedian": 0.2,
+  "jsP95": 24.8,
+  "jsP99": 252.1,
+  "jsMax": 772,
+  "jsP95Raw": 24.8,
+  "rawWithGlP95": 24.8,
   "glP95": 0,
-  "gapP95": 683.3,
-  "gapMedian": 283.3,
-  "over100": 0,
+  "gapP95": 199.9,
+  "gapMedian": 16.7,
+  "over100": 17,
   "limit": 16
  },
  "errors": [],
@@ -108,9 +121,9 @@
  "consoleErrors": [],
  "failed": [],
  "resources": {
-  "heap0MB": 1.9,
+  "heap0MB": 1.8,
   "heap1MB": 2,
-  "heapGrowthPct": 8,
+  "heapGrowthPct": 7,
   "heapMeasured": true,
   "nodesStart": 74,
   "nodesEnd": 89,
@@ -141,9 +154,9 @@
   "sdkTimers": 0
  },
  "cpu": {
-  "mainThreadBusyPct": 3,
-  "scriptPct": 1,
-  "layoutPerSec": 0.4
+  "mainThreadBusyPct": 54,
+  "scriptPct": 19,
+  "layoutPerSec": 1
  },
  "risks": [],
  "sdkDeclared": true,
@@ -166,41 +179,49 @@
  "gameScore": {
   "updates": 3,
   "first": 0,
-  "last": 0,
-  "max": 0,
+  "last": 1,
+  "max": 1,
   "trajectory": [
    [
-    9,
+    11,
     0
    ],
    [
-    16,
+    21,
     0
    ],
    [
-    19,
-    0
+    26,
+    1
    ]
   ]
  },
  "bot": {
-  "taps": 27,
+  "taps": 22,
   "swipes": 1,
   "holds": 1,
-  "keys": 2,
-  "buttonPresses": 11,
+  "keys": 1,
+  "buttonPresses": 7,
   "resumes": 0,
   "touchApi": null,
-  "inputLatencyMedianMs": 478,
-  "inputLatencyP95Ms": 4000,
-  "inputLatencyMaxMs": 4002,
-  "inputTimeouts": 2
+  "inputLatencyMedianMs": 104,
+  "inputLatencyP95Ms": 1770,
+  "inputLatencyMaxMs": 3500,
+  "inputTimeouts": 0
  },
  "screen": {
-  "longestStaticS": 14.6,
-  "changeTitleToPlayPct": 46.4,
-  "maxChangeFromStartPct": 48.7,
-  "samples": 10
+  "longestStaticS": 21.2,
+  "changeTitleToPlayPct": 48.3,
+  "maxChangeFromStartPct": 48.5,
+  "samples": 11
  },
- "severity": 0.3
+ "severity": 108.6,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [],
+  "evidence": null,
+  "blockPlayMs": 138,
+  "blockLoadMs": 321,
+  "load1": 0
+ }
 }

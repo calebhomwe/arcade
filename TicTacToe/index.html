@@ -27,12 +27,36 @@
     .intro .card { width:min(100%,420px); border:2px solid var(--line); border-radius:24px; padding:26px 22px 20px; background:linear-gradient(160deg,#122269,#080f38); box-shadow:0 0 50px #1c46b799; text-align:center; }
     .intro h2 { margin:0 0 6px; font-size:2rem; font-weight:950; letter-spacing:-.04em; } .intro h2 span { color:var(--cyan); } .intro ol { text-align:left; margin:14px 0 18px; padding-left:22px; color:#dce5ff; font-weight:650; line-height:1.6; }
     .mini { display:grid; grid-template-columns:repeat(3,34px); gap:4px; justify-content:center; margin:6px 0 2px; } .mini i { height:34px; border-radius:8px; background:#1a2a7a; font:900 22px/34px system-ui; font-style:normal; color:var(--cyan); } .mini i.w { background:#1c3b8b; box-shadow:inset 0 0 0 2px #ffd257; }
-    @media (prefers-reduced-motion: reduce) { .cell, #new, .cell.win { transition:none; animation:none; } }
+    @media (prefers-reduced-motion: reduce) { .cell, #new, .cell.win, .ocard { transition:none; animation:none; } }
+    /* career strip: level + XP, stars, coins, the daily goal, and the skins shop row */
+    #career { display:flex; flex-direction:column; gap:8px; }
+    .c-lv { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; }
+    .c-lv .lv { font-size:.85rem; font-weight:950; letter-spacing:.08em; color:#09102f; background:linear-gradient(135deg,#4beaff,#1c9ee8); border-radius:99px; padding:6px 12px; }
+    .c-lv .xp { flex:1 1 120px; max-width:190px; height:9px; border-radius:5px; background:#070d32b8; border:1px solid #2d418d; overflow:hidden; } .c-lv .xp i { display:block; height:100%; width:0; background:linear-gradient(90deg,#4beaff,#7cd0ff); transition:width .4s; }
+    .pill { font-size:.78rem; font-weight:800; color:#cfe0ff; background:#070d32b8; border:1px solid #2d418d; border-radius:99px; padding:5px 11px; min-height:30px; display:flex; align-items:center; gap:4px; }
+    .pill b { color:#fff; } .pill.daily { color:#ffd257; } .pill.daily.done { color:#7dffa8; }
+    #shopRow { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+    #shopRow button { min-height:40px; border-radius:12px; font-weight:850; font-size:.8rem; color:var(--text); background:#070d32b8; border:1.5px solid #2d418d; cursor:pointer; touch-action:manipulation; padding:6px 2px; }
+    #shopRow button.on { background:var(--cyan); color:#09102f; border-color:transparent; }
+    .over-card { position:fixed; inset:0; z-index:6; display:grid; place-items:center; background:#060a24e0; padding:22px; }
+    .over-card[hidden] { display:none; }
+    .ocard { width:min(100%,360px); border:2px solid var(--line); border-radius:24px; padding:26px 22px; background:linear-gradient(160deg,#122269,#080f38); box-shadow:0 0 50px #1c46b799; text-align:center; animation:pop .3s ease; }
+    .ocard .oh { font-size:2.1rem; font-weight:950; letter-spacing:-.03em; color:#fff; }
+    .ocard .op { margin:10px 0 4px; font-weight:850; color:#ffd257; font-size:1rem; }
+    .ocard .otip { margin:8px 0 16px; color:#dce5ff; font-weight:650; font-size:.85rem; line-height:1.5; }
+    .ocard button { width:100%; border:2px solid #54e5ff; border-radius:16px; min-height:52px; color:#04122b; background:linear-gradient(135deg,#4beaff,#1c9ee8); font-size:1.15rem; font-weight:900; cursor:pointer; }
+    @keyframes pop { from { transform:scale(.92); opacity:.4; } }
     @media (max-height:680px) { .game { gap:13px; padding-top:18px; padding-bottom:18px; } h1 { font-size:2.4rem; } .board { width:min(78vw,390px); justify-self:center; align-self:center; } .cell { font-size:4rem; } }
   </style>
 </head>
 <body>
-  <main class="game"><div class="stars"></div><div class="codes-on" id="codesOn" hidden>CODES ON</div><header><h1><span>TIC</span> <span>TAC TOE</span></h1><p>Beat the bot. You are X.</p></header><div class="score"><span>You <b id="you">0</b></span><span>Draws <b id="draws">0</b></span><span>Bot <b id="bot">0</b></span></div><section class="board" aria-label="Tic tac toe board" id="board"></section><div id="status" class="status" aria-live="polite">YOUR TURN</div><div class="controls"><button id="new">New game</button><div class="row2"><button class="ghost" id="undo" disabled>Undo</button><button class="ghost" id="hintbtn">Hint</button></div><div class="difficulty"><button class="active" data-mode="easy">EASY</button><button data-mode="hard">HARD</button></div></div></main>
+  <main class="game"><div class="stars"></div><div class="codes-on" id="codesOn" hidden>CODES ON</div><header><h1><span>TIC</span> <span>TAC TOE</span></h1><p>Beat the bot. You are X.</p></header>
+    <div id="career"><div class="c-lv"><span class="lv">LV 1</span><span class="xp"><i></i></span><span class="pill st">★ <b>0</b></span><span class="pill co">🪙 <b>0</b></span><span class="pill daily"></span></div>
+      <div id="shopRow" style="display:none"></div></div>
+    <div class="score"><span>You <b id="you">0</b></span><span>Draws <b id="draws">0</b></span><span>Bot <b id="bot">0</b></span></div><section class="board" aria-label="Tic tac toe board" id="board"></section><div id="status" class="status" aria-live="polite">YOUR TURN</div><div class="controls"><button id="new">New game</button><div class="row2"><button class="ghost" id="undo" disabled>Undo</button><button class="ghost" id="hintbtn">Hint</button></div><div class="difficulty"><button class="active" data-mode="easy">EASY</button><button data-mode="hard">HARD</button></div>
+      <div class="row2"><button class="ghost" id="howBtn">❔ How to play</button><button class="ghost" id="muteBtn">🔊</button><button class="ghost" id="skinsBtn">🎨 Skins</button></div></div>
+    <div class="over-card" id="overCard" hidden><div class="ocard"><div class="oh">You win!</div><div class="op"></div><div class="otip"></div><button id="againBtn">Play again</button></div></div>
+  </main>
   <div class="intro" id="intro" hidden role="dialog" aria-modal="true" aria-labelledby="introH"><div class="card"><h2 id="introH"><span>TIC</span> TAC TOE</h2>
     <div class="mini" aria-hidden="true"><i class="w">X</i><i></i><i></i><i></i><i class="w">X</i><i></i><i>O</i><i>O</i><i class="w">X</i></div>
     <ol><li>You are <b>X</b>. Tap an empty square.</li><li>The bot answers with <b>O</b>.</li><li>Three in a row across, down or corner to corner wins.</li></ol>
@@ -40,14 +64,94 @@
   <script>
     const boardEl=document.querySelector('#board'), status=document.querySelector('#status'); let board=Array(9).fill(''), turn='X', over=false, mode='easy', hist=[], botNaps=0, xray=false, botTimer=0; const saved=(()=>{try{return JSON.parse(localStorage.getItem('ttt_scores'))||null}catch(e){return null}})(); const scores=saved||{X:0,O:0,D:0};
     const sdk=(fn,a)=>{try{window.ArcadeSDK&&ArcadeSDK[fn](a)}catch(e){}}; const cheated=()=>!!(window.ArcadeSDK&&ArcadeSDK.cheated);
+    /* sound: the arcade's shared kit, with a persisted mute toggle (ttt_mute) */
+    let muted=(()=>{try{return localStorage.getItem('ttt_mute')==='1'}catch(e){return false}})();
+    const setMute=m=>{muted=m;try{localStorage.setItem('ttt_mute',m?'1':'0')}catch(e){}const b=document.querySelector('#muteBtn');if(b)b.textContent=m?'🔇':'🔊'};
+    const sfx=n=>{if(!muted)sdk('sfx',n)};
+    setMute(muted);
     const cellName=i=>['top left','top middle','top right','middle left','centre','middle right','bottom left','bottom middle','bottom right'][i]; const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+    /* ---------- career: levels, stars, coins, skins, daily challenge, badges (ttt_career) ---------- */
+    const CAREER=(()=>{let c=null;try{c=JSON.parse(localStorage.getItem('ttt_career')||'null')}catch(e){}
+      c=Object.assign({lvl:1,xp:0,stars:0,coins:0,games:0,wins:0,streak:0,bestStreak:0,skins:{owned:['neon'],cur:'neon'},daily:{d:'',goal:0,prog:0,done:false},ach:{}},c||{});return c})();
+    const saveCareer=()=>{try{localStorage.setItem('ttt_career',JSON.stringify(CAREER))}catch(e){}};
+    saveCareer();   // the save exists from first load, even before a round is played
+    const SKINS=[
+      {id:'neon',name:'Neon',cost:0,x:'#43ddff',o:'#ff866b',glow:'18px'},
+      {id:'mint',name:'Mint',cost:40,x:'#4dffb0',o:'#ff5c8a',glow:'18px'},
+      {id:'sunset',name:'Sunset',cost:80,x:'#ffd257',o:'#c17bff',glow:'20px'},
+      {id:'ice',name:'Frost',cost:140,x:'#bfefff',o:'#5c9dff',glow:'24px'},
+    ];
+    const curSkin=()=>SKINS.find(s=>s.id===CAREER.skins.cur)||SKINS[0];
+    const skinStyle=document.createElement('style');
+    const applySkin=()=>{const s=curSkin();document.documentElement.style.setProperty('--cyan',s.x);document.documentElement.style.setProperty('--coral',s.o);
+      skinStyle.textContent=`.cell.x{color:${s.x};text-shadow:0 0 ${s.glow} ${s.x}}.cell.o{color:${s.o};text-shadow:0 0 ${s.glow} ${s.o}}`;
+      if(!skinStyle.parentNode)document.head.appendChild(skinStyle);};
+    applySkin();
+    const xpNeed=l=>60+(l-1)*40;
+    const TIPS=[ 'Take the centre first: it sits on four winning lines.', 'If the bot takes the centre, answer with a corner, never an edge.', 'Two open lines at once (a fork) is the only way to beat Hard.', 'Stuck? Hint shows the square that keeps the most lines open.' ];
+    const DAILY_GOALS=['Win 1 round today','Win 2 rounds today','Beat Hard once today'];
+    function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+    function rollDaily(){const t=todayKey();if(CAREER.daily.d===t)return;let seed=0;for(let i=0;i<t.length;i++)seed=(seed*31+t.charCodeAt(i))>>>0;
+      CAREER.daily={d:t,goal:seed%DAILY_GOALS.length,done:false};saveCareer()}
+    rollDaily();
+    function ach(id,title){if(CAREER.ach[id])return;CAREER.ach[id]=1;saveCareer();try{ArcadeSDK.profile&&ArcadeSDK.profile.achievement('ttt-'+id,{title,desc:title,tier:'bronze'})}catch(e){}}
+    function endRoundProgress(won,draw){ // coins, xp, stars and the daily goal from one finished round
+      rollDaily();
+      const hard=mode==='hard';
+      const coins=won?(hard?25:12):(draw?5:2), xp=won?(hard?22:12):(draw?6:2), stars=won?(hard?3:2):(draw?1:0);
+      if(!cheated()){CAREER.coins+=coins;CAREER.stars+=stars;CAREER.xp+=xp;
+        while(CAREER.xp>=xpNeed(CAREER.lvl)){CAREER.xp-=xpNeed(CAREER.lvl);CAREER.lvl++}
+        CAREER.games++;if(won){CAREER.wins++;CAREER.streak++;CAREER.bestStreak=Math.max(CAREER.bestStreak,CAREER.streak)}else CAREER.streak=0;
+        if(won&&(!CAREER.daily.done)){CAREER.daily.prog=(CAREER.daily.prog||0)+1;const g=CAREER.daily.goal,need=g===1?2:1;
+          if((g===0)||(g===1&&CAREER.daily.prog>=need)||(g===2&&hard))CAREER.daily.done=true,CAREER.coins+=30;}
+        ach('firstwin',won,'First win');ach('games10',CAREER.games>=10,'Ten rounds');ach('hardwin',won&&hard,'Beat Hard');
+        ach('streak3',CAREER.bestStreak>=3,'Three wins in a row');ach('lvl5',CAREER.lvl>=5,'Player level 5');
+      }
+      saveCareer();renderCareer();
+      return{coins,xp,stars};
+    }
+    function renderCareer(){
+      const el=document.querySelector('#career');if(!el)return;
+      el.querySelector('.lv').textContent='LV '+CAREER.lvl;
+      el.querySelector('.xp i').style.width=Math.min(100,CAREER.xp/xpNeed(CAREER.lvl)*100)+'%';
+      el.querySelector('.pill.st b').textContent=CAREER.stars;
+      el.querySelector('.pill.co b').textContent=CAREER.coins;
+      const d=el.querySelector('.daily');d.textContent=(CAREER.daily.done?'Daily done ✓ ':'Daily: ')+DAILY_GOALS[CAREER.daily.goal];d.classList.toggle('done',!!CAREER.daily.done);
+    }
+    function renderShop(){
+      const shop=document.querySelector('#shopRow');if(!shop)return;
+      shop.innerHTML=SKINS.map(s=>{const owned=CAREER.skins.owned.indexOf(s.id)>=0,on=CAREER.skins.cur===s.id;
+        return `<button type="button" data-sk="${s.id}" class="${on?'on':''}" style="${on?'':`background:${s.x}22;border-color:${s.x}`}">${s.name}${owned?(on?' ✓':''):' · '+s.cost+'🪙'}</button>`}).join('');
+      shop.querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=SKINS.find(x=>x.id===b.dataset.sk);const owned=CAREER.skins.owned.indexOf(s.id)>=0;
+        if(!owned){if(CAREER.coins<s.cost)return;CAREER.coins-=s.cost;CAREER.skins.owned.push(s.id)}
+        CAREER.skins.cur=s.id;saveCareer();applySkin();renderShop();renderCareer();sfx('coin')});
+    }
+    function showSkins(){const row=document.querySelector('#shopRow');const open=row.style.display!=='grid';row.style.display=open?'grid':'none';if(open)renderShop()}
+
     function render(){ boardEl.innerHTML=''; board.forEach((v,i)=>{const b=document.createElement('button'); b.className='cell '+(v?v.toLowerCase():''); b.textContent=v; b.setAttribute('aria-label',v||`Cell ${i+1}`); b.onclick=()=>move(i); boardEl.appendChild(b)}); ['X','O','D'].forEach(k=>document.querySelector('#'+({X:'you',O:'bot',D:'draws'}[k])).textContent=scores[k]); }
     function winner(b=board){ for(const line of lines) if(b[line[0]]&&b[line[0]]===b[line[1]]&&b[line[1]]===b[line[2]]) return {who:b[line[0]],line}; return b.every(Boolean)?{who:'D',line:[]}:null; }
-    function end(r){over=true; setTimeout(()=>{ if(!cheated()) try{localStorage.setItem('ttt_scores',JSON.stringify(scores))}catch(e){} sdk('state',{scene:'over',score:scores.X,outcome:r.who}); },0); if(r.who==='D'){scores.D++;status.textContent='DRAW — GOOD GAME';} else {scores[r.who]++;status.textContent=r.who==='X'?'YOU WIN!':'BOT WINS'; status.className='status '+(r.who==='O'?'bot':'');} render(); if(r.line?.length) r.line.forEach(i=>boardEl.children[i].classList.add('win'));}
-    function move(i){ if(over||turn!=='X'||board[i]) return; hist.push(board.slice()); board[i]='X'; render(); undoBtn.disabled=false; const r=winner(); if(r) return end(r); if(botNaps>0){botNaps--;status.textContent='THE BOT IS NAPPING: GO AGAIN';return;} turn='O';status.textContent='BOT IS THINKING';status.className='status bot'; botTimer=setTimeout(botMove,350); }
+    function end(r){
+      over=true;
+      let head,earn;
+      if(r.who==='D'){scores.D++;status.textContent='DRAW — GOOD GAME';earn=endRoundProgress(false,true);head='Draw!';}
+      else{scores[r.who]++;status.textContent=r.who==='X'?'YOU WIN!':'BOT WINS';status.className='status '+(r.who==='O'?'bot':'');
+        earn=endRoundProgress(r.who==='X',false);head=r.who==='X'?'You win!':'Bot wins';}
+      render(); if(r.line?.length) r.line.forEach(i=>boardEl.children[i].classList.add('win'));
+      // results card with the round's outcome, the rewards and a one-tap replay (also: tap anywhere)
+      const over0=document.querySelector('#overCard');
+      over0.querySelector('.oh').textContent=head;
+      over0.querySelector('.op').textContent=+earn.xp+' XP · +'+earn.coins+'🪙 · +'+earn.stars+'★'+(CAREER.daily.done?' · Daily done ✓':'');
+      over0.querySelector('.otip').textContent=TIPS[Math.floor(Math.random()*TIPS.length)];
+      over0.hidden=false;
+      setTimeout(()=>{ if(!cheated()) try{localStorage.setItem('ttt_scores',JSON.stringify(scores))}catch(e){}
+        sdk('state',{scene:'over',score:scores.X,level:CAREER.lvl,stars:CAREER.stars,outcome:r.who}); },0);
+      sfx(r.who==='X'?'win':r.who==='D'?'tap':'lose');
+    }
+    function move(i){ if(over||turn!=='X'||board[i]) return; hist.push(board.slice()); board[i]='X'; sfx('tap'); render(); undoBtn.disabled=false; const r=winner(); if(r) return end(r); if(botNaps>0){botNaps--;status.textContent='THE BOT IS NAPPING: GO AGAIN';return;} turn='O';status.textContent='BOT IS THINKING';status.className='status bot'; botTimer=setTimeout(botMove,350); }
     function bestMove(b,player){ const r=winner(b); if(r) return r.who==='O'?10:r.who==='X'?-10:0; let best=player==='O'?-Infinity:Infinity; for(let i=0;i<9;i++)if(!b[i]){b[i]=player;let s=bestMove(b,player==='O'?'X':'O');b[i]='';best=player==='O'?Math.max(best,s):Math.min(best,s)} return best; }
     function botMove(){ if(over)return; const open=board.map((v,i)=>v?'':i).filter(v=>v!==''); let pick; if(mode==='easy'&&Math.random()<.63) pick=open[Math.floor(Math.random()*open.length)]; else {let top=-Infinity;for(const i of open){board[i]='O';const s=bestMove(board,'X');board[i]='';if(s>top){top=s;pick=i}}} board[pick]='O';render(); const r=winner();if(r)return end(r);turn='X';status.textContent='YOUR TURN';status.className='status'; if(xray) peek(); }
-    function reset(){clearTimeout(botTimer);board=Array(9).fill('');turn='X';over=false;hist=[];undoBtn.disabled=true;status.textContent='YOUR TURN';status.className='status';render();if(xray)peek();sdk('state',{scene:'play'});} document.querySelector('#new').onclick=reset; document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));reset()});
+    function reset(){clearTimeout(botTimer);board=Array(9).fill('');turn='X';over=false;hist=[];undoBtn.disabled=true;status.textContent='YOUR TURN';status.className='status';render();document.querySelector('#overCard').hidden=true;if(xray)peek();sdk('state',{scene:'play'});} document.querySelector('#new').onclick=reset; document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));reset()});
     const undoBtn=document.querySelector('#undo'), intro=document.querySelector('#intro');
     function undo(){ if(!hist.length||turn!=='X') return; board=hist.pop(); over=false; status.textContent='YOUR TURN'; status.className='status'; render(); undoBtn.disabled=!hist.length; }
     undoBtn.onclick=undo;
@@ -63,6 +167,12 @@
       return {ok:true,message:CODES[c]}; }
     function showIntro(){ intro.hidden=false; document.querySelector('#introPlay').focus(); sdk('state',{scene:'title'}); }
     document.querySelector('#introPlay').onclick=()=>{ intro.hidden=true; try{localStorage.setItem('ttt_seen','1')}catch(e){} reset(); };
+    /* pause-menu stand-ins on the main screen: how-to, mute, skins; the over card replays with one tap */
+    document.querySelector('#howBtn').onclick=()=>showIntro();
+    document.querySelector('#muteBtn').onclick=()=>{ setMute(!muted); sfx('tap'); };
+    document.querySelector('#skinsBtn').onclick=showSkins;
+    document.querySelector('#againBtn').onclick=reset;
+    document.querySelector('#overCard').onclick=e=>{ if(e.target.id!=='againBtn') reset(); };   // tap anywhere to replay
     if(window.ArcadeSDK) ArcadeSDK.init({
       onRestart:reset,
       onExit:()=>{ reset(); showIntro(); },
@@ -70,6 +180,7 @@
       onHint:hint,
       onCheat:code,
     });
-    render(); let seen=false; try{seen=localStorage.getItem('ttt_seen')==='1'}catch(e){} if(seen) sdk('state',{scene:'play'}); else showIntro();
+    render(); renderCareer(); renderShop(); applySkin();
+    let seen=false; try{seen=localStorage.getItem('ttt_seen')==='1'}catch(e){} if(seen) sdk('state',{scene:'play'}); else showIntro();
   </script>
 </body></html>

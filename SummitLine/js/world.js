@@ -20,7 +20,7 @@ export class World {
     scene.environmentRotation.y = ENV_ROT_Y;
     scene.environmentIntensity = 0.55;
     scene.add(makeSkyDome(assets.sky));
-    onStep && onStep('light');
+    onStep && await onStep('light');
 
     // sun
     const sun = new THREE.DirectionalLight(0xfff1dc, 3.4);
@@ -40,17 +40,17 @@ export class World {
     const farMat = makeSnowMaterial(assets, q, 'massif');
     this.snowMat = snowMat; this.farMat = farMat;
     this.ribbon = buildRibbon(q, snowMat); scene.add(this.ribbon);
-    onStep && onStep('ribbon');
+    onStep && await onStep('ribbon');
     this.massif = buildMassif(q, farMat); scene.add(this.massif);
     this.panorama = buildPanorama(farMat); scene.add(this.panorama);
-    onStep && onStep('massif');
+    onStep && await onStep('massif');
 
     this.forest = new Forest(assets, assets.treeMeta, q).populate();
     scene.add(this.forest.group);
-    onStep && onStep('forest');
+    onStep && await onStep('forest');
 
     this.props = buildProps(scene, assets, q);
-    onStep && onStep('props');
+    onStep && await onStep('props');
   }
 
   // keep the shadow frustum centred on the focus point

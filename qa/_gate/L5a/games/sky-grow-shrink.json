@@ -1,0 +1,236 @@
+{
+ "id": "sky-grow-shrink",
+ "title": "Grow or Shrink",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/grow-shrink.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-grow-shrink-1-title.jpg",
+  "2-mid": "shots\\sky-grow-shrink-2-mid.jpg",
+  "3-end": "shots\\sky-grow-shrink-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1.1,
+  "contentionSamples": [
+   11.09,
+   1.1,
+   1,
+   1.1,
+   1.74,
+   1,
+   1
+  ]
+ },
+ "loadMs": 432,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/grow-shrink.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/grow-shrink.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.2,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.1,
+  "loadMs": 150,
+  "playMs": 858,
+  "loadRawMs": 165,
+  "playRawMs": 944,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 38,
+  "longTasks100Play": 18,
+  "tbtLoadMs": 100,
+  "tbtPlayMs": 4670,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 23,
+  "slowestPollMs": 565,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 809.6,
+   "blocking": 469.9,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     93
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 606.8,
+   "blocking": 535.1,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     577
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 587.1,
+   "blocking": 452.4,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     392
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     109
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 899,
+  "jsMedian": 0.18,
+  "jsP95": 11.27,
+  "jsP99": 40.09,
+  "jsMax": 525.3,
+  "jsP95Raw": 12.4,
+  "rawWithGlP95": 12.4,
+  "glP95": 0,
+  "gapP95": 50.1,
+  "gapMedian": 16.7,
+  "over100": 4,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.8,
+  "heap1MB": 2,
+  "heapGrowthPct": 9,
+  "heapMeasured": true,
+  "nodesStart": 30,
+  "nodesEnd": 31,
+  "nodesMax": 31,
+  "listeners0": 60,
+  "listeners1": 60,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 3,
+   "totalMB": 3.7,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 52,
+  "scriptPct": 15,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 2,
+  "restartsAfterOver": 2
+ },
+ "gameScore": {
+  "updates": 2,
+  "first": 0,
+  "last": 0,
+  "max": 0,
+  "trajectory": [
+   [
+    10,
+    0
+   ],
+   [
+    20,
+    0
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 19,
+  "swipes": 1,
+  "holds": 0,
+  "keys": 1,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 36,
+  "inputLatencyP95Ms": 847,
+  "inputLatencyMaxMs": 1588,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 24.7,
+  "maxChangeFromStartPct": 14.5,
+  "samples": 7
+ },
+ "severity": 0.9
+}

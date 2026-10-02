@@ -1,0 +1,181 @@
+{
+ "id": "hub-flappy-flight",
+ "title": "Flappy Flight",
+ "cat": "arcade",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/flappy-flight.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "flappyBest",
+  "flappyPipes",
+  "flappyFeathers",
+  "hm-flappy",
+  "flappyGale"
+ ],
+ "session1": {
+  "start": "#playBtn",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 2,
+  "score": {
+   "first": 0,
+   "last": 0,
+   "max": 0
+  },
+  "botTaps": 10,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "flappyFeathers",
+   "flappyTut",
+   "hm-flappy"
+  ],
+  "savedKeysWrittenInSession1": 3,
+  "titleTextChanged": true,
+  "title1": "🔊 Flappy Flight FLY THE GOLDEN VALLEY Best 0 · Chick · 0 pipes flown 🪶 0 🎨 Skins 📋 Goals 4 🔥 0/5 Classic endless Sprint 20 pipes Gale m",
+  "title2": "🔊 Flappy Flight FLY THE GOLDEN VALLEY Best 0 · Chick · 0 pipes flown 🪶 8 🎨 Skins 📋 Goals 4 🔥 1/5 Classic endless Sprint 20 pipes Gale m",
+  "keysUpdatedAgain": [
+   "hm-flappy"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 3,
+  "added": [
+   "flappyFeathers",
+   "flappyTut"
+  ],
+  "changed": [
+   "hm-flappy"
+  ],
+  "removed": [],
+  "sample": {
+   "flappyFeathers": "0",
+   "hm-flappy": "{\"v\":1,\"coins\":8,\"life\":8,\"owned\":{\"sunny\":1},\"skin\":\"sunny\",\"runs\":3,",
+   "flappyTut": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "currency",
+   "unlocks",
+   "cosmetics",
+   "score",
+   "levels",
+   "stars"
+  ],
+  "categoriesPresent": [
+   "other",
+   "currency",
+   "unlocks",
+   "cosmetics",
+   "score",
+   "levels",
+   "stars"
+  ],
+  "writesDuringPlay": {
+   "hm-flappy": "4x",
+   "flappyTut": "1x",
+   "flappyFeathers": "3x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": true,
+   "dom": false,
+   "meta": false
+  },
+  "unlocks": {
+   "storage": true,
+   "dom": false,
+   "meta": true
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "stars": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  },
+  "goals": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": true,
+   "dom": true,
+   "meta": true
+  }
+ },
+ "currency": {
+  "storage": true,
+  "dom": false,
+  "meta": true
+ },
+ "observedSystems": [
+  "levels",
+  "unlocks",
+  "stars",
+  "goals",
+  "cosmetics"
+ ],
+ "claimedOnly": [
+  "upgrades",
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [
+   "levels",
+   "stars",
+   "currency",
+   "unlocks",
+   "cosmetics"
+  ],
+  "unclassifiedBlob": true
+ },
+ "level": 3,
+ "label": "P3",
+ "why": "progress persists (levels, stars, currency, unlocks, cosmetics); systems seen: levels, unlocks, stars, goals, cosmetics; sinks unlocks/cosmetics fed by levels/stars/goals/currency",
+ "expected": [
+  "unlocks",
+  "cosmetics",
+  "daily",
+  "achievements",
+  "goals"
+ ],
+ "lacks": [
+  "daily",
+  "achievements"
+ ],
+ "pageErrors": []
+}

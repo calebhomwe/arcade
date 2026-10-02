@@ -1,0 +1,237 @@
+{
+ "id": "sky-lane-switcher",
+ "title": "Lane Switcher",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/lane-switcher.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-lane-switcher-1-title.jpg",
+  "2-mid": "shots\\sky-lane-switcher-2-mid.jpg",
+  "3-end": "shots\\sky-lane-switcher-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   1,
+   1,
+   1,
+   4.74,
+   1,
+   1.1,
+   1.1
+  ]
+ },
+ "loadMs": 924,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/lane-switcher.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/lane-switcher.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.4,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 898,
+  "playMs": 737,
+  "loadRawMs": 898,
+  "playRawMs": 737,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 38,
+  "longTasks100Play": 32,
+  "tbtLoadMs": 968,
+  "tbtPlayMs": 7276,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 33,
+  "slowestPollMs": 1380,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 911.6,
+   "blocking": 850,
+   "scripts": [
+    [
+     "skywalker-playables/lane-switcher.html",
+     "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/lane-switcher.html",
+     5
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     511
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 740.8,
+   "blocking": 653,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     702
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 709.9,
+   "blocking": 0,
+   "scripts": [],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 828,
+  "jsMedian": 0.2,
+  "jsP95": 18.4,
+  "jsP99": 161.8,
+  "jsMax": 702.8,
+  "jsP95Raw": 18.4,
+  "rawWithGlP95": 18.4,
+  "glP95": 0,
+  "gapP95": 116.7,
+  "gapMedian": 16.7,
+  "over100": 16,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 9,
+  "heapMeasured": true,
+  "nodesStart": 30,
+  "nodesEnd": 31,
+  "nodesMax": 31,
+  "listeners0": 57,
+  "listeners1": 57,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 7,
+   "totalMB": 3.7,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 80,
+     "h": 32,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 48,
+  "scriptPct": 21,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 2,
+  "restartsAfterOver": 2
+ },
+ "gameScore": {
+  "updates": 2,
+  "first": 10,
+  "last": 10,
+  "max": 10,
+  "trajectory": [
+   [
+    18,
+    10
+   ],
+   [
+    28,
+    10
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 14,
+  "swipes": 2,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 41,
+  "inputLatencyP95Ms": 1843,
+  "inputLatencyMaxMs": 1843,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 53.6,
+  "maxChangeFromStartPct": 51.2,
+  "samples": 7
+ },
+ "severity": 0.9
+}

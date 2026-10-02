@@ -1,0 +1,142 @@
+{
+ "id": "hub-sudoku",
+ "title": "Sudoku",
+ "cat": "puzzle",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/sudoku.html",
+ "engine": "chromium",
+ "notes": [
+  "the bot never reached play: what persists after real play was not measured"
+ ],
+ "shots": {},
+ "declaredSaves": [
+  "sudoBest_easy",
+  "sudoBest_medium",
+  "sudoBest_hard",
+  "sudo_solved"
+ ],
+ "session1": {
+  "start": "declared start button not tappable -> tap centre + Skip + tap on game",
+  "reachedPlay": false,
+  "scenes": [
+   "title"
+  ],
+  "gameOvers": 0,
+  "score": null,
+  "botTaps": 33,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": false,
+  "readsSavedKeysAtBoot": [
+   "sudoTut"
+  ],
+  "savedKeysWrittenInSession1": 1,
+  "titleTextChanged": false,
+  "title1": "← Hub 🔊 Sudoku ❌ 0 ⏱ 0:00 Easy 1 2 3 4 5 6 7 8 9 ⌫ ✎ ↶ 💡 New Sudoku Fill the grid so every row, column and 3×3 box holds 1 to 9 once. Easy",
+  "title2": "← Hub 🔊 Sudoku ❌ 0 ⏱ 0:00 Easy 1 2 3 4 5 6 7 8 9 ⌫ ✎ ↶ 💡 New Sudoku Fill the grid so every row, column and 3×3 box holds 1 to 9 once. Easy",
+  "keysUpdatedAgain": [],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 1,
+  "added": [
+   "sudoTut"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "sudoTut": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other"
+  ],
+  "categoriesPresent": [
+   "other"
+  ],
+  "writesDuringPlay": {
+   "sudoTut": "1x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "daily": {
+   "storage": false,
+   "dom": true,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": false,
+  "meta": false
+ },
+ "observedSystems": [
+  "daily"
+ ],
+ "claimedOnly": [
+  "achievements"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": false,
+  "progress": [],
+  "unclassifiedBlob": true
+ },
+ "lowConfidence": true,
+ "level": 1,
+ "label": "P1",
+ "why": "saves some state but shows no unlock, upgrade, goal or level system",
+ "expected": [
+  "levels",
+  "stars",
+  "daily",
+  "goals",
+  "unlocks"
+ ],
+ "lacks": [
+  "levels",
+  "stars",
+  "goals",
+  "unlocks"
+ ],
+ "pageErrors": []
+}

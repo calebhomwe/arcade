@@ -117,13 +117,30 @@ function hubHint() {
 }
 
 /* ── hub ─────────────────────────────────────────────────── */
+function hudStrip() {
+  const d = Progress.daily();
+  const badges = Progress.badgeLabels();
+  return el('div', { class:'panel', style:'margin-top:14px;padding:12px 16px', id:'hud' },
+    el('div', { style:'display:flex;flex-wrap:wrap;gap:10px;align-items:center' },
+      el('span', { class:'tag', style:'background:var(--ink);color:var(--paper);border-color:var(--ink)' },
+        `Level ${Progress.level()} · ${Progress.xp()} XP`),
+      el('span', { class:'bar', style:'width:110px;display:inline-block' }, el('i', { style:`width:${Progress.levelPct()}%` })),
+      el('span', { class:'tag' }, `⭐ ${Progress.stars()} stars`),
+      el('span', { class:'tag' }, `🪙 ${Progress.coins()} coins`),
+      el('span', { class:'tag ' + (d.done ? '' : '') , style: d.done ? 'background:#5f7d5a;color:#f2e9d8;border-color:#5f7d5a' : '' },
+        `Daily goal: ${Math.min(d.correct, d.goal)}/${d.goal} correct${d.done ? ' · bonus paid' : ''}`),
+      badges.length ? el('span', { class:'tag', style:'border-style:dashed' }, `Achievements: ${badges.length} — ${badges.join(', ')}`)
+                    : el('span', { class:'tag', style:'border-style:dashed' }, 'Achievements: earn your first answer badge today')));
+}
+
 function renderHub() {
   const db = Progress.all();
+  Progress.rollDaily();
   const done = MODULES.filter(m => Progress.moduleScore(m.id) >= 100).length;
   const app = $('#app');
   app.replaceChildren();
   current = null; hintFn = null;
-  sdk('state', { scene:'title' });
+  sdk('state', { scene:'title', level: Progress.level(), stars: Progress.stars() });
 
   const head = el('div', { class:'masthead' },
     el('div', {},
@@ -139,9 +156,12 @@ function renderHub() {
         `${done}/${MODULES.length} certified`),
       el('div', { class:'note', style:'margin-top:2px' },
         `${db.totalRight} correct · ${db.streak} day streak`),
+      el('div', { class:'note', style:'margin-top:2px' },
+        `Level ${Progress.level()} · ⭐ ${Progress.stars()} stars · 🪙 ${Progress.coins()} coins`),
       el('button', { class:'btn go', id:'playNext', style:'margin-top:10px', onclick: () => open(nextModule()) },
         'Play · ' + nextModule().title)));
   app.append(head);
+  app.append(hudStrip());
 
   app.append(el('div', { class:'bandrow', id:'bandRow', role:'group', 'aria-label':'Year group' },
     el('span', { class:'lbl' }, 'Year group'),
@@ -261,6 +281,13 @@ async function open(m) {
   Sound.init();
   const app = $('#app');
   app.replaceChildren(el('p', { class:'note' }, 'Opening ' + m.title + '…'));
+  const visit = Progress.visit(m.id);          // XP for starting a shift at an instrument
+  if (visit) {
+    let msg = `Shift started · +${visit.xp} XP`;
+    if (visit.leveled) msg += ` · Level ${Progress.level()}!`;
+    for (const b of visit.newBadges) msg += ` · New achievement: ${b}`;
+    toast(msg);
+  }
   try {
     const mod = await import(m.file);
     app.replaceChildren();
@@ -273,17 +300,24 @@ async function open(m) {
       el('span', { class:'tag ' + m.subject }, m.subject === 'sci' ? 'Science' : 'English'),
       el('span', { class:'tag' }, m.years));
     app.append(bar);
+    const d = Progress.daily();
+    app.append(el('div', { id:'hud', class:'note', style:'display:flex;gap:8px;flex-wrap:wrap;margin:8px 2px' },
+      el('span', { class:'tag', style:'background:var(--ink);color:var(--paper);border-color:var(--ink)' }, `Level ${Progress.level()}`),
+      el('span', { class:'tag' }, `⭐ ${Progress.stars()} stars`),
+      el('span', { class:'tag' }, `🪙 ${Progress.coins()} coins`),
+      el('span', { class:'tag', style: d.done ? 'background:#5f7d5a;color:#f2e9d8;border-color:#5f7d5a' : '' },
+        `Daily goal: ${Math.min(d.correct, d.goal)}/${d.goal} correct`)));
     const root = el('div');
     app.append(root);
     mod.start(root, {
       record: (skill, ok) => Progress.record(m.id + '/' + skill, ok),
       complete: pct => { Progress.setModule(m.id, pct); },
       setHint: fn => { hintFn = fn; },                               // each instrument keeps its current hint fresh
-      done: pct => sdk('state', { scene:'over', score: pct }),         // the instrument's end-of-run screen
+      done: pct => sdk('state', { scene:'over', score: pct, level: Progress.level(), stars: Progress.stars() }),  // the instrument's end-of-run screen
       toast, Sound, home: renderHub
     });
     scrollTo(0, 0);
-    sdk('state', { scene:'play' });
+    sdk('state', { scene:'play', level: Progress.level(), stars: Progress.stars() });
   } catch (err) {
     app.replaceChildren(
       el('button', { class:'btn ghost', onclick: renderHub }, '← Station'),

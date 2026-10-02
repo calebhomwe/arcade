@@ -1,0 +1,222 @@
+{
+ "id": "sky-parking-puzzle",
+ "title": "Parking Puzzle",
+ "cat": "hyper",
+ "genre": "puzzle",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/parking-puzzle.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 43.09 ms over 33 ms (unthrottled, divided by machine slowdown x1.1; raw p95 47.4, median 0.27, p99 92.91, max 155.2; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-parking-puzzle-1-title.jpg",
+  "2-mid": "shots\\sky-parking-puzzle-2-mid.jpg",
+  "3-end": "shots\\sky-parking-puzzle-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1.1,
+  "contentionSamples": [
+   3.17,
+   1,
+   1.1,
+   1.29,
+   1,
+   1,
+   1.1
+  ]
+ },
+ "loadMs": 77,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/parking-puzzle.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/parking-puzzle.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.3,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1.1,
+  "loadMs": 0,
+  "playMs": 451,
+  "loadRawMs": 0,
+  "playRawMs": 497,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 99,
+  "longTasks100Play": 34,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 4596,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 45,
+  "slowestPollMs": 255,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 294.3,
+   "blocking": 243.9,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     70
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 259.9,
+   "blocking": 209.1,
+   "scripts": [
+    [
+     "skywalker-playables/sky-arcade.js",
+     "BUTTON.onclick",
+     258
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 252,
+   "blocking": 201.5,
+   "scripts": [
+    [
+     "skywalker-playables/sky-arcade.js",
+     "BUTTON.onclick",
+     250
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 814,
+  "jsMedian": 0.27,
+  "jsP95": 43.09,
+  "jsP99": 92.91,
+  "jsMax": 155.2,
+  "jsP95Raw": 47.4,
+  "rawWithGlP95": 47.4,
+  "glP95": 0,
+  "gapP95": 116.7,
+  "gapMedian": 16.7,
+  "over100": 7,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2,
+  "heapGrowthPct": 9,
+  "heapMeasured": true,
+  "nodesStart": 33,
+  "nodesEnd": 33,
+  "nodesMax": 33,
+  "listeners0": 67,
+  "listeners1": 67,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 14,
+   "totalMB": 3.8,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 64,
+  "scriptPct": 27,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 12,
+  "swipes": 0,
+  "holds": 2,
+  "keys": 3,
+  "buttonPresses": 3,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 35,
+  "inputLatencyP95Ms": 3026,
+  "inputLatencyMaxMs": 3026,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 5,
+  "changeTitleToPlayPct": 87.1,
+  "maxChangeFromStartPct": 3,
+  "samples": 7
+ },
+ "severity": 42.5
+}

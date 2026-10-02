@@ -11,143 +11,133 @@
  "orientation": "landscape",
  "verdicts": [
   "FREEZE",
-  "STALL"
+  "JANK"
  ],
  "evidence": {
-  "FREEZE": "page did not answer the harness for 6 s (72 poll timeout(s))",
-  "STALL": "game never reported play after the start attempts (start: #btnPlay + SKIP + tap on game); scenes seen: title"
+  "FREEZE": "main thread blocked 10019 ms (while playing), 4499 ms of it inside WebGL calls (software GL), machine slowdown x1.3 -> about 4182 ms of JS; long-task API + timer heartbeat; longest frame 29143.3 ms: build/three.core.min.js Response.arrayBuffer.then 28783 /  FrameRequestCallback 170 | page did not answer the harness for 6 s (4 poll timeout(s))",
+  "JANK": "p95 JS frame cost 665.53 ms over 16 ms (CPU throttled x4, divided by machine slowdown x1.3; raw p95 878.5, median 51.29, p99 848.03, max 848; time inside WebGL calls excluded, p95 of it 57.9)"
  },
  "notes": [
-  "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.4)"
+  "software-GL artefact: over 40% of the longest block was inside synchronous WebGL calls (getProgramInfoLog, readPixels, draw...) waiting for this box's software GL; an iPhone GPU would not wait"
  ],
  "shots": {
   "1-title": null,
   "3-end": null
  },
  "machine": {
-  "load1Start": 24.06,
-  "cores": 4,
-  "load1End": 18.5,
-  "contention": 1.36,
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1.32,
   "contentionSamples": [
-   1.25,
-   1.24,
-   2.4,
-   1.53,
-   1.36
+   1,
+   1.32,
+   10.14,
+   1.28,
+   8.01
   ]
  },
- "loadMs": 1839,
+ "loadMs": 4671,
  "loaded": true,
- "startUrl": "http://127.0.0.1:36997/SummitLine/index.html",
- "startPath": "http://127.0.0.1:36997/SummitLine/index.html",
+ "startUrl": "http://127.0.0.1:55504/SummitLine/index.html",
+ "startPath": "http://127.0.0.1:55504/SummitLine/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 123.1,
-  "bench1Ms": 51.4,
-  "effectiveSlowdown": 2.4
+  "benchMs": null,
+  "bench1Ms": 925,
+  "effectiveSlowdown": null
  },
  "start": {
-  "how": "#btnPlay + SKIP + tap on game",
+  "how": "declared start button not tappable -> tap centre",
   "viaKey": false,
-  "detectedBy": null,
+  "detectedBy": "sdk",
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.36,
-  "loadMs": 312,
-  "playMs": 1024,
-  "loadRawMs": 424,
-  "playRawMs": 56843,
-  "playGlMs": 55450,
+  "c": 1.32,
+  "loadMs": 3128,
+  "playMs": 4182,
+  "loadRawMs": 4129,
+  "playRawMs": 10019,
+  "playGlMs": 4499,
   "loadGlMs": 0,
-  "longTasksPlay": 7,
-  "longTasks100Play": 2,
-  "tbtLoadMs": 381,
-  "tbtPlayMs": 94,
+  "longTasksPlay": 26,
+  "longTasks100Play": 13,
+  "tbtLoadMs": 5853,
+  "tbtPlayMs": 1466,
   "longtaskApi": true,
-  "heartbeatOver100Play": 6,
-  "slowestPollMs": 6136,
-  "pollTimeouts": 72,
+  "heartbeatOver100Play": 28,
+  "slowestPollMs": 7086,
+  "pollTimeouts": 4,
   "shaderCompileMs": 0.1,
   "shaderCompileMaxCallMs": 0.1
  },
  "loafTop": [
   {
-   "ms": 55933.1,
-   "blocking": 55882.1,
+   "ms": 29143.3,
+   "blocking": 29033.4,
    "scripts": [
     [
-     "js/main.js",
-     "BUTTON#btnPlay.onclick",
-     269
+     "build/three.core.min.js",
+     "Response.arrayBuffer.then",
+     28783
     ],
     [
      "",
      "FrameRequestCallback",
-     55584
+     170
+    ]
+   ],
+   "phase": "calib"
+  },
+  {
+   "ms": 9580.9,
+   "blocking": 8612.2,
+   "scripts": [
+    [
+     "assets/arcade-sdk.js",
+     "beat",
+     176
+    ],
+    [
+     "js/main.js",
+     "BUTTON#btnPlay.onclick",
+     196
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     5516
     ]
    ],
    "phase": "start"
   },
   {
-   "ms": 47286.3,
-   "blocking": 87.2,
-   "scripts": [
-    [
-     "assets/arcade-sdk.js",
-     "TimerHandler:setTimeout",
-     23
-    ],
-    [
-     "",
-     "TimerHandler:setTimeout",
-     7
-    ],
-    [
-     "",
-     "TimerHandler:setTimeout",
-     6
-    ]
-   ],
-   "phase": "start"
-  },
-  {
-   "ms": 11339.8,
-   "blocking": 75,
+   "ms": 5813.7,
+   "blocking": 30.4,
    "scripts": [
     [
      "",
-     "TimerHandler:setTimeout",
-     12
-    ],
-    [
-     "assets/arcade-sdk.js",
-     "TimerHandler:setTimeout",
-     11
-    ],
-    [
-     "assets/arcade-sdk.js",
-     "TimerHandler:setTimeout",
-     82
+     "FrameRequestCallback",
+     79
     ]
    ],
-   "phase": "start"
+   "phase": "calib"
   }
  ],
  "rafStalls": [],
  "frames": {
-  "n": 6,
-  "jsMedian": 40,
-  "jsP95": 65.88,
-  "jsP99": 65.88,
-  "jsMax": 65.9,
-  "jsP95Raw": 89.6,
-  "rawWithGlP95": 90.8,
-  "glP95": 10.5,
-  "gapP95": 1466.6,
-  "gapMedian": 1466.6,
-  "over100": 0,
+  "n": 32,
+  "jsMedian": 51.29,
+  "jsP95": 665.53,
+  "jsP99": 848.03,
+  "jsMax": 848,
+  "jsP95Raw": 878.5,
+  "rawWithGlP95": 1119.6,
+  "glP95": 57.9,
+  "gapP95": 2549.8,
+  "gapMedian": 716.6,
+  "over100": 12,
   "limit": 16
  },
  "errors": [],
@@ -155,15 +145,15 @@
  "consoleErrors": [],
  "failed": [],
  "resources": {
-  "heap0MB": 9.6,
-  "heap1MB": 9.6,
-  "heapGrowthPct": 0,
+  "heap0MB": 9.2,
+  "heap1MB": 9.3,
+  "heapGrowthPct": 1,
   "heapMeasured": true,
   "nodesStart": 328,
   "nodesEnd": 339,
   "nodesMax": 339,
-  "listeners0": 97,
-  "listeners1": 97,
+  "listeners0": 84,
+  "listeners1": 84,
   "audioContexts": 1,
   "audioElements": 0,
   "webglContexts": 1,
@@ -209,32 +199,33 @@
   "sdkTimers": 1
  },
  "cpu": {
-  "mainThreadBusyPct": 3,
-  "scriptPct": 1,
-  "layoutPerSec": 0
+  "mainThreadBusyPct": 21,
+  "scriptPct": 15,
+  "layoutPerSec": 0.1
  },
  "risks": [],
  "sdkDeclared": true,
  "scenes": {
   "sequence": [
-   "title"
+   "title",
+   "play"
   ],
-  "reachedPlay": false,
+  "reachedPlay": true,
   "gameOvers": 0,
   "restartsAfterOver": 0
  },
  "bot": {
-  "taps": 2,
+  "taps": 1,
   "swipes": 0,
   "holds": 0,
-  "keys": 2,
+  "keys": 0,
   "buttonPresses": 0,
   "resumes": 0,
   "touchApi": null,
-  "inputLatencyMedianMs": 2062,
-  "inputLatencyP95Ms": 4000,
-  "inputLatencyMaxMs": 4000,
-  "inputTimeouts": 1
+  "inputLatencyMedianMs": 1165,
+  "inputLatencyP95Ms": 1165,
+  "inputLatencyMaxMs": 1165,
+  "inputTimeouts": 0
  },
  "screen": {
   "longestStaticS": 0,
@@ -242,15 +233,17 @@
   "maxChangeFromStartPct": null,
   "samples": 0
  },
- "severity": 105,
+ "severity": 108.2,
  "recheck": {
   "reproduced": true,
   "verdicts": [
-   "FREEZE"
+   "FREEZE",
+   "JANK",
+   "STALL"
   ],
-  "evidence": "page did not answer the harness for 6 s (1 poll timeout(s))",
-  "blockPlayMs": 92,
-  "blockLoadMs": 1040,
-  "load1": 17.71
+  "evidence": "main thread blocked 5689 ms (while playing), 1 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 5688 ms of JS; long-task API + timer heartbeat; longest frame 6398.9 ms:  TimerHandler:setTimeout 6 /  FrameRequestCallback 1322 | page did not answer the harness for 6 s (28 poll timeout(s))",
+  "blockPlayMs": 5688,
+  "blockLoadMs": 3119,
+  "load1": 0
  }
 }

@@ -51,6 +51,10 @@
   #coach .kl-btn{min-height:44px;padding:0 14px}
   #grown{display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;padding:16px 18px;box-sizing:border-box;color:var(--kl-ink)}
   #grown.show{display:block}
+  /* DOM progression strip: keep level, stars, maps and the daily goal readable over the canvas */
+  #qtprog{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:9;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+    font:700 13px Fredoka,system-ui,sans-serif;pointer-events:none;max-width:calc(100vw - 16px)}
+  #qtprog span{background:rgba(24,14,8,.82);border:1px solid rgba(230,200,140,.45);border-radius:14px;padding:3px 10px;color:#ffe7a0;white-space:nowrap}
   #grown h2{margin:0 0 4px;color:#a03a10;font-size:22px}
   .lk-p{margin:6px 0;color:var(--kl-ink2);font-size:14px;font-weight:700}
   .lk-p b{color:var(--kl-ink)}
@@ -62,6 +66,7 @@
 </head>
 <body>
 <canvas id="cv" width="1100" height="640"></canvas>
+<div id="qtprog" aria-hidden="true"></div>
 <div id="coach" class="kl-glass" role="status" aria-live="polite"><div style="flex:1"><div class="st" id="coachStep"></div><div id="coachText"></div></div>
   <button class="kl-btn cream" id="coachSkip">Skip</button></div>
 <div id="grown" class="kl-parch" role="dialog" aria-label="For grown-ups"><h2>For grown-ups</h2>
@@ -706,7 +711,11 @@ const CARDS=[
   {n:'Sunny Golem',c:'#e8c840',a:'#fffbd0'},{n:'Coral Golem',c:'#e8808a',a:'#ffe0e4'},{n:'Rainbow Golem',c:'#5aa8e0',a:'#ffffff',rainbow:true}];
 function loadMeta(){try{return JSON.parse(localStorage.getItem(META_KEY))||{};}catch(e){return {};}}
 let _mc=null;
-function saveMeta(m){_mc=null;try{localStorage.setItem(META_KEY,JSON.stringify(m));}catch(e){}}
+function saveMeta(m){_mc=null;try{localStorage.setItem(META_KEY,JSON.stringify(Object.assign({},m,{
+  stars:totalStars(m),                                   /* total stars across maps, kept next to the rest */
+  level:1+Math.floor(totalStars(m)/3),                   /* castle keep level: one per three stars earned */
+  unlocked:MAPS.map((_,i)=>totalStars(m)>=UNLOCK[i])     /* which maps the stars have opened */
+})));}catch(e){}paintProg();}
 function meta(){
   const m=loadMeta();
   m.matches=+m.matches||0;m.wins=+m.wins||0;
@@ -723,6 +732,15 @@ function meta(){
 /* the drawing code reads a cached copy, so a frame never touches localStorage */
 const mc=()=>_mc||(_mc=meta());
 const totalStars=m=>Object.values((m||meta()).best).reduce((a,b)=>a+(+b||0),0);
+/* DOM progression strip: repainted only when its text changes */
+function paintProg(){
+  const el=document.getElementById('qtprog');if(!el)return;
+  let m;try{m=meta();}catch(e){return;}
+  const open=MAPS.filter((_,i)=>totalStars(m)>=UNLOCK[i]).length;
+  const txt='Keep level '+Math.floor(totalStars(m)/3)+' of 5|⭐ '+(m.stars||0)+' stars|🗺️ '+open+' of '+MAPS.length+' maps unlocked|Daily goal '+Math.min(m.daily.n,DAILY_GOAL)+'/'+DAILY_GOAL+(m.daily.got?' 🎁':'')+'|🃏 Golem cards '+(m.cards?m.cards.length:0)+' of '+CARDS.length+'|🔥 Streak '+m.streak.n+' day'+(m.streak.n===1?'':'s');
+  if(el.dataset.t===txt)return;el.dataset.t=txt;
+  el.innerHTML=txt.split('|').map(s=>'<span>'+s+'</span>').join('');
+}
 
 /* ═══════════ layout and maps ═══════════ */
 const CELL=48, COLS=16, ROWS=10, FX=8, FY=64, FW=COLS*CELL, FH=ROWS*CELL;
@@ -1989,12 +2007,19 @@ function draw(){
 }
 
 /* ═══════════ input: one pointer handler, forgiving taps ═══════════ */
-cv.addEventListener('pointerdown',e=>{
-  const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*W/r.width,y=(e.clientY-r.top)*H/r.height;
-  AU.init();
-  for(let i=hits.length-1;i>=0;i--){const h=hits[i];if(x>=h.x&&x<=h.x+h.w&&y>=h.y&&y<=h.y+h.h){press(h.id);kitSfx('button',{volume:.35});h.fn();return;}}
-  if(G.phase==='playing')fieldTap(x,y);
-});
+function canvasTap(cx,cy){
+  try{
+    const r=cv.getBoundingClientRect(),x=(cx-r.left)*W/r.width,y=(cy-r.top)*H/r.height;
+    for(let i=hits.length-1;i>=0;i--){const h=hits[i];if(x>=h.x&&x<=h.x+h.w&&y>=h.y&&y<=h.y+h.h){press(h.id);kitSfx('button',{volume:.35});h.fn();return;}}
+    if(G.phase==='playing')fieldTap(x,y);
+  }catch(err){/* a lost tap must never come from an audio or draw hiccup */}
+  AU.init();   // wake audio after the tap has been routed: input must not depend on sound
+}
+let lastTapT=0;
+cv.addEventListener('pointerdown',e=>{lastTapT=performance.now();canvasTap(e.clientX,e.clientY);});
+/* engines that deliver touch without a synthesised pointer event: route those too, de-duplicated */
+cv.addEventListener('touchstart',e=>{if(performance.now()-lastTapT>350){lastTapT=performance.now();const t=e.changedTouches[0];if(t)canvasTap(t.clientX,t.clientY);}},{passive:true});
+cv.addEventListener('click',e=>{if(performance.now()-lastTapT>350){lastTapT=performance.now();canvasTap(e.clientX,e.clientY);}});
 function fieldTap(x,y){
   if(x<FX||x>FX+FW||y<FY||y>FY+FH)return;
   if(G.selected==='answer'){
@@ -2089,10 +2114,12 @@ const _startGame=startGame;
 startGame=function(mode,mapIdx){_startGame(mode,mapIdx);let seen=false;try{seen=localStorage.getItem('qt_tut')==='1';}catch(e){}if(!seen&&coachIx<0){coachIx=0;coachT=0;}};
 let lastPhase='';
 function watchPhase(){
+  paintProg();
   if(G.phase===lastPhase)return;lastPhase=G.phase;
-  if(G.phase==='menu'||G.phase==='cards'){closeGrown();sdkState({scene:'title'});}
+  if(G.phase==='menu'||G.phase==='cards'){closeGrown();sdkState({scene:'title',level:1+Math.floor(totalStars(mc())/3),stars:totalStars(mc())});}
 }
 const touchUI=matchMedia('(pointer: coarse)').matches;
+paintProg();
 
 if(window.ArcadeSDK)ArcadeSDK.init({orientation:'landscape',
   pauseButton:'tr',

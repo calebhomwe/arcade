@@ -1,0 +1,237 @@
+{
+ "id": "sky-match-swipe",
+ "title": "Match Swipe",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/match-swipe.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [
+  "FREEZE",
+  "JANK"
+ ],
+ "evidence": {
+  "FREEZE": "main thread blocked 3650 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 3650 ms of JS; long-task API + timer heartbeat; longest frame 3641.4 ms:  FrameRequestCallback 3625",
+  "JANK": "p95 JS frame cost 100.7 ms over 33 ms (unthrottled, divided by machine slowdown x1; raw p95 100.7, median 0.4, p99 197.6, max 3626; time inside WebGL calls excluded, p95 of it 0)"
+ },
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-match-swipe-1-title.jpg",
+  "2-mid": "shots\\sky-match-swipe-2-mid.jpg",
+  "3-end": "shots\\sky-match-swipe-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   1,
+   8.33,
+   12.6,
+   1,
+   1,
+   1,
+   1
+  ]
+ },
+ "loadMs": 110,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/match-swipe.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/match-swipe.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 18.8,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 977,
+  "playMs": 3650,
+  "loadRawMs": 977,
+  "playRawMs": 3650,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 131,
+  "longTasks100Play": 63,
+  "tbtLoadMs": 5345,
+  "tbtPlayMs": 13167,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 54,
+  "slowestPollMs": 3313,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 3641.4,
+   "blocking": 3577.1,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     3625
+    ]
+   ],
+   "phase": "start"
+  },
+  {
+   "ms": 1197,
+   "blocking": 32.6,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     45
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 881.4,
+   "blocking": 433.5,
+   "scripts": [
+    [
+     "",
+     "TimerHandler:setTimeout",
+     68
+    ],
+    [
+     "",
+     "FrameRequestCallback",
+     411
+    ]
+   ],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 605,
+  "jsMedian": 0.4,
+  "jsP95": 100.7,
+  "jsP99": 197.6,
+  "jsMax": 3626,
+  "jsP95Raw": 100.7,
+  "rawWithGlP95": 100.7,
+  "glP95": 0,
+  "gapP95": 183.3,
+  "gapMedian": 16.7,
+  "over100": 31,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2,
+  "heapGrowthPct": 6,
+  "heapMeasured": true,
+  "nodesStart": 33,
+  "nodesEnd": 34,
+  "nodesMax": 34,
+  "listeners0": 66,
+  "listeners1": 66,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 6,
+   "totalMB": 3.7,
+   "biggest": [
+    {
+     "w": 740,
+     "h": 1288,
+     "mpx": 0.95,
+     "dom": true,
+     "css": [
+      370,
+      644
+     ]
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 64,
+     "h": 64,
+     "mpx": 0,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 71,
+  "scriptPct": 36,
+  "layoutPerSec": 0
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 3,
+  "swipes": 2,
+  "holds": 0,
+  "keys": 0,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 1092,
+  "inputLatencyP95Ms": 2062,
+  "inputLatencyMaxMs": 2062,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": null,
+  "maxChangeFromStartPct": 24.3,
+  "samples": 4
+ },
+ "severity": 107.7,
+ "recheck": {
+  "reproduced": false,
+  "verdicts": [],
+  "evidence": null,
+  "blockPlayMs": 68,
+  "blockLoadMs": 0,
+  "load1": 0
+ }
+}

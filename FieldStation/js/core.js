@@ -30,11 +30,21 @@ const KEY = 'fieldstation.v1';
 let DB = load();
 
 function load() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || fresh(); }
-  catch { return fresh(); }
+  let db = null;
+  try { db = JSON.parse(localStorage.getItem(KEY)); } catch { db = null; }
+  const f = fresh();
+  if (db && typeof db === 'object') { for (const k of Object.keys(f)) if (db[k] === undefined) db[k] = f[k]; return db; }
+  return f;
 }
-function fresh() { return { skills: {}, modules: {}, streak: 0, lastDay: null, totalRight: 0, totalWrong: 0 }; }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch {} }
+function fresh() {
+  return { skills: {}, modules: {}, streak: 0, lastDay: null, totalRight: 0, totalWrong: 0,
+           xp: 0, coins: 0, stars: 0, daily: { day: null, correct: 0, goal: 5, done: false, reward: 0 },
+           badges: [], seen: {} };
+}
+function save() {
+  DB.stars = Math.round((DB.totalRight || 0) / 4) + Object.keys(DB.modules).filter(m => DB.modules[m] >= 100).length * 2;
+  try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch {}
+}
 
 export const Progress = {
   all: () => DB,
@@ -47,9 +57,85 @@ export const Progress = {
       ? clamp(cur + (100 - cur) * 0.34, 0, 100)   // approach mastery, never leap to it
       : clamp(cur - 18, 0, 100);                  // errors cost more than hits earn
     correct ? DB.totalRight++ : DB.totalWrong++;
+    const ev = this.award(correct ? 10 : 3, correct ? 1 : 0, correct ? 'Answer logged' : 'Effort logged');
     this.touchDay();
+    if (correct) this.bumpDaily();
+    save();
+    return ev;
+  },
+
+  /* ── XP / level / stars / coins / badges ─────────────── */
+  xp() { return DB.xp || 0; },
+  level() { return 1 + Math.floor((DB.xp || 0) / 60); },
+  levelPct() { return Math.round(((DB.xp || 0) % 60) / 60 * 100); },
+  stars() { return DB.stars || 0; },
+  coins() { return DB.coins || 0; },
+
+  /** Add XP and coins; level up, finish the daily goal and unlock badges as they come due. */
+  award(xp, coins, whyText) {
+    const ev = { xp: xp || 0, coins: coins || 0, leveled: false, newBadges: [], dailyDone: false };
+    const before = this.level();
+    DB.xp = (DB.xp || 0) + (xp || 0);
+    DB.coins = (DB.coins || 0) + (coins || 0);
+    ev.leveled = this.level() > before;
+    ev.newBadges = this.checkBadges();
+    save();
+    return ev;
+  },
+
+  /** The daily goal: N correct answers today, one bonus payout. */
+  daily() { return DB.daily; },
+  bumpDaily() {
+    const d = DB.daily, today = new Date().toDateString();
+    if (d.day !== today) { d.day = today; d.correct = 0; d.done = false; d.reward = 0; }
+    d.correct++;
+    if (!d.done && d.correct >= d.goal) {
+      d.done = true; d.reward = 10;
+      DB.coins = (DB.coins || 0) + 10;
+      this.checkBadges();
+    }
     save();
   },
+  /** Roll the daily goal over for a new day (call whenever the station renders). */
+  rollDaily() {
+    const d = DB.daily, today = new Date().toDateString();
+    if (d.day !== today) { d.day = today; d.correct = 0; d.done = false; d.reward = 0; save(); }
+  },
+
+  /** One XP thanks for opening an instrument (first time each day) — operating it counts. */
+  visit(modId) {
+    const today = new Date().toDateString();
+    DB.seen = DB.seen || {};
+    DB.seen[modId] = (DB.seen[modId] || 0) + 1;
+    if (DB.lastVisitDay !== today) {
+      DB.lastVisitDay = today;
+      this.rollDaily();
+      const ev = this.award(5, 1, 'Station shift started');
+      ev.newBadges = ev.newBadges.concat(this.checkBadges());
+      save();
+      return ev;
+    }
+    save();
+    return null;
+  },
+
+  BADGES: [
+    { id: 'first',     label: 'First answer',      test: db => (db.totalRight || 0) >= 1 },
+    { id: 'ten',       label: 'Ten right',         test: db => (db.totalRight || 0) >= 10 },
+    { id: 'explorer',  label: 'Explorer',          test: db => Object.keys(db.seen || {}).length >= 3 },
+    { id: 'certified', label: 'First certification', test: db => Object.values(db.modules || {}).some(v => v >= 100) },
+    { id: 'streak3',   label: 'Three-day streak',  test: db => (db.streak || 0) >= 3 },
+    { id: 'daily',     label: 'Daily goal done',   test: db => !!(db.daily && db.daily.done) },
+    { id: 'rich',      label: 'Twenty coins',      test: db => (db.coins || 0) >= 20 }
+  ],
+  checkBadges() {
+    const out = [];
+    for (const b of this.BADGES) {
+      if (!DB.badges.includes(b.id) && b.test(DB)) { DB.badges.push(b.id); out.push(b.label); }
+    }
+    return out;
+  },
+  badgeLabels() { return this.BADGES.filter(b => DB.badges.includes(b.id)).map(b => b.label); },
 
   /** Module completion percentage, 0..100. */
   moduleScore(modId) { return DB.modules[modId] ?? 0; },

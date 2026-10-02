@@ -9,98 +9,131 @@
  "throttled": true,
  "durationS": 45,
  "orientation": "portrait",
- "verdicts": [],
- "evidence": {},
+ "verdicts": [
+  "FREEZE"
+ ],
+ "evidence": {
+  "FREEZE": "page did not answer the harness for 6 s (1 poll timeout(s))"
+ },
  "notes": [
-  "3 touch input(s) took over 4 s to be acknowledged (machine slowdown x1.5)"
+  "animation loop paused 1x (over 3 s) but the screen kept changing, so it is not counted (DOM game or idle loop)"
  ],
  "shots": {
-  "1-title": "shots/market-merge-1-title.jpg",
-  "2-mid": "shots/market-merge-2-mid.jpg",
-  "3-end": "shots/market-merge-3-end.jpg"
+  "1-title": "shots\\market-merge-1-title.jpg",
+  "2-mid": "shots\\market-merge-2-mid.jpg",
+  "3-end": "shots\\market-merge-3-end.jpg"
  },
  "machine": {
-  "load1Start": 16.01,
-  "cores": 4,
-  "load1End": 17.19,
-  "contention": 1.47,
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 7.51,
   "contentionSamples": [
-   1.69,
-   1.25,
-   1.07,
-   2.95,
-   1.55,
-   1.47,
-   1.36
+   4.2,
+   1,
+   1.54,
+   20.28,
+   7.51,
+   10.4,
+   55.07
   ]
  },
- "loadMs": 380,
+ "loadMs": 300,
  "loaded": true,
- "startUrl": "http://127.0.0.1:33091/MarketMerge/index.html",
- "startPath": "http://127.0.0.1:33091/MarketMerge/index.html",
+ "startUrl": "http://127.0.0.1:55504/MarketMerge/index.html",
+ "startPath": "http://127.0.0.1:55504/MarketMerge/index.html",
  "sdk": true,
  "calibration": {
-  "benchMs": 142.1,
-  "bench1Ms": 43.9,
-  "effectiveSlowdown": 3.2
+  "benchMs": 86.7,
+  "bench1Ms": 20.5,
+  "effectiveSlowdown": 4.2
  },
  "start": {
   "how": "#play",
   "viaKey": false,
+  "detectedBy": "sdk",
   "buttonStillVisible": false
  },
  "block": {
-  "c": 1.47,
-  "loadMs": 447,
-  "playMs": 272,
-  "loadRawMs": 657,
-  "playRawMs": 400,
+  "c": 4,
+  "loadMs": 29,
+  "playMs": 931,
+  "loadRawMs": 115,
+  "playRawMs": 3723,
   "playGlMs": 0,
   "loadGlMs": 0,
-  "longTasksPlay": 8,
-  "longTasks100Play": 2,
-  "tbtLoadMs": 84,
-  "tbtPlayMs": 200,
+  "longTasksPlay": 34,
+  "longTasks100Play": 13,
+  "tbtLoadMs": 0,
+  "tbtPlayMs": 3268,
   "longtaskApi": true,
-  "heartbeatOver100Play": 5,
-  "slowestPollMs": 257,
-  "pollTimeouts": 0,
+  "heartbeatOver100Play": 22,
+  "slowestPollMs": 6000,
+  "pollTimeouts": 1,
   "shaderCompileMs": 0,
   "shaderCompileMaxCallMs": 0
  },
  "loafTop": [
   {
-   "ms": 1458.9,
-   "blocking": 0,
-   "scripts": [],
+   "ms": 5883,
+   "blocking": 835.3,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     843
+    ]
+   ],
    "phase": "play"
   },
   {
-   "ms": 1051.8,
-   "blocking": 0,
-   "scripts": [],
+   "ms": 3386,
+   "blocking": 3246.2,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     3295
+    ]
+   ],
    "phase": "play"
   },
   {
-   "ms": 910.6,
-   "blocking": 0,
-   "scripts": [],
+   "ms": 1058.5,
+   "blocking": 1006.3,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     6
+    ]
+   ],
    "phase": "play"
   }
  ],
- "rafStalls": [],
+ "rafStalls": [
+  {
+   "atMs": 43489,
+   "scene": "play",
+   "seconds": 5.2,
+   "recovered": true,
+   "errorAtStall": false,
+   "screenStatic": null,
+   "counted": false
+  }
+ ],
  "frames": {
-  "n": 166,
-  "jsMedian": 1.36,
-  "jsP95": 7.28,
-  "jsP99": 21.43,
-  "jsMax": 27.8,
-  "jsP95Raw": 10.7,
-  "rawWithGlP95": 10.7,
+  "n": 442,
+  "jsMedian": 0.17,
+  "jsP95": 1.95,
+  "jsP99": 46.55,
+  "jsMax": 210.8,
+  "jsP95Raw": 7.8,
+  "rawWithGlP95": 7.8,
   "glP95": 0,
-  "gapP95": 666.7,
-  "gapMedian": 233.3,
-  "over100": 0,
+  "gapP95": 266.7,
+  "gapMedian": 16.7,
+  "over100": 1,
   "limit": 16
  },
  "errors": [],
@@ -108,9 +141,9 @@
  "consoleErrors": [],
  "failed": [],
  "resources": {
-  "heap0MB": 1.9,
-  "heap1MB": 2.1,
-  "heapGrowthPct": 11,
+  "heap0MB": 1.8,
+  "heap1MB": 2,
+  "heapGrowthPct": 10,
   "heapMeasured": true,
   "nodesStart": 92,
   "nodesEnd": 92,
@@ -148,12 +181,12 @@
    "tooBig": 0,
    "dpr": 3
   },
-  "sdkTimers": 1
+  "sdkTimers": 0
  },
  "cpu": {
-  "mainThreadBusyPct": 7,
-  "scriptPct": 1,
-  "layoutPerSec": 4.1
+  "mainThreadBusyPct": 66,
+  "scriptPct": 18,
+  "layoutPerSec": 8.9
  },
  "risks": [],
  "sdkDeclared": true,
@@ -167,23 +200,33 @@
   "restartsAfterOver": 0
  },
  "bot": {
-  "taps": 22,
-  "swipes": 2,
+  "taps": 9,
+  "swipes": 0,
   "holds": 1,
   "keys": 0,
-  "buttonPresses": 6,
+  "buttonPresses": 2,
   "resumes": 0,
   "touchApi": null,
-  "inputLatencyMedianMs": 545,
-  "inputLatencyP95Ms": 4001,
-  "inputLatencyMaxMs": 4060,
-  "inputTimeouts": 3
+  "inputLatencyMedianMs": 45,
+  "inputLatencyP95Ms": 3320,
+  "inputLatencyMaxMs": 3320,
+  "inputTimeouts": 0
  },
  "screen": {
   "longestStaticS": 0,
-  "changeTitleToPlayPct": 44.1,
-  "maxChangeFromStartPct": 11.8,
-  "samples": 9
+  "changeTitleToPlayPct": 45.3,
+  "maxChangeFromStartPct": 7.2,
+  "samples": 4
  },
- "severity": 0.4
+ "severity": 102.9,
+ "recheck": {
+  "reproduced": true,
+  "verdicts": [
+   "FREEZE"
+  ],
+  "evidence": "main thread blocked 5332 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 5332 ms of JS; long-task API + timer heartbeat; longest frame 5405.9 ms: MarketMerge/index.html BUTTON#play.onclick 5172 | page did not answer the harness for 6 s (9 poll timeout(s))",
+  "blockPlayMs": 5332,
+  "blockLoadMs": 242,
+  "load1": 0
+ }
 }

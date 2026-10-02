@@ -48,21 +48,24 @@ const audio = new Audio();
 const fx = {};
 let world, player, racers = [], ais = [], riders = [], trails = [], colliders;
 let state = 'loading', raceT = 0, countdownT = 0, finishT = 0, paused = false;
+let booted = false;   // Play before the mountain is built would start a race boot() then cancels via toTitle()
 const clock = new THREE.Clock();
 
 // ---------------------------------------------------------------- loading
 function setLoad(p, txt) { if(state==='error')return; $('loadFill').style.width = Math.round(p * 100) + '%'; if (txt) $('loadTxt').textContent = txt; }
+const yieldFrame = () => new Promise(r => setTimeout(r, 0));
 
 async function boot() {
   resize();
   await document.fonts.load("italic 800 40px 'Barlow Condensed'").catch(() => {});
   await document.fonts.load("600 40px 'Barlow Condensed'").catch(() => {});
   const assets = await loadAll(renderer, (p) => setLoad(p * 0.55, 'Loading the mountain'));
-  const wait = () => new Promise(r => setTimeout(r, 0));
+  const wait = yieldFrame;
   setLoad(0.58, 'Lighting the sky'); await wait();
   world = new World(renderer, Q);
   const steps = { light: [0.62, 'Sculpting the run'], ribbon: [0.72, 'Raising the peaks'], massif: [0.82, 'Growing the forest'], forest: [0.9, 'Building the course'], props: [0.95, 'Waxing boards'] };
-  await world.build(assets, (k) => { const s = steps[k]; if (s) setLoad(s[0], s[1]); });
+  // build in short slices: every phase yields to the main thread so nothing blocks it for long
+  await world.build(assets, async (k) => { const s = steps[k]; if (s) setLoad(s[0], s[1]); await wait(); });
   colliders = new Colliders(world.forest.colliders, world.props.boulders);
 
   // riders
@@ -95,6 +98,7 @@ async function boot() {
   renderer.compile(world.scene, camera);
   renderer.render(world.scene, camera);
   $('loading').classList.remove('show');
+  booted = true;
   toTitle();
   window.__game = { state: () => state, player: () => player, racers: () => racers, timelapse: (n) => { QA_STEPS = n; }, hold: (b) => { paused = b; }, height: () => player.pos.y - heightAt(player.pos.x, player.pos.z) };
   requestAnimationFrame(loop);
@@ -220,6 +224,7 @@ function resetRace() {
 }
 
 function startRace() {
+  if (!booted) return;   // the mountain is still building: ignore taps so a race is never set up and then cancelled
   audio.start(); audio.click();
   paused=false;show('pause',false);
   show('title', false); show('results', false); show('help', false);
@@ -228,6 +233,7 @@ function startRace() {
   resetRace();
   state = 'countdown'; countdownT = 3.2; lastCount = 4;
   buildProgressDots();
+  try { if (window.ArcadeSDK) ArcadeSDK.state({ scene: 'play' }); } catch (e) { /* SDK optional */ }
 }
 
 let lastCount = 4;

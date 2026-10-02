@@ -1,0 +1,210 @@
+{
+ "id": "sky-hole-eater",
+ "title": "Hole Eater",
+ "cat": "hyper",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [
+  "JANK"
+ ],
+ "evidence": {
+  "JANK": "p95 JS frame cost 45.3 ms over 33 ms (unthrottled, divided by machine slowdown x1; raw p95 45.3, median 2.4, p99 55.4, max 98.3; time inside WebGL calls excluded, p95 of it 0.5)"
+ },
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\sky-hole-eater-1-title.jpg",
+  "2-mid": "shots\\sky-hole-eater-2-mid.jpg",
+  "3-end": "shots\\sky-hole-eater-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   1,
+   1.11,
+   1,
+   1,
+   1,
+   1,
+   1
+  ]
+ },
+ "loadMs": 119,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+ "startPath": "https://calebhomwe.github.io/neon-game-arcade/games/skywalker-playables/hole-eater.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.9,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "tap centre",
+  "viaKey": false,
+  "detectedBy": "sdk"
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 72,
+  "playMs": 188,
+  "loadRawMs": 81,
+  "playRawMs": 188,
+  "playGlMs": 0,
+  "loadGlMs": 9,
+  "longTasksPlay": 50,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 22,
+  "tbtPlayMs": 683,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 8,
+  "slowestPollMs": 1120,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 157.4,
+   "blocking": 100.3,
+   "scripts": [
+    [
+     "three/three.core.min.js",
+     "Promise.resolve",
+     147
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 133.7,
+   "blocking": 43.2,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     93
+    ]
+   ],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 1221,
+  "jsMedian": 2.4,
+  "jsP95": 45.3,
+  "jsP99": 55.4,
+  "jsMax": 98.3,
+  "jsP95Raw": 45.3,
+  "rawWithGlP95": 46.1,
+  "glP95": 0.5,
+  "gapP95": 50.1,
+  "gapMedian": 16.7,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 5.2,
+  "heap1MB": 6,
+  "heapGrowthPct": 14,
+  "heapMeasured": true,
+  "nodesStart": 35,
+  "nodesEnd": 35,
+  "nodesMax": 35,
+  "listeners0": 66,
+  "listeners1": 66,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 2,
+  "canvases": {
+   "n": 7,
+   "totalMB": 6.2,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 512,
+     "h": 512,
+     "mpx": 0.26,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 256,
+     "h": 256,
+     "mpx": 0.07,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 59,
+  "scriptPct": 42,
+  "layoutPerSec": 0.1
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "bot": {
+  "taps": 18,
+  "swipes": 6,
+  "holds": 2,
+  "keys": 1,
+  "buttonPresses": 0,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 49,
+  "inputLatencyP95Ms": 1593,
+  "inputLatencyMaxMs": 2019,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 98.7,
+  "maxChangeFromStartPct": 67,
+  "samples": 8
+ },
+ "severity": 42.2
+}

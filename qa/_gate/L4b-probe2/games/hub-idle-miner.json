@@ -1,0 +1,252 @@
+{
+ "id": "hub-idle-miner",
+ "title": "Idle Miner",
+ "cat": "idle",
+ "genre": "idle",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/idle-miner.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "bot navigated away to https://calebhomwe.github.io/arcade-hub/index.html and was sent back",
+  "page reloaded 1x right after a button press (the game's own restart): Play",
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\hub-idle-miner-1-title.jpg",
+  "2-mid": "shots\\hub-idle-miner-2-mid.jpg",
+  "3-end": "shots\\hub-idle-miner-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 2.06,
+  "contentionSamples": [
+   1,
+   2.46,
+   2.4,
+   2.06,
+   1.75,
+   2,
+   2.24
+  ]
+ },
+ "loadMs": 270,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/idle-miner.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/idle-miner.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 19.5,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#btnPlay",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 2.06,
+  "loadMs": 159,
+  "playMs": 82,
+  "loadRawMs": 328,
+  "playRawMs": 169,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 144,
+  "longTasks100Play": 0,
+  "tbtLoadMs": 128,
+  "tbtPlayMs": 40,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 0,
+  "slowestPollMs": 353,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 235.5,
+   "blocking": 170.4,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     200
+    ]
+   ],
+   "phase": "load"
+  },
+  {
+   "ms": 169.2,
+   "blocking": 115.1,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     154
+    ]
+   ],
+   "phase": "calib"
+  },
+  {
+   "ms": 141.5,
+   "blocking": 81.6,
+   "scripts": [],
+   "phase": "start"
+  }
+ ],
+ "rafStalls": [],
+ "navigations": [
+  {
+   "at": 20316,
+   "abs": "https://calebhomwe.github.io/arcade-hub/games/idle-miner.html",
+   "url": "https://calebhomwe.github.io/arcade-hub/games/idle-miner.html",
+   "afterAction": 52,
+   "kind": "button",
+   "txt": "Play"
+  }
+ ],
+ "frames": {
+  "n": 514,
+  "jsMedian": 0.19,
+  "jsP95": 0.29,
+  "jsP99": 0.44,
+  "jsMax": 6.9,
+  "jsP95Raw": 0.6,
+  "rawWithGlP95": 0.6,
+  "glP95": 0,
+  "gapP95": 66.7,
+  "gapMedian": 33.2,
+  "over100": 0,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 2.2,
+  "heap1MB": 1.8,
+  "heapGrowthPct": -17,
+  "heapMeasured": true,
+  "nodesStart": 322,
+  "nodesEnd": 324,
+  "nodesMax": 326,
+  "listeners0": 78,
+  "listeners1": 64,
+  "audioContexts": 1,
+  "audioElements": 0,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 2,
+   "totalMB": 5.7,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1328,
+     "mpx": 1.04,
+     "dom": true,
+     "css": [
+      390,
+      664
+     ]
+    },
+    {
+     "w": 780,
+     "h": 580,
+     "mpx": 0.45,
+     "dom": true,
+     "css": [
+      390,
+      290
+     ]
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 1
+ },
+ "cpu": {
+  "mainThreadBusyPct": 98,
+  "scriptPct": 2,
+  "layoutPerSec": 3.4
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "title",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 0,
+  "restartsAfterOver": 0
+ },
+ "gameScore": {
+  "updates": 7,
+  "first": 0,
+  "last": 18,
+  "max": 18,
+  "trajectory": [
+   [
+    0,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    10,
+    9
+   ],
+   [
+    18,
+    15
+   ],
+   [
+    0,
+    15
+   ],
+   [
+    1,
+    15
+   ],
+   [
+    9,
+    18
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 33,
+  "swipes": 4,
+  "holds": 1,
+  "keys": 1,
+  "buttonPresses": 17,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 132,
+  "inputLatencyP95Ms": 1003,
+  "inputLatencyMaxMs": 1082,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 68.3,
+  "maxChangeFromStartPct": 27.9,
+  "samples": 9
+ },
+ "severity": 0.2
+}

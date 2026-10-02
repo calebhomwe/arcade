@@ -1,0 +1,539 @@
+{
+ "generated": "2026-10-01T18:47:36.076Z",
+ "engine": "chromium",
+ "count": 2,
+ "results": [
+  {
+   "id": "hub-idle-empire",
+   "title": "Idle Empire",
+   "cat": "idle",
+   "genre": "idle",
+   "src": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "JANK"
+   ],
+   "evidence": {
+    "FREEZE": "main thread blocked 3952 ms (while playing), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 3952 ms of JS; long-task API + timer heartbeat; longest frame 2339 ms:  FrameRequestCallback 1997",
+    "JANK": "p95 JS frame cost 166.6 ms over 33 ms (unthrottled, divided by machine slowdown x1; raw p95 166.6, median 57.3, p99 286.5, max 311.3; time inside WebGL calls excluded, p95 of it 0)"
+   },
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\hub-idle-empire-1-title.jpg",
+    "2-mid": "shots\\hub-idle-empire-2-mid.jpg",
+    "3-end": "shots\\hub-idle-empire-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1,
+    "contentionSamples": [
+     4.12,
+     2.67,
+     1.28,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "loadMs": 1292,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+   "startPath": "https://calebhomwe.github.io/arcade-hub/games/idle-empire.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 187.6,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#btnPlay",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1,
+    "loadMs": 2623,
+    "playMs": 3952,
+    "loadRawMs": 2623,
+    "playRawMs": 3952,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 132,
+    "longTasks100Play": 64,
+    "tbtLoadMs": 6456,
+    "tbtPlayMs": 24168,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 34,
+    "slowestPollMs": 1188,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 2339,
+     "blocking": 1974.9,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       1997
+      ]
+     ],
+     "phase": "calib"
+    },
+    {
+     "ms": 1409.7,
+     "blocking": 206.5,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       256
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 1125.1,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 137,
+    "jsMedian": 57.3,
+    "jsP95": 166.6,
+    "jsP99": 286.5,
+    "jsMax": 311.3,
+    "jsP95Raw": 166.6,
+    "rawWithGlP95": 166.6,
+    "glP95": 0,
+    "gapP95": 1099.9,
+    "gapMedian": 83.4,
+    "over100": 16,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2.2,
+    "heap1MB": 2.4,
+    "heapGrowthPct": 7,
+    "heapMeasured": true,
+    "nodesStart": 298,
+    "nodesEnd": 298,
+    "nodesMax": 306,
+    "listeners0": 80,
+    "listeners1": 79,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 13,
+     "totalMB": 12,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 780,
+       "h": 580,
+       "mpx": 0.45,
+       "dom": true,
+       "css": [
+        390,
+        290
+       ]
+      },
+      {
+       "w": 780,
+       "h": 580,
+       "mpx": 0.45,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 588,
+       "h": 734,
+       "mpx": 0.43,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 100,
+    "scriptPct": 12,
+    "layoutPerSec": 0.2
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 3,
+    "first": 0,
+    "last": 0,
+    "max": 0,
+    "trajectory": [
+     [
+      1,
+      0
+     ],
+     [
+      13,
+      0
+     ],
+     [
+      25,
+      0
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 5,
+    "swipes": 1,
+    "holds": 0,
+    "keys": 0,
+    "buttonPresses": 4,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 1126,
+    "inputLatencyP95Ms": 1832,
+    "inputLatencyMaxMs": 1832,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 70.7,
+    "maxChangeFromStartPct": 18.4,
+    "samples": 4
+   },
+   "severity": 108,
+   "recheck": {
+    "reproduced": true,
+    "verdicts": [
+     "FREEZE",
+     "JANK"
+    ],
+    "evidence": "main thread blocked 3384 ms (during load), 0 ms of it inside WebGL calls (software GL), machine slowdown x1 -> about 3384 ms of JS; long-task API + timer heartbeat; longest frame 2194.1 ms:  FrameRequestCallback 2192",
+    "blockPlayMs": 2425,
+    "blockLoadMs": 3384,
+    "load1": 0
+   }
+  },
+  {
+   "id": "hub-farm-idle",
+   "title": "Farm Idle Tycoon",
+   "cat": "idle",
+   "genre": "idle",
+   "src": "https://calebhomwe.github.io/arcade-hub/games/farm-idle.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [
+    "FREEZE",
+    "JANK"
+   ],
+   "evidence": {
+    "FREEZE": "page reloaded 1x without a button press (https://calebhomwe.github.io/arcade-hub/games/farm-idle.html; last input was canvas 658 ms earlier)",
+    "JANK": "p95 JS frame cost 240.91 ms over 33 ms (unthrottled, divided by machine slowdown x1.6; raw p95 395.1, median 32.32, p99 314.27, max 527.7; time inside WebGL calls excluded, p95 of it 0)"
+   },
+   "notes": [
+    "bot navigated away to https://calebhomwe.github.io/arcade-hub/index.html and was sent back",
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\hub-farm-idle-1-title.jpg",
+    "2-mid": "shots\\hub-farm-idle-2-mid.jpg",
+    "3-end": "shots\\hub-farm-idle-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1.64,
+    "contentionSamples": [
+     4.02,
+     1,
+     1.55,
+     1,
+     17.01,
+     1.94,
+     1.64
+    ]
+   },
+   "loadMs": 517,
+   "loaded": true,
+   "startUrl": "https://calebhomwe.github.io/arcade-hub/games/farm-idle.html",
+   "startPath": "https://calebhomwe.github.io/arcade-hub/games/farm-idle.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 19.4,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "declared start button not tappable -> tap centre",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1.64,
+    "loadMs": 566,
+    "playMs": 720,
+    "loadRawMs": 928,
+    "playRawMs": 1181,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 78,
+    "longTasks100Play": 29,
+    "tbtLoadMs": 5427,
+    "tbtPlayMs": 4490,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 24,
+    "slowestPollMs": 1257,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 867,
+     "blocking": 815.5,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       865
+      ]
+     ],
+     "phase": "start"
+    },
+    {
+     "ms": 828.9,
+     "blocking": 359.8,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       409
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 546.8,
+     "blocking": 496.6,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       546
+      ]
+     ],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [],
+   "navigations": [
+    {
+     "at": 24199,
+     "abs": "https://calebhomwe.github.io/arcade-hub/games/farm-idle.html",
+     "url": "https://calebhomwe.github.io/arcade-hub/games/farm-idle.html",
+     "afterAction": 658,
+     "kind": "canvas",
+     "txt": ""
+    }
+   ],
+   "frames": {
+    "n": 103,
+    "jsMedian": 32.32,
+    "jsP95": 240.91,
+    "jsP99": 314.27,
+    "jsMax": 527.7,
+    "jsP95Raw": 395.1,
+    "rawWithGlP95": 395.1,
+    "glP95": 0,
+    "gapP95": 416.7,
+    "gapMedian": 66.7,
+    "over100": 20,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2.8,
+    "heap1MB": 1.9,
+    "heapGrowthPct": -30,
+    "heapMeasured": true,
+    "nodesStart": 296,
+    "nodesEnd": 297,
+    "nodesMax": 309,
+    "listeners0": 95,
+    "listeners1": 68,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 13,
+     "totalMB": 9.8,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 780,
+       "h": 580,
+       "mpx": 0.45,
+       "dom": true,
+       "css": [
+        390,
+        290
+       ]
+      },
+      {
+       "w": 780,
+       "h": 580,
+       "mpx": 0.45,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 368,
+       "h": 324,
+       "mpx": 0.12,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 97,
+    "scriptPct": 40,
+    "layoutPerSec": 0.7
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play",
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 5,
+    "first": 0,
+    "last": 0,
+    "max": 0,
+    "trajectory": [
+     [
+      0,
+      0
+     ],
+     [
+      15,
+      0
+     ],
+     [
+      0,
+      0
+     ],
+     [
+      3,
+      0
+     ],
+     [
+      11,
+      0
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 23,
+    "swipes": 2,
+    "holds": 0,
+    "keys": 1,
+    "buttonPresses": 7,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 242,
+    "inputLatencyP95Ms": 647,
+    "inputLatencyMaxMs": 1002,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 70.7,
+    "maxChangeFromStartPct": 72.5,
+    "samples": 8
+   },
+   "severity": 104.7,
+   "recheck": {
+    "reproduced": false,
+    "verdicts": [
+     "JANK"
+    ],
+    "evidence": null,
+    "blockPlayMs": 293,
+    "blockLoadMs": 159,
+    "load1": 0
+   }
+  }
+ ]
+}

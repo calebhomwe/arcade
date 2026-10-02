@@ -1,0 +1,174 @@
+{
+ "id": "hub-color-switch",
+ "title": "Color Switch",
+ "cat": "arcade",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/color-switch.html",
+ "engine": "chromium",
+ "notes": [],
+ "shots": {},
+ "declaredSaves": [
+  "colorBest"
+ ],
+ "session1": {
+  "start": "#playBtn + tap on game",
+  "reachedPlay": true,
+  "scenes": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "gameOvers": 3,
+  "score": {
+   "first": 1,
+   "last": 2,
+   "max": 2
+  },
+  "botTaps": 74,
+  "pageErrors": 0
+ },
+ "session2": {
+  "reachedPlay": true,
+  "readsSavedKeysAtBoot": [
+   "csPass",
+   "csTut",
+   "csRuns",
+   "csNear",
+   "colorBest",
+   "gamesMuted"
+  ],
+  "savedKeysWrittenInSession1": 6,
+  "titleTextChanged": true,
+  "title1": "← Hub 🔊 0 BEST 0 Color Switch Tap or Space to spin. Pass through the color that matches your ball — it changes after every pass! 🌟 Gold ri",
+  "title2": "← Hub 🔇 0 BEST 2 Color Switch Tap or Space to spin. Pass through the color that matches your ball — it changes after every pass! 🌟 Gold ri",
+  "keysUpdatedAgain": [
+   "csRuns"
+  ],
+  "startsFromSaved": true
+ },
+ "storage": {
+  "localStorageKeys": 6,
+  "added": [
+   "csPass",
+   "csTut",
+   "csRuns",
+   "csNear",
+   "colorBest",
+   "gamesMuted"
+  ],
+  "changed": [],
+  "removed": [],
+  "sample": {
+   "csPass": "3",
+   "csTut": "1",
+   "csRuns": "4",
+   "csNear": "2",
+   "colorBest": "2",
+   "gamesMuted": "1"
+  },
+  "indexedDB": [],
+  "indexedDBChanged": false,
+  "indexedDBKeys": [],
+  "cookies": 0,
+  "categoriesChanged": [
+   "other",
+   "score",
+   "settings"
+  ],
+  "categoriesPresent": [
+   "other",
+   "score",
+   "settings"
+  ],
+  "writesDuringPlay": {
+   "csTut": "1x",
+   "csRuns": "4x",
+   "gamesMuted": "46x",
+   "csNear": "2x",
+   "colorBest": "2x",
+   "csPass": "3x"
+  }
+ },
+ "systems": {
+  "levels": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "unlocks": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "upgrades": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "stars": {
+   "storage": false,
+   "dom": true,
+   "meta": false
+  },
+  "goals": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "achievements": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  },
+  "daily": {
+   "storage": false,
+   "dom": false,
+   "meta": true
+  },
+  "cosmetics": {
+   "storage": false,
+   "dom": false,
+   "meta": false
+  }
+ },
+ "currency": {
+  "storage": false,
+  "dom": true,
+  "meta": true
+ },
+ "observedSystems": [
+  "stars"
+ ],
+ "claimedOnly": [
+  "daily"
+ ],
+ "persists": {
+  "anything": true,
+  "bestScore": true,
+  "progress": [],
+  "unclassifiedBlob": true
+ },
+ "level": 1,
+ "label": "P1",
+ "why": "saves a best score but shows no unlock, upgrade, goal or level system",
+ "expected": [
+  "unlocks",
+  "cosmetics",
+  "daily",
+  "achievements",
+  "goals"
+ ],
+ "lacks": [
+  "unlocks",
+  "cosmetics",
+  "daily",
+  "achievements",
+  "goals"
+ ],
+ "pageErrors": []
+}

@@ -25,6 +25,10 @@
   #hud .lbl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:block}
   #cleanWrap{width:190px;height:10px;background:#e4dccd;border-radius:6px;overflow:hidden;margin-top:4px}
   #cleanBar{height:100%;width:0%;background:linear-gradient(90deg,var(--wood),var(--sage));transition:width .18s}
+  /* level + XP chip: progression is visible on the HUD without opening anything */
+  #lvChip{min-width:96px;cursor:default}
+  #xpBar{display:block;height:8px;width:100%;margin-top:4px;border-radius:5px;background:#e4dccd;overflow:hidden}
+  #xpBar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#e0a83c,#8fae8b);transition:width .25s}
   /* streak readout: the combo used to be toast-only every 22 scrubs */
   #comboChip{opacity:.35;transition:opacity .15s;min-width:52px}
   #comboChip.on{opacity:1}
@@ -149,6 +153,7 @@
 
 <div class="panel" id="hud">
   <div><span class="lbl">Cash</span><b id="cash">$0</b></div>
+  <div id="lvChip"><span class="lbl">Level</span><b id="lvVal">1</b><span id="xpBar"><i></i></span></div>
   <div><span class="lbl">Clean</span><b id="cleanPct">0%</b>
     <div id="cleanWrap"><div id="cleanBar"></div></div></div>
   <div><span class="lbl">Job</span><b id="jobName" style="font-size:14px">-</b></div>
@@ -186,8 +191,11 @@
     Travel the city, clean up messy houses, decorate them with style and sell them on for a profit.
     Better tools clean faster. Better taste sells higher.</p>
   <div id="mapCta"><span>Tap a job card to load the house and start cleaning, or press Play for the one marked START HERE.</span><button class="btn go" id="btnPlay" style="width:auto;padding:11px 28px">Play</button></div>
+  <div id="progLine" style="margin:10px 0 0;font-size:13px;line-height:1.55;color:var(--ink);background:rgba(143,174,139,.14);border:1px solid rgba(143,174,139,.4);border-radius:10px;padding:8px 11px"></div>
   <h2>Available jobs &mdash; click one to start</h2>
   <div class="jobs" id="jobList"></div>
+  <h2>House paint &mdash; unlock new colours with your flip cash</h2>
+  <div class="row" id="paintRow"></div>
   <h2>Your kit</h2>
   <div class="row" id="kitRow"></div>
   <h2>Difficulty</h2>
@@ -229,13 +237,116 @@ if(!T){ document.body.innerHTML = '<p style="color:#fff;font:16px system-ui;padd
    (non-module) three.js build in vendor/ so it runs from file:// too.
    ===================================================================== */
 
+/* =========================================================================
+   PROGRESSION: XP + levels, a date-seeded daily challenge, badges and
+   unlockable house paint (cosmetics bought with earned cash). Everything
+   persists inside the ONE save blob and is visible on the HUD and the city
+   map without opening any menu.
+   ========================================================================= */
+var XP_BASE = 120;
+function xpForNext(l){ return Math.round(XP_BASE * Math.pow(1.35, l-1)); }
+function addXp(n){
+  save.xp += n; var ups = 0, reward = 0;
+  while(save.xp >= xpForNext(save.level)){ save.xp -= xpForNext(save.level); save.level++; ups++; reward += save.level*40; }
+  if(ups){ save.cash += reward; toast('LEVEL '+save.level+'! +'+fmt(reward), '#ffe9a8'); AU.play('sparkle',0.6); checkAch(); }
+}
+/* house paint: a cosmetic sink for earned cash (pure tint of the walls) */
+var THEMES = [
+  { id:'classic', name:'Classic Cream', cost:0,   wall:0xeae0cf },
+  { id:'sky',     name:'Sky Blue',      cost:400, wall:0xbfd9ea },
+  { id:'sage',    name:'Sage Green',    cost:900, wall:0xbcd4b0 },
+  { id:'blossom', name:'Blossom Pink',  cost:1600,wall:0xe8c6cd },
+  { id:'sunset',  name:'Sunset Gold',   cost:2600,wall:0xe8c79a }
+];
+function themeById(id){ for(var i=0;i<THEMES.length;i++) if(THEMES[i].id===id) return THEMES[i]; return THEMES[0]; }
+function renderPaint(){
+  var row = el('paintRow'); if(!row) return;
+  row.innerHTML = '';
+  THEMES.forEach(function(t){
+    var owned = save.paint.owned.indexOf(t.id)>=0, cur = save.paint.cur===t.id;
+    var d = document.createElement('div'); d.className = 'item'+(cur?' sel':'')+(owned?'':' lockable');
+    d.innerHTML = '<div><b>'+t.name+'</b><small>'+(cur?'equipped':(owned?'owned - tap to equip':'unlock: '+fmt(t.cost)))+'</small></div><div>'+(owned?'&#10003;':fmt(t.cost))+'</div>';
+    d.onclick = function(){
+      if(owned){ save.paint.cur = t.id; persist(); renderPaint(); AU.play('click',0.4); toast('Paint: '+t.name, '#cfe6ff'); }
+      else if(save.cash >= t.cost){ save.cash -= t.cost; save.paint.owned.push(t.id); save.paint.cur = t.id; persist(); renderHUD(); renderPaint(); AU.play('coin',0.6); toast('Unlocked '+t.name+'!','#b6e3a8'); checkAch(); }
+      else { toast('Not enough cash - '+fmt(t.cost-save.cash)+' to go','#ff9a8a'); }
+    };
+    row.appendChild(d);
+  });
+}
+/* date-seeded daily challenge: same goal for everyone that day, bonus cash */
+function dailyKey(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function dayHash(){ var s=0,k=dailyKey(); for(var i=0;i<k.length;i++) s=(s*31+k.charCodeAt(i))>>>0; return s; }
+function ensureDaily(){
+  var k = dailyKey();
+  if(save.daily.day !== k){
+    var h = dayHash();
+    save.daily = { day:k, flips:0, goal:1+(h%2), reward:120+(h%7)*60, claimed:false };
+    persist();
+  }
+}
+function dailyDone(){ return save.daily.goal>0 && save.daily.flips >= save.daily.goal; }
+function progressDaily(){
+  ensureDaily();
+  save.daily.flips++;
+  if(dailyDone() && !save.daily.claimed){
+    save.daily.claimed = true; save.cash += save.daily.reward;
+    addXp(60);
+    toast('DAILY DONE! +'+fmt(save.daily.reward), '#ffe9a8'); AU.play('coin',0.7);
+  }
+  persist(); checkAch();
+}
+/* small badges; each is checked where it can fire, toasted once */
+var ACHS = [
+  { id:'first',  name:'First Flip',      test:function(){ return save.flips>=1; } },
+  { id:'stars3', name:'Dream Home',      test:function(){ for(var k in save.best) if(save.best[k]>=3) return true; return false; } },
+  { id:'five',   name:'House Flipper',   test:function(){ return save.flips>=5; } },
+  { id:'scrub',  name:'Fully Kitted',    test:function(){ return !!save.tools.scrubber; } },
+  { id:'paint',  name:'Interior Designer',test:function(){ return save.paint.owned.length>=3; } },
+  { id:'lvl5',   name:'Pro Cleaner (LV 5)',test:function(){ return save.level>=5; } }
+];
+function achCount(){ var n=0; for(var i=0;i<ACHS.length;i++) if(save.ach[ACHS[i].id]) n++; return n; }
+function checkAch(){
+  ACHS.forEach(function(a){
+    if(!save.ach[a.id] && a.test()){ save.ach[a.id] = Date.now(); toast('BADGE: '+a.name, '#b6e3a8'); AU.play('sparkle',0.55); }
+  });
+  persist();
+}
+/* the one visible line, painted on the city map card and the HUD */
+function paintProg(){
+  ensureDaily();
+  var el1 = document.getElementById('progLine');
+  if(el1) el1.innerHTML =
+    '<b>Level '+save.level+'</b> &middot; '+save.xp+'/'+xpForNext(save.level)+' XP &middot; '+
+    '&#11088; '+achCount()+'/'+ACHS.length+' badges &middot; '+
+    '<b>'+save.flips+'</b> flips &middot; '+
+    (dailyDone() ? '&#10003; Daily challenge done' : 'Daily challenge: flip '+save.daily.goal+' house'+(save.daily.goal>1?'s':'')+' ('+save.daily.flips+'/'+save.daily.goal+') for +'+fmt(save.daily.reward));
+  var chip = document.getElementById('lvChip');
+  if(chip){
+    chip.innerHTML = '<span class="lbl">Level</span><b id="lvVal">'+save.level+'</b>'+
+      '<span id="xpBar"><i style="width:'+Math.round(Math.min(1,save.xp/xpForNext(save.level))*100)+'%"></i></span>';
+    chip.title = save.xp + ' / ' + xpForNext(save.level) + ' XP';
+  }
+}
+
 var ROOM = { w: 9, d: 9, h: 3.2 };
 var SAVE_KEY = 'cleanhouse_save_v1';
 
 /* ---------------------------------------------------------------- save */
-var save = { cash: 250, tools: { sponge:1, mop:1, vacuum:1 }, done: [], best: {} };
+var save = { cash: 250, tools: { sponge:1, mop:1, vacuum:1 }, done: [], best: {},
+             xp:0, level:1, bank:0, flips:0, daily:{ day:'', flips:0, goal:0, reward:0, claimed:false },
+             ach:{}, paint:{ owned:['classic'], cur:'classic' } };
 function loadSave(){
   try{ var r = localStorage.getItem(SAVE_KEY); if(r){ var o = JSON.parse(r); if(o && o.cash!=null) save = o; } }catch(e){}
+  // normalize: older saves gain the newer progression fields
+  if(typeof save.xp!=='number') save.xp=0;
+  if(typeof save.level!=='number'||save.level<1) save.level=1;
+  if(typeof save.bank!=='number') save.bank=0;
+  if(typeof save.flips!=='number') save.flips=0;
+  if(!save.daily||typeof save.daily!=='object') save.daily={ day:'', flips:0, goal:0, reward:0, claimed:false };
+  if(!save.ach||typeof save.ach!=='object') save.ach={};
+  if(!save.paint||typeof save.paint!=='object') save.paint={ owned:['classic'], cur:'classic' };
+  if(!save.paint.owned||!save.paint.owned.length) save.paint.owned=['classic'];
 }
 function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} }
 /* difficulty: how much grime and rubbish each house starts with */
@@ -274,23 +385,54 @@ var AU = (function(){
   return { play: play };
 })();
 
-/* ---------------------------------------------------------------- scene */
+/* ---------------------------------------------------------------- scene
+   PERF/FREEZE: creating the WebGL context and baking the first room used to run
+   synchronously at boot - a multi-second main-thread block before first paint
+   (reproduced FREEZE in qa). Now the GL context, lights and the backdrop room are
+   built ASYNC, one chunk per frame, after the city map card has painted. */
 var canvas = document.getElementById('gl');
-var renderer = new T.WebGLRenderer({ canvas: canvas, antialias:true });
-renderer.setPixelRatio(gfx==='low' ? 1 : Math.min(2, window.devicePixelRatio||1));
-renderer.setSize(innerWidth, innerHeight);
-renderer.shadowMap.enabled = gfx!=='low';
-renderer.shadowMap.type = T.PCFSoftShadowMap;
+var renderer = null, scene = null, camera = null, glReady = false, glCbs = [];
+function onGL(cb){ if(glReady) cb(); else glCbs.push(cb); }
+function initGL(){
+  if(renderer) return;
+  renderer = new T.WebGLRenderer({ canvas: canvas, antialias:true });
+  renderer.setPixelRatio(gfx==='low' ? 1 : Math.min(2, window.devicePixelRatio||1));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = gfx!=='low';
+  renderer.shadowMap.type = T.PCFSoftShadowMap;
 
-var scene = new T.Scene();
-scene.background = new T.Color(0x101820);
-scene.fog = new T.Fog(0x101820, 26, 46);
+  scene = new T.Scene();
+  scene.background = new T.Color(0x101820);
+  scene.fog = new T.Fog(0x101820, 26, 46);
 
-var camera = new T.PerspectiveCamera(48, innerWidth/innerHeight, 0.1, 200);
+  camera = new T.PerspectiveCamera(48, innerWidth/innerHeight, 0.1, 200);
+  camera.position.set(
+    cam.target.x + cam.dist*Math.sin(cam.el)*Math.sin(cam.az),
+    cam.target.y + cam.dist*Math.cos(cam.el),
+    cam.target.z + cam.dist*Math.sin(cam.el)*Math.cos(cam.az));
+  camera.lookAt(cam.target);
+
+  scene.add(new T.AmbientLight(0xffffff, 0.55));
+  var hemi = new T.HemisphereLight(0xfff4e0, 0x39424d, 0.55); scene.add(hemi);
+  sun = new T.DirectionalLight(0xfff2dc, 1.15);
+  sun.position.set(6, 12, 7); sun.castShadow = gfx!=='low';
+  sun.shadow.mapSize.set(1024,1024);
+  sun.shadow.camera.left=-12; sun.shadow.camera.right=12; sun.shadow.camera.top=12; sun.shadow.camera.bottom=-12;
+  scene.add(sun);
+  var lamp = new T.PointLight(0xffd9a0, 0.5, 18); lamp.position.set(0, ROOM.h-0.3, 0); scene.add(lamp);
+  // finish the async boot: the backdrop room for the map card, then queued Play presses
+  buildRoom(JOBS[0]);
+  glReady = true;
+  var q = glCbs; glCbs = [];
+  q.forEach(function(cb){ cb(); });
+}
+/* outer-scope camera state (used by the pointer handlers and applyGfx) */
 var cam = { az: Math.PI*0.25, el: 0.72, dist: 15.5, target: new T.Vector3(0, ROOM.h*0.4, 0) };
 var dirty = true;           // the 3D view only needs redrawing when something in it changed
+var sun = null;             // applied by applyGfx()
 function applyCam(){
   dirty = true;
+  if(!camera) return;
   camera.position.set(
     cam.target.x + cam.dist*Math.sin(cam.el)*Math.sin(cam.az),
     cam.target.y + cam.dist*Math.cos(cam.el),
@@ -298,15 +440,12 @@ function applyCam(){
   camera.lookAt(cam.target);
 }
 applyCam();
-
-scene.add(new T.AmbientLight(0xffffff, 0.55));
-var hemi = new T.HemisphereLight(0xfff4e0, 0x39424d, 0.55); scene.add(hemi);
-var sun = new T.DirectionalLight(0xfff2dc, 1.15);
-sun.position.set(6, 12, 7); sun.castShadow = gfx!=='low';
-sun.shadow.mapSize.set(1024,1024);
-sun.shadow.camera.left=-12; sun.shadow.camera.right=12; sun.shadow.camera.top=12; sun.shadow.camera.bottom=-12;
-scene.add(sun);
-var lamp = new T.PointLight(0xffd9a0, 0.5, 18); lamp.position.set(0, ROOM.h-0.3, 0); scene.add(lamp);
+/* chunk the boot across frames: lights -> backdrop room -> ready */
+function bootGL(){
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    try { initGL(); } catch(e){ /* GL unavailable: the map card still works */ }
+  }); });
+}
 
 /* ------------------------------------------------------- dirt surfaces */
 var DIRT_COLORS = [ [0.42,0.33,0.24], [0.32,0.26,0.20], [0.50,0.40,0.28], [0.28,0.30,0.24] ];
@@ -454,14 +593,16 @@ function scrub(s, u, v, radiusPx, strength){
 }
 
 /* ------------------------------------------------------------ room build */
-var roomGroup = new T.Group(); scene.add(roomGroup);
+var roomGroup = null;           // created with the scene inside async initGL
 function clearRoom(){
-  while(roomGroup.children.length){ var c=roomGroup.children.pop(); roomGroup.remove(c);
+  if(roomGroup) while(roomGroup.children.length){ var c=roomGroup.children.pop(); roomGroup.remove(c);
     if(c.geometry) c.geometry.dispose(); }
   surfaces.length=0; trash.length=0;
 }
 
 function buildRoom(job){
+  if(!scene) return;            // GL boot not finished yet: nothing to build into
+  if(!roomGroup){ roomGroup = new T.Group(); scene.add(roomGroup); }
   clearRoom();
   // Each job can bring its own footprint and ceiling height - a bedsit and a
   // penthouse should not be the same box. ROOM is updated in place so placement,
@@ -601,6 +742,7 @@ function pickAt(clientX, clientY){
 var parts = [];
 var partGeo = new T.SphereGeometry(0.05, 6, 5);
 function spawnDust(p, color){
+  if(!roomGroup) return;
   for(var i=0;i<(RM?1:5);i++){
     var m = new T.Mesh(partGeo, new T.MeshBasicMaterial({ color: color||0xcdbba0, transparent:true, opacity:.85 }));
     m.position.copy(p);
@@ -613,6 +755,7 @@ function spawnDust(p, color){
   }
 }
 function spawnSparkle(p){
+  if(!roomGroup) return;
   for(var i=0;i<12;i++){
     var m = new T.Mesh(partGeo, new T.MeshBasicMaterial({ color:0xffe9a8, transparent:true, opacity:1 }));
     m.scale.setScalar(0.7 + Math.random());
@@ -623,6 +766,7 @@ function spawnSparkle(p){
   }
 }
 function stepParts(dt){
+  if(!roomGroup) return;
   for(var i=parts.length-1;i>=0;i--){
     var q = parts[i];
     q.life -= dt;
@@ -746,10 +890,10 @@ function frame(now){
   paintCombo();
   // While cleaning the room is live; behind the city map or the SOLD card it is a still backdrop,
   // so it is drawn only when it changed (software GL on low-end machines was spending every frame here).
-  if(mode==='play' || dirty || parts.length){ renderer.render(scene, camera); dirty = false; }
+  if(renderer && (mode==='play' || dirty || parts.length)){ renderer.render(scene, camera); dirty = false; }
   // Auto quality: if cleaning runs slower than ~16 fps on High and the player never picked a
   // setting, drop to Low (1x pixels, no shadow maps) once, and say so.
-  if(mode==='play' && gfx==='high' && !gfxChosen){ sampled++; if(raw>60) slowFrames++;
+  if(renderer && mode==='play' && gfx==='high' && !gfxChosen){ sampled++; if(raw>60) slowFrames++;
     if(sampled>=90){ if(slowFrames>60){ gfx='low'; applyGfx(); toast('Graphics set to Low for speed (change it in Settings)', '#cfe6ff'); gfxChosen=true; } sampled=0; slowFrames=0; } }
 }
 requestAnimationFrame(frame);
@@ -876,6 +1020,7 @@ function renderHUD(){
   el('cash').textContent = fmt(save.cash);
   if(job) el('jobName').textContent = job.name;
   el('codesOn').hidden = !cheated();
+  paintProg();
 }
 /* the star goals, live: the same thresholds listHouse() scores against */
 function decorNow(){ return placed.reduce(function(a,p){ return a + (p.item.decor||p.item.cost); }, 0); }
@@ -952,6 +1097,7 @@ function renderJobs(){
 function startJob(j){
   coachEnd();
   job = Object.assign({}, j); job.baseId = j.id;
+  job.wallColor = themeById(save.paint.cur).wall;   // equipped paint tints every house
   var D = DIFFS[save.diff] || DIFFS.normal;
   // per-run variance: the same address is never exactly the same mess twice
   job.mess  = Math.max(0.45, job.mess * D.mess * (0.90 + Math.random()*0.20));
@@ -993,6 +1139,11 @@ function listHouse(){
   if(save.done.indexOf(job.id)<0) save.done.push(job.id);
   var codes = cheated(), prevBest = save.best[job.id]||0;
   if(!codes) save.best[job.id] = Math.max(prevBest, stars);   // a run with codes on never sets a best
+  // progression: bank, XP, daily challenge, badges (codes runs earn XP but no best)
+  save.bank += Math.max(0, total); save.flips++;
+  progressDaily();
+  addXp(stars*60 + Math.round(Math.max(0,total)/40));
+  checkAch();
   persist();
 
   el('resTitle').textContent = stars===3 ? 'Dream home!' : (stars===2 ? 'Sold well' : 'Flipped');
@@ -1057,6 +1208,7 @@ function shareCard(){
 
 /* ------------------------------------------------------------- resize */
 addEventListener('resize', function(){
+  if(!renderer) return;
   renderer.setSize(innerWidth, innerHeight); dirty = true;
   camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
 });
@@ -1072,10 +1224,12 @@ function paintSettings(){
 document.querySelectorAll('#diffRow [data-diff]').forEach(function(b){ b.onclick=function(){ save.diff=b.getAttribute('data-diff'); persist(); paintSettings(); AU.play('click',0.4); }; });
 /* Low: 1x pixel ratio and no shadow maps. High: up to 2x pixel ratio with soft shadows. */
 function applyGfx(){
-  renderer.setPixelRatio(gfx==='low' ? 1 : Math.min(2, window.devicePixelRatio||1));
-  renderer.setSize(innerWidth, innerHeight);
-  renderer.shadowMap.enabled = gfx!=='low'; sun.castShadow = gfx!=='low';
-  scene.traverse(function(o){ if(o.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(function(m){ m.needsUpdate=true; }); } });
+  if(renderer){
+    renderer.setPixelRatio(gfx==='low' ? 1 : Math.min(2, window.devicePixelRatio||1));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.shadowMap.enabled = gfx!=='low'; if(sun) sun.castShadow = gfx!=='low';
+    scene.traverse(function(o){ if(o.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(function(m){ m.needsUpdate=true; }); } });
+  }
   dirty = true;
   paintSettings();
 }
@@ -1092,7 +1246,7 @@ var COACH_STEPS = [
   { sel:'#btnList', k:'5 / 5 · Sell', t:'LIST THE HOUSE when you are happy. Hit the Goal box targets for two or three stars.' }
 ];
 function coachStart(){
-  if(mode!=='play'){ var s0=null; JOBS.forEach(function(x){ if(s0===null && save.done.indexOf(x.id)<0) s0=x; }); startJob(s0||JOBS[0]); }
+  if(mode!=='play'){ var s0=null; JOBS.forEach(function(x){ if(s0===null && save.done.indexOf(x.id)<0) s0=x; }); onGL(function(){ startJob(s0||JOBS[0]); }); }
   COACH = { i:0 }; el('coach').classList.add('on'); coachPaint(); sdk('event','tutorial-start');
 }
 function coachPaint(){
@@ -1146,8 +1300,8 @@ function hintText(){
   return 'Spotless and furnished: LIST THE HOUSE for three stars.';
 }
 
-function goMap(){ coachEnd(); mode='map'; showLayer('result',false); showLayer('map',true); renderJobs(); paintSettings(); sdk('state',{scene:'title'}); }
-function retryJob(){ var base=null; if(job) JOBS.forEach(function(x){ if(x.id===job.baseId) base=x; }); startJob(base||JOBS[0]); }
+function goMap(){ coachEnd(); mode='map'; showLayer('result',false); showLayer('map',true); renderJobs(); renderPaint(); paintProg(); paintSettings(); sdk('state',{scene:'title'}); }
+function retryJob(){ var base=null; if(job) JOBS.forEach(function(x){ if(x.id===job.baseId) base=x; }); onGL(function(){ startJob(base||JOBS[0]); }); }
 
 /* --------------------------------------------------------------- boot */
 el('btnList').onclick = function(){ if(mode==='play') listHouse(); };
@@ -1156,10 +1310,12 @@ el('btnShare').onclick= shareCard;
 el('btnAgain').onclick= goMap;
 el('btnRetry').onclick= retryJob;
 el('btnHow').onclick  = function(){ coachStart(); };
-el('btnPlay').onclick = function(){ var s0=null; JOBS.forEach(function(x){ if(s0===null && save.done.indexOf(x.id)<0) s0=x; }); startJob(s0||JOBS[0]); };
+function playNow(){ var s0=null; JOBS.forEach(function(x){ if(s0===null && save.done.indexOf(x.id)<0) s0=x; }); startJob(s0||JOBS[0]); }
+el('btnPlay').onclick = function(){ onGL(playNow); };   // waits for the async GL boot if the player is quick
 
 loadSave(); renderHUD(); renderJobs(); renderTools(); renderShop(); renderCatalog(); paintSettings();
-buildRoom(JOBS[0]);   // a room behind the map so it is not empty
+renderPaint(); paintProg();
+bootGL();             // the GL context + backdrop room build ASYNC (see initGL) - never at boot
 mode='map';
 if(window.ArcadeSDK) ArcadeSDK.init({
   onRestart: function(){ if(mode==='map') { var s0=null; JOBS.forEach(function(x){ if(s0===null && save.done.indexOf(x.id)<0) s0=x; }); startJob(s0||JOBS[0]); } else retryJob(); },
@@ -1179,8 +1335,8 @@ window.__clean_debug = {
                               trash:j.trash, pay:j.pay, dirt:j.dirt, room:j.room||null }; }); },
   catalog: function(){ return CATALOG.map(function(c){ return { id:c.id, name:c.name,
                               cost:c.cost, decor:c.decor||c.cost }; }); },
-  start: function(i){ startJob(JOBS[i||0]); },
-  startId: function(id){ var j=null; JOBS.forEach(function(x){ if(x.id===id) j=x; }); if(j) startJob(j); return j?j.name:null; },
+  start: function(i){ onGL(function(){ startJob(JOBS[i||0]); }); },
+  startId: function(id){ var j=null; JOBS.forEach(function(x){ if(x.id===id) j=x; }); if(j) onGL(function(){ startJob(j); }); return j?j.name:null; },
   scrubAt: function(u,v,rr){ var n=0; surfaces.forEach(function(s){ n += scrub(s,u,v,rr||80,1); }); computeClean(); return n; },
   scrubFrac: function(frac){   // sweep until roughly `frac` of the grime is gone
     var target = 0; surfaces.forEach(function(s){ target += s.total*(frac==null?0.5:frac); });

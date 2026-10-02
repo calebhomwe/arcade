@@ -1,0 +1,227 @@
+{
+ "id": "hub-color-switch",
+ "title": "Color Switch",
+ "cat": "arcade",
+ "genre": "hyper-casual",
+ "src": "https://calebhomwe.github.io/arcade-hub/games/color-switch.html",
+ "engine": "chromium",
+ "throttle": 0,
+ "throttled": false,
+ "durationS": 25,
+ "orientation": "portrait",
+ "verdicts": [],
+ "evidence": {},
+ "notes": [
+  "unthrottled run"
+ ],
+ "shots": {
+  "1-title": "shots\\hub-color-switch-1-title.jpg",
+  "2-mid": "shots\\hub-color-switch-2-mid.jpg",
+  "3-end": "shots\\hub-color-switch-3-end.jpg"
+ },
+ "machine": {
+  "load1Start": 0,
+  "cores": 24,
+  "load1End": 0,
+  "contention": 1,
+  "contentionSamples": [
+   1,
+   1.28,
+   4.12,
+   1,
+   1,
+   32.01,
+   1
+  ]
+ },
+ "loadMs": 350,
+ "loaded": true,
+ "startUrl": "https://calebhomwe.github.io/arcade-hub/games/color-switch.html",
+ "startPath": "https://calebhomwe.github.io/arcade-hub/games/color-switch.html",
+ "sdk": true,
+ "calibration": {
+  "benchMs": 20.1,
+  "bench1Ms": null,
+  "effectiveSlowdown": null
+ },
+ "start": {
+  "how": "#playBtn + tap on game",
+  "viaKey": false,
+  "detectedBy": "sdk",
+  "buttonStillVisible": false
+ },
+ "block": {
+  "c": 1,
+  "loadMs": 54,
+  "playMs": 487,
+  "loadRawMs": 54,
+  "playRawMs": 487,
+  "playGlMs": 0,
+  "loadGlMs": 0,
+  "longTasksPlay": 74,
+  "longTasks100Play": 26,
+  "tbtLoadMs": 4,
+  "tbtPlayMs": 4296,
+  "longtaskApi": true,
+  "heartbeatOver100Play": 24,
+  "slowestPollMs": 3777,
+  "pollTimeouts": 0,
+  "shaderCompileMs": 0,
+  "shaderCompileMaxCallMs": 0
+ },
+ "loafTop": [
+  {
+   "ms": 502.7,
+   "blocking": 437.1,
+   "scripts": [],
+   "phase": "play"
+  },
+  {
+   "ms": 420.8,
+   "blocking": 349.4,
+   "scripts": [
+    [
+     "",
+     "FrameRequestCallback",
+     9
+    ]
+   ],
+   "phase": "play"
+  },
+  {
+   "ms": 401.9,
+   "blocking": 351.7,
+   "scripts": [],
+   "phase": "play"
+  }
+ ],
+ "rafStalls": [],
+ "frames": {
+  "n": 2105,
+  "jsMedian": 0.2,
+  "jsP95": 9.1,
+  "jsP99": 32,
+  "jsMax": 144,
+  "jsP95Raw": 9.1,
+  "rawWithGlP95": 9.1,
+  "glP95": 0,
+  "gapP95": 50,
+  "gapMedian": 16.7,
+  "over100": 2,
+  "limit": 33
+ },
+ "errors": [],
+ "errorCount": 0,
+ "consoleErrors": [],
+ "failed": [],
+ "resources": {
+  "heap0MB": 1.9,
+  "heap1MB": 2.1,
+  "heapGrowthPct": 7,
+  "heapMeasured": true,
+  "nodesStart": 87,
+  "nodesEnd": 87,
+  "nodesMax": 151,
+  "listeners0": 53,
+  "listeners1": 64,
+  "audioContexts": 2,
+  "audioElements": 12,
+  "webglContexts": 0,
+  "canvases": {
+   "n": 4,
+   "totalMB": 3.8,
+   "biggest": [
+    {
+     "w": 780,
+     "h": 1226,
+     "mpx": 0.96,
+     "dom": true,
+     "css": [
+      390,
+      613
+     ]
+    },
+    {
+     "w": 96,
+     "h": 96,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 96,
+     "h": 96,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    },
+    {
+     "w": 96,
+     "h": 96,
+     "mpx": 0.01,
+     "dom": false,
+     "css": null
+    }
+   ],
+   "tooBig": 0,
+   "dpr": 3
+  },
+  "sdkTimers": 0
+ },
+ "cpu": {
+  "mainThreadBusyPct": 41,
+  "scriptPct": 7,
+  "layoutPerSec": 5.2
+ },
+ "risks": [],
+ "sdkDeclared": true,
+ "scenes": {
+  "sequence": [
+   "title",
+   "play",
+   "over",
+   "play",
+   "over",
+   "play"
+  ],
+  "reachedPlay": true,
+  "gameOvers": 2,
+  "restartsAfterOver": 2
+ },
+ "gameScore": {
+  "updates": 2,
+  "first": 0,
+  "last": 2,
+  "max": 2,
+  "trajectory": [
+   [
+    19,
+    0
+   ],
+   [
+    34,
+    2
+   ]
+  ]
+ },
+ "bot": {
+  "taps": 12,
+  "swipes": 1,
+  "holds": 3,
+  "keys": 1,
+  "buttonPresses": 6,
+  "resumes": 0,
+  "touchApi": null,
+  "inputLatencyMedianMs": 58,
+  "inputLatencyP95Ms": 3232,
+  "inputLatencyMaxMs": 3232,
+  "inputTimeouts": 0
+ },
+ "screen": {
+  "longestStaticS": 0,
+  "changeTitleToPlayPct": 48.6,
+  "maxChangeFromStartPct": 31.6,
+  "samples": 7
+ },
+ "severity": 0.5
+}

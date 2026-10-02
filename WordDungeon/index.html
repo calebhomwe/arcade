@@ -64,6 +64,10 @@
   #coach .kl-btn{min-height:44px;padding:0 14px}
   #grown{display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;padding:16px 18px;box-sizing:border-box;color:var(--kl-ink)}
   #grown.show{display:block}
+  /* DOM progression strip: level, stars, coins, daily goal, achievements — always visible over the canvas */
+  #wdprog{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:9;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+    font:700 13px Fredoka,system-ui,sans-serif;pointer-events:none;max-width:calc(100vw - 16px)}
+  #wdprog span{background:rgba(11,23,48,.8);border:1px solid rgba(190,215,255,.42);border-radius:14px;padding:3px 10px;color:#ffe7a0;white-space:nowrap}
   #grown h2{margin:0 0 4px;color:#a03a10;font-size:22px}
   .lk-p{margin:6px 0;color:var(--kl-ink2);font-size:14px;font-weight:700}
   .lk-p b{color:var(--kl-ink)}
@@ -80,6 +84,7 @@
 <div class="tbtn" id="tJump">▲</div>
 <div class="tbtn" id="tScroll" role="button" aria-label="Use a hint scroll">📜</div>
 <div class="tbtn" id="tHint" role="button" aria-label="Hint">?</div>
+<div id="wdprog" aria-hidden="true"></div>
 <div id="coach" class="kl-glass" role="status" aria-live="polite"><div style="flex:1"><div class="st" id="coachStep"></div><div id="coachText"></div></div>
   <button class="kl-btn cream" id="coachSkip">Skip</button></div>
 <div id="grown" class="kl-parch" role="dialog" aria-label="For grown-ups"><h2>For grown-ups</h2>
@@ -126,12 +131,13 @@ const dayBefore=iso=>{const [y,m,d]=iso.split('-').map(Number);const t=new Date(
 
 /* ═══════════ persistence ═══════════ */
 const MKEY='worddungeon.meta.v1';
-function defMeta(){return{bestMath:0,bestSpell:0,runs:0,coinsEarned:0,stars:0,hero:0,relics:[],cp:{math:1,spell:1},daily:{d:'',n:0,got:0},streak:{last:'',n:0,best:0}};}
+function defMeta(){return{bestMath:0,bestSpell:0,runs:0,coinsEarned:0,stars:0,hero:0,relics:[],cp:{math:1,spell:1},daily:{d:'',n:0,got:0},streak:{last:'',n:0,best:0},xp:0,badges:[],locksAllTime:0,bossesAllTime:0};}
 function loadMeta(){
   const d=defMeta();
   try{const m=JSON.parse(localStorage.getItem(MKEY));
     if(m&&typeof m==='object'){
-      for(const k of['bestMath','bestSpell','runs','coinsEarned','stars','hero'])d[k]=+m[k]||0;
+      for(const k of['bestMath','bestSpell','runs','coinsEarned','stars','hero','xp','locksAllTime','bossesAllTime'])d[k]=+m[k]||0;
+      if(Array.isArray(m.badges))d.badges=m.badges.map(String).slice(0,24);
       if(Array.isArray(m.relics))d.relics=m.relics.map(Number).filter(n=>n>=0&&n<12);
       if(m.cp){d.cp.math=Math.max(1,+m.cp.math||1);d.cp.spell=Math.max(1,+m.cp.spell||1);}
       if(m.daily&&typeof m.daily==='object'){d.daily.d=String(m.daily.d||'');d.daily.n=+m.daily.n||0;d.daily.got=+m.daily.got||0;}
@@ -139,10 +145,35 @@ function loadMeta(){
     }}catch(e){}
   return d;
 }
-function saveMeta(m){try{localStorage.setItem(MKEY,JSON.stringify(m));}catch(e){}}
+function saveMeta(m){try{localStorage.setItem(MKEY,JSON.stringify(m));}catch(e){}paintProg();}
+/* the DOM progression strip: repainted only when its text changes */
+function paintProg(){
+  const el=document.getElementById('wdprog');if(!el)return;
+  try{syncDaily();}catch(e){}
+  const txt='Level '+wdLevel()+' · '+(meta.xp||0)+' XP|⭐ '+(meta.stars||0)+' stars|🪙 '+(meta.coinsEarned||0)+' coins earned|Daily goal '+Math.min(meta.daily.n,DAILY_GOAL)+'/'+DAILY_GOAL+(meta.daily.got?' 🎁':'')+'|Achievements '+((meta.badges||[]).length);
+  if(el.dataset.t===txt)return;el.dataset.t=txt;
+  el.innerHTML=txt.split('|').map(s=>'<span>'+s+'</span>').join('');
+}
 let meta=loadMeta();
 function syncDaily(){const t=todayISO();if(meta.daily.d!==t)meta.daily={d:t,n:0,got:0};}
 syncDaily();
+/* explorer level and badges: honest counters kept next to the rest of the save */
+const wdLevel=()=>1+Math.floor((meta.xp||0)/25);
+const wdLevelPct=()=>Math.round(((meta.xp||0)%25)/25*100);
+const WD_BADGES=[
+  {id:'first-lock', n:'First lock opened', t:()=>(meta.locksAllTime||0)>=1},
+  {id:'ten-locks',  n:'Ten locks opened',  t:()=>(meta.locksAllTime||0)>=10},
+  {id:'slime-king', n:'Slime King beaten', t:()=>(meta.bossesAllTime||0)>=1},
+  {id:'relic',      n:'First relic found', t:()=>(meta.relics||[]).length>=1},
+  {id:'daily',      n:'Daily goal done',   t:()=>!!(meta.daily&&meta.daily.got)},
+  {id:'deep',       n:'Floor 5 reached',   t:()=>Math.max(meta.cp?meta.cp.math:1,meta.cp?meta.cp.spell:1)>=5},
+  {id:'wardrobe',   n:'Hero unlocked',     t:()=>(meta.stars||0)>=12}
+];
+function wdCheckBadges(){
+  const out=[];
+  for(const b of WD_BADGES){if(!(meta.badges||[]).includes(b.id)&&b.t()){(meta.badges=meta.badges||[]).push(b.id);out.push(b.n);}}
+  return out;
+}
 
 /*@kidlook*/
 /* KL: a small canvas "rich look" kit. Warm light, layered depth, real-feeling surfaces (wood, parchment, gold, navy glass),
@@ -959,6 +990,8 @@ function runeComplete(owner){
   if(owner===G.boss){bossHit();return;}
   owner.solved=true;AU.unlock();
   syncDaily();meta.daily.n++;
+  meta.locksAllTime=(meta.locksAllTime||0)+1;meta.xp=(meta.xp||0)+2;
+  const nb=wdCheckBadges();for(const n of nb){G.banner={t:2.6,txt:'Achievement: '+n};}
   if(meta.daily.n>=DAILY_GOAL&&!meta.daily.got){meta.daily.got=1;meta.stars++;G.coins+=20;G.banner={t:3,txt:'Daily goal done! +1 star, +20 coins'};}
   saveMeta(meta);
   const bx=owner.x+owner.w/2;for(let i=0;i<24;i++)G.particles.push({x:bx,y:GY-owner.h*.6,vx:(Math.random()-.5)*380,vy:-Math.random()*380,t:1,c:i%3?'#ffd75e':'#fff6b0',s:4});
@@ -973,7 +1006,8 @@ function runeComplete(owner){
 function bossHit(){
   const b=G.boss;b.hp--;AU.unlock();say('The king reels!',1.6);
   if(b.hp<=0){
-    const gain=25;G.coins+=gain;meta.coinsEarned+=gain;saveMeta(meta);G.bossWins++;
+    const gain=25;G.coins+=gain;meta.coinsEarned+=gain;meta.bossesAllTime=(meta.bossesAllTime||0)+1;meta.xp=(meta.xp||0)+6;saveMeta(meta);G.bossWins++;
+    const nb2=wdCheckBadges();if(nb2.length)say('Achievement: '+nb2[0],2.4);
     say('SLIME KING falls! +'+gain+' coins',3);b.deadT=1.2;
     for(let i=0;i<40;i++)G.particles.push({x:b.x+b.w/2,y:b.y+b.h/2,vx:(Math.random()-.5)*420,vy:-Math.random()*380,t:1.1,c:i%2?'#5cc85c':'#a6f0a6',s:4});
   }else bossQuestion();
@@ -1509,11 +1543,18 @@ function frame(now){
 }
 
 /* ═══════════ arcade glue: taps, hints, grown-up report, first-run coach ═══════════ */
-cv.addEventListener('pointerdown',e=>{
-  const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*W/r.width,y=(e.clientY-r.top)*H/r.height;
-  AU.init();
-  for(let i=hits.length-1;i>=0;i--){const h=hits[i];if(x>=h.x&&x<=h.x+h.w&&y>=h.y&&y<=h.y+h.h){kitSfx('button',{volume:.5});h.fn();return;}}
-});
+function canvasTap(cx,cy){
+  try{
+    const r=cv.getBoundingClientRect(),x=(cx-r.left)*W/r.width,y=(cy-r.top)*H/r.height;
+    for(let i=hits.length-1;i>=0;i--){const h=hits[i];if(x>=h.x&&x<=h.x+h.w&&y>=h.y&&y<=h.y+h.h){kitSfx('button',{volume:.5});h.fn();return;}}
+  }catch(err){/* a tap must never be lost to an audio or draw hiccup */}
+  AU.init();   // wake audio after the tap has been routed, never before: input must not depend on sound
+}
+let lastTapT=0;
+cv.addEventListener('pointerdown',e=>{lastTapT=performance.now();canvasTap(e.clientX,e.clientY);});
+/* some engines deliver touch events without a synthesised pointer event: route those too, de-duplicated */
+cv.addEventListener('touchstart',e=>{if(performance.now()-lastTapT>350){lastTapT=performance.now();const t=e.changedTouches[0];if(t)canvasTap(t.clientX,t.clientY);}},{passive:true});
+cv.addEventListener('click',e=>{if(performance.now()-lastTapT>350){lastTapT=performance.now();canvasTap(e.clientX,e.clientY);}});
 function sdkState(o){try{window.ArcadeSDK&&ArcadeSDK.state(o);}catch(e){}}
 function noteAnswer(q,ok){
   if(q.kind==='math')LK.noteMath(q.raw||q.prompt,ok);
@@ -1544,6 +1585,7 @@ bindTap(document.getElementById('tHint'),showHint);
 bindTap(document.getElementById('tScroll'),()=>onKeyPress('KeyH'));
 let lastPhase='';
 function watchPhase(){
+  paintProg();
   if(G.phase===lastPhase)return;
   const was=lastPhase;lastPhase=G.phase;closeGrown();
   document.body.classList.toggle('hidebtn',G.phase!=='play');
