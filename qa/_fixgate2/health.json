@@ -1,0 +1,975 @@
+{
+ "generated": "2026-10-02T05:46:30.301Z",
+ "engine": "chromium",
+ "count": 5,
+ "results": [
+  {
+   "id": "clean-house",
+   "title": "Clean House",
+   "cat": "sim",
+   "genre": "management",
+   "src": "CleanHouse/index.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "1 touch input(s) took over 4 s to be acknowledged (machine slowdown x1)",
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\clean-house-1-title.jpg",
+    "2-mid": "shots\\clean-house-2-mid.jpg",
+    "3-end": "shots\\clean-house-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1,
+    "contentionSamples": [
+     3.77,
+     1,
+     9.34,
+     9.47,
+     1,
+     1,
+     1
+    ]
+   },
+   "loadMs": 118,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:63423/CleanHouse/index.html",
+   "startPath": "http://127.0.0.1:63423/CleanHouse/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 19.9,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#btnPlay",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1,
+    "loadMs": 1238,
+    "playMs": 750,
+    "loadRawMs": 1238,
+    "playRawMs": 750,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 10,
+    "longTasks100Play": 2,
+    "tbtLoadMs": 1325,
+    "tbtPlayMs": 835,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 2,
+    "slowestPollMs": 2582,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0.2,
+    "shaderCompileMaxCallMs": 0.1
+   },
+   "loafTop": [
+    {
+     "ms": 803.6,
+     "blocking": 699.9,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       749
+      ]
+     ],
+     "phase": "play"
+    },
+    {
+     "ms": 580.2,
+     "blocking": 487.7,
+     "scripts": [
+      [
+       "",
+       "PerformanceObserverCallback",
+       184
+      ],
+      [
+       "",
+       "FrameRequestCallback",
+       24
+      ]
+     ],
+     "phase": "load"
+    },
+    {
+     "ms": 245.6,
+     "blocking": 178.6,
+     "scripts": [
+      [
+       "",
+       "FrameRequestCallback",
+       18
+      ]
+     ],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 587,
+    "jsMedian": 0.5,
+    "jsP95": 1.1,
+    "jsP99": 25.3,
+    "jsMax": 749.8,
+    "jsP95Raw": 1.1,
+    "rawWithGlP95": 1.3,
+    "glP95": 0.1,
+    "gapP95": 100,
+    "gapMedian": 50,
+    "over100": 1,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 4.1,
+    "heap1MB": 4.6,
+    "heapGrowthPct": 13,
+    "heapMeasured": true,
+    "nodesStart": 316,
+    "nodesEnd": 319,
+    "nodesMax": 319,
+    "listeners0": 105,
+    "listeners1": 106,
+    "audioContexts": 0,
+    "audioElements": 9,
+    "webglContexts": 1,
+    "canvases": {
+     "n": 11,
+     "totalMB": 28,
+     "biggest": [
+      {
+       "w": 1024,
+       "h": 1024,
+       "mpx": 1.05,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 1024,
+       "h": 1024,
+       "mpx": 1.05,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      },
+      {
+       "w": 1024,
+       "h": 512,
+       "mpx": 0.52,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 11,
+    "scriptPct": 7,
+    "layoutPerSec": 5.8
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 9,
+    "swipes": 1,
+    "holds": 1,
+    "keys": 1,
+    "buttonPresses": 5,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 179,
+    "inputLatencyP95Ms": 4009,
+    "inputLatencyMaxMs": 4009,
+    "inputTimeouts": 1
+   },
+   "screen": {
+    "longestStaticS": 5,
+    "changeTitleToPlayPct": 77.8,
+    "maxChangeFromStartPct": 76,
+    "samples": 6
+   },
+   "severity": 1.2
+  },
+  {
+   "id": "high-nest",
+   "title": "High Nest",
+   "cat": "arcade",
+   "genre": "hyper-casual",
+   "src": "HighNest/index.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\high-nest-1-title.jpg",
+    "2-mid": "shots\\high-nest-2-mid.jpg",
+    "3-end": "shots\\high-nest-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1.91,
+    "contentionSamples": [
+     1,
+     1.94,
+     2.65,
+     1,
+     2.57,
+     1.91,
+     1.11
+    ]
+   },
+   "loadMs": 87,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:63423/HighNest/index.html",
+   "startPath": "http://127.0.0.1:63423/HighNest/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 21.5,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "#play",
+    "viaKey": false,
+    "detectedBy": "sdk",
+    "buttonStillVisible": false
+   },
+   "block": {
+    "c": 1.91,
+    "loadMs": 30,
+    "playMs": 50,
+    "loadRawMs": 58,
+    "playRawMs": 95,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 1,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 0,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 0,
+    "slowestPollMs": 29,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 137.5,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 1681,
+    "jsMedian": 0.1,
+    "jsP95": 0.16,
+    "jsP99": 0.31,
+    "jsMax": 5.4,
+    "jsP95Raw": 0.3,
+    "rawWithGlP95": 0.3,
+    "glP95": 0,
+    "gapP95": 16.8,
+    "gapMedian": 16.7,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 1.8,
+    "heap1MB": 2,
+    "heapGrowthPct": 11,
+    "heapMeasured": true,
+    "nodesStart": 97,
+    "nodesEnd": 112,
+    "nodesMax": 112,
+    "listeners0": 56,
+    "listeners1": 56,
+    "audioContexts": 1,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 1,
+     "totalMB": 4,
+     "biggest": [
+      {
+       "w": 780,
+       "h": 1328,
+       "mpx": 1.04,
+       "dom": true,
+       "css": [
+        390,
+        664
+       ]
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 3,
+    "scriptPct": 1,
+    "layoutPerSec": 2.7
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play",
+     "over",
+     "play",
+     "over",
+     "title"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 2,
+    "restartsAfterOver": 1
+   },
+   "gameScore": {
+    "updates": 2,
+    "first": 1,
+    "last": 1,
+    "max": 1,
+    "trajectory": [
+     [
+      5,
+      1
+     ],
+     [
+      10,
+      1
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 16,
+    "swipes": 4,
+    "holds": 1,
+    "keys": 1,
+    "buttonPresses": 4,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 36,
+    "inputLatencyP95Ms": 528,
+    "inputLatencyMaxMs": 791,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 7.8,
+    "changeTitleToPlayPct": 51.2,
+    "maxChangeFromStartPct": 51.3,
+    "samples": 6
+   },
+   "severity": 0.1
+  },
+  {
+   "id": "quiz-tower",
+   "title": "Quiz Tower Defense",
+   "cat": "learning",
+   "genre": "learning",
+   "src": "QuizTower/index.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "landscape",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\quiz-tower-1-title.jpg",
+    "2-mid": null,
+    "3-end": null
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 3.87,
+    "contentionSamples": [
+     1.29,
+     3.89,
+     7.52,
+     2.57,
+     3.77,
+     3.87,
+     4.06
+    ]
+   },
+   "loadMs": 91,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:63423/QuizTower/index.html",
+   "startPath": "http://127.0.0.1:63423/QuizTower/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 19.6,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "tap:50%,76%",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 3.87,
+    "loadMs": 0,
+    "playMs": 135,
+    "loadRawMs": 0,
+    "playRawMs": 524,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 3,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 59,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 1,
+    "slowestPollMs": 301,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 1067,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    },
+    {
+     "ms": 783.9,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    },
+    {
+     "ms": 667,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "play"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 1095,
+    "jsMedian": 0.21,
+    "jsP95": 4.42,
+    "jsP99": 6.43,
+    "jsMax": 70.5,
+    "jsP95Raw": 17.1,
+    "rawWithGlP95": 17.1,
+    "glP95": 0,
+    "gapP95": 16.8,
+    "gapMedian": 16.7,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 2,
+    "heap1MB": 2.2,
+    "heapGrowthPct": 9,
+    "heapMeasured": true,
+    "nodesStart": 41,
+    "nodesEnd": 41,
+    "nodesMax": 41,
+    "listeners0": 36,
+    "listeners1": 36,
+    "audioContexts": 2,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 35,
+     "totalMB": 18.7,
+     "biggest": [
+      {
+       "w": 1496,
+       "h": 684,
+       "mpx": 1.02,
+       "dom": true,
+       "css": [
+        748,
+        342
+       ]
+      },
+      {
+       "w": 1496,
+       "h": 684,
+       "mpx": 1.02,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 1496,
+       "h": 684,
+       "mpx": 1.02,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 846,
+       "h": 539,
+       "mpx": 0.46,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 18,
+    "scriptPct": 10,
+    "layoutPerSec": 0
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 1,
+    "swipes": 0,
+    "holds": 0,
+    "keys": 1,
+    "buttonPresses": 0,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 368,
+    "inputLatencyP95Ms": 368,
+    "inputLatencyMaxMs": 368,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": null,
+    "maxChangeFromStartPct": null,
+    "samples": 0
+   },
+   "severity": 0.1
+  },
+  {
+   "id": "tic-tac-toe",
+   "title": "Tic Tac Toe — Beat the Bot",
+   "cat": "classic",
+   "genre": "board",
+   "src": "TicTacToe/index.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "portrait",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\tic-tac-toe-1-title.jpg",
+    "2-mid": "shots\\tic-tac-toe-2-mid.jpg",
+    "3-end": "shots\\tic-tac-toe-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1.95,
+    "contentionSamples": [
+     1,
+     8.01,
+     3.98,
+     1,
+     1,
+     1.95,
+     1.95
+    ]
+   },
+   "loadMs": 80,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:63423/TicTacToe/index.html",
+   "startPath": "http://127.0.0.1:63423/TicTacToe/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 20.4,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "tap centre + Play",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1.95,
+    "loadMs": 26,
+    "playMs": 0,
+    "loadRawMs": 51,
+    "playRawMs": 0,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 0,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 0,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 0,
+    "slowestPollMs": 31,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [],
+   "rafStalls": [],
+   "frames": {
+    "n": 0,
+    "jsMedian": null,
+    "jsP95": null,
+    "jsP99": null,
+    "jsMax": null,
+    "jsP95Raw": null,
+    "rawWithGlP95": null,
+    "glP95": null,
+    "gapP95": null,
+    "gapMedian": null,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 1.7,
+    "heap1MB": 1.8,
+    "heapGrowthPct": 5,
+    "heapMeasured": true,
+    "nodesStart": 96,
+    "nodesEnd": 96,
+    "nodesMax": 96,
+    "listeners0": 62,
+    "listeners1": 62,
+    "audioContexts": 0,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 0,
+     "totalMB": 0,
+     "biggest": [],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 2,
+    "scriptPct": 0,
+    "layoutPerSec": 2.2
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "bot": {
+    "taps": 71,
+    "swipes": 2,
+    "holds": 0,
+    "keys": 4,
+    "buttonPresses": 54,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 5,
+    "inputLatencyP95Ms": 308,
+    "inputLatencyMaxMs": 433,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 5.7,
+    "changeTitleToPlayPct": 1,
+    "maxChangeFromStartPct": 1,
+    "samples": 10
+   },
+   "severity": 0
+  },
+  {
+   "id": "word-dungeon",
+   "title": "Word Dungeon",
+   "cat": "learning",
+   "genre": "learning",
+   "src": "WordDungeon/index.html",
+   "engine": "chromium",
+   "throttle": 0,
+   "throttled": false,
+   "durationS": 25,
+   "orientation": "landscape",
+   "verdicts": [],
+   "evidence": {},
+   "notes": [
+    "unthrottled run"
+   ],
+   "shots": {
+    "1-title": "shots\\word-dungeon-1-title.jpg",
+    "2-mid": "shots\\word-dungeon-2-mid.jpg",
+    "3-end": "shots\\word-dungeon-3-end.jpg"
+   },
+   "machine": {
+    "load1Start": 0,
+    "cores": 24,
+    "load1End": 0,
+    "contention": 1.54,
+    "contentionSamples": [
+     1.1,
+     1.94,
+     1.54,
+     1.54,
+     1.54,
+     1,
+     1
+    ]
+   },
+   "loadMs": 129,
+   "loaded": true,
+   "startUrl": "http://127.0.0.1:63423/WordDungeon/index.html",
+   "startPath": "http://127.0.0.1:63423/WordDungeon/index.html",
+   "sdk": true,
+   "calibration": {
+    "benchMs": 21.3,
+    "bench1Ms": null,
+    "effectiveSlowdown": null
+   },
+   "start": {
+    "how": "tap:36%,56%",
+    "viaKey": false,
+    "detectedBy": "sdk"
+   },
+   "block": {
+    "c": 1.54,
+    "loadMs": 39,
+    "playMs": 0,
+    "loadRawMs": 60,
+    "playRawMs": 0,
+    "playGlMs": 0,
+    "loadGlMs": 0,
+    "longTasksPlay": 0,
+    "longTasks100Play": 0,
+    "tbtLoadMs": 0,
+    "tbtPlayMs": 0,
+    "longtaskApi": true,
+    "heartbeatOver100Play": 0,
+    "slowestPollMs": 26,
+    "pollTimeouts": 0,
+    "shaderCompileMs": 0,
+    "shaderCompileMaxCallMs": 0
+   },
+   "loafTop": [
+    {
+     "ms": 434,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "load"
+    },
+    {
+     "ms": 129,
+     "blocking": 0,
+     "scripts": [],
+     "phase": "start"
+    }
+   ],
+   "rafStalls": [],
+   "frames": {
+    "n": 1577,
+    "jsMedian": 0.39,
+    "jsP95": 0.65,
+    "jsP99": 1.04,
+    "jsMax": 9.9,
+    "jsP95Raw": 1,
+    "rawWithGlP95": 1,
+    "glP95": 0,
+    "gapP95": 16.7,
+    "gapMedian": 16.7,
+    "over100": 0,
+    "limit": 33
+   },
+   "errors": [],
+   "errorCount": 0,
+   "consoleErrors": [],
+   "failed": [],
+   "resources": {
+    "heap0MB": 1.8,
+    "heap1MB": 2.1,
+    "heapGrowthPct": 15,
+    "heapMeasured": true,
+    "nodesStart": 45,
+    "nodesEnd": 47,
+    "nodesMax": 47,
+    "listeners0": 52,
+    "listeners1": 52,
+    "audioContexts": 2,
+    "audioElements": 0,
+    "webglContexts": 0,
+    "canvases": {
+     "n": 26,
+     "totalMB": 13.7,
+     "biggest": [
+      {
+       "w": 1500,
+       "h": 684,
+       "mpx": 1.03,
+       "dom": true,
+       "css": [
+        750,
+        342
+       ]
+      },
+      {
+       "w": 1500,
+       "h": 684,
+       "mpx": 1.03,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 659,
+       "h": 684,
+       "mpx": 0.45,
+       "dom": false,
+       "css": null
+      },
+      {
+       "w": 1348,
+       "h": 122,
+       "mpx": 0.16,
+       "dom": false,
+       "css": null
+      }
+     ],
+     "tooBig": 0,
+     "dpr": 3
+    },
+    "sdkTimers": 0
+   },
+   "cpu": {
+    "mainThreadBusyPct": 7,
+    "scriptPct": 4,
+    "layoutPerSec": 0.1
+   },
+   "risks": [],
+   "sdkDeclared": true,
+   "scenes": {
+    "sequence": [
+     "title",
+     "play"
+    ],
+    "reachedPlay": true,
+    "gameOvers": 0,
+    "restartsAfterOver": 0
+   },
+   "gameScore": {
+    "updates": 1,
+    "first": 1,
+    "last": 1,
+    "max": 1,
+    "trajectory": [
+     [
+      3,
+      1
+     ]
+    ]
+   },
+   "bot": {
+    "taps": 15,
+    "swipes": 1,
+    "holds": 0,
+    "keys": 1,
+    "buttonPresses": 5,
+    "resumes": 0,
+    "touchApi": null,
+    "inputLatencyMedianMs": 49,
+    "inputLatencyP95Ms": 586,
+    "inputLatencyMaxMs": 586,
+    "inputTimeouts": 0
+   },
+   "screen": {
+    "longestStaticS": 0,
+    "changeTitleToPlayPct": 73.5,
+    "maxChangeFromStartPct": 23.9,
+    "samples": 4
+   },
+   "severity": 0
+  }
+ ]
+}

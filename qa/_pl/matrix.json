@@ -1,0 +1,1798 @@
+{
+ "summary": {
+  "games": 7,
+  "checks": 26,
+  "generated": "2026-10-02T05:59:33.929Z",
+  "byCheck": {
+   "U01": [
+    6,
+    0,
+    1,
+    0
+   ],
+   "U02": [
+    2,
+    5,
+    0,
+    0
+   ],
+   "U03": [
+    7,
+    0,
+    0,
+    0
+   ],
+   "U04": [
+    4,
+    2,
+    1,
+    0
+   ],
+   "U05": [
+    5,
+    1,
+    1,
+    0
+   ],
+   "U06": [
+    6,
+    1,
+    0,
+    0
+   ],
+   "U07": [
+    6,
+    1,
+    0,
+    0
+   ],
+   "U08": [
+    2,
+    3,
+    2,
+    0
+   ],
+   "U09": [
+    6,
+    1,
+    0,
+    0
+   ],
+   "U10": [
+    6,
+    1,
+    0,
+    0
+   ],
+   "U11": [
+    1,
+    0,
+    6,
+    0
+   ],
+   "U12": [
+    4,
+    0,
+    3,
+    0
+   ],
+   "U13": [
+    6,
+    0,
+    1,
+    0
+   ],
+   "U14": [
+    7,
+    0,
+    0,
+    0
+   ],
+   "U15": [
+    6,
+    0,
+    1,
+    0
+   ],
+   "U16": [
+    7,
+    0,
+    0,
+    0
+   ],
+   "U17": [
+    6,
+    1,
+    0,
+    0
+   ],
+   "U18": [
+    7,
+    0,
+    0,
+    0
+   ],
+   "H01": [
+    6,
+    1,
+    0,
+    0
+   ],
+   "H02": [
+    6,
+    0,
+    0,
+    1
+   ],
+   "H03": [
+    7,
+    0,
+    0,
+    0
+   ],
+   "C01": [
+    6,
+    1,
+    0,
+    0
+   ],
+   "G01": [
+    0,
+    0,
+    7,
+    0
+   ],
+   "T01": [
+    0,
+    0,
+    0,
+    7
+   ],
+   "X01": [
+    2,
+    0,
+    5,
+    0
+   ],
+   "P01": [
+    0,
+    0,
+    7,
+    0
+   ]
+  },
+  "totals": {
+   "PASS": 121,
+   "FAIL": 18,
+   "REVIEW": 35,
+   "N/A": 8
+  }
+ },
+ "standard": [
+  {
+   "id": "U01",
+   "name": "Title screen",
+   "how": "observe",
+   "pass": "The game reports a title scene (ArcadeSDK.state({scene:'title'})) or the first frame is not blank."
+  },
+  {
+   "id": "U02",
+   "name": "How to play",
+   "how": "observe+meta",
+   "pass": "At least 2 steps in meta, and the arcade's Help button opens them inside the game."
+  },
+  {
+   "id": "U03",
+   "name": "Controls",
+   "how": "meta",
+   "pass": "Keyboard and touch controls written in meta."
+  },
+  {
+   "id": "U04",
+   "name": "Pause",
+   "how": "observe",
+   "pass": "On-screen pause button; the arcade's Pause freezes the canvas, the clock and audio; P or Esc pauses where free; a hidden tab pauses."
+  },
+  {
+   "id": "U05",
+   "name": "Resume",
+   "how": "observe",
+   "pass": "After a 2 s pause the game clock has not jumped and the game moves again."
+  },
+  {
+   "id": "U06",
+   "name": "Restart",
+   "how": "observe",
+   "pass": "The game restarts the run itself (ArcadeSDK onRestart), without reloading the page."
+  },
+  {
+   "id": "U07",
+   "name": "Exit to title",
+   "how": "observe",
+   "pass": "The game returns to its title itself (ArcadeSDK onExit)."
+  },
+  {
+   "id": "U08",
+   "name": "Sound",
+   "how": "observe",
+   "pass": "The arcade's Mute silences every audio context and media element, and the choice is remembered."
+  },
+  {
+   "id": "U09",
+   "name": "Settings",
+   "how": "meta+scan",
+   "pass": "Sound always; 3D tiers also list a graphics-quality setting in meta.settings."
+  },
+  {
+   "id": "U10",
+   "name": "Tips",
+   "how": "observe+meta",
+   "pass": "At least 3 tips in meta, shown on the pause menu."
+  },
+  {
+   "id": "U11",
+   "name": "Results screen",
+   "how": "observe",
+   "pass": "The game reports scene 'over' with a score or outcome during the scripted session, or meta.features.results says where it is (REVIEW)."
+  },
+  {
+   "id": "U12",
+   "name": "Saving",
+   "how": "observe+scan",
+   "pass": "A key named in meta.saves (the best score or progress, not a first-run flag or setting) is in localStorage or IndexedDB after the session."
+  },
+  {
+   "id": "U13",
+   "name": "Phone",
+   "how": "observe",
+   "pass": "At 390x844 with touch: no sideways scroll, DOM text at least 12 px, DOM tap targets at least 40 px."
+  },
+  {
+   "id": "U14",
+   "name": "Stability",
+   "how": "observe",
+   "pass": "0 page errors, 0 console errors and 0 failed requests from the game."
+  },
+  {
+   "id": "U15",
+   "name": "Loading",
+   "how": "observe",
+   "pass": "Something visible within 1 s of the game frame loading, and the SDK ready within 20 s."
+  },
+  {
+   "id": "U16",
+   "name": "Accessibility",
+   "how": "scan",
+   "pass": "The game respects prefers-reduced-motion."
+  },
+  {
+   "id": "U17",
+   "name": "Arcade SDK",
+   "how": "observe",
+   "pass": "The SDK loads and says ready; the game calls ArcadeSDK.init to declare what it supports."
+  },
+  {
+   "id": "U18",
+   "name": "Catalogue",
+   "how": "meta",
+   "pass": "Category, genre, 2+ tags, blurb, howto, tips, controls, a 480x300 tile and a 960x600 tile."
+  },
+  {
+   "id": "H01",
+   "name": "Tutorial",
+   "how": "observe",
+   "pass": "The game can replay its tutorial (ArcadeSDK onTutorial)."
+  },
+  {
+   "id": "H02",
+   "name": "Hints",
+   "how": "observe",
+   "pass": "Required for puzzle and learning games: the arcade's hint request returns a hint."
+  },
+  {
+   "id": "H03",
+   "name": "Difficulty",
+   "how": "meta",
+   "pass": "meta.difficulty says how difficulty works (modes, adaptive curve or age bands)."
+  },
+  {
+   "id": "C01",
+   "name": "Cheat codes",
+   "how": "observe+meta",
+   "pass": "Eligible games list 3+ codes in meta and the game accepts each one through the SDK."
+  },
+  {
+   "id": "G01",
+   "name": "Genre module",
+   "how": "meta+review",
+   "pass": "Every feature of the genre module is described in meta.features (REVIEW until a person confirms it)."
+  },
+  {
+   "id": "T01",
+   "name": "Tricks",
+   "how": "observe+meta",
+   "pass": "Board-sports games: 6+ named tricks with inputs, shown in the pause menu's Trick list."
+  },
+  {
+   "id": "X01",
+   "name": "Graphics tier",
+   "how": "observe+scan",
+   "pass": "3D tiers render in 3D (WebGL context plus a 3D engine); 2D-HD canvases are crisp at the device pixel ratio."
+  },
+  {
+   "id": "P01",
+   "name": "Progression",
+   "how": "observe+meta+review",
+   "pass": "Progress that persists (meta.saves names a key that is written) and real goals to come back for: levels, worlds, unlocks, stars or upgrades. The game tells the arcade profile where the player is with ArcadeSDK.state({scene, score, level, stars}). Always REVIEW for now: the harness lists what it saw and a person (or the progression checker) confirms the goals are real."
+  }
+ ],
+ "games": [
+  {
+   "id": "bloxburg-town",
+   "title": "Bloxburg Town",
+   "cat": "sim",
+   "genre": "life-sim",
+   "tier": "3D-S",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": true,
+   "render": "unity-3d",
+   "sdk": false,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "REVIEW",
+     "note": "Something is on screen; a person should confirm it is a title with a clear Play button."
+    },
+    "U02": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "U05": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "U06": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "U07": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "U08": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "U09": {
+     "s": "FAIL",
+     "note": "No arcade sound switch without the SDK."
+    },
+    "U10": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: No game over: a sandbox; the HUD shows money and needs"
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under idb:/idbfs."
+    },
+    "U13": {
+     "s": "REVIEW",
+     "note": "No sideways scroll; the UI is drawn on the canvas, so text and tap sizes need a person."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 0.6 s."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "H02": {
+     "s": "N/A",
+     "note": "Recommended, not required, for Life / farm / world sim games."
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "No difficulty modes: it is a relaxed sandbox where jobs pay more as you are promoted and the daily mailbox gift grows with your streak."
+    },
+    "C01": {
+     "s": "FAIL",
+     "note": "The arcade SDK is not on this game yet (it lives in bloxburg-town)."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Life / farm / world sim: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "REVIEW",
+     "note": "3D-S: renders in 3D (unity-3d); the stylised 3D bar needs a person."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves idb:/idbfs (written); no SDK, so nothing reaches the arcade profile; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\bloxburg-town-1-first-second.jpg",
+    "2-playing-a": "shots\\bloxburg-town-2-playing-a.jpg",
+    "2-playing-b": "shots\\bloxburg-town-2-playing-b.jpg",
+    "phone": "shots\\bloxburg-town-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 2880,
+     "h": 1800,
+     "cw": 960,
+     "ch": 600,
+     "area": 576000
+    },
+    "dpr": 3,
+    "dom": 0,
+    "shot": "shots\\bloxburg-town-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 649,
+    "ready": null
+   },
+   "gl": [],
+   "seconds": 113
+  },
+  {
+   "id": "bridge-rush",
+   "title": "Bridge Rush",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "tier": "3D-S",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": true,
+   "render": "three-3d",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "PASS",
+     "note": "The arcade Help button opened 3 steps inside the game."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "FAIL",
+     "note": "the arcade Pause button was not clickable"
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (0 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "REVIEW",
+     "note": "Mute works, but the game made no sound in the scripted session."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade; graphics quality: Graphics: High / Low button on the title card. High: up to 2x pixel ratio and soft shadows; Low: 1x, no shadow pass and half the island scenery.."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "3 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: Result card with stars, score, coins, material and place"
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under bridge-rush-prog-v1."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 1.3 s, SDK ready 0.7 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"Keep a few planks spare: every cone you run into knocks material loose.\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "Race N is 220+55(N-1) m (up to the classic 620 m); the rival lays faster each race and the winning margin for three stars grows. Classic is the original 620 m race."
+    },
+    "C01": {
+     "s": "PASS",
+     "note": "All 3 codes accepted; a wrong code is refused."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Hyper-casual: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "REVIEW",
+     "note": "3D-S: renders in 3D (three-3d); the stylised 3D bar needs a person."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves bridge-rush-prog-v1 (written); reports scene, level; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\bridge-rush-1-first-second.jpg",
+    "2-playing-b": "shots\\bridge-rush-2-playing-b.jpg",
+    "4-paused": "shots\\bridge-rush-4-paused.jpg",
+    "5-paused-later": "shots\\bridge-rush-5-paused-later.jpg",
+    "6-resumed-a": "shots\\bridge-rush-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\bridge-rush-6-resumed-b.jpg",
+    "8-how-to-play": "shots\\bridge-rush-8-how-to-play.jpg",
+    "phone": "shots\\bridge-rush-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 390,
+     "h": 844,
+     "cw": 390,
+     "ch": 844,
+     "area": 329160
+    },
+    "dpr": 3,
+    "dom": 8,
+    "shot": "shots\\bridge-rush-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 1328,
+    "ready": 674
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "webgl2",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 128,
+     "h": 32
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 64
+    }
+   ],
+   "seconds": 94
+  },
+  {
+   "id": "crowd-clash",
+   "title": "Crowd Clash",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "tier": "3D-S",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": true,
+   "render": "three-3d",
+   "sdk": true,
+   "harness": "",
+   "animating": null,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "FAIL",
+     "note": "No how-to steps: write them in qa/standard/meta/crowd-clash.json."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "REVIEW",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P and Esc pause; screenshots timed out before the pause, so motion was not measured."
+    },
+    "U05": {
+     "s": "REVIEW",
+     "note": "Resumed and the clock is in step; screenshots timed out, so motion was not measured."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "REVIEW",
+     "note": "Mute works, but the game made no sound in the scripted session."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade; graphics quality: Graphics: High / Low button on the title card. High: up to 2x pixel ratio, soft shadows from every runner; Low: 1x, no shadow pass and half the roadside scenery.."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "3 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: Result card with stars, score, coins, peak crowd, distance and knocked out"
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under crowd-clash-prog-v1."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "REVIEW",
+     "note": "The one-second screenshot timed out on a busy machine, so first paint was not measured."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"Next gate: the LEFT side leaves you with 16 runners. Keep off the centre post.\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "Level N has a 300+80(N-1) m track (up to the classic 920 m) and a boss gate of 22+3.3(N-1) people, rising to 45+ from level 8. Marathon is the original 920 m run to a 45-person boss gate."
+    },
+    "C01": {
+     "s": "PASS",
+     "note": "All 3 codes accepted; a wrong code is refused."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Hyper-casual: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "REVIEW",
+     "note": "3D-S: renders in 3D (three-3d); the stylised 3D bar needs a person."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves crowd-clash-prog-v1 (written); reports scene, level; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "2-playing-a": "shots\\crowd-clash-2-playing-a.jpg",
+    "4-paused": "shots\\crowd-clash-4-paused.jpg",
+    "5-paused-later": "shots\\crowd-clash-5-paused-later.jpg",
+    "8-how-to-play": "shots\\crowd-clash-8-how-to-play.jpg",
+    "phone": "shots\\crowd-clash-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 390,
+     "h": 844,
+     "cw": 390,
+     "ch": 844,
+     "area": 329160
+    },
+    "dpr": 3,
+    "dom": 8,
+    "shot": "shots\\crowd-clash-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 3253,
+    "ready": 402
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "webgl2",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "2d",
+     "w": 512,
+     "h": 720
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 128,
+     "h": 32
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 512,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 256
+    }
+   ],
+   "seconds": 152
+  },
+  {
+   "id": "helix-drop",
+   "title": "Helix Drop",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "tier": "3D-S",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": true,
+   "render": "three-3d",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "FAIL",
+     "note": "No how-to steps: write them in qa/standard/meta/helix-drop.json."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "PASS",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P and Esc pause."
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (0 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "PASS",
+     "note": "Mute silenced 2 sound source(s) and is remembered."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade; graphics quality: Graphics: High / Low button on the title card. High renders the 3D tower at up to 2x pixel ratio with soft real-time shadows; Low renders at 1x with no shadow pass.."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "4 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: Red ring screen with depth, level, bonuses, best combo and all-time best"
+    },
+    "U12": {
+     "s": "REVIEW",
+     "note": "Declared save key(s) hx_rec not written in the scripted session (they may be written at the end of a run)."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 1.5 s, SDK ready 1.1 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"Nearest gap: spin LEFT about 4 blocks. Never land on red.\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "An adaptive curve: every ring deeper adds spin speed (12 up to 20 blocks a second) and gravity (up to 2.3x); red blocks start on ring 4 and one more appears every 4 rings, and past ring 16 many gaps shrink to a single block."
+    },
+    "C01": {
+     "s": "PASS",
+     "note": "All 3 codes accepted; a wrong code is refused."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Hyper-casual: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "REVIEW",
+     "note": "3D-S: renders in 3D (three-3d); the stylised 3D bar needs a person."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves declared (hx_rec) but not written in the scripted session; reports scene; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\helix-drop-1-first-second.jpg",
+    "2-playing-a": "shots\\helix-drop-2-playing-a.jpg",
+    "2-playing-b": "shots\\helix-drop-2-playing-b.jpg",
+    "4-paused": "shots\\helix-drop-4-paused.jpg",
+    "5-paused-later": "shots\\helix-drop-5-paused-later.jpg",
+    "6-resumed-a": "shots\\helix-drop-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\helix-drop-6-resumed-b.jpg",
+    "8-how-to-play": "shots\\helix-drop-8-how-to-play.jpg",
+    "phone": "shots\\helix-drop-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 390,
+     "h": 844,
+     "cw": 390,
+     "ch": 844,
+     "area": 329160
+    },
+    "dpr": 3,
+    "dom": 3,
+    "shot": "shots\\helix-drop-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 1496,
+    "ready": 1076
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "webgl2",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "2d",
+     "w": 128,
+     "h": 128
+    }
+   ],
+   "seconds": 187
+  },
+  {
+   "id": "rung-runner",
+   "title": "Rung Runner",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "tier": "3D-S",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": true,
+   "render": "three-3d",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "FAIL",
+     "note": "No how-to steps: write them in qa/standard/meta/rung-runner.json."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "PASS",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P and Esc pause."
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (1 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "FAIL",
+     "note": "Mute did not reach the game; the choice is not remembered"
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade; graphics quality: Graphics: High / Low button on the title card. High: up to 2x pixel ratio and soft shadows; Low: 1x, no shadow pass and half the floating islands.."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "4 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: Run over screen with score, distance, zone, rungs, walls cleared and all-time best"
+    },
+    "U12": {
+     "s": "REVIEW",
+     "note": "Declared save key(s) rr_rec not written in the scripted session (they may be written at the end of a run)."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 1.8 s, SDK ready 1.0 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"The next wall needs 2 rungs and you hold 0: grab 2 more before it.\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "An adaptive curve: speed climbs from 14.5 to 31 over the first 950 m through five zones, and walls grow from about 2 rungs to 6 (higher still when you hoard rungs)."
+    },
+    "C01": {
+     "s": "PASS",
+     "note": "All 3 codes accepted; a wrong code is refused."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Hyper-casual: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "REVIEW",
+     "note": "3D-S: renders in 3D (three-3d); the stylised 3D bar needs a person."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves declared (rr_rec) but not written in the scripted session; reports scene; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\rung-runner-1-first-second.jpg",
+    "2-playing-a": "shots\\rung-runner-2-playing-a.jpg",
+    "2-playing-b": "shots\\rung-runner-2-playing-b.jpg",
+    "4-paused": "shots\\rung-runner-4-paused.jpg",
+    "5-paused-later": "shots\\rung-runner-5-paused-later.jpg",
+    "6-resumed-a": "shots\\rung-runner-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\rung-runner-6-resumed-b.jpg",
+    "phone": "shots\\rung-runner-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 390,
+     "h": 844,
+     "cw": 390,
+     "ch": 844,
+     "area": 329160
+    },
+    "dpr": 3,
+    "dom": 3,
+    "shot": "shots\\rung-runner-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 1771,
+    "ready": 1049
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "webgl2",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 160
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 160
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 160
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 160
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 160
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 160
+    },
+    {
+     "type": "2d",
+     "w": 256,
+     "h": 160
+    }
+   ],
+   "seconds": 137
+  },
+  {
+   "id": "snake-clash",
+   "title": "Snake Clash",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "tier": "2D-HD",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": true,
+   "render": "canvas-2d",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "FAIL",
+     "note": "No how-to steps: write them in qa/standard/meta/snake-clash.json."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "PASS",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P and Esc pause."
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (0 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "FAIL",
+     "note": "Mute did not reach the game; 3 sound source(s) stayed loud; the choice is not remembered"
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "5 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "PASS",
+     "note": "The game reported a results scene."
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under sc_rec, pz_snakeclash."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 1.8 s, SDK ready 0.6 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"Grow first: sweep the bright orb clusters before you pick fights.\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "An adaptive curve: you start against 3 rivals, one more joins for every 7 segments you grow (up to 9), and they speed up as you get longer."
+    },
+    "C01": {
+     "s": "PASS",
+     "note": "All 3 codes accepted; a wrong code is refused."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Hyper-casual: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "PASS",
+     "note": "Crisp: canvas 780px wide for 390 CSS px at DPR 3."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves sc_rec, pz_snakeclash (written); reports scene, stars and 1 finished round(s); goals: XP levels unlock 6 looks (a snake skin plus a matching textured arena); 3 daily goals; a weekly stamp card with a chest; trophies. Saved in pz_snakeclash. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\snake-clash-1-first-second.jpg",
+    "2-playing-a": "shots\\snake-clash-2-playing-a.jpg",
+    "2-playing-b": "shots\\snake-clash-2-playing-b.jpg",
+    "4-paused": "shots\\snake-clash-4-paused.jpg",
+    "5-paused-later": "shots\\snake-clash-5-paused-later.jpg",
+    "6-resumed-a": "shots\\snake-clash-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\snake-clash-6-resumed-b.jpg",
+    "phone": "shots\\snake-clash-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 780,
+     "h": 1688,
+     "cw": 390,
+     "ch": 844,
+     "area": 329160
+    },
+    "dpr": 3,
+    "dom": 4,
+    "shot": "shots\\snake-clash-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 1780,
+    "ready": 627
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "2d",
+     "w": 720,
+     "h": 220
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 80,
+     "h": 80
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 80,
+     "h": 80
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 80,
+     "h": 80
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 80,
+     "h": 80
+    },
+    {
+     "type": "2d",
+     "w": 512,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 512,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 512,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 512,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 512,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 512,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 512,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 80,
+     "h": 80
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 80,
+     "h": 80
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 64,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 80,
+     "h": 80
+    },
+    {
+     "type": "2d",
+     "w": 720,
+     "h": 220
+    }
+   ],
+   "seconds": 89
+  },
+  {
+   "id": "volt-dash",
+   "title": "Volt Dash",
+   "cat": "hyper",
+   "genre": "hyper-casual",
+   "tier": "2D-HD",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": true,
+   "render": "canvas-2d",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "PASS",
+     "note": "The arcade Help button opened 3 steps inside the game."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "PASS",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P and Esc pause."
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (0 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "PASS",
+     "note": "Mute silenced 2 sound source(s) and is remembered."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "4 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: Blackout screen with score, distance, cells, dashes, hits and all-time best"
+    },
+    "U12": {
+     "s": "REVIEW",
+     "note": "Declared save key(s) vd_rec not written in the scripted session (they may be written at the end of a run)."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 5.4 s, SDK ready 1.7 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"Each cell is +12 volts. Dash (Shift or swipe right) smashes through a hit, but o\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "An adaptive curve: speed climbs from 11 to 24 and the battery drain from 4 to 15 volts a second over the first 900 m, through five sectors."
+    },
+    "C01": {
+     "s": "PASS",
+     "note": "All 3 codes accepted; a wrong code is refused."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Hyper-casual: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "PASS",
+     "note": "Crisp: canvas 780px wide for 390 CSS px at DPR 3."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves declared (vd_rec) but not written in the scripted session; reports scene; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\volt-dash-1-first-second.jpg",
+    "2-playing-a": "shots\\volt-dash-2-playing-a.jpg",
+    "2-playing-b": "shots\\volt-dash-2-playing-b.jpg",
+    "4-paused": "shots\\volt-dash-4-paused.jpg",
+    "5-paused-later": "shots\\volt-dash-5-paused-later.jpg",
+    "6-resumed-a": "shots\\volt-dash-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\volt-dash-6-resumed-b.jpg",
+    "8-how-to-play": "shots\\volt-dash-8-how-to-play.jpg",
+    "phone": "shots\\volt-dash-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 780,
+     "h": 1688,
+     "cw": 390,
+     "ch": 844,
+     "area": 329160
+    },
+    "dpr": 3,
+    "dom": 2,
+    "shot": "shots\\volt-dash-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 5446,
+    "ready": 1699
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 300,
+     "h": 150
+    }
+   ],
+   "seconds": 61
+  }
+ ]
+}

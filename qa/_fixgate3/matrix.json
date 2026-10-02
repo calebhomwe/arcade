@@ -1,0 +1,1395 @@
+{
+ "summary": {
+  "games": 4,
+  "checks": 26,
+  "generated": "2026-10-02T05:49:36.165Z",
+  "byCheck": {
+   "U01": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U02": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U03": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U04": [
+    2,
+    0,
+    2,
+    0
+   ],
+   "U05": [
+    2,
+    0,
+    2,
+    0
+   ],
+   "U06": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U07": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U08": [
+    3,
+    0,
+    1,
+    0
+   ],
+   "U09": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U10": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U11": [
+    0,
+    0,
+    4,
+    0
+   ],
+   "U12": [
+    3,
+    0,
+    1,
+    0
+   ],
+   "U13": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U14": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U15": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U16": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U17": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "U18": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "H01": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "H02": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "H03": [
+    4,
+    0,
+    0,
+    0
+   ],
+   "C01": [
+    2,
+    0,
+    0,
+    2
+   ],
+   "G01": [
+    0,
+    0,
+    4,
+    0
+   ],
+   "T01": [
+    0,
+    0,
+    0,
+    4
+   ],
+   "X01": [
+    2,
+    0,
+    2,
+    0
+   ],
+   "P01": [
+    0,
+    0,
+    4,
+    0
+   ]
+  },
+  "totals": {
+   "PASS": 78,
+   "FAIL": 0,
+   "REVIEW": 20,
+   "N/A": 6
+  }
+ },
+ "standard": [
+  {
+   "id": "U01",
+   "name": "Title screen",
+   "how": "observe",
+   "pass": "The game reports a title scene (ArcadeSDK.state({scene:'title'})) or the first frame is not blank."
+  },
+  {
+   "id": "U02",
+   "name": "How to play",
+   "how": "observe+meta",
+   "pass": "At least 2 steps in meta, and the arcade's Help button opens them inside the game."
+  },
+  {
+   "id": "U03",
+   "name": "Controls",
+   "how": "meta",
+   "pass": "Keyboard and touch controls written in meta."
+  },
+  {
+   "id": "U04",
+   "name": "Pause",
+   "how": "observe",
+   "pass": "On-screen pause button; the arcade's Pause freezes the canvas, the clock and audio; P or Esc pauses where free; a hidden tab pauses."
+  },
+  {
+   "id": "U05",
+   "name": "Resume",
+   "how": "observe",
+   "pass": "After a 2 s pause the game clock has not jumped and the game moves again."
+  },
+  {
+   "id": "U06",
+   "name": "Restart",
+   "how": "observe",
+   "pass": "The game restarts the run itself (ArcadeSDK onRestart), without reloading the page."
+  },
+  {
+   "id": "U07",
+   "name": "Exit to title",
+   "how": "observe",
+   "pass": "The game returns to its title itself (ArcadeSDK onExit)."
+  },
+  {
+   "id": "U08",
+   "name": "Sound",
+   "how": "observe",
+   "pass": "The arcade's Mute silences every audio context and media element, and the choice is remembered."
+  },
+  {
+   "id": "U09",
+   "name": "Settings",
+   "how": "meta+scan",
+   "pass": "Sound always; 3D tiers also list a graphics-quality setting in meta.settings."
+  },
+  {
+   "id": "U10",
+   "name": "Tips",
+   "how": "observe+meta",
+   "pass": "At least 3 tips in meta, shown on the pause menu."
+  },
+  {
+   "id": "U11",
+   "name": "Results screen",
+   "how": "observe",
+   "pass": "The game reports scene 'over' with a score or outcome during the scripted session, or meta.features.results says where it is (REVIEW)."
+  },
+  {
+   "id": "U12",
+   "name": "Saving",
+   "how": "observe+scan",
+   "pass": "A key named in meta.saves (the best score or progress, not a first-run flag or setting) is in localStorage or IndexedDB after the session."
+  },
+  {
+   "id": "U13",
+   "name": "Phone",
+   "how": "observe",
+   "pass": "At 390x844 with touch: no sideways scroll, DOM text at least 12 px, DOM tap targets at least 40 px."
+  },
+  {
+   "id": "U14",
+   "name": "Stability",
+   "how": "observe",
+   "pass": "0 page errors, 0 console errors and 0 failed requests from the game."
+  },
+  {
+   "id": "U15",
+   "name": "Loading",
+   "how": "observe",
+   "pass": "Something visible within 1 s of the game frame loading, and the SDK ready within 20 s."
+  },
+  {
+   "id": "U16",
+   "name": "Accessibility",
+   "how": "scan",
+   "pass": "The game respects prefers-reduced-motion."
+  },
+  {
+   "id": "U17",
+   "name": "Arcade SDK",
+   "how": "observe",
+   "pass": "The SDK loads and says ready; the game calls ArcadeSDK.init to declare what it supports."
+  },
+  {
+   "id": "U18",
+   "name": "Catalogue",
+   "how": "meta",
+   "pass": "Category, genre, 2+ tags, blurb, howto, tips, controls, a 480x300 tile and a 960x600 tile."
+  },
+  {
+   "id": "H01",
+   "name": "Tutorial",
+   "how": "observe",
+   "pass": "The game can replay its tutorial (ArcadeSDK onTutorial)."
+  },
+  {
+   "id": "H02",
+   "name": "Hints",
+   "how": "observe",
+   "pass": "Required for puzzle and learning games: the arcade's hint request returns a hint."
+  },
+  {
+   "id": "H03",
+   "name": "Difficulty",
+   "how": "meta",
+   "pass": "meta.difficulty says how difficulty works (modes, adaptive curve or age bands)."
+  },
+  {
+   "id": "C01",
+   "name": "Cheat codes",
+   "how": "observe+meta",
+   "pass": "Eligible games list 3+ codes in meta and the game accepts each one through the SDK."
+  },
+  {
+   "id": "G01",
+   "name": "Genre module",
+   "how": "meta+review",
+   "pass": "Every feature of the genre module is described in meta.features (REVIEW until a person confirms it)."
+  },
+  {
+   "id": "T01",
+   "name": "Tricks",
+   "how": "observe+meta",
+   "pass": "Board-sports games: 6+ named tricks with inputs, shown in the pause menu's Trick list."
+  },
+  {
+   "id": "X01",
+   "name": "Graphics tier",
+   "how": "observe+scan",
+   "pass": "3D tiers render in 3D (WebGL context plus a 3D engine); 2D-HD canvases are crisp at the device pixel ratio."
+  },
+  {
+   "id": "P01",
+   "name": "Progression",
+   "how": "observe+meta+review",
+   "pass": "Progress that persists (meta.saves names a key that is written) and real goals to come back for: levels, worlds, unlocks, stars or upgrades. The game tells the arcade profile where the player is with ArcadeSDK.state({scene, score, level, stars}). Always REVIEW for now: the harness lists what it saw and a person (or the progression checker) confirms the goals are real."
+  }
+ ],
+ "games": [
+  {
+   "id": "word-dungeon",
+   "title": "Word Dungeon",
+   "cat": "learning",
+   "genre": "learning",
+   "tier": "2D-HD",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": false,
+   "render": "canvas-2d",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "PASS",
+     "note": "The arcade Help button opened 4 steps inside the game."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "PASS",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P pauses."
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (0 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "PASS",
+     "note": "Mute silenced 1 sound source(s) and is remembered."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "5 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: Depth-cleared shop screen and the You Fell screen with the depth reached, best depth and this run's accuracy"
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under worddungeon.meta.v1, wd_learn."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 0.2 s, SDK ready 0.1 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"Head right to the locked chest. Number line: start at 7 and count up to 8. How m\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "Three age bands (5–7, 7–9, 9–11). Each band has its own range of question tiers, and every two depths the questions step up inside that range: from adding within 20 up to fractions and percentages, and from short words up to tricky words."
+    },
+    "C01": {
+     "s": "N/A",
+     "note": "Learning games get hints instead of codes."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Learning: all 3 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "PASS",
+     "note": "Crisp: canvas 780px wide for 390 CSS px at DPR 3."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves worddungeon.meta.v1, wd_learn (written); reports scene; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\word-dungeon-1-first-second.jpg",
+    "2-playing-a": "shots\\word-dungeon-2-playing-a.jpg",
+    "2-playing-b": "shots\\word-dungeon-2-playing-b.jpg",
+    "4-paused": "shots\\word-dungeon-4-paused.jpg",
+    "5-paused-later": "shots\\word-dungeon-5-paused-later.jpg",
+    "6-resumed-a": "shots\\word-dungeon-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\word-dungeon-6-resumed-b.jpg",
+    "8-how-to-play": "shots\\word-dungeon-8-how-to-play.jpg",
+    "phone": "shots\\word-dungeon-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 780,
+     "h": 554,
+     "cw": 390,
+     "ch": 277,
+     "area": 108030
+    },
+    "dpr": 3,
+    "dom": 2,
+    "shot": "shots\\word-dungeon-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 229,
+    "ready": 58
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 960,
+     "h": 540
+    },
+    {
+     "type": "2d",
+     "w": 460,
+     "h": 478
+    },
+    {
+     "type": "2d",
+     "w": 96,
+     "h": 96
+    },
+    {
+     "type": "2d",
+     "w": 71,
+     "h": 35
+    },
+    {
+     "type": "2d",
+     "w": 850,
+     "h": 478
+    },
+    {
+     "type": "2d",
+     "w": 524,
+     "h": 103
+    },
+    {
+     "type": "2d",
+     "w": 163,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 163,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 255,
+     "h": 213
+    },
+    {
+     "type": "2d",
+     "w": 211,
+     "h": 66
+    },
+    {
+     "type": "2d",
+     "w": 198,
+     "h": 163
+    },
+    {
+     "type": "2d",
+     "w": 166,
+     "h": 52
+    },
+    {
+     "type": "2d",
+     "w": 191,
+     "h": 163
+    },
+    {
+     "type": "2d",
+     "w": 147,
+     "h": 66
+    },
+    {
+     "type": "2d",
+     "w": 147,
+     "h": 66
+    },
+    {
+     "type": "2d",
+     "w": 156,
+     "h": 66
+    },
+    {
+     "type": "2d",
+     "w": 85,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 220,
+     "h": 85
+    },
+    {
+     "type": "2d",
+     "w": 34,
+     "h": 34
+    },
+    {
+     "type": "2d",
+     "w": 85,
+     "h": 161
+    },
+    {
+     "type": "2d",
+     "w": 213,
+     "h": 85
+    },
+    {
+     "type": "2d",
+     "w": 156,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 198,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 92,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 227,
+     "h": 85
+    }
+   ],
+   "seconds": 26
+  },
+  {
+   "id": "quiz-tower",
+   "title": "Quiz Tower Defense",
+   "cat": "learning",
+   "genre": "learning",
+   "tier": "2D-HD",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": false,
+   "render": "canvas-2d",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "PASS",
+     "note": "The arcade Help button opened 5 steps inside the game."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "PASS",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P pauses."
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (0 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "PASS",
+     "note": "Mute silenced 1 sound source(s) and is remembered."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "5 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: Victory screen with 1 to 3 stars, or Game Over, with waves survived, kills, career record and this game's accuracy"
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under quiztower_meta_v1, qt_learn."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 0.2 s, SDK ready 0.0 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"Choose Arrow, then tap a glowing pad next to the road. Then tap Start wave.\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "Three age bands (5–7, 7–9, 9–11). Each band has its own range of question tiers, and the questions step up inside that range as the waves go on (every three waves in Math, every two in Spelling); enemies grow tougher each wave."
+    },
+    "C01": {
+     "s": "N/A",
+     "note": "Learning games get hints instead of codes."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Learning: all 3 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "PASS",
+     "note": "Crisp: canvas 780px wide for 390 CSS px at DPR 3."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves quiztower_meta_v1, qt_learn (written); reports scene, level, stars; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\quiz-tower-1-first-second.jpg",
+    "2-playing-a": "shots\\quiz-tower-2-playing-a.jpg",
+    "2-playing-b": "shots\\quiz-tower-2-playing-b.jpg",
+    "4-paused": "shots\\quiz-tower-4-paused.jpg",
+    "5-paused-later": "shots\\quiz-tower-5-paused-later.jpg",
+    "6-resumed-a": "shots\\quiz-tower-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\quiz-tower-6-resumed-b.jpg",
+    "8-how-to-play": "shots\\quiz-tower-8-how-to-play.jpg",
+    "phone": "shots\\quiz-tower-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 780,
+     "h": 454,
+     "cw": 390,
+     "ch": 227,
+     "area": 88530
+    },
+    "dpr": 3,
+    "dom": 2,
+    "shot": "shots\\quiz-tower-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 194,
+    "ready": 36
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 1100,
+     "h": 640
+    },
+    {
+     "type": "2d",
+     "w": 850,
+     "h": 478
+    },
+    {
+     "type": "2d",
+     "w": 96,
+     "h": 96
+    },
+    {
+     "type": "2d",
+     "w": 472,
+     "h": 90
+    },
+    {
+     "type": "2d",
+     "w": 167,
+     "h": 60
+    },
+    {
+     "type": "2d",
+     "w": 199,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 199,
+     "h": 64
+    },
+    {
+     "type": "2d",
+     "w": 158,
+     "h": 54
+    },
+    {
+     "type": "2d",
+     "w": 158,
+     "h": 54
+    },
+    {
+     "type": "2d",
+     "w": 179,
+     "h": 120
+    },
+    {
+     "type": "2d",
+     "w": 179,
+     "h": 120
+    },
+    {
+     "type": "2d",
+     "w": 296,
+     "h": 80
+    },
+    {
+     "type": "2d",
+     "w": 227,
+     "h": 102
+    },
+    {
+     "type": "2d",
+     "w": 181,
+     "h": 59
+    },
+    {
+     "type": "2d",
+     "w": 850,
+     "h": 478
+    },
+    {
+     "type": "2d",
+     "w": 574,
+     "h": 359
+    },
+    {
+     "type": "2d",
+     "w": 48,
+     "h": 33
+    },
+    {
+     "type": "2d",
+     "w": 72,
+     "h": 72
+    },
+    {
+     "type": "2d",
+     "w": 99,
+     "h": 112
+    },
+    {
+     "type": "2d",
+     "w": 592,
+     "h": 376
+    },
+    {
+     "type": "2d",
+     "w": 161,
+     "h": 60
+    },
+    {
+     "type": "2d",
+     "w": 203,
+     "h": 60
+    },
+    {
+     "type": "2d",
+     "w": 131,
+     "h": 60
+    },
+    {
+     "type": "2d",
+     "w": 21,
+     "h": 21
+    },
+    {
+     "type": "2d",
+     "w": 137,
+     "h": 60
+    },
+    {
+     "type": "2d",
+     "w": 287,
+     "h": 203
+    },
+    {
+     "type": "2d",
+     "w": 136,
+     "h": 52
+    },
+    {
+     "type": "2d",
+     "w": 63,
+     "h": 78
+    },
+    {
+     "type": "2d",
+     "w": 136,
+     "h": 52
+    },
+    {
+     "type": "2d",
+     "w": 63,
+     "h": 78
+    },
+    {
+     "type": "2d",
+     "w": 63,
+     "h": 78
+    },
+    {
+     "type": "2d",
+     "w": 270,
+     "h": 59
+    },
+    {
+     "type": "2d",
+     "w": 229,
+     "h": 73
+    },
+    {
+     "type": "2d",
+     "w": 370,
+     "h": 90
+    },
+    {
+     "type": "2d",
+     "w": 72,
+     "h": 54
+    }
+   ],
+   "seconds": 28
+  },
+  {
+   "id": "clean-house",
+   "title": "Clean House",
+   "cat": "sim",
+   "genre": "management",
+   "tier": "3D-S",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": false,
+   "render": "three-3d",
+   "sdk": true,
+   "harness": "",
+   "animating": false,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "PASS",
+     "note": "The arcade Help button opened 4 steps inside the game."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "REVIEW",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P and Esc pause; the scene was not moving before the pause, so the freeze itself was not seen."
+    },
+    "U05": {
+     "s": "REVIEW",
+     "note": "Resumed and the clock is in step, but the scene was not moving, so continuity was not seen."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "PASS",
+     "note": "Mute silenced 1 sound source(s) and is remembered."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade; graphics quality: City map > Settings > Graphics: Low / High (also in the side panel while cleaning). Low drops shadows and renders at 1x.."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "5 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: SOLD card with Back to the city and Flip it again"
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under cleanhouse_save_v1."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 0.6 s, SDK ready 0.2 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"6 pieces of rubbish left: tap each one to bag it.\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "Easy, Normal or Hard on the city map. Easy houses start with lighter grime and two fewer pieces of rubbish; Hard ones have heavier grime and three more. Later houses in the list are messier and pay more."
+    },
+    "C01": {
+     "s": "PASS",
+     "note": "All 4 codes accepted; a wrong code is refused."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Management / shop / shift: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "REVIEW",
+     "note": "3D-S: renders in 3D (three-3d); the stylised 3D bar needs a person."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves cleanhouse_save_v1 (written); reports scene; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\clean-house-1-first-second.jpg",
+    "2-playing-a": "shots\\clean-house-2-playing-a.jpg",
+    "2-playing-b": "shots\\clean-house-2-playing-b.jpg",
+    "4-paused": "shots\\clean-house-4-paused.jpg",
+    "5-paused-later": "shots\\clean-house-5-paused-later.jpg",
+    "8-how-to-play": "shots\\clean-house-8-how-to-play.jpg",
+    "phone": "shots\\clean-house-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 780,
+     "h": 1688,
+     "cw": 390,
+     "ch": 844,
+     "area": 329160
+    },
+    "dpr": 3,
+    "dom": 2,
+    "shot": "shots\\clean-house-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 594,
+    "ready": 240
+   },
+   "gl": [
+    {
+     "type": "webgl2",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 1024
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 1024
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 1024
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 1024
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 1024
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 1024
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    },
+    {
+     "type": "2d",
+     "w": 1024,
+     "h": 512
+    }
+   ],
+   "seconds": 31
+  },
+  {
+   "id": "tic-tac-toe",
+   "title": "Tic Tac Toe — Beat the Bot",
+   "cat": "classic",
+   "genre": "board",
+   "tier": "2D-HD",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": false,
+   "render": "dom",
+   "sdk": true,
+   "harness": "",
+   "animating": false,
+   "checks": {
+    "U01": {
+     "s": "PASS",
+     "note": "The game reports its title scene."
+    },
+    "U02": {
+     "s": "PASS",
+     "note": "The arcade Help button opened 3 steps inside the game."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "REVIEW",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P and Esc pause; the scene was not moving before the pause, so the freeze itself was not seen."
+    },
+    "U05": {
+     "s": "REVIEW",
+     "note": "Resumed and the clock is in step, but the scene was not moving, so continuity was not seen."
+    },
+    "U06": {
+     "s": "PASS",
+     "note": "Restarted without reloading."
+    },
+    "U07": {
+     "s": "PASS",
+     "note": "Exit to title handled by the game, in place."
+    },
+    "U08": {
+     "s": "REVIEW",
+     "note": "Mute works, but the game made no sound in the scripted session and its code has no audio at all."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "4 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "REVIEW",
+     "note": "Described in meta: The status line says who won, the winning line pulses, and the score board updates"
+    },
+    "U12": {
+     "s": "REVIEW",
+     "note": "Declared save key(s) ttt_scores not written in the scripted session (they may be written at the end of a run)."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 6.9 s, SDK ready 4.5 s after Play."
+    },
+    "U16": {
+     "s": "PASS",
+     "note": "Respects prefers-reduced-motion."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "PASS",
+     "note": "Hint: \"Take the top left. It keeps the most lines open.\""
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "Easy plays a random square about two times in three; Hard plays perfectly, so a draw is a good result."
+    },
+    "C01": {
+     "s": "PASS",
+     "note": "All 3 codes accepted; a wrong code is refused."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Board / classic: all 3 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "REVIEW",
+     "note": "No canvas on the phone screen (DOM game); a person should judge the art."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves declared (ttt_scores) but not written in the scripted session; reports scene; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\tic-tac-toe-1-first-second.jpg",
+    "2-playing-a": "shots\\tic-tac-toe-2-playing-a.jpg",
+    "2-playing-b": "shots\\tic-tac-toe-2-playing-b.jpg",
+    "4-paused": "shots\\tic-tac-toe-4-paused.jpg",
+    "5-paused-later": "shots\\tic-tac-toe-5-paused-later.jpg",
+    "8-how-to-play": "shots\\tic-tac-toe-8-how-to-play.jpg",
+    "phone": "shots\\tic-tac-toe-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": null,
+    "dpr": 3,
+    "dom": 16,
+    "shot": "shots\\tic-tac-toe-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 6938,
+    "ready": 4538
+   },
+   "gl": [],
+   "seconds": 32
+  }
+ ]
+}
