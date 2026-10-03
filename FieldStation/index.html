@@ -347,7 +347,10 @@ async function open(m) {
   }
 }
 
-renderHub();
+/* Anti-slop: the first screen is the GAME, not the instrument menu.
+   Boot straight into the weakest instrument (its live sandbox, motion and all);
+   the gamebar's "← Station" button still reaches the hub to switch instruments. */
+try { open(nextModule()); } catch (e) { renderHub(); }
 applyTheme(Progress.theme());
 addEventListener('pointerdown', () => Sound.init(), { once:true });
 if (window.ArcadeSDK) ArcadeSDK.init({
