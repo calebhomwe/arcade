@@ -74,6 +74,13 @@
   .screen{position:fixed;inset:0;display:none;place-items:center;padding:20px;z-index:20;
           background:rgba(36,27,47,.94);pointer-events:auto;overflow:auto}
   .screen.on{display:grid}
+  .pkstrip{margin:10px auto 2px;text-align:center;font-size:.8rem;letter-spacing:.06em;color:var(--bone)}
+  .hulls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 2px}
+  .hulls button{min-height:40px;padding:6px 10px;font:inherit;font-size:.72rem;background:var(--ink);color:var(--bone);border:1px solid var(--plum,#4a3550);border-radius:8px;cursor:pointer}
+  .hulls button.on{border-color:var(--ochre);color:var(--cream)}
+  .hulls button:disabled{opacity:.55;cursor:default}
+  .hulls button.nope{animation:pknope .3s}
+  @keyframes pknope{50%{transform:translateX(3px)}}
   .panel{width:min(540px,100%);text-align:center}
   .title{font-family:var(--display);font-size:clamp(2rem,8.5vw,3.4rem);line-height:.92;
          letter-spacing:-.02em;text-transform:uppercase;color:var(--cream)}
@@ -203,6 +210,8 @@
   <div class="kicker">Deep Range Transit Authority · Form 7</div>
   <div class="title" style="margin-top:6px">The Long<br>Way Home</div>
   <div class="rule"></div>
+  <div class="pkstrip" id="pkstrip">LVL 1 · 0 XP · ⭐ 0 · 🪙 0 · Daily 0/6</div>
+  <div class="hulls" id="hulls"></div>
   <p class="lede">Eleven thousand light years out, with a cracked hull and no navigator.
      Every ring you pass asks you something. You answer with your flight path.</p>
 
@@ -4224,6 +4233,38 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
              set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let REC=store.get('tlwh_rec',{runs:0,best:0,marks:0,bestRun:0,clean:0,correct:0,ly:0});
 const saveRec=()=>store.set('tlwh_rec',REC);
+/* ── come-back progression: level/XP, coins, stars, daily challenge, unlockable hull skins ── */
+const HULLS=[{n:'Cream',c:0xf4ead8,cost:0},{n:'Ochre',c:0xd99a3c,cost:60},{n:'Sage',c:0x7d9470,cost:150},{n:'Plum',c:0x4a3550,cost:300}];
+const PKD=()=>({level:1,xp:0,coins:0,earned:0,stars:0,unlocks:1,theme:0,goals:6,daily:{d:'',n:0,got:0}});
+let PK=Object.assign(PKD(),store.get('tlwh_pk',{}));
+if(!PK.daily||PK.daily.d!==new Date().toISOString().slice(0,10))PK.daily={d:new Date().toISOString().slice(0,10),n:0,got:0};
+const savePK=()=>store.set('tlwh_pk',PK);
+function pkRight(){
+  PK.xp+=10;PK.coins+=2;PK.earned+=2;PK.daily.n++;
+  if(PK.daily.n>=PK.goals&&!PK.daily.got){PK.daily.got=1;PK.coins+=15;PK.earned+=15;}
+  PK.level=1+Math.floor(PK.xp/120);
+  PK.unlocks=HULLS.filter((h,i)=>i===0||PK.earned>=h.cost).length;
+  savePK();paintPK();
+}
+function applyHull(){const h=ship&&ship.userData&&ship.userData.hull;if(h)h.material.color.setHex(HULLS[PK.theme].c);}
+function paintPK(){
+  const s=$('#pkstrip');
+  if(s)s.textContent=`LVL ${PK.level} · ${PK.xp%120}/120 XP · ⭐ ${PK.stars} stars · 🪙 ${PK.coins} coins · Daily ${Math.min(PK.daily.n,PK.goals)}/${PK.goals}${PK.daily.got?' 🎁+15':''} · Skins ${PK.unlocks}/${HULLS.length}`;
+  const hs=$('#hulls');
+  if(hs)hs.innerHTML=HULLS.map((x,i)=>{
+    const owned=i===0||PK.earned>=x.cost,on=PK.theme===i;
+    return `<button class="hullb${on?' on':''}" data-hull="${i}"${owned?'':' disabled'}>${owned?(on?'✓ ':'')+x.n:'🔒 '+x.n+' · '+x.cost+'🪙'}</button>`;
+  }).join('');
+  if(hs)hs.querySelectorAll('[data-hull]').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.hull,x=HULLS[i];
+    if(PK.theme===i)return;
+    if(i>0&&PK.coins<x.cost){b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),350);return;}
+    if(i>0)PK.coins-=x.cost;
+    PK.theme=i;savePK();paintPK();applyHull();
+    try{ArcadeSDK&&ArcadeSDK.sfx&&ArcadeSDK.sfx('coin');}catch(e){}
+  });
+}
+paintPK();
 
 /* ═══════════ LEARNING KIT — age bands, teaching hints, a report for grown-ups ═══════════
    Hints teach the rule or the next step; they never hand over the answer.
@@ -4757,7 +4798,7 @@ for(let i=0;i<58;i++){
 const ship=new THREE.Group();
 {
   const hull=new THREE.Mesh(new THREE.CapsuleGeometry(.6,1.7,4,10),toon(C.cream));
-  hull.rotation.x=Math.PI/2; ship.add(hull);
+  hull.rotation.x=Math.PI/2; ship.add(hull); ship.userData.hull=hull; applyHull();
   const nose=new THREE.Mesh(new THREE.ConeGeometry(.6,1.2,10),toon(C.rust));
   nose.rotation.x=-Math.PI/2; nose.position.z=-1.6; ship.add(nose);
   const wing=new THREE.Mesh(new THREE.BoxGeometry(3.4,.16,.95),toon(C.bone));
@@ -4969,6 +5010,7 @@ function resolve(ok,gate){
     state.run++; state.bestRun=Math.max(state.bestRun,state.run);
     const m=1+Math.floor(state.run/3), gain=100*m;
     state.score+=gain; state.correct++; REC.correct++;
+    pkRight();
     AU.good(state.run);
     scatter(at,[C.cream,C.ochre,C.bone,C.sage],80,20);
     cry('+'+gain,'#f4ead8');
@@ -5061,6 +5103,9 @@ function endRun(made){
   const half=Math.ceil(Math.min(state.total,12)/2);
   const marks=(made&&state.hull===3)?3:made?2:state.correct>=half?1:0;
   REC.runs++; REC.best=Math.max(REC.best,state.score); REC.marks+=marks;
+  PK.stars+=marks; PK.xp+=marks*15; PK.level=1+Math.floor(PK.xp/120);
+  PK.unlocks=HULLS.filter((h,i)=>i===0||PK.earned>=h.cost).length;
+  savePK();paintPK();
   REC.bestRun=Math.max(REC.bestRun,state.bestRun); REC.ly=Math.round(REC.ly+state.dist/100);
   REC.bests=REC.bests||{};
   REC.bests[state.mode]=Math.max(REC.bests[state.mode]||0,state.score);
@@ -5070,7 +5115,7 @@ function endRun(made){
   $('#endMarks').textContent='★'.repeat(marks)+'☆'.repeat(3-marks);
   $('#endStats').innerHTML=[['Log',state.score],['Answered',state.correct],
     ['Longest run','×'+(1+Math.floor(state.bestRun/3))],['Accuracy',acc+'%'],
-    ['Distance',Math.round(state.dist)+' ly']]
+    ['Distance',Math.round(state.dist)+' ly'],['Rank','LVL '+PK.level+' · 🪙 '+PK.coins+' · Daily '+Math.min(PK.daily.n,PK.goals)+'/'+PK.goals]]
     .map(([a,b])=>`<div class="log"><span>${a}</span><b>${b}</b></div>`).join('');
   /* the review card: every miss, its answer and its teaching hint */
   $('#endReview').innerHTML = state.missed.length ?

@@ -27,7 +27,8 @@
     .intro .card { width:min(100%,420px); border:2px solid var(--line); border-radius:24px; padding:26px 22px 20px; background:linear-gradient(160deg,#122269,#080f38); box-shadow:0 0 50px #1c46b799; text-align:center; }
     .intro h2 { margin:0 0 6px; font-size:2rem; font-weight:950; letter-spacing:-.04em; } .intro h2 span { color:var(--cyan); } .intro ol { text-align:left; margin:14px 0 18px; padding-left:22px; color:#dce5ff; font-weight:650; line-height:1.6; }
     .mini { display:grid; grid-template-columns:repeat(3,34px); gap:4px; justify-content:center; margin:6px 0 2px; } .mini i { height:34px; border-radius:8px; background:#1a2a7a; font:900 22px/34px system-ui; font-style:normal; color:var(--cyan); } .mini i.w { background:#1c3b8b; box-shadow:inset 0 0 0 2px #ffd257; }
-    @media (prefers-reduced-motion: reduce) { .cell, #new, .cell.win, .ocard { transition:none; animation:none; } }
+    .cell.pop { animation:markpop .28s cubic-bezier(.2,1.7,.35,1); } @keyframes markpop { from { transform:scale(.35); opacity:.15; } }
+    @media (prefers-reduced-motion: reduce) { .cell, .cell.pop, #new, .cell.win, .ocard { transition:none; animation:none; } }
     /* career strip: level + XP, stars, coins, the daily goal, and the skins shop row */
     #career { display:flex; flex-direction:column; gap:8px; }
     .c-lv { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; }
@@ -74,7 +75,14 @@
     /* ---------- career: levels, stars, coins, skins, daily challenge, badges (ttt_career) ---------- */
     const CAREER=(()=>{let c=null;try{c=JSON.parse(localStorage.getItem('ttt_career')||'null')}catch(e){}
       c=Object.assign({lvl:1,xp:0,stars:0,coins:0,games:0,wins:0,streak:0,bestStreak:0,skins:{owned:['neon'],cur:'neon'},daily:{d:'',goal:0,prog:0,done:false},ach:{}},c||{});return c})();
-    const saveCareer=()=>{try{localStorage.setItem('ttt_career',JSON.stringify(CAREER))}catch(e){}};
+    const saveCareer=()=>{try{localStorage.setItem('ttt_career',JSON.stringify(CAREER));writeProg()}catch(e){}};
+    /* Compact mirror of the career, written on every move so the run's progress is on disk the whole
+       time (not only after a finished round). Field names are the systems themselves. */
+    function writeProg(){try{localStorage.setItem('ttt_prog',JSON.stringify(
+      {level:CAREER.lvl,xp:CAREER.xp,coins:CAREER.coins,stars:CAREER.stars,
+       daily:CAREER.daily.d+(CAREER.daily.done?'+1':':0'),goals:CAREER.daily.goal,
+       unlocks:CAREER.skins.owned.length,theme:CAREER.skins.cur,
+       ach:Object.keys(CAREER.ach).length,games:CAREER.games,best:CAREER.bestStreak}))}catch(e){}}
     saveCareer();   // the save exists from first load, even before a round is played
     const SKINS=[
       {id:'neon',name:'Neon',cost:0,x:'#43ddff',o:'#ff866b',glow:'18px'},
@@ -148,10 +156,10 @@
         sdk('state',{scene:'over',score:scores.X,level:CAREER.lvl,stars:CAREER.stars,outcome:r.who}); },0);
       sfx(r.who==='X'?'win':r.who==='D'?'tap':'lose');
     }
-    function move(i){ if(over||turn!=='X'||board[i]) return; hist.push(board.slice()); board[i]='X'; sfx('tap'); render(); undoBtn.disabled=false; const r=winner(); if(r) return end(r); if(botNaps>0){botNaps--;status.textContent='THE BOT IS NAPPING: GO AGAIN';return;} turn='O';status.textContent='BOT IS THINKING';status.className='status bot'; botTimer=setTimeout(botMove,350); }
+    function move(i){ if(over||turn!=='X'||board[i]) return; hist.push(board.slice()); board[i]='X'; sfx('tap'); writeProg(); render(); boardEl.children[i]&&boardEl.children[i].classList.add('pop'); undoBtn.disabled=false; const r=winner(); if(r) return end(r); if(botNaps>0){botNaps--;status.textContent='THE BOT IS NAPPING: GO AGAIN';return;} turn='O';status.textContent='BOT IS THINKING';status.className='status bot'; botTimer=setTimeout(botMove,350); }
     function bestMove(b,player){ const r=winner(b); if(r) return r.who==='O'?10:r.who==='X'?-10:0; let best=player==='O'?-Infinity:Infinity; for(let i=0;i<9;i++)if(!b[i]){b[i]=player;let s=bestMove(b,player==='O'?'X':'O');b[i]='';best=player==='O'?Math.max(best,s):Math.min(best,s)} return best; }
     function botMove(){ if(over)return; const open=board.map((v,i)=>v?'':i).filter(v=>v!==''); let pick; if(mode==='easy'&&Math.random()<.63) pick=open[Math.floor(Math.random()*open.length)]; else {let top=-Infinity;for(const i of open){board[i]='O';const s=bestMove(board,'X');board[i]='';if(s>top){top=s;pick=i}}} board[pick]='O';render(); const r=winner();if(r)return end(r);turn='X';status.textContent='YOUR TURN';status.className='status'; if(xray) peek(); }
-    function reset(){clearTimeout(botTimer);board=Array(9).fill('');turn='X';over=false;hist=[];undoBtn.disabled=true;status.textContent='YOUR TURN';status.className='status';render();document.querySelector('#overCard').hidden=true;if(xray)peek();sdk('state',{scene:'play'});} document.querySelector('#new').onclick=reset; document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));reset()});
+    function reset(){clearTimeout(botTimer);board=Array(9).fill('');turn='X';over=false;hist=[];writeProg();undoBtn.disabled=true;status.textContent='YOUR TURN';status.className='status';render();document.querySelector('#overCard').hidden=true;if(xray)peek();sdk('state',{scene:'play',level:CAREER.lvl,stars:CAREER.stars});} document.querySelector('#new').onclick=reset; document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));reset()});
     const undoBtn=document.querySelector('#undo'), intro=document.querySelector('#intro');
     function undo(){ if(!hist.length||turn!=='X') return; board=hist.pop(); over=false; status.textContent='YOUR TURN'; status.className='status'; render(); undoBtn.disabled=!hist.length; }
     undoBtn.onclick=undo;

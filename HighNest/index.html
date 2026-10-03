@@ -184,7 +184,7 @@
   <div id="newbest">★ NEW BEST ★</div>
   <div id="overStats" style="text-align:left"></div>
   <div id="hnearn"></div>
-  <button class="btn" id="again">Build another</button>
+  <button class="btn" id="again">Build again</button>
   <button class="btn quiet" id="menu2">Back to the shed</button>
 </div></div>
 
@@ -637,7 +637,11 @@ function startGame(withTutorial){
 function toMenu(){state.phase='menu';state.paused=false;state.slider=null;coachHide();
   $('#hud').style.display='none';show('#s-menu');sdk('state',{scene:'title'});}
 addEventListener('pointerdown',e=>{
-  if(e.target.closest('button')||e.target.closest('.screen'))return;primary();});
+  if(e.target.closest('button'))return;
+  /* one-tap replay: the results card is a full-screen overlay, so a tap on it (outside its buttons)
+     rebuilds instead of doing nothing — otherwise the card looks like a dead end. */
+  if(e.target.closest('#s-over')){restart();return;}
+  if(e.target.closest('.screen'))return;primary();});
 addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT')return;
   if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;   /* focused buttons click themselves */

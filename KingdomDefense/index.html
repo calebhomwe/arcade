@@ -109,6 +109,7 @@ body.sheet-open #shop,body.sheet-open #shopFilters{opacity:.16;pointer-events:no
 .stat b{transition:transform .12s,filter .12s}.stat.pop b{display:inline-block;animation:statBounce .2s ease}
 .diffRow{display:flex;gap:9px;margin-bottom:14px;min-width:0}.diff{flex:1;display:grid;gap:3px;padding:10px 6px;min-height:58px;min-width:0}.diff b{font-size:15px;letter-spacing:.5px;overflow-wrap:break-word;word-break:break-word;hyphens:auto}.diff small{font-size:9px;color:var(--secondary);line-height:1.3}.diff.on{background:rgba(10,132,255,.3);border-color:rgba(100,210,255,.7)}
 .diff[data-diff="easy"].on{background:rgba(48,209,88,.25);border-color:rgba(48,209,88,.7)}.diff[data-diff="hard"].on{background:rgba(255,69,58,.25);border-color:rgba(255,69,58,.7)}
+#crownTag,#starTag{color:var(--gold);font-weight:800;white-space:nowrap}
 #xpbar{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:4px calc(var(--safe-right) + 12px) max(4px,calc(var(--safe-bottom) - 6px)) calc(var(--safe-left) + 12px);background:rgba(5,15,11,.72);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);pointer-events:none;font-size:10px;letter-spacing:1px;color:var(--ui-cold);z-index:60}
 .xpTrack{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}.xpTrack i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ui-cold),var(--gold));transition:width .3s}#xpNext{color:var(--secondary)}
 #rankUp{position:absolute;top:calc(var(--safe-top) + 78px);left:50%;display:grid;place-items:center;z-index:150;pointer-events:none;opacity:0;transform:translate(-50%,-12px) scale(.96);transition:opacity .22s ease,transform .3s cubic-bezier(.2,1.2,.4,1)}#rankUp.show{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
@@ -172,7 +173,7 @@ body.breach-warning::after{content:"";position:fixed;inset:0;pointer-events:none
   <div id="settingsMenu"><div class="modal panel"><div class="eyebrow">MISSION OPTIONS</div><h2>Settings</h2><div class="menuStack"><button class="btn" id="setSound">SOUND: ON</button><label class="audioControl">MASTER <input id="masterVolume" type="range" min="0" max="100" value="70"></label><label class="audioControl">SFX <input id="sfxVolume" type="range" min="0" max="100" value="80"></label><label class="audioControl">AMBIENCE <input id="musicVolume" type="range" min="0" max="100" value="35"></label><button class="btn" id="setShake">SCREEN SHAKE: ON</button><button class="btn" id="setParticles">PARTICLES: HIGH</button><button class="btn" id="setDebug" style="display:none">DEV MODE: OFF</button><button class="btn" id="setReset">ERASE RANK & PROGRESS</button><button class="btn primary" id="settingsClose">Done</button></div></div></div>
   <div id="mapMenu"><div class="modal panel"><div class="eyebrow">SELECT A MISSION</div><h2>Choose a Map</h2><div class="diffRow" id="diffRow"><button class="btn diff on" data-diff="easy"><b>EASY</b><small>40 gate · 800 credits · gentler pods</small></button><button class="btn diff" data-diff="medium"><b>MEDIUM</b><small>30 gate · 700 credits · standard</small></button><button class="btn diff" data-diff="hard"><b>HARD</b><small>20 gate · 600 credits · tougher pods</small></button><button class="btn diff" data-diff="impoppable"><b>IMPOPPABLE</b><small>1 gate · 450 credits · no mercy</small></button></div><div class="maps" id="maps"></div></div></div>
   <div id="rankUp"><div class="rankbox panel"><div class="rankNum" id="rankNum">2</div><div><div class="eyebrow">KINGDOM HONORS</div><h1>RANK UP!</h1><p id="rankText"></p></div><button class="btn primary" id="rankOk">GOT IT</button></div></div>
-  <div id="xpbar"><span id="rankTag">RANK 1</span><div class="xpTrack"><i id="xpFill"></i></div><span id="xpNext"></span></div>
+  <div id="xpbar"><span id="rankTag">RANK 1</span><div class="xpTrack"><i id="xpFill"></i></div><span id="xpNext"></span><span id="crownTag">0 🏅</span><span id="starTag">★0</span></div>
   <div id="pauseMenu"><div class="modal panel"><div class="eyebrow">MISSION CONTROL</div><h2>Paused</h2><div class="menuStack"><button class="btn primary" id="resume">Resume</button><button class="btn" id="restartWave">Restart Mission</button><button class="btn" id="pauseSettings">Settings</button><button class="btn" id="mapSelect">Map Select</button></div></div></div>
   <div id="loading"><div class="loadbox panel"><b>PREPARING THE KINGDOM…</b><div class="loadbar"><i id="loadFill"></i></div></div></div>
   <div id="end"><div class="endbox panel"><h1 id="endTitle"></h1><div class="endStars" id="endStars"><span>★</span><span>★</span><span>★</span></div><p id="endText"></p><div class="endProgress" id="endProgress" style="display:none"><span id="endProgressLabel"></span><div class="bar"><i id="endProgressFill"></i></div></div><div class="endRow"><button class="btn" id="endMapSelect">MAP SELECT</button><button class="btn primary" id="restart">REDEPLOY</button></div></div></div>
@@ -213,7 +214,7 @@ const state={money:700,lives:30,wave:0,towers:[],enemies:[],shots:[],fx:[],kills
 const DIFFS={easy:{label:"EASY",lives:40,money:800,hp:.85,rw:1.12},medium:{label:"MEDIUM",lives:30,money:700,hp:1,rw:1},hard:{label:"HARD",lives:20,money:600,hp:1.18,rw:.9},impoppable:{label:"IMPOPPABLE",lives:1,money:450,hp:1.34,rw:.72}};
 let diff="medium";try{diff=localStorage.getItem("kd-diff")||"medium"}catch(e){}if(!DIFFS[diff])diff="medium";
 const TOWER_RANK={cheetah:2,falcon:3,rhino:4,camp:4,mole:5,lion:6};
-const career=(()=>{try{return Object.assign({xp:0,rank:1,crowns:0,towerXP:{},achievements:{}},JSON.parse(localStorage.getItem("kd-career")||"{}"))}catch(e){return{xp:0,rank:1,crowns:0,towerXP:{},achievements:{}}}})();
+const career=(()=>{try{return Object.assign({xp:0,rank:1,crowns:0,stars:0,towerXP:{},achievements:{}},JSON.parse(localStorage.getItem("kd-career")||"{}"))}catch(e){return{xp:0,rank:1,crowns:0,stars:0,towerXP:{},achievements:{}}}})();
 let tutorialSeen=true;try{tutorialSeen=localStorage.getItem("kd-tutorial-seen")==="1"}catch(e){}
 let tutorialAwaitingBuild=false,tutorialAwaitingWave=false;
 function markTutorialSeen(){tutorialSeen=true;try{localStorage.setItem("kd-tutorial-seen","1")}catch(e){}}
@@ -222,7 +223,16 @@ function runFirstMissionTutorial(){
   tutorialAwaitingBuild=true;
   setTimeout(()=>{if(playing&&tutorialAwaitingBuild)toast("TIP: Pick a defender below, then tap a glowing green spot to build.","clear")},3400);
 }
-function saveCareer(){try{localStorage.setItem("kd-career",JSON.stringify(career))}catch(e){}}
+function saveCareer(){try{localStorage.setItem("kd-career",JSON.stringify(career))}catch(e){}writeProg()}
+/* kd_prog: a small, always-current mirror of the kingdom's progress (rank, XP, crowns, stars,
+   unlocked defenders, trained paths, best wave, badges). Written whenever progress moves, so a
+   save survives a reload even in the middle of a campaign. */
+let progT=0;
+function writeProg(force){const n=performance.now();if(!force&&n-progT<1200)return;progT=n;try{localStorage.setItem("kd_prog",JSON.stringify({level:career.rank,xp:career.xp,
+  coins:career.crowns,stars:career.stars,unlocks:1+Object.keys(TOWER_RANK).filter(k=>career.rank>=TOWER_RANK[k]).length,
+  upgrades:Object.keys(career.towerXP).length,goals:bestWaveAll(),ach:Object.keys(career.achievements).length,
+  wave:playing?state.wave:bestWaveAll()}))}catch(e){}}
+function bestWaveAll(){let m=0;try{const b=JSON.parse(localStorage.getItem("kd-best")||"{}");for(const k in b)m=Math.max(m,+b[k]||0)}catch(e){}return m}
 function xpNeeded(rank){return 110+(rank-1)*55}
 function mastery(type){return career.towerXP[type]||0}
 function masteryLevel(type){let x=mastery(type);return x>=2400?50:x>=900?25:x>=260?10:x>=90?5:Math.max(1,Math.floor(x/18)+1)}
@@ -939,6 +949,7 @@ function startWave(){
   spawnQueue=[];
   for(let group of nextWaves)for(let i=0;i<group[1];i++)spawnQueue.push({type:group[0],delay:i?group[2]:.1});
   state.wave++;
+  writeProg(true);
   waveCountdown=2.8;
   addPulse("wave",1.2);
   waveCountdownTick=4;
@@ -1469,7 +1480,9 @@ function reset(map=selectedMap){
 }
 function loadBest(){try{return JSON.parse(localStorage.getItem("kd-best")||"{}")}catch(e){return{}}}
 function saveBest(map,wave){let b=loadBest(),k=map+":"+diff;if(wave>(b[k]||0)){b[k]=wave;try{localStorage.setItem("kd-best",JSON.stringify(b))}catch(e){}}}
-function syncXP(){document.querySelector("#rankTag").textContent="RANK "+career.rank;document.querySelector("#xpFill").style.width=Math.min(100,career.xp/xpNeeded(career.rank)*100)+"%";document.querySelector("#xpNext").textContent=career.xp+" / "+xpNeeded(career.rank)+" XP"}
+function syncXP(){document.querySelector("#rankTag").textContent="RANK "+career.rank;document.querySelector("#xpFill").style.width=Math.min(100,career.xp/xpNeeded(career.rank)*100)+"%";document.querySelector("#xpNext").textContent=career.xp+" / "+xpNeeded(career.rank)+" XP";
+  const c=document.querySelector("#crownTag"),s=document.querySelector("#starTag");
+  if(c)c.textContent=career.crowns+" 🏅";if(s)s.textContent="★"+career.stars}
 function awardXP(n){career.xp+=n;let ranked=false;while(career.xp>=xpNeeded(career.rank)){career.xp-=xpNeeded(career.rank);career.rank++;ranked=true}saveCareer();syncXP();if(ranked)showRankUp()}
 function showRankUp(){
   let unlock=Object.keys(TOWER_RANK).find(k=>TOWER_RANK[k]===career.rank),el=document.querySelector("#rankUp");
@@ -1496,8 +1509,13 @@ function finish(win){
     const lifeFrac=DIFFS[diff].lives?state.lives/DIFFS[diff].lives:1;
     stars=lifeFrac>=.75?3:lifeFrac>=.4?2:1;
   }
+  /* kingdom honors: stars and crowns bank to the career (a cheated run earns nothing) */
+  const codesOn=!!(window.ArcadeSDK&&ArcadeSDK.cheated);
+  let crowns=0;
+  if(!codesOn){crowns=stars*15+(win?25:state.wave*2);career.stars+=stars;career.crowns+=crowns;saveCareer();syncXP();writeProg(true)}
   endTitle.textContent=win?"KINGDOM SECURED":"GATE BREACHED";
-  endText.textContent=win?`All ${waves.length} waves stopped. ${state.kills} air-pods popped · ${state.lives} gate HP left.`:`You reached wave ${state.wave} of ${waves.length}. Rebuild and try again.`;
+  endText.textContent=(win?`All ${waves.length} waves stopped. ${state.kills} air-pods popped · ${state.lives} gate HP left.`:`You reached wave ${state.wave} of ${waves.length}. Rebuild and try again.`)
+    +(codesOn?"":` · Honors: +${stars}★ +${crowns}🏅 · Rank ${career.rank}`);
   if(win){
     progEl.style.display="none";
   }else{
@@ -1544,11 +1562,11 @@ document.querySelector("#setShake").onclick=()=>{shakeFx=!shakeFx;try{localStora
 for(let [id,key,bus] of [["masterVolume","master","audioBus"],["sfxVolume","sfx","sfxBus"],["musicVolume","music","musicBus"]])document.querySelector("#"+id).oninput=e=>{audioPrefs[key]=+e.target.value/100;initAudio();if(window[bus])window[bus].gain.value=audioPrefs[key];saveAudio()};
 document.querySelector("#setParticles").onclick=()=>{particles=particles==="high"?"low":"high";haptic();syncSettings()};
 document.querySelector("#setDebug").onclick=()=>{devMode=!devMode;document.body.classList.toggle("dev-on",devMode);haptic();syncSettings()};
-document.querySelector("#setReset").onclick=()=>{if(confirm("Erase rank, XP and best-wave records?")){["kd-career","kd-best"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});location.reload()}};document.querySelector("#restart").onclick=()=>{haptic("medium");reset(selectedMap)};
+document.querySelector("#setReset").onclick=()=>{if(confirm("Erase rank, XP and best-wave records?")){["kd-career","kd-best","kd_prog"].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});location.reload()}};document.querySelector("#restart").onclick=()=>{haptic("medium");reset(selectedMap)};
 document.querySelector("#endMapSelect").onclick=()=>{haptic();document.querySelector("#end").style.display="none";playing=false;refreshBest();syncDiff();document.querySelector("#mapMenu").style.display="grid"};
 if(document.fonts){document.fonts.load("800 20px 'Baloo 2'");document.fonts.load("700 14px 'Nunito'")}
 let assetList=Object.values(images),loaded=0;function assetDone(){loaded++;document.querySelector("#loadFill").style.width=Math.round(loaded/assetList.length*100)+"%";if(loaded>=assetList.length)setTimeout(()=>document.querySelector("#loading").style.display="none",350)}assetList.forEach(im=>{if(im.complete)assetDone();else{im.onload=assetDone;im.onerror=assetDone}});
-updateUI();syncXP();syncDiff();syncCards();
+updateUI();syncXP();syncDiff();syncCards();writeProg(true);
 window.KD={state,MAPS,TYPES,ENEMIES,waves,images,DIFFS,career,TOWER_RANK,awardXP,get playing(){return playing},get paused(){return paused},get waveActive(){return waveActive},get path(){return path},get pathTotal(){return pathTotal},get selectedMap(){return selectedMap},startWave,reset,finish,setPause,selectPlaced,tryBuild,canBuild,step:(dt,n)=>{for(let i=0;i<n;i++)update(dt)},get selectedType(){return selectedType},get dragState(){return drag},get canvasTopMargin(){return canvasTopMargin},get SBW(){return SBW},get W(){return W},get H(){return H},version:"v7.4-strategy"};
 </script>
 <script src="arcade-hooks.js"></script>

@@ -83,8 +83,9 @@
   <h1 id="dTitleH">DOMINION</h1>
   <p>A living valley that pans past on its own. There is nothing to win or lose: watch, change the pace of time, and let the chronicle note what really happens.</p>
   <div class="stats" id="dTitleStats"></div>
+  <div class="k" id="dTitleCareer" style="margin:6px 0;color:#ffd98a"></div>
   <button type="button" class="go" id="dPlay">Play</button>
-  <div class="row"><button type="button" id="dHow">How to play</button><button type="button" id="dSights">Sightings</button></div>
+  <div class="row"><button type="button" id="dHow">How to play</button><button type="button" id="dSights">Sightings</button><button type="button" id="dShop">GOLDEN HOUR</button></div>
 </div></div>
 <div class="dlayer" id="dSight" role="dialog" aria-modal="true" aria-labelledby="dSightH"><div class="dcard">
   <h2 id="dSightH">SIGHTINGS</h2>
@@ -1231,11 +1232,15 @@ function drawButterflies(g, state, cam, t) {
   }
 }
 
-/* ---- world state ---- */
+/* ---- world state ----
+   FREEZE FIX: the heavy canvas bakes (ground, 4 hill tiles, 5 trees, 9 clouds) used to
+   run synchronously at parse time - a reproduced multi-second block during load. They now
+   run in an async chain that yields to the browser between every bake; the draw loop
+   waits for WORLD_READY. Nothing else about the world changes (same seeds, same pixels). */
+const __y=()=>new Promise(r=>setTimeout(r,0));
+let WORLD_READY=false;
 let DPR=1, cv, ctx;
-const groundTex=bakeGround();
-const hillTex=PAL.hills.map((c,i)=>bakeHill(c,512));
-const treeVariants=[bakeTree(0x501),bakeTree(0x502),bakeTree(0x503),bakeTree(0x504),bakeTree(0x505)];
+let groundTex=null, hillTex=null, treeVariants=null, cloudTex=[];
 
 // FORGE distributions
 const WORLDW=3600; // wrap width
@@ -1243,19 +1248,13 @@ const __water=makeWater(0x77A7E7), __flora=makeFlora(0x0F10A);
 const __fireflies=makeFireflies(0xF17E), __foreground=makeForeground(0xF6D0);
 const __rocks=makeRocks(0x70CC), __flock=makeFlock(0xF10C), __mist=makeMist(0x175);
 const __shafts=makeGodshafts(0x5A4F), __flutter=makeButterflies(0xB177);
-const trees=(()=>{const r=stream(0x900),arr=[];const lane=8*U; // jittered lane spacing (invariant #1)
-  for(let x=0;x<WORLDW;x+=lane){const jx=x+(r()-0.5)*lane*0.5;
-    const v=treeVariants[(r()*treeVariants.length)|0];
-    const depth=0.86+r()*0.22; // near-ground scale
-    arr.push({x:jx,v,depth,phase:r()*TAU,sway:0.5+r()*0.8,
-      base:HORIZON+18+r()*40, scale:(0.6+r()*0.7)});}
-  return arr;})();
+let trees=[]; // filled in bakeWorld() once treeVariants exist (same seeded stream)
 
 const clouds=(()=>{const r=stream(0xA00),arr=[];for(let i=0;i<9;i++)
   arr.push({x:r()*WORLDW,y:60+r()*220,s:0.6+r()*1.4,spd:6+r()*10,puff:0.6+r()*0.8,seed:0x1000+i});
   return arr;})();
-// bake cloud sprites (GRIT: soft fBm blobs, not flat)
-const cloudTex=clouds.map(c=>{const n=makeNoise(c.seed),S=192,cvs=baked(S*1.6|0,S,(g,w,h)=>{
+// bake cloud sprites (GRIT: soft fBm blobs, not flat) - one per cloud, chunked in bakeWorld()
+function bakeCloud(c){const n=makeNoise(c.seed),S=192,cvs=baked(S*1.6|0,S,(g,w,h)=>{
   const img=g.createImageData(w,h),d=img.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){
     const dx=(x-w/2)/(w/2),dy=(y-h/2)/(h/2);
@@ -1263,7 +1262,7 @@ const cloudTex=clouds.map(c=>{const n=makeNoise(c.seed),S=192,cvs=baked(S*1.6|0,
     const f=fbm((u,v)=>n(u,v),x/24,y/24,4,2,0.6);
     const a=clamp((1-rr)*1.4*(0.5+f*0.9),0,1);
     const i=(y*w+x)*4; d[i]=245;d[i+1]=238;d[i+2]=228; d[i+3]=clamp(a*a*230,0,230);
-  } g.putImageData(img,0,0);}); return cvs;});
+  } g.putImageData(img,0,0);}); return cvs;}
 
 // PULSE: boids (birds)
 const birds=(()=>{const r=stream(0xB00),arr=[];for(let i=0;i<14;i++)
@@ -1309,7 +1308,7 @@ function fogAmount(depth){return clamp(depth,0,1);} // 0 near ..1 far
    margin. Previously every frame re-clipped the silhouette, re-created a full-screen
    pattern and re-tiled all four layers (measured at ~56% of the frame). */
 const HILL_MARGIN = 512;                       // bake margin each side (multiple of the 512 tile)
-const hillStrips = hillTex.map(()=>null);      // [{cv,P0}] baked strip per layer
+let hillStrips = [];                           // [{cv,P0}] baked strip per layer (filled in bakeWorld)
 function hillStrip(i,par,P){
   let s=hillStrips[i];
   if(s && Math.abs(P-s.P0) <= HILL_MARGIN-8) return s;
@@ -1528,6 +1527,8 @@ function worldHash(){
 /* ---- main loop ---- */
 let t0=0, frames=0, fps=0, acc=0, lastDraw=-1e9;
 function frame(ms){
+  // The valley wakes in chunks (FREEZE fix): hold the loop until the bakes are done.
+  if(!WORLD_READY || !ctx || !groundTex){ requestAnimationFrame(frame); return; }
   // Behind the title card or the session summary the valley is only a backdrop: draw it at ~10 fps.
   if(typeof playing!=="undefined" && (!playing || document.querySelector(".dlayer.on:not(#dCoach)")) && ms-lastDraw<100){ requestAnimationFrame(frame); return; }
   lastDraw=ms;
@@ -1556,11 +1557,12 @@ function frame(ms){
   drawPollen(ctx,cam,wt);
   drawFireflies(ctx,__fireflies,cam,wt);
   drawForeground(ctx,__foreground,cam,wt);
+  if(CRIT.theme){ctx.fillStyle='rgba(255,176,84,0.11)';ctx.fillRect(0,0,VW,VH);} // GOLDEN HOUR paint
   drawVignette(ctx);
   chronicleTick(wt);
   document.getElementById("hud").textContent=
     "DOMINION · seed "+SEED+" · lap "+(Math.max(0,Math.floor((worldT*38+camNudge)/WORLDW))+1)+" · "+clk(worldT)
-    +" · "+(paused?"time frozen":timeRate+"x")+" · "+fps+"fps";
+    +" · "+(paused?"time frozen":timeRate+"x")+" · "+fps+"fps · LV "+CRIT.level+" XP "+CRIT.xp+"/"+xpNeed()+" · "+CRIT.coins+"🪙";
   paintCtl();
   requestAnimationFrame(frame);
 }
@@ -1570,8 +1572,29 @@ window.addEventListener("load",()=>{cv=document.getElementById("c");ctx=cv.getCo
   const lastC=chron[chron.length-1];
   if(!(lastC && lastC.k==="boot" && Date.now()-lastC.iso<3600000)) chronAdd("boot","chronicle opened");
   requestAnimationFrame(frame);});
-// expose for headless VERDICT / seed gate (additive)
-window.__DOMINION={SEED,trees:trees.length,hills:hillTex.length,birds:birds.length,pollen:pollen.length,worldHash};
+/* ---- FREEZE fix: chunked world wake. Every heavy canvas bake is its own task; the
+   draw loop holds until WORLD_READY, so a slow box never sees a blocked main thread.
+   Same seeds, same pixels, same worldHash - only the scheduling changed. ---- */
+async function bakeWorld(){
+  const wakeEl=document.createElement("div");
+  wakeEl.textContent="WAKING THE VALLEY…";
+  wakeEl.style.cssText="position:fixed;left:50%;bottom:12%;transform:translateX(-50%);z-index:9;color:#ffd98a;font:600 13px ui-monospace,monospace;letter-spacing:.12em;text-shadow:0 1px 0 #000;pointer-events:none";
+  document.body.appendChild(wakeEl);
+  groundTex=bakeGround(); await __y();
+  hillTex=[]; for(const c of PAL.hills){ hillTex.push(bakeHill(c,512)); await __y(); }
+  hillStrips=hillTex.map(()=>null);
+  treeVariants=[]; for(const s of [0x501,0x502,0x503,0x504,0x505]){ treeVariants.push(bakeTree(s)); await __y(); }
+  { const r=stream(0x900),arr=[],lane=8*U;
+    for(let x=0;x<WORLDW;x+=lane){ const jx=x+(r()-0.5)*lane*0.5;
+      const v=treeVariants[(r()*treeVariants.length)|0];
+      arr.push({x:jx,v,depth:0.86+r()*0.22,phase:r()*TAU,sway:0.5+r()*0.8,base:HORIZON+18+r()*40,scale:0.6+r()*0.7}); }
+    trees=arr; }
+  cloudTex=[]; for(let i=0;i<clouds.length;i++){ cloudTex.push(bakeCloud(clouds[i])); if(i%2===1) await __y(); }
+  // expose for headless VERDICT / seed gate (additive) - after the real arrays exist
+  window.__DOMINION={SEED,trees:trees.length,hills:hillTex.length,birds:birds.length,pollen:pollen.length,worldHash};
+  WORLD_READY=true; wakeEl.remove();
+}
+bakeWorld();
 window.__DEBUG={ worldHash, seedInfo:()=>({seed:SEED}),
   chronicle:()=>({count:chron.length,visible:chronVisible,last:chron.slice(-6)}),
   time:()=>({worldT:Math.round(worldT*100)/100,rate:timeRate,paused}) };
@@ -1601,11 +1624,37 @@ let sights={}; try{ const o=JSON.parse(localStorage.getItem(SIGHT_KEY)); if(o&&o
 function saveSights(){ try{ localStorage.setItem(SIGHT_KEY, JSON.stringify({v:1,seen:sights})); }catch(e){} }
 const seenCount=()=>SIGHTS.filter(x=>sights[x[0]]).length;
 let sess={t0:0,n:0,fresh:[]}, playing=false;
+/* Career mirror (arcade P01): ONE compact localStorage key (well under 400 chars), shown
+   on the title card and in the running HUD. XP/coins come from real moments the chronicle
+   notes; the daily goal and the GOLDEN HOUR paint (a cosmetic sink) feed back. */
+const CRIT={level:1,xp:0,coins:0,stars:0,daily:'',fc:0,goal:0,unlocks:[],theme:0};
+try{const cv=JSON.parse(localStorage.getItem('dom.career'));if(cv&&typeof cv==='object')Object.assign(CRIT,cv);}catch(e){}
+const todayNum=()=>{const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();};
+const xpNeed=()=>60+CRIT.level*40;
+function critSave(){try{localStorage.setItem('dom.career',JSON.stringify(CRIT));}catch(e){}}
+function critXp(n){CRIT.xp+=n;let msg='';while(CRIT.xp>=xpNeed()){CRIT.xp-=xpNeed();CRIT.level++;CRIT.stars++;msg+=' · LEVEL '+CRIT.level+' +1★';}return msg;}
+const dailyLeft=()=>(CRIT.daily===todayNum()?Math.max(0,2-CRIT.fc):2);
+function paintCareer(){
+  const el=$d('dTitleCareer');
+  if(el)el.textContent='LV '+CRIT.level+' · XP '+CRIT.xp+'/'+xpNeed()+' · 🪙 '+CRIT.coins+' · ★ '+CRIT.stars+' · DAILY GOAL: log '+(CRIT.daily===todayNum()&&CRIT.fc>=2?'0 ✓':dailyLeft()+' more sighting'+(dailyLeft()===1?'':'s')+' +50🪙');
+  const b=$d('dShop');
+  if(b){const owned=CRIT.unlocks.indexOf(0)>=0;b.textContent=owned?(CRIT.theme?'GOLDEN HOUR ✔':'GOLDEN HOUR ✓'):'GOLDEN HOUR · 120🪙';b.setAttribute('aria-pressed',CRIT.theme?'true':'false');}
+}
 function onMoment(k,msg){
   if(k==="boot") return;
   sess.n++;
-  if(SIGHTS.some(x=>x[0]===k) && !sights[k]){ sights[k]=Date.now(); saveSights(); sess.fresh.push(k); toast("NEW SIGHTING · "+SIGHTS.find(x=>x[0]===k)[1]); }
+  if(SIGHTS.some(x=>x[0]===k) && !sights[k]){ sights[k]=Date.now(); saveSights(); sess.fresh.push(k); toast("NEW SIGHTING · "+SIGHTS.find(x=>x[0]===k)[1]+critXp(25)+" +10🪙");
+    if(CRIT.daily!==todayNum()){CRIT.daily=todayNum();CRIT.fc=0;} CRIT.fc++; CRIT.coins+=10; CRIT.goal=CRIT.goal||2;
+    if(CRIT.fc===2){CRIT.coins+=50;CRIT.stars+=1;toast("DAILY GOAL MET +50🪙 +1★");}
+    critSave(); paintCareer();
+  }
 }
+$d('dShop').addEventListener('click',()=>{
+  const owned=CRIT.unlocks.indexOf(0)>=0;
+  if(!owned){ if(CRIT.coins<120){toast("GOLDEN HOUR costs 120🪙 - log sightings to earn coins");return;} CRIT.coins-=120; CRIT.unlocks.push(0); toast("UNLOCKED: GOLDEN HOUR paint"); }
+  else CRIT.theme=CRIT.theme?0:1;
+  critSave(); paintCareer();
+});
 function toast(m){ const t=$d("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),2800); }
 function paintCtl(){
   const r=$d("cRate"); if(!r) return;
@@ -1630,7 +1679,8 @@ function show(id,on){ $d(id).classList.toggle("on",!!on); }
 function showTitle(){
   coachEnd(); show("dSight",false); show("dSum",false); playing=false;
   $d("dTitleStats").innerHTML="<div><b>"+seenCount()+"/"+SIGHTS.length+"</b>sightings</div><div><b>"+chron.length+"</b>moments noted</div><div><b>"+SEED+"</b>seed</div>";
-  show("dTitle",true); setTimeout(()=>$d("dPlay").focus(),30); sdkCall("state",{scene:"title"});
+  paintCareer();
+  show("dTitle",true); setTimeout(()=>$d("dPlay").focus(),30); sdkCall("state",{scene:"title",level:CRIT.level,stars:CRIT.stars});
 }
 function play(){
   show("dTitle",false); playing=true; sess={t0:worldT,n:0,fresh:[]}; sdkCall("state",{scene:"play"});
@@ -1652,8 +1702,10 @@ function endSession(){
   $d("dSumStats").innerHTML="<div><b>"+clk(watched)+"</b>world time</div><div><b>"+sess.n+"</b>moments</div><div><b>"+seenCount()+"/"+SIGHTS.length+"</b>sightings</div>";
   $d("dSumList").innerHTML=sess.fresh.length?sess.fresh.map(k=>'<li class="seen">New: '+SIGHTS.find(x=>x[0]===k)[1]+'</li>').join("")
     :'<li class="unseen">No new sightings this time. Next to find: '+((SIGHTS.find(x=>!sights[x[0]])||[0,"nothing, the journal is full"])[1])+'</li>';
+  if(!codesUsed()){ const bonus=10+Math.min(20,sess.n); CRIT.coins+=bonus; const m=critXp(15); critSave(); paintCareer();
+    $d("dSumK").textContent+=" · +"+bonus+"🪙 +15 XP"+m; }
   show("dSum",true); $d("dAgain").focus();
-  sdkCall("state",{scene:"over",score:sess.n});
+  sdkCall("state",{scene:"over",score:sess.n,level:CRIT.level,stars:CRIT.stars});
 }
 /* A fresh day: the world clock and camera go back to the start. Chronicle and sightings are kept. */
 function newDay(){
@@ -1667,7 +1719,11 @@ $d("dPlay").onclick=play;
 $d("dHow").onclick=()=>{ play(); coachStart(); };
 // autosave: where the clock and camera were, restored on the next visit
 function saveSession(){ try{ localStorage.setItem(SESSION_KEY, JSON.stringify({v:1,seed:SEED,worldT:Math.round(worldT*10)/10,timeIdx,camNudge:Math.round(camNudge)})); }catch(e){} }
-setInterval(saveSession,5000);
+let saveInt=setInterval(saveSession,5000);
+document.addEventListener("visibilitychange",()=>{ // no autosave timer while the tab is hidden (QA: setInterval with no clearInterval)
+  if(document.hidden){ if(saveInt){clearInterval(saveInt);saveInt=null;} saveSession(); }
+  else if(!saveInt) saveInt=setInterval(saveSession,5000);
+});
 addEventListener("pagehide",saveSession);
 (function(){ try{ const o=JSON.parse(localStorage.getItem(SESSION_KEY)); if(o&&o.seed===SEED&&isFinite(o.worldT)){ worldT=o.worldT; camNudge=o.camNudge||0; if(TIME_STEPS[o.timeIdx]!==undefined) setRate(o.timeIdx); } else if(RM) setRate(1); }catch(e){ if(RM) setRate(1); } })();
 

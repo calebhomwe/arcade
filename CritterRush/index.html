@@ -84,6 +84,7 @@
         <div id="titleScreen" class="screen">
             <h1>CRITTER RUSH</h1>
             <div id="bestLine"></div>
+            <div id="careerLine" style="color:#ffe9a8;font-size:1rem;text-shadow:1px 1px 0 #333;margin:-4px 0 6px"></div>
             <p>Race to the finish! Use weapons to slow rivals!</p>
             <div id="charSelect">
                 <button class="charBtn selected" data-char="fox" aria-label="Fox" title="Fox"><svg viewBox="0 0 64 64" width="62" height="62" aria-hidden="true"><polygon points="13,24 19,4 31,18" fill="#f4762a"/><polygon points="51,24 45,4 33,18" fill="#f4762a"/><polygon points="18,21 21,10 27,18" fill="#2a2a2a"/><polygon points="46,21 43,10 37,18" fill="#2a2a2a"/><ellipse cx="32" cy="37" rx="20" ry="18" fill="#f4762a"/><ellipse cx="32" cy="43" rx="12" ry="9" fill="#fff0dc"/><circle cx="25" cy="34" r="3.2" fill="#2a2a2a"/><circle cx="39" cy="34" r="3.2" fill="#2a2a2a"/><ellipse cx="32" cy="42" rx="3.6" ry="2.6" fill="#2a2a2a"/></svg></button>
@@ -95,12 +96,16 @@
                 <button class="opt" data-d="easy" aria-pressed="false">EASY</button><button class="opt" data-d="normal" aria-pressed="true">NORMAL</button><button class="opt" data-d="hard" aria-pressed="false">HARD</button>
             </div>
             <div class="optRow"><button class="opt" id="qualityBtn" aria-pressed="true">GRAPHICS: HIGH</button></div>
+            <div class="optRow" id="paintShop" role="group" aria-label="Paint jobs">
+                <button class="opt paintBtn" data-p="0" aria-pressed="false">GOLD 60</button><button class="opt paintBtn" data-p="1" aria-pressed="false">NEON 120</button><button class="opt paintBtn" data-p="2" aria-pressed="false">CANDY 90</button>
+            </div>
             <button id="playBtn" class="btn">PLAY</button>
             <p>Space/W/↑: Jump (double) | S/↓: Slide | F/Shift: Use Item | M: Mute</p>
         </div>
         <div id="hud">
             <div id="position">1st</div>
             <div id="progressBar"></div>
+            <div id="xpBadge" style="position:absolute;top:54px;left:12px;font:700 12px/1.4 monospace;color:#FFD700;text-shadow:1px 1px 0 #000"></div>
             <div id="codesOn" hidden>CODES ON</div>
         </div>
         <div id="coach" role="status" aria-live="polite" hidden><span id="coachTxt"></span><button id="coachSkip">SKIP</button></div>
@@ -111,6 +116,7 @@
             <h2 id="resultTitle">YOU WIN!</h2>
             <div id="resultPlaces"></div>
             <div id="resultBest"></div>
+            <div id="resultCareer" style="color:#ffe9a8;font-size:1.1rem;text-shadow:1px 1px 0 #333;margin:6px 0;display:none"></div>
             <div id="newBest">★ NEW BEST TIME ★</div>
             <button id="restartBtn" class="btn">RESTART</button>
             <button id="btnShare" class="btn" style="font-size:1.3rem;padding:12px 34px;margin:6px">SAVE THE RACE CARD</button>
@@ -274,6 +280,50 @@
         let countdownTimer = 0;
         let bestTime = null;
         try { const b = parseFloat(localStorage.getItem('critterBest')); if (b > 0) bestTime = b; } catch (e) {}
+
+        // --- Career mirror (arcade P01): ONE compact localStorage key under 400 chars.
+        //     lv/XP + coins + stars + date-seeded daily + race goals + unlockable paint jobs. ---
+        const CRIT = { level: 1, xp: 0, coins: 0, stars: 0, plays: 0, daily: '', unlocks: [], theme: 0 };
+        try { const cv = JSON.parse(localStorage.getItem('critterCareer')); if (cv && typeof cv === 'object') Object.assign(CRIT, cv); } catch (e) {}
+        const PAINTS = [['GOLD', 60, 0xffd700], ['NEON', 120, 0xb060ff], ['CANDY', 90, 0xff7f9e]];
+        const todayStr = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
+        const xpNeed = () => 80 + CRIT.level * 40;
+        function critSave() { try { localStorage.setItem('critterCareer', JSON.stringify(CRIT)); } catch (e) {} }
+        function critAddXp(n) {
+            CRIT.xp += n;
+            let msg = '';
+            while (CRIT.xp >= xpNeed()) { CRIT.xp -= xpNeed(); CRIT.level++; CRIT.stars++; msg += ' · LEVEL UP! LV ' + CRIT.level + ' +1★'; playCheer(); }
+            return msg;
+        }
+        function paintCareer() {
+            const cl = document.getElementById('careerLine');
+            if (cl) cl.textContent = 'LV ' + CRIT.level + ' · XP ' + CRIT.xp + '/' + xpNeed() + ' · 🪙 ' + CRIT.coins + ' · ★ ' + CRIT.stars + ' · ' + (CRIT.daily === todayStr() ? 'DAILY ✓' : 'DAILY win +80🪙') + ' · GOAL: race ' + (3 - (CRIT.plays % 3)) + ' more for ★★+40🪙';
+            const hb = document.getElementById('xpBadge');
+            if (hb) hb.textContent = 'LV ' + CRIT.level + ' · XP ' + CRIT.xp + '/' + xpNeed() + ' · 🪙' + CRIT.coins;
+        }
+        function paintShop() {
+            document.querySelectorAll('.paintBtn').forEach(b => {
+                const i = +b.dataset.p, owned = CRIT.unlocks.indexOf(i) >= 0, active = CRIT.theme === i + 1;
+                b.textContent = (active ? '✔ ' : owned ? '' : (CRIT.coins >= PAINTS[i][1] ? '' : '🔒 ')) + PAINTS[i][0] + (owned ? '' : ' ' + PAINTS[i][1]);
+                b.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+        }
+        const bodyColor = hex => CRIT.theme ? new THREE.Color(hex).lerp(new THREE.Color(PAINTS[CRIT.theme - 1][2], 1), 0.55).getHex() : hex;
+        function recolorPlayer() {
+            const colors = { fox: 0xff6b35, rabbit: 0x9b59b6, cat: 0x2ecc71, bear: 0x8b4513 };
+            const hex = bodyColor(colors[selectedChar] || 0xff6b35);
+            player.mesh.children.forEach(child => { if (child.material && child.material.color) child.material.color.setHex(hex); });
+        }
+        document.querySelectorAll('.paintBtn').forEach(b => b.addEventListener('click', () => {
+            const i = +b.dataset.p, cost = PAINTS[i][1];
+            if (CRIT.unlocks.indexOf(i) < 0) {
+                if (CRIT.coins < cost) return;
+                CRIT.coins -= cost; CRIT.unlocks.push(i); playItem();
+            }
+            CRIT.theme = CRIT.theme === i + 1 ? 0 : i + 1;
+            critSave(); paintCareer(); paintShop(); recolorPlayer();
+        }));
+        paintCareer(); paintShop();
 
         // --- Track constants ---
         const TRACK_LENGTH = 900;
@@ -1370,8 +1420,19 @@
             }
             document.getElementById('resultBest').textContent = (bestTime ? 'Best time: ' + bestTime.toFixed(1) + 's' : 'Win a race to set a best time') + (cheated() ? '  (codes on: not saved)' : '');
             document.getElementById('newBest').style.display = newBest ? 'block' : 'none';
+            if (!cheated()) {
+                const xp = playerPlace === 1 ? 60 : playerPlace <= 3 ? 35 : 15;
+                const coins = Math.max(5, 26 - 6 * playerPlace);
+                let msg = '+' + xp + ' XP · +' + coins + ' 🪙';
+                if (playerPlace === 1 && CRIT.daily !== todayStr()) { CRIT.daily = todayStr(); CRIT.coins += 80; CRIT.stars += 1; msg += ' · DAILY WIN BONUS +80🪙 +1★'; }
+                CRIT.coins += coins;
+                msg += critAddXp(xp);
+                critSave(); paintCareer(); paintShop();
+                const rc = document.getElementById('resultCareer');
+                rc.textContent = msg; rc.style.display = 'block';
+            }
             tutHide();
-            sdk('state', { scene: 'over', score: +raceTime.toFixed(1), place: playerPlace, outcome: playerPlace === 1 ? 'win' : 'place' });
+            sdk('state', { scene: 'over', score: +raceTime.toFixed(1), place: playerPlace, outcome: playerPlace === 1 ? 'win' : 'place', level: CRIT.level, stars: CRIT.stars });
         }
 
         // --- Main loop ---
@@ -1622,7 +1683,10 @@
             updateItemSlot();
             startCountdown();
             if (tutSeen()) tutHide(); else tutStart();
-            sdk('state', { scene: 'play' });
+            CRIT.plays++;
+            if (!cheated() && CRIT.plays % 3 === 0) { CRIT.stars += 2; CRIT.coins += 40; }
+            critSave(); paintCareer(); paintShop();
+            sdk('state', { scene: 'play', level: CRIT.level, stars: CRIT.stars });
         });
 
         document.querySelectorAll('.charBtn').forEach(btn => {
@@ -1630,12 +1694,7 @@
                 document.querySelectorAll('.charBtn').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
                 selectedChar = btn.dataset.char;
-                const colors = { fox: 0xff6b35, rabbit: 0x9b59b6, cat: 0x2ecc71, bear: 0x8b4513 };
-                player.mesh.children.forEach(child => {
-                    if (child.material && child.material.color) {
-                        child.material.color.setHex(colors[selectedChar] || 0xff6b35);
-                    }
-                });
+                recolorPlayer();
             });
         });
 

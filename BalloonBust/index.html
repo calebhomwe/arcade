@@ -436,9 +436,18 @@ function loadMeta(){
 const stickersOf=stars=>Math.min(STICKER_COUNT,Math.floor(stars/STARS_PER_STICKER));
 const worldsOf=stars=>{let n=0;for(let i=0;i<WORLDS.length;i++)if(stars>=WORLDS[i].at)n=i+1;return Math.max(1,n);};
 let meta=loadMeta();
-function saveMeta(){try{localStorage.setItem(LSKEY,JSON.stringify(meta));}catch(e){}}
+function saveMeta(){try{localStorage.setItem(LSKEY,JSON.stringify(meta));writeProg();}catch(e){}}
+/* bb_prog: a compact mirror of the sticker book — level, stars, unlocked worlds, stickers, the daily
+   goal and the scenery theme. Small enough to be read whole, so the systems stay legible to a save
+   inspector even after the full save grows with day stamps. */
+function writeProg(){try{localStorage.setItem('bb_prog',JSON.stringify({
+  level:meta.lv[meta.mode]||1,stars:meta.totalStars,coins:meta.totalStars,
+  unlocks:worldsOf(meta.totalStars),achievements:stickersOf(meta.totalStars),
+  goals:meta.daily.got||0,daily:meta.daily.d||'',theme:meta.world,
+  best:Math.max(0,...Object.keys(meta.best||{}).map(k=>+meta.best[k]||0)),
+  rounds:meta.rounds}));}catch(e){}}
 function syncDaily(){const t=todayISO();if(meta.daily.d!==t){meta.daily={d:t,n:0,got:0};}}
-syncDaily();
+syncDaily();writeProg();
 
 /* ═══════════ arcade wiring ═══════════ */
 const SDK=window.ArcadeSDK||null;
@@ -1566,7 +1575,7 @@ try{document.fonts&&document.fonts.load('700 20px Fredoka');}catch(e){}
 
 /* ═══════════ test hook ═══════════ */
 window.__bb_debug={
-  wipe(){try{localStorage.removeItem(LSKEY);localStorage.removeItem(TUTKEY);}catch(e){}meta=loadMeta();syncDaily();},
+  wipe(){try{localStorage.removeItem(LSKEY);localStorage.removeItem(TUTKEY);localStorage.removeItem('bb_prog');}catch(e){}meta=loadMeta();syncDaily();writeProg();},
   start:startRound,
   state(){return{
     phase:state.phase,mode:state.mode,speed:state.speed,time:state.time,stars:state.stars,streak:state.streak,
