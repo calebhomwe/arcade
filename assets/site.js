@@ -565,7 +565,7 @@ function play() {
     if (PT) PT.start();
   }
   // phones: Play goes straight to fullscreen (theatre where the browser has no fullscreen API)
-  const phonePlay = () => { start(); if (touch.matches && innerWidth <= 760) fs.click(); };
+  const phonePlay = () => { start(); if (touch.matches && (innerWidth <= 760 || innerHeight <= 500)) fs.click(); };
   $('#playbtn').addEventListener('click', phonePlay);
   splash.addEventListener('click', e => { if (!e.target.closest('a,button')) phonePlay(); });
   const alt = $('#alt');
