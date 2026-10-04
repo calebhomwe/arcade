@@ -316,7 +316,7 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
 /* iOS theatre/fullscreen: with viewport-fit=cover the notch must not sit on the game.
    env() is 0 everywhere else, so this only moves on devices with a cutout. */
-body.theatre .player iframe,.player:fullscreen iframe{top:env(safe-area-inset-top,0px);height:auto}
+body.theatre .player iframe,.player:fullscreen iframe{top:env(safe-area-inset-top,0px);height:calc(100% - env(safe-area-inset-top,0px))}
 body.theatre .player .exit{top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px))}
 .player .backdrop{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(28px) saturate(1.4) brightness(.55);transform:scale(1.1)}
 .splash{position:absolute;inset:0;z-index:4;display:grid;place-items:center;overflow:hidden;transition:opacity .35s,visibility .35s}

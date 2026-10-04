@@ -13,15 +13,24 @@ const browser=await chromium.launch({args:['--enable-webgl','--use-angle=swiftsh
 const results=[];
 // Only observable DOM state is used as progression evidence. Animation alone is not a pass.
 async function snapshot(frame){return frame.evaluate(()=>({text:document.body.innerText.slice(0,14000),canvas:[...document.querySelectorAll('canvas')].map(c=>({width:c.width,height:c.height})),controls:[...document.querySelectorAll('button,[role=button],input')].filter(e=>e.getBoundingClientRect().width&&e.getBoundingClientRect().height).map(e=>({text:(e.innerText||e.value||e.getAttribute('aria-label')||'').trim(),id:e.id})).slice(0,50)}));}
-async function test(game,mobile){
- const r={id:game.id,title:game.title,source:game.src,viewport:mobile?'phone':'desktop',status:'unverified',actions:[],errors:[],http:[],requests:[],note:game.note};
- const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,serviceWorkers:'block',reducedMotion:'reduce'});
+async function test(game,mobile,landscape=false){
+ const viewport=mobile?(landscape?{width:844,height:390}:{width:390,height:844}):{width:1440,height:900};
+ const r={id:game.id,title:game.title,source:game.src,viewport:mobile?(landscape?'phone-landscape':'phone'):'desktop',status:'unverified',actions:[],errors:[],http:[],requests:[],note:game.note};
+ const ctx=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile,serviceWorkers:'block',reducedMotion:'reduce'});
  const deadline=setTimeout(()=>{r.deadlineExceeded=true;ctx.close().catch(()=>{});},65000);
  const page=await ctx.newPage();page.setDefaultTimeout(4000);
  page.on('pageerror',e=>r.errors.push(e.message));page.on('response',e=>{if(e.status()>=400)r.http.push({status:e.status(),url:e.url()})});page.on('requestfailed',e=>r.requests.push({url:e.url(),error:e.failure()?.errorText}));
  try{
   await page.goto(base+'play.html?g='+game.id,{waitUntil:'domcontentloaded',timeout:45000});
   await page.locator('#playbtn').click();r.actions.push('Clicked portal Play');
+  if(mobile){
+   const frameBox=await page.locator('#frame').boundingBox();
+   const viewportHeight=await page.evaluate(()=>innerHeight);
+   if(!frameBox||frameBox.height<viewportHeight*.9){
+    r.frameLayoutFailure=`Game frame is ${Math.round(frameBox?.height||0)}px high in a ${viewportHeight}px phone viewport`;
+    r.errors.push(r.frameLayoutFailure);
+   }
+  }
   const handle=await page.locator('#frame').elementHandle();const f=await handle.contentFrame();
   await f.waitForLoadState('domcontentloaded',{timeout:45000});
   await page.waitForTimeout(/Godot|Unity/.test(game.note)?14000:3000);
@@ -68,7 +77,11 @@ async function test(game,mobile){
  finally{clearTimeout(deadline);await ctx.close();results.push(r);await fs.writeFile(path.join(out,'results.json'),JSON.stringify(results,null,2));console.log(JSON.stringify({id:r.id,viewport:r.viewport,status:r.status,errors:r.errors,http:r.http,failure:r.failure,screenshotError:r.screenshotError,actions:r.actions}));}
 }
 const jobs=catalog.flatMap(g=>[{g,m:false},{g,m:true}]);
-await Promise.all(Array.from({length:1},async()=>{while(jobs.length){const job=jobs.shift();await test(job.g,job.m);}}));
+if(Number(process.env.SHARD_INDEX||0)===0){
+ const fishing=selectedCatalog.find(g=>g.id==='fishing-for-words');
+ if(fishing)jobs.push({g:fishing,m:true,landscape:true});
+}
+await Promise.all(Array.from({length:1},async()=>{while(jobs.length){const job=jobs.shift();await test(job.g,job.m,job.landscape);}}));
 await fs.writeFile(path.join(out,'results.json'),JSON.stringify(results,null,2));
 for(const mobile of [false,true]){
  const page=await browser.newPage({viewport:mobile?{width:390,height:844}:{width:1440,height:1000}});
@@ -80,4 +93,5 @@ const counts=results.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 await fs.writeFile(path.join(out,'index.html'),`<!doctype html><meta charset="utf-8"><title>Arcade harness</title><style>body{font:16px system-ui;background:#111513;color:#f5f7f1;max-width:1200px;margin:40px auto;padding:20px}a{color:#c5ee78}table{border-collapse:collapse;width:100%}td,th{padding:12px;border-bottom:1px solid #465046;text-align:left}img{max-width:280px}summary{cursor:pointer}</style><h1>Every-game browser harness</h1><p>${catalog.length} games, desktop and phone. ${results.length} checks. ${esc(JSON.stringify(counts))}</p><p>Interaction observed means visible text changed after input. This is smoke coverage, not proof of full game completion. Canvas-only gameplay needs visual review. Microphone, network and hardware-dependent features can remain unverified.</p><p><a href="results.json">Full machine-readable evidence</a></p><table><tr><th>Game</th><th>Viewport</th><th>Result</th><th>Evidence</th></tr>${results.sort((a,b)=>a.id.localeCompare(b.id)||a.viewport.localeCompare(b.viewport)).map(r=>`<tr><td>${esc(r.title)}</td><td>${r.viewport}</td><td>${r.status}<br>${esc(r.failure||r.errors.join('; '))}</td><td><details><summary>Actions and screenshot</summary><p>${esc(r.actions.join(' → '))}</p><a href="${r.id}-${r.viewport}.jpg"><img loading="lazy" src="${r.id}-${r.viewport}.jpg"></a></details></td></tr>`).join('')}</table>`);
 console.log('SUMMARY '+JSON.stringify(counts));
-if(results.length!==catalog.length*2)process.exitCode=1;
+if(results.length!==catalog.length*2+(jobs.length===0&&Number(process.env.SHARD_INDEX||0)===0&&selectedCatalog.some(g=>g.id==='fishing-for-words')?1:0))process.exitCode=1;
+if(results.some(r=>r.frameLayoutFailure||(r.id==='fishing-for-words'&&r.viewport!=='desktop'&&r.status==='blocked')))process.exitCode=1;
