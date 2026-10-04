@@ -36,6 +36,7 @@ Spec fields (all optional)
 Needs Chromium through Python Playwright (CHROME env var, default: the one in /opt/pw-browsers).
 """
 import json, os, re, sys, shutil, asyncio, html
+from pathlib import Path
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KA = os.path.join(ROOT, 'tools', 'keyart')
 SRC = os.path.join(KA, 'src')
@@ -88,7 +89,7 @@ def mix(hexc, other, t):
     return '#%02x%02x%02x' % tuple(round(x + (y - x) * t) for x, y in zip(a, b))
 
 def page(g, s, sw, sh):
-    url = 'file://' + src_path(g['id'])
+    url = Path(src_path(g['id'])).as_uri()
     acc = s.get('accent') or CAT_ACCENT.get(g['cat'], '#ff4d6d')
     gr = dict({'sat': 1.3, 'con': 1.1, 'bri': 1.03}, **s.get('grade', {}))
     filt = 'saturate(%s) contrast(%s) brightness(%s)' % (gr['sat'], gr['con'], gr['bri'])
@@ -119,7 +120,7 @@ def page(g, s, sw, sh):
         layers.append('<div style="position:absolute;inset:-60%%;background:repeating-conic-gradient(from 0deg at %s 50%%,rgba(255,255,255,.10) 0 6deg,transparent 6deg 18deg)"></div>' % ('calc(%s * .45 + 27.5%%)' % rx))
         layers.append('<div style="position:absolute;inset:0;background:radial-gradient(440px 380px at %s 52%%,rgba(255,255,255,.38),transparent 70%%)"></div>' % rx)
     for hdef in heroes:
-        hurl = 'file://' + src_path(g['id'] + hdef.get('src', '')); hsw, hsh = sw, sh
+        hurl = Path(src_path(g['id'] + hdef.get('src', ''))).as_uri(); hsw, hsh = sw, sh
         if hdef.get('src'):
             from PIL import Image
             hsw, hsh = Image.open(src_path(g['id'] + hdef['src'])).size
@@ -154,7 +155,7 @@ def page(g, s, sw, sh):
              'l': 'left:48px;top:50%;transform:translateY(-50%)', 'c': 'left:50%;top:50%;transform:translate(-50%,-50%)'}[pos]
     light = mix(acc, '#ffffff', .55)
     return '''<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-@font-face{font-family:F;src:url('file://%(font)s') format('woff2');font-weight:300 700}
+@font-face{font-family:F;src:url('%(font)s') format('woff2');font-weight:300 700}
 html,body{margin:0;background:#000}
 #s{position:relative;width:%(W)dpx;height:%(H)dpx;overflow:hidden;background:#101020}
 #logo{position:absolute;%(place)s;max-width:%(maxw)dpx;width:%(maxw)dpx;font:700 150px/.9 F;letter-spacing:-.01em;text-align:%(align)s}
@@ -171,8 +172,8 @@ function set(){L.style.fontSize=fs+'px';L.style.setProperty('--st',Math.round(fs
 const lines=Math.max(2,L.querySelector('.f').innerHTML.split('<br>').length);
 document.fonts.load('700 150px F').then(()=>{set();while(fs>36&&(wmax()>maxw-fs*.1||L.offsetHeight>maxh)){fs-=3;set()}
 L.style.width='fit-content';document.title='ok'});
-</script></body></html>''' % dict(font=os.path.join(ROOT, 'assets', 'fonts', 'fredoka.woff2'), W=W, H=H, place=place, maxw=maxw,
-                                  maxh=H * s.get('maxh', .62 if mode == 'hero' else .36), align=align, light=light, acc=acc, layers=''.join(layers), logo=logo)
+</script></body></html>''' % dict(W=W, H=H, place=place, maxw=maxw,
+                                  maxh=H * s.get('maxh', .62 if mode == 'hero' else .36), align=align, light=light, acc=acc, layers=''.join(layers), logo=logo, font=Path(os.path.join(ROOT, 'assets', 'fonts', 'fredoka.woff2')).as_uri())
 
 async def render(ids):
     from playwright.async_api import async_playwright
@@ -189,7 +190,7 @@ async def render(ids):
             if not g or not os.path.exists(src_path(gid)) or s.get('skip'): print('skip', gid); continue
             sw, sh = Image.open(src_path(gid)).size
             open(tmp, 'w', encoding='utf-8').write(page(g, s, sw, sh))
-            await pg.goto('file://' + tmp); await pg.wait_for_function('document.title=="ok"'); await pg.evaluate('document.fonts.ready')
+            await pg.goto(Path(tmp).as_uri()); await pg.wait_for_function('document.title=="ok"'); await pg.evaluate('document.fonts.ready')
             await pg.wait_for_timeout(60)
             name = os.path.basename(g['thumb'])
             big = os.path.join(THUMBS, '2x', name)

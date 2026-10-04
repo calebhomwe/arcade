@@ -1350,8 +1350,8 @@
     "upgrade-path",
     "end-of-day-summary"
    ],
-   "tier": "2D-HD",
-   "should3d": false,
+   "tier": "3D-S",
+   "should3d": true,
    "why3d": "",
    "cheatPolicy": "eligible",
    "frozen": false,
@@ -1359,8 +1359,8 @@
    "ext": false,
    "src": "MiniMart/index.html",
    "scan": {
-    "engine": "canvas",
-    "render": "canvas-2d",
+    "engine": "three",
+    "render": "three-3d",
     "saves": true,
     "reducedMotion": true,
     "audio": true,
@@ -5801,9 +5801,10 @@
     "hints": "Hint names the next hazard and its distance, or how to use the item you hold"
    },
    "saves": [
-    "critterRush2dBest"
+    "critterRush2dBest",
+    "critterRush2dProg"
    ],
-   "start": "key:Enter",
+   "start": "#play",
    "authored": [
     "cheats",
     "controls",
@@ -7422,6 +7423,163 @@
     "difficulty",
     "features",
     "howto",
+    "pauseButton",
+    "saves",
+    "start",
+    "tips"
+   ]
+  },
+  "crumb-crown": {
+   "title": "Crumb & Crown",
+   "cat": "idle",
+   "genre": "idle",
+   "genreName": "Idle / tycoon",
+   "modules": [
+    "offline-earnings",
+    "upgrade-tree",
+    "big-number-format",
+    "prestige-or-next-goal"
+   ],
+   "tier": "2D-HD",
+   "should3d": false,
+   "why3d": "",
+   "cheatPolicy": "eligible",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": false,
+   "src": "CrumbCrown/index.html",
+   "scan": {
+    "engine": "canvas",
+    "render": "canvas-2d",
+    "saves": true,
+    "reducedMotion": false,
+    "audio": true,
+    "gamepad": false,
+    "touch": true,
+    "usesP": false,
+    "usesEsc": false,
+    "ownPause": false,
+    "sdk": true,
+    "sdkInit": false
+   },
+   "pauseKeys": "p+esc",
+   "pauseButton": "tr",
+   "howto": [
+    "Click the big cookie to bake. Every click also earns a share of your cookies-per-second rate, so clicking never becomes useless.",
+    "Open the STORE on the right and buy buildings — Cursor, Grandma, Wheat Field, Sugar Mine and up — each adds cookies per second. The 1 / 10 / 100 / MAX buttons set how many you buy at once.",
+    "Buy upgrades as they unlock: they multiply the buildings, and the kitten line multiplies everything by your milk.",
+    "Golden cookies appear on their own for a few seconds. Click one for a 7x production Frenzy (60 seconds), a 20x click frenzy (15 seconds), or a lucky windfall of cookies.",
+    "Feats unlock as milestones are reached and each one raises your milk. When all-time cookies reach a billion, the Legacy button ascends the run for permanent Golden Dough."
+   ],
+   "tips": [
+    "Buy in tens or hundreds once you can afford it: bulk prices are a discount versus buying one at a time.",
+    "A production Frenzy is the moment to spend, and stacking a click frenzy on top is the biggest spike in the game.",
+    "Milk comes from feats and the kittens multiply by it — chasing feats is a real income path, not decoration.",
+    "Offline earnings are capped at 12 hours and pay at your current rate, so coming back after a day is a payday.",
+    "Legacy level is the cube root of all-time cookies: the first billion is the first ascension, and every level is a permanent +2% cookies per second."
+   ],
+   "controls": {
+    "keyboard": "Mouse only: click the cookie, click store rows to buy. 1 / 10 / 100 / MAX set the buy amount; the bottom bar switches Stats, Feats, Legacy and Options.",
+    "touch": "Tap the cookie, tap rows in the store to buy, and tap the bottom bar for Stats, Feats, Legacy and Options. The game is happy in portrait."
+   },
+   "tricks": [],
+   "cheats": [],
+   "difficulty": "No modes: one long curve. Each building costs 15% more than the last of its kind, upgrades multiply what they make, and Legacy resets the run for permanent Golden Dough — the genre-standard prestige loop.",
+   "features": {
+    "offline-earnings": "Cookies accrue while the tab is closed, capped at 12 hours at your current rate",
+    "upgrade-tree": "28 upgrades multiply buildings, clicks and golden cookies; 12 building tiers from Cursor to Time Machine",
+    "big-number-format": "Counts run in K / M / B / T / Qa through the counter, store and stats",
+    "prestige-or-next-goal": "Feats fire every few minutes early on; the Legacy panel opens at the first billion all-time cookies and shows the next Golden Dough level",
+    "autosave": "Saves every few seconds and when the tab hides; a full progress wipe lives in Options"
+   },
+   "saves": [
+    "cc_save_v1",
+    "cc_rec"
+   ],
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "howto",
+    "pauseButton",
+    "saves",
+    "tips"
+   ]
+  },
+  "my-mini-mart": {
+   "title": "My Mini Mart",
+   "cat": "idle",
+   "genre": "management",
+   "genreName": "Management / shop / shift",
+   "modules": [
+    "goals-or-day-targets",
+    "economy-readout",
+    "upgrade-path",
+    "end-of-day-summary"
+   ],
+   "tier": "2D-HD",
+   "should3d": false,
+   "why3d": "",
+   "cheatPolicy": "eligible",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": false,
+   "src": "MyMiniMart/index.html",
+   "scan": {
+    "engine": "canvas",
+    "render": "canvas-2d",
+    "saves": true,
+    "reducedMotion": false,
+    "audio": true,
+    "gamepad": false,
+    "touch": false,
+    "usesP": false,
+    "usesEsc": false,
+    "ownPause": false,
+    "sdk": true,
+    "sdkInit": false
+   },
+   "pauseKeys": "p+esc",
+   "pauseButton": "tr",
+   "howto": [
+    "Press Open the store. Walk to the STOCK ROOM in the top-left and press E to grab a box, carry it to the shelf it matches and press E to restock.",
+    "Customers take what the shelves hold, then queue at the checkout. Stand behind the register and press E to scan each one — a scan takes a moment per customer, and a full queue walks out.",
+    "Spend takings in the Store Manager panel: unlock pricier product lines, hire a cashier and a stocker, expand the floor, and buy Marketing, Box Size, Shelf Capacity and Register Speed levels.",
+    "Your star rating rises with happy customers and falls when shoppers leave angry — it is the live score of the run."
+   ],
+   "tips": [
+    "An empty shelf turns shoppers away: keep every unlocked line stocked before unlocking the next one.",
+    "Stock costs money up front (Apples $2 per box item, up to Cake) and sales pay more — but only if the shelf is full when a shopper reaches it.",
+    "The Cashier ($2,500) scans the queue by himself and the Stocker ($4,000) refills empty shelves: with both hired the mart runs itself and you only step in for the rush.",
+    "Register Speed and Marketing compound hardest — more shoppers per minute only pays if the queue actually moves.",
+    "Grab a box from the stock room on every trip past it: walking is the slow part, so never make an empty-handed trip."
+   ],
+   "controls": {
+    "keyboard": "WASD or arrow keys walk; E or Space acts (grab a box, restock a shelf, scan a customer); clicking a spot walks there and acts on what you click.",
+    "touch": "Tap where you want to go, then tap shelves, boxes and the register. Everything in the Store Manager panel is tap-to-buy."
+   },
+   "tricks": [],
+   "cheats": [],
+   "difficulty": "No difficulty modes — one endless store. Pressure comes from the product tiers you unlock and the shopper rate Marketing brings in; a bad minute costs reputation stars but never progress.",
+   "features": {
+    "goals-or-day-targets": "Live star rating in the HUD (3 of 5 at the start) plus the XP bar to the next level",
+    "economy-readout": "Money, XP level, stars and served/lost counters across the top; every price and effect is written on its Store Manager card",
+    "upgrade-path": "Store Manager panel: 8 product lines, Marketing / Box Size / Shelf Capacity / Register Speed (5 levels each), Cashier and Stocker hires, and one store expansion",
+    "end-of-day-summary": "No day clock: the panel and toasts report every unlock and hire as it happens, and the hint bar always names the next useful job"
+   },
+   "start": "#play",
+   "saves": [
+    "***",
+    "mmm_rec"
+   ],
+   "authored": [
+    "controls",
+    "difficulty",
+    "features",
+    "genre",
+    "genreName",
+    "howto",
+    "modules",
     "pauseButton",
     "saves",
     "start",
@@ -9374,7 +9532,7 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
@@ -9464,7 +9622,7 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
@@ -9554,7 +9712,7 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
@@ -9644,7 +9802,7 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
@@ -9738,7 +9896,7 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
@@ -9828,7 +9986,7 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
@@ -9922,7 +10080,7 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
@@ -10012,7 +10170,7 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
@@ -10102,16 +10260,16 @@
     "render": "canvas-2d",
     "saves": true,
     "reducedMotion": true,
-    "audio": false,
+    "audio": true,
     "gamepad": false,
     "touch": true,
     "usesP": false,
-    "usesEsc": false,
+    "usesEsc": true,
     "ownPause": false,
     "sdk": true,
     "sdkInit": true
    },
-   "pauseKeys": "p+esc",
+   "pauseKeys": "p",
    "pauseButton": "bl",
    "howto": [
     "Your turret sits at the bottom. Red drones fly in from the edges towards it.",

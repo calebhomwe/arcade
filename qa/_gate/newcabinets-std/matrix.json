@@ -1,0 +1,667 @@
+{
+ "summary": {
+  "games": 2,
+  "checks": 26,
+  "generated": "2026-10-04T07:04:18.446Z",
+  "byCheck": {
+   "U01": [
+    0,
+    0,
+    2,
+    0
+   ],
+   "U02": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U03": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U04": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U05": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U06": [
+    0,
+    2,
+    0,
+    0
+   ],
+   "U07": [
+    0,
+    2,
+    0,
+    0
+   ],
+   "U08": [
+    1,
+    0,
+    1,
+    0
+   ],
+   "U09": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U10": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U11": [
+    0,
+    2,
+    0,
+    0
+   ],
+   "U12": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U13": [
+    1,
+    1,
+    0,
+    0
+   ],
+   "U14": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U15": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U16": [
+    0,
+    2,
+    0,
+    0
+   ],
+   "U17": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "U18": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "H01": [
+    1,
+    1,
+    0,
+    0
+   ],
+   "H02": [
+    0,
+    0,
+    0,
+    2
+   ],
+   "H03": [
+    2,
+    0,
+    0,
+    0
+   ],
+   "C01": [
+    0,
+    2,
+    0,
+    0
+   ],
+   "G01": [
+    0,
+    0,
+    2,
+    0
+   ],
+   "T01": [
+    0,
+    0,
+    0,
+    2
+   ],
+   "X01": [
+    1,
+    1,
+    0,
+    0
+   ],
+   "P01": [
+    0,
+    0,
+    2,
+    0
+   ]
+  },
+  "totals": {
+   "PASS": 28,
+   "FAIL": 13,
+   "REVIEW": 7,
+   "N/A": 4
+  }
+ },
+ "standard": [
+  {
+   "id": "U01",
+   "name": "Title screen",
+   "how": "observe",
+   "pass": "The game reports a title scene (ArcadeSDK.state({scene:'title'})) or the first frame is not blank."
+  },
+  {
+   "id": "U02",
+   "name": "How to play",
+   "how": "observe+meta",
+   "pass": "At least 2 steps in meta, and the arcade's Help button opens them inside the game."
+  },
+  {
+   "id": "U03",
+   "name": "Controls",
+   "how": "meta",
+   "pass": "Keyboard and touch controls written in meta."
+  },
+  {
+   "id": "U04",
+   "name": "Pause",
+   "how": "observe",
+   "pass": "On-screen pause button; the arcade's Pause freezes the canvas, the clock and audio; P or Esc pauses where free; a hidden tab pauses."
+  },
+  {
+   "id": "U05",
+   "name": "Resume",
+   "how": "observe",
+   "pass": "After a 2 s pause the game clock has not jumped and the game moves again."
+  },
+  {
+   "id": "U06",
+   "name": "Restart",
+   "how": "observe",
+   "pass": "The game restarts the run itself (ArcadeSDK onRestart), without reloading the page."
+  },
+  {
+   "id": "U07",
+   "name": "Exit to title",
+   "how": "observe",
+   "pass": "The game returns to its title itself (ArcadeSDK onExit)."
+  },
+  {
+   "id": "U08",
+   "name": "Sound",
+   "how": "observe",
+   "pass": "The arcade's Mute silences every audio context and media element, and the choice is remembered."
+  },
+  {
+   "id": "U09",
+   "name": "Settings",
+   "how": "meta+scan",
+   "pass": "Sound always; 3D tiers also list a graphics-quality setting in meta.settings."
+  },
+  {
+   "id": "U10",
+   "name": "Tips",
+   "how": "observe+meta",
+   "pass": "At least 3 tips in meta, shown on the pause menu."
+  },
+  {
+   "id": "U11",
+   "name": "Results screen",
+   "how": "observe",
+   "pass": "The game reports scene 'over' with a score or outcome during the scripted session, or meta.features.results says where it is (REVIEW)."
+  },
+  {
+   "id": "U12",
+   "name": "Saving",
+   "how": "observe+scan",
+   "pass": "A key named in meta.saves (the best score or progress, not a first-run flag or setting) is in localStorage or IndexedDB after the session."
+  },
+  {
+   "id": "U13",
+   "name": "Phone",
+   "how": "observe",
+   "pass": "At 390x844 with touch: no sideways scroll, DOM text at least 12 px, DOM tap targets at least 40 px."
+  },
+  {
+   "id": "U14",
+   "name": "Stability",
+   "how": "observe",
+   "pass": "0 page errors, 0 console errors and 0 failed requests from the game."
+  },
+  {
+   "id": "U15",
+   "name": "Loading",
+   "how": "observe",
+   "pass": "Something visible within 1 s of the game frame loading, and the SDK ready within 20 s."
+  },
+  {
+   "id": "U16",
+   "name": "Accessibility",
+   "how": "scan",
+   "pass": "The game respects prefers-reduced-motion."
+  },
+  {
+   "id": "U17",
+   "name": "Arcade SDK",
+   "how": "observe",
+   "pass": "The SDK loads and says ready; the game calls ArcadeSDK.init to declare what it supports."
+  },
+  {
+   "id": "U18",
+   "name": "Catalogue",
+   "how": "meta",
+   "pass": "Category, genre, 2+ tags, blurb, howto, tips, controls, a 480x300 tile and a 960x600 tile."
+  },
+  {
+   "id": "H01",
+   "name": "Tutorial",
+   "how": "observe",
+   "pass": "The game can replay its tutorial (ArcadeSDK onTutorial)."
+  },
+  {
+   "id": "H02",
+   "name": "Hints",
+   "how": "observe",
+   "pass": "Required for puzzle and learning games: the arcade's hint request returns a hint."
+  },
+  {
+   "id": "H03",
+   "name": "Difficulty",
+   "how": "meta",
+   "pass": "meta.difficulty says how difficulty works (modes, adaptive curve or age bands)."
+  },
+  {
+   "id": "C01",
+   "name": "Cheat codes",
+   "how": "observe+meta",
+   "pass": "Eligible games list 3+ codes in meta and the game accepts each one through the SDK."
+  },
+  {
+   "id": "G01",
+   "name": "Genre module",
+   "how": "meta+review",
+   "pass": "Every feature of the genre module is described in meta.features (REVIEW until a person confirms it)."
+  },
+  {
+   "id": "T01",
+   "name": "Tricks",
+   "how": "observe+meta",
+   "pass": "Board-sports games: 6+ named tricks with inputs, shown in the pause menu's Trick list."
+  },
+  {
+   "id": "X01",
+   "name": "Graphics tier",
+   "how": "observe+scan",
+   "pass": "3D tiers render in 3D (WebGL context plus a 3D engine); 2D-HD canvases are crisp at the device pixel ratio."
+  },
+  {
+   "id": "P01",
+   "name": "Progression",
+   "how": "observe+meta+review",
+   "pass": "Progress that persists (meta.saves names a key that is written) and real goals to come back for: levels, worlds, unlocks, stars or upgrades. The game tells the arcade profile where the player is with ArcadeSDK.state({scene, score, level, stars}). Always REVIEW for now: the harness lists what it saw and a person (or the progression checker) confirms the goals are real."
+  }
+ ],
+ "games": [
+  {
+   "id": "crumb-crown",
+   "title": "Crumb & Crown",
+   "cat": "idle",
+   "genre": "idle",
+   "tier": "2D-HD",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": false,
+   "render": "canvas-2d",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "REVIEW",
+     "note": "Something is on screen; a person should confirm it is a title with a clear Play button."
+    },
+    "U02": {
+     "s": "PASS",
+     "note": "The arcade Help button opened 5 steps inside the game."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "PASS",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P and Esc pause."
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (0 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "FAIL",
+     "note": "Restart falls back to reloading the game (add ArcadeSDK onRestart)."
+    },
+    "U07": {
+     "s": "FAIL",
+     "note": "Exit to title falls back to reloading the game (add ArcadeSDK onExit)."
+    },
+    "U08": {
+     "s": "REVIEW",
+     "note": "Mute works, but the game made no sound in the scripted session."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "5 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "FAIL",
+     "note": "No results scene reported (ArcadeSDK.state({scene:\"over\"})) and none described in meta."
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under cc_save_v1, cc_rec."
+    },
+    "U13": {
+     "s": "FAIL",
+     "note": "5 text run(s) under 12 px, e.g. 1 (11.5px); 10 (11.5px); 100 (11.5px); 4 tap target(s) under 40 px, e.g. 1 25x23; 10 31x23; 100 38x23"
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 0.1 s, SDK ready 0.0 s after Play."
+    },
+    "U16": {
+     "s": "FAIL",
+     "note": "Ignores the reduced-motion setting (screen shake and flashes stay on)."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "FAIL",
+     "note": "The game does not offer a tutorial replay (ArcadeSDK onTutorial)."
+    },
+    "H02": {
+     "s": "N/A",
+     "note": "Recommended, not required, for Idle / tycoon games."
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "No modes: one long curve. Each building costs 15% more than the last of its kind, upgrades multiply what they make, and Legacy resets the run for permanent Golden Dough — the genre-standard prestige loop."
+    },
+    "C01": {
+     "s": "FAIL",
+     "note": "0 codes written in meta; 3 needed."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Idle / tycoon: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "PASS",
+     "note": "Crisp: canvas 780px wide for 390 CSS px at DPR 3."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves cc_save_v1, cc_rec (written); reports scene; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\crumb-crown-1-first-second.jpg",
+    "2-playing-a": "shots\\crumb-crown-2-playing-a.jpg",
+    "2-playing-b": "shots\\crumb-crown-2-playing-b.jpg",
+    "4-paused": "shots\\crumb-crown-4-paused.jpg",
+    "5-paused-later": "shots\\crumb-crown-5-paused-later.jpg",
+    "6-resumed-a": "shots\\crumb-crown-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\crumb-crown-6-resumed-b.jpg",
+    "8-how-to-play": "shots\\crumb-crown-8-how-to-play.jpg",
+    "phone": "shots\\crumb-crown-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [
+     "1 (11.5px)",
+     "10 (11.5px)",
+     "100 (11.5px)",
+     "MAX (11.5px)",
+     "Upgrades (10.5px)"
+    ],
+    "smallN": 5,
+    "tiny": [
+     "1 25x23",
+     "10 31x23",
+     "100 38x23",
+     "MAX 45x23"
+    ],
+    "tinyN": 4,
+    "cv": {
+     "w": 780,
+     "h": 1047,
+     "cw": 390,
+     "ch": 523.265625,
+     "area": 204073.59375
+    },
+    "dpr": 3,
+    "dom": 9,
+    "shot": "shots\\crumb-crown-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 146,
+    "ready": 48
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 300,
+     "h": 150
+    },
+    {
+     "type": "2d",
+     "w": 460,
+     "h": 460
+    }
+   ],
+   "seconds": 50
+  },
+  {
+   "id": "my-mini-mart",
+   "title": "My Mini Mart",
+   "cat": "idle",
+   "genre": "management",
+   "tier": "2D-HD",
+   "frozen": false,
+   "ownerActive": false,
+   "ext": false,
+   "render": "canvas-2d",
+   "sdk": true,
+   "harness": "",
+   "animating": true,
+   "checks": {
+    "U01": {
+     "s": "REVIEW",
+     "note": "Something is on screen; a person should confirm it is a title with a clear Play button."
+    },
+    "U02": {
+     "s": "PASS",
+     "note": "The arcade Help button opened 4 steps inside the game."
+    },
+    "U03": {
+     "s": "PASS",
+     "note": "Keyboard and touch controls written."
+    },
+    "U04": {
+     "s": "PASS",
+     "note": "Pause froze picture, clock and audio, menu showed a tip; P and Esc pause."
+    },
+    "U05": {
+     "s": "PASS",
+     "note": "Resumed where it stopped: no time jump (0 ms), and the picture moves again."
+    },
+    "U06": {
+     "s": "FAIL",
+     "note": "Restart falls back to reloading the game (add ArcadeSDK onRestart)."
+    },
+    "U07": {
+     "s": "FAIL",
+     "note": "Exit to title falls back to reloading the game (add ArcadeSDK onExit)."
+    },
+    "U08": {
+     "s": "PASS",
+     "note": "Mute silenced 1 sound source(s) and is remembered."
+    },
+    "U09": {
+     "s": "PASS",
+     "note": "Sound switch from the arcade."
+    },
+    "U10": {
+     "s": "PASS",
+     "note": "5 tips; the pause menu shows one."
+    },
+    "U11": {
+     "s": "FAIL",
+     "note": "No results scene reported (ArcadeSDK.state({scene:\"over\"})) and none described in meta."
+    },
+    "U12": {
+     "s": "PASS",
+     "note": "Progress saved under ***, mmm_rec."
+    },
+    "U13": {
+     "s": "PASS",
+     "note": "No sideways scroll; DOM text and buttons are big enough."
+    },
+    "U14": {
+     "s": "PASS",
+     "note": "No errors and no failed requests."
+    },
+    "U15": {
+     "s": "PASS",
+     "note": "First picture within 1 s; frame loaded in 0.2 s, SDK ready 0.0 s after Play."
+    },
+    "U16": {
+     "s": "FAIL",
+     "note": "Ignores the reduced-motion setting (screen shake and flashes stay on)."
+    },
+    "U17": {
+     "s": "PASS",
+     "note": "Ready, and the game declares what it supports."
+    },
+    "U18": {
+     "s": "PASS",
+     "note": "Complete."
+    },
+    "H01": {
+     "s": "PASS",
+     "note": "The arcade asked for the tutorial and the game replayed it."
+    },
+    "H02": {
+     "s": "N/A",
+     "note": "Recommended, not required, for Management / shop / shift games."
+    },
+    "H03": {
+     "s": "PASS",
+     "note": "No difficulty modes — one endless store. Pressure comes from the product tiers you unlock and the shopper rate Marketing brings in; a bad minute costs reputation stars but never progress."
+    },
+    "C01": {
+     "s": "FAIL",
+     "note": "0 codes written in meta; 3 needed."
+    },
+    "G01": {
+     "s": "REVIEW",
+     "note": "Management / shop / shift: all 4 features described; a person should confirm them."
+    },
+    "T01": {
+     "s": "N/A",
+     "note": "Only board-sports games need a trick list."
+    },
+    "X01": {
+     "s": "FAIL",
+     "note": "Blurry on phones: canvas 960px wide for 960 CSS px at DPR 3 (needs 1728)."
+    },
+    "P01": {
+     "s": "REVIEW",
+     "note": "Saw: saves ***, mmm_rec (written); reports scene; no goals described in meta.progression. REVIEW until the goals (levels, worlds, unlocks, stars, upgrades) are confirmed real."
+    }
+   },
+   "shots": {
+    "1-first-second": "shots\\my-mini-mart-1-first-second.jpg",
+    "2-playing-a": "shots\\my-mini-mart-2-playing-a.jpg",
+    "2-playing-b": "shots\\my-mini-mart-2-playing-b.jpg",
+    "4-paused": "shots\\my-mini-mart-4-paused.jpg",
+    "5-paused-later": "shots\\my-mini-mart-5-paused-later.jpg",
+    "6-resumed-a": "shots\\my-mini-mart-6-resumed-a.jpg",
+    "6-resumed-b": "shots\\my-mini-mart-6-resumed-b.jpg",
+    "8-how-to-play": "shots\\my-mini-mart-8-how-to-play.jpg",
+    "phone": "shots\\my-mini-mart-9-phone.jpg"
+   },
+   "phone": {
+    "over": false,
+    "small": [],
+    "smallN": 0,
+    "tiny": [],
+    "tinyN": 0,
+    "cv": {
+     "w": 960,
+     "h": 720,
+     "cw": 960,
+     "ch": 720,
+     "area": 691200
+    },
+    "dpr": 3,
+    "dom": 2,
+    "shot": "shots\\my-mini-mart-9-phone.jpg"
+   },
+   "t": {
+    "frameLoad": 212,
+    "ready": 37
+   },
+   "gl": [
+    {
+     "type": "2d",
+     "w": 960,
+     "h": 720
+    }
+   ],
+   "seconds": 50
+  }
+ ]
+}
