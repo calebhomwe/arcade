@@ -1,6 +1,6 @@
-# Handoff: Caleb's Arcade (state as of 2026-10-01)
+# Handoff: Caleb's Arcade (work state as of 2026-10-01; repo facts re-checked 2026-10-04)
 
-For the next agent (or person) picking this up. Everything here was checked against the repos and live site on 2026-10-01 unless marked **not verified**. `main` has had commits from other sessions since (look at `git log`): check whether an item below is already done before redoing it.
+For the next agent (or person) picking this up. The work described was done and tested up to 2026-10-01 (live site checked then); game counts, file names and repo layout were re-checked on 2026-10-04. Anything marked **not verified** was not. `main` has had commits from other sessions since (look at `git log`): check whether an item below is already done before redoing it.
 
 ## The goal
 Caleb's little sister plays the arcade on an iPhone. Her verdict on the old version: some games work; Claire's Big Life "stays fixed on one angle and doesn't look appealing"; others "don't work, freeze, look super lame and poor". Caleb wants to review the result in a YouTube video, so it must be genuinely good and honestly described. Caleb's target look is the rich, warm-lit, textured look of his key art (`calebs_farm/ref_01..04.png` in the `claires-big-life-adventure` repo), **not** flat cartoon with thick outlines. Games also need real progression (levels, unlocks, daily goals, a reason to come back), not just a loop.
