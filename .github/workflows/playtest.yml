@@ -37,3 +37,34 @@ jobs:
           name: arcade-playtest-${{ matrix.shard }}
           path: qa/results
           retention-days: 14
+  harness:
+    # Play harness (qa/harness/play.mjs, docs/GAME_WIKI.md): the four profiled cabinets played like a player through
+    # the portal. A page error, NaN/undefined state, illegal phase change, stuck run, failed restart or a run where no
+    # progression signal moves fails the step. play.mjs serves the repo itself, so no separate web server is needed.
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        game: [hole-grind, survivor-wave, long-way-home, chili-firm]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix qa/harness
+      - run: cd qa/harness && npx playwright install --with-deps chromium
+      - name: Default play, 2 episodes
+        run: node qa/harness/play.mjs --game ${{ matrix.game }} --mode default --episodes 2 --secs 40
+      - name: Phone, 390x844 touch
+        if: ${{ !cancelled() }}
+        run: node qa/harness/play.mjs --game ${{ matrix.game }} --mode mobile --episodes 1 --secs 30
+      - name: Blocked storage
+        if: ${{ !cancelled() }}
+        run: node qa/harness/play.mjs --game ${{ matrix.game }} --mode storage-blocked --episodes 1 --secs 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: play-harness-${{ matrix.game }}
+          path: harness-out
+          retention-days: 14
