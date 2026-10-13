@@ -190,7 +190,7 @@ const GAMES = {
       if (m === 30) return [{ sel: '#d-market' }];
       if (m === 32) return [{ sel: '[data-action="sell-strain"][data-qty="999999"]:not([disabled])' }];
       if (m === 34) return [{ sel: '#panel-root.open .panel .x' }];
-      if (s.panel) return [{ sel: '#panel-root.open .panel .x' }];
+      if (s.panel && (m < 30 || m > 34)) return [{ sel: '#panel-root.open .panel .x' }];   // leave the Market open while selling
       return [{ sel: '.plot[data-idx="' + (tick % 12) + '"]' }];
     },
     progression: ['planted', 'harvested', 'sold'],
