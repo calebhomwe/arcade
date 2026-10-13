@@ -52,7 +52,7 @@ const GAMES = {
     transitions: { menu: ['playing'], playing: ['paused', 'over', 'menu'], paused: ['playing', 'menu'], over: ['menu', 'playing'] },
     // DROP IN sits under the "LOADING THE CITY…" cover until models/city.glb is in (index.html:79, 1180): a click before that is lost.
     ready: () => !document.getElementById('loading') && !!(window.__DEBUG && window.__DEBUG.state.ready),
-    start: async (f) => { await clickSel(f, '#btnPlay'); },
+    start: async (f) => { await clickSel(f, '#btnPlay'); }, startSel: '#btnPlay', restartSel: '#btnAgain',
     restart: async (f) => { await clickSel(f, '#btnAgain'); },
     resumeSel: '#btnResume',
     // Steer by the "nearest edible prop" distance the debug state exposes: keep the heading while it shrinks, turn when it grows.
@@ -88,7 +88,7 @@ const GAMES = {
     },
     transitions: { menu: ['playing'], playing: ['paused', 'over', 'menu'], paused: ['playing', 'menu'], over: ['menu', 'playing'] },
     ready: () => typeof state !== 'undefined' && !!document.getElementById('playBtn'),
-    start: async (f) => { await clickSel(f, '#playBtn'); },
+    start: async (f) => { await clickSel(f, '#playBtn'); }, startSel: '#playBtn', restartSel: '#againBtn',
     resumeSel: '#pResume',   // its own pause overlay (index.html:702); window blur pauses the run and waits for the player
     // Its full effects (bloom canvas, gradients) render at 0-1 fps on SwiftShader on a loaded box, so the game clock barely moves
     // (dt is capped at 0.05 s, index.html:13806). Play with the game's own "Low effects" setting (settings.lowFx, applyLowFx() at
@@ -143,7 +143,7 @@ const GAMES = {
     transitions: { menu: ['playing'], playing: ['paused', 'over', 'menu'], paused: ['playing', 'menu'], over: ['menu', 'playing'] },
     // #boot (index.html:166) covers the hangar until the renderer has compiled the scene and hides at line 5438.
     ready: () => !!window.__tlwh_debug && getComputedStyle(document.getElementById('boot')).display === 'none',
-    start: async (f) => { await clickSel(f, '[data-play="quick"]'); },
+    start: async (f) => { await clickSel(f, '[data-play="quick"]'); }, startSel: '[data-play="quick"]', restartSel: '#again',
     resumeSel: '#resume',   // "Resume transit" on #s-pause
     restart: async (f) => { await clickSel(f, '#again'); },
     // Fly through the ring that carries the correct answer: the pointer aims the ship (aim(), line 5163, maps the viewport
@@ -179,7 +179,7 @@ const GAMES = {
     },
     transitions: { menu: ['playing'], playing: ['menu', 'paused'], paused: ['playing', 'menu'] },   // paused = the arcade SDK's pause sheet
     ready: () => !!(window.CF && window.CF.ui && window.CF.state && document.querySelector('#title .playbtn')),
-    start: async (f) => { await clickSel(f, '#title .playbtn'); },
+    start: async (f) => { await clickSel(f, '#title .playbtn'); }, startSel: '#title .playbtn', restartSel: '#title .playbtn',
     restart: async (f) => { await clickSel(f, '#title .playbtn'); },
     // Tap pots in turn (plant / water / harvest, ui.js onPointerDown), then every 40 ticks open the Market and sell everything.
     // A story dialogue (#dlg: a full-screen shade with a .dbox that advances on a tap, js/ui/ui.js:411-425) covers the pots:
@@ -375,10 +375,13 @@ async function playOne() {
     while (Date.now() - t0 < 60000) { if (await frame.evaluate(GAME.ready).catch(() => false)) return true; await page.waitForTimeout(500); }
     return false;
   };
-  const pressUntilPlaying = async (fn) => {
+  // The third press is a DOM click on the control (GAME.startSel / restartSel): a portal toast in the parent page can sit
+  // over the frame on a repeat visit and swallow a coordinate click. The press count shows when that was needed.
+  const pressUntilPlaying = async (fn, sel) => {
     if (!(await waitReady())) throw new Error('game never became ready (GAME.ready) within 60 s');
     for (let i = 1; i <= 3; i++) {
-      await fn(frame, page).catch(() => {});
+      if (i === 3 && sel) await frame.evaluate(q => { const el = document.querySelector(q); if (el) el.click(); }, sel).catch(() => {});
+      else await fn(frame, page).catch(() => {});
       for (let k = 0; k < 8; k++) { await page.waitForTimeout(500); if ((await readState()).phase === 'playing') return i; }
     }
     return 0;
@@ -391,13 +394,13 @@ async function playOne() {
       report.episodes.push(ep);
       const mem = {};
       try {
-        if (e === 0) { ep.presses = await pressUntilPlaying(GAME.start); if (!ep.presses) { ep.invariantFailures.push('start: 3 presses and the run never began'); fail('could not start'); } }
+        if (e === 0) { ep.presses = await pressUntilPlaying(GAME.start, GAME.startSel); if (!ep.presses) { ep.invariantFailures.push('start: 3 presses and the run never began'); fail('could not start'); } }
         else {
           const before = await readState();
-          if (before.phase === 'over') { ep.restartVia = 'restart'; ep.presses = await pressUntilPlaying(GAME.restart); }
-          else { await open(ep); ep.restartVia = 'reload+start'; ep.presses = await pressUntilPlaying(GAME.start); }
+          if (before.phase === 'over') { ep.restartVia = 'restart'; ep.presses = await pressUntilPlaying(GAME.restart, GAME.restartSel); }
+          else { await open(ep); ep.restartVia = 'reload+start'; ep.presses = await pressUntilPlaying(GAME.start, GAME.startSel); }
           let s = await readState();
-          if (s.phase === 'menu') { ep.presses = await pressUntilPlaying(GAME.start); s = await readState(); }
+          if (s.phase === 'menu') { ep.presses = await pressUntilPlaying(GAME.start, GAME.startSel); s = await readState(); }
           ep.restartOk = s.phase === 'playing';
           if (!ep.restartOk) { ep.invariantFailures.push(`restart did not reach playing (phase=${s.phase}, via ${ep.restartVia})`); fail('restart did not work'); }
         }
@@ -418,7 +421,7 @@ async function playOne() {
           // long mode is one long session: start the next run from the end screen and keep going until --secs
           if (MODE === 'long' && Date.now() - t0 < SECS * 1000 - 8000) {
             ep.longRestarts = (ep.longRestarts || 0) + 1;
-            const n = await pressUntilPlaying(GAME.restart).catch(() => 0);
+            const n = await pressUntilPlaying(GAME.restart, GAME.restartSel).catch(() => 0);
             if (!n) { ep.invariantFailures.push('long: restart from the end screen did not reach playing'); fail('restart did not work'); break; }
             prev = null; lastChange = Date.now(); lastKey = ''; tick++; continue;
           }
@@ -437,7 +440,7 @@ async function playOne() {
         } else if (cur.phase === 'menu' && tick - (mem.lastRestartTick ?? -99) > 20) {
           // back on the title mid-episode (storm input left the run): press start again, as a player would
           mem.lastRestartTick = tick; ep.menuReturns = (ep.menuReturns || 0) + 1;
-          await pressUntilPlaying(GAME.start).catch(() => 0); actions = [];
+          await pressUntilPlaying(GAME.start, GAME.startSel).catch(() => 0); actions = [];
         } else actions = [{ key: 'Enter' }];
         if (cur.phase !== 'paused') mem.pausedTicks = 0;
         if (mobile && !GAME.touchPolicy) actions = actions.map(a => (a.key && GAME.touchMap && GAME.touchMap[a.key]) ? { tap: GAME.touchMap[a.key] } : a);
