@@ -90,6 +90,10 @@ const GAMES = {
     ready: () => typeof state !== 'undefined' && !!document.getElementById('playBtn'),
     start: async (f) => { await clickSel(f, '#playBtn'); },
     resumeSel: '#pResume',   // its own pause overlay (index.html:702); window blur pauses the run and waits for the player
+    // Its full effects (bloom canvas, gradients) render at 0-1 fps on SwiftShader on a loaded box, so the game clock barely moves
+    // (dt is capped at 0.05 s, index.html:13806). Play with the game's own "Low effects" setting (settings.lowFx, applyLowFx() at
+    // 13855), as a player on a slow machine would; it is stored in survivorSettings, so storage-blocked runs keep full effects.
+    setup: async (ctx) => { await ctx.addInitScript(() => { try { if (!localStorage.getItem('survivorSettings')) localStorage.setItem('survivorSettings', JSON.stringify({ lowFx: true })); } catch (e) {} }); },
     restart: async (f) => { if (await f.locator('#winAgainBtn').isVisible().catch(() => false)) await clickSel(f, '#winAgainBtn'); else await clickSel(f, '#againBtn'); },
     // Dodge the nearest zombie when it is close, otherwise walk to the nearest XP gem; pick the first card on level-up, open chests.
     policy: (s, tick, rnd) => {
@@ -168,7 +172,7 @@ const GAMES = {
     readState: () => {
       const CF = window.CF; if (!CF || !CF.state || !CF.ui) return { phase: 'menu', loading: 1 };
       const s = CF.state, st = s.plots.slice(0, s.plotCount).map(p => p.status);
-      return { phase: CF.ui.started ? 'playing' : 'menu', money: Math.round(s.money), rep: Math.round(s.rep), day: s.day,
+      return { phase: CF.ui.started ? 'playing' : 'menu', money: Math.round(s.money), rep: Math.round(s.rep), day: s.day, mission: s.missionIdx,
         planted: s.stats.planted, harvested: s.stats.harvested, sold: s.stats.sold,
         empty: st.filter(x => x === 'empty').length, ready: st.filter(x => x === 'ready' || x === 'wilted').length, panel: document.querySelector('#panel-root.open') ? 1 : 0 };
     },
@@ -334,7 +338,7 @@ async function playOne() {
   const g = byId[GAME_ID], GAME = GAMES[GAME_ID];
   const report = { game: g.title, id: g.id, mode: MODE, fault: FAULT, commit, url: BASE + 'play.html?g=' + g.id, load1: null, episodes: [], pageErrors: [], consoleErrors: [], failedRequests: [], fps: [], heap: [], verdict: { pass: true, reasons: [] } };
   const fail = (why) => { report.verdict.pass = false; if (!report.verdict.reasons.includes(why)) report.verdict.reasons.push(why); };
-  const ctx = await newContext(); const page = await ctx.newPage();
+  const ctx = await newContext(); if (GAME.setup) await GAME.setup(ctx, MODE); const page = await ctx.newPage();
   page.on('pageerror', e => { report.pageErrors.push(String(e.message || e).slice(0, 300)); fail('page error'); });
   page.on('console', m => { if (m.type() === 'error') report.consoleErrors.push(m.text().slice(0, 300)); });
   page.on('requestfailed', r => report.failedRequests.push(r.url().replace(BASE, '/') + ' ' + (r.failure()?.errorText || '')));
@@ -381,7 +385,7 @@ async function playOne() {
       report.episodes.push(ep);
       const mem = {};
       try {
-        if (e === 0) { ep.presses = await pressUntilPlaying(GAME.start); }
+        if (e === 0) { ep.presses = await pressUntilPlaying(GAME.start); if (!ep.presses) { ep.invariantFailures.push('start: 3 presses and the run never began'); fail('could not start'); } }
         else {
           const before = await readState();
           if (before.phase === 'over') { ep.restartVia = 'restart'; ep.presses = await pressUntilPlaying(GAME.restart); }
@@ -414,8 +418,8 @@ async function playOne() {
           }
           break;
         }
-        // storm input may legitimately pause the game or leave the run; elsewhere the run must still be going at tick 15
-        if (e === 0 && tick === 15 && cur.phase !== 'playing' && MODE !== 'storm') { ep.invariantFailures.push(`not playing after start (phase=${cur.phase})`); fail('start did not reach playing'); }
+        // storm input and blur events may legitimately pause the game or leave the run; elsewhere it must still be going at tick 15
+        if (e === 0 && tick === 15 && cur.phase !== 'playing' && MODE !== 'storm' && MODE !== 'blur') { ep.invariantFailures.push(`not playing after start (phase=${cur.phase})`); fail('start did not reach playing'); }
         const box = await frameBox(page);
         let actions;
         if (cur.phase === 'playing') actions = (mobile && GAME.touchPolicy ? GAME.touchPolicy : GAME.policy)(cur, tick, rnd, mem, box) || [];
