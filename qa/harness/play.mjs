@@ -264,7 +264,8 @@ async function newContext() {
 }
 async function applyFaults(page, faults) {
   for (const f of faults) {
-    await page.route('**/' + f.file, async route => {
+    // match on the path alone: play.html is always requested with ?g=<id>, which a '**/play.html' glob never matches
+    await page.route(u => u.pathname.endsWith('/' + f.file), async route => {
       const body = (await (await route.fetch()).text());
       if (!body.includes(f.from)) { console.error('fault text not found in', f.file); process.exit(2); }
       await route.fulfill({ body: body.replace(f.from, f.to), contentType: typeOf(f.file) });
