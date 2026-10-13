@@ -175,7 +175,7 @@ const GAMES = {
       const s = CF.state, st = s.plots.slice(0, s.plotCount).map(p => p.status);
       return { phase: CF.ui.started ? 'playing' : 'menu', money: Math.round(s.money), rep: Math.round(s.rep), day: s.day, mission: s.missionIdx,
         planted: s.stats.planted, harvested: s.stats.harvested, sold: s.stats.sold,
-        empty: st.filter(x => x === 'empty').length, ready: st.filter(x => x === 'ready' || x === 'wilted').length, panel: document.querySelector('#panel-root.open') ? 1 : 0, dlg: CF.ui.dialog ? 1 : 0 };
+        empty: st.filter(x => x === 'empty').length, ready: st.filter(x => x === 'ready' || x === 'wilted').length, panel: document.querySelector('#panel-root.open') ? 1 : 0, dlg: CF.ui.dialog ? 1 : 0, cele: document.querySelector('#celebrate.open') ? 1 : 0 };
     },
     transitions: { menu: ['playing'], playing: ['menu', 'paused'], paused: ['playing', 'menu'] },   // paused = the arcade SDK's pause sheet
     ready: () => !!(window.CF && window.CF.ui && window.CF.state && document.querySelector('#title .playbtn')),
@@ -186,6 +186,7 @@ const GAMES = {
     // read it on, as a player would, before tapping pots.
     policy: (s, tick) => {
       if (s.dlg) return [{ sel: '#dlg .dbox' }];
+      if (s.cele) return [{ sel: '#celebrate [data-action="celebrate-close"]' }];   // level-up / trophy / mission cards wait for a tap
       const m = tick % 40;
       if (m === 30) return [{ sel: '#d-market' }];
       if (m === 32) return [{ sel: '[data-action="sell-strain"][data-qty="999999"]:not([disabled])' }];
