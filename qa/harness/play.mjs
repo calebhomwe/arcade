@@ -54,6 +54,7 @@ const GAMES = {
     ready: () => !document.getElementById('loading') && !!(window.__DEBUG && window.__DEBUG.state.ready),
     start: async (f) => { await clickSel(f, '#btnPlay'); },
     restart: async (f) => { await clickSel(f, '#btnAgain'); },
+    resumeSel: '#btnResume',
     // Steer by the "nearest edible prop" distance the debug state exposes: keep the heading while it shrinks, turn when it grows.
     policy: (s, tick, rnd, mem) => {
       const dirs = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
@@ -88,6 +89,7 @@ const GAMES = {
     transitions: { menu: ['playing'], playing: ['paused', 'over', 'menu'], paused: ['playing', 'menu'], over: ['menu', 'playing'] },
     ready: () => typeof state !== 'undefined' && !!document.getElementById('playBtn'),
     start: async (f) => { await clickSel(f, '#playBtn'); },
+    resumeSel: '#pResume',   // its own pause overlay (index.html:702); window blur pauses the run and waits for the player
     restart: async (f) => { if (await f.locator('#winAgainBtn').isVisible().catch(() => false)) await clickSel(f, '#winAgainBtn'); else await clickSel(f, '#againBtn'); },
     // Dodge the nearest zombie when it is close, otherwise walk to the nearest XP gem; pick the first card on level-up, open chests.
     policy: (s, tick, rnd) => {
@@ -138,6 +140,7 @@ const GAMES = {
     // #boot (index.html:166) covers the hangar until the renderer has compiled the scene and hides at line 5438.
     ready: () => !!window.__tlwh_debug && getComputedStyle(document.getElementById('boot')).display === 'none',
     start: async (f) => { await clickSel(f, '[data-play="quick"]'); },
+    resumeSel: '#resume',   // "Resume transit" on #s-pause
     restart: async (f) => { await clickSel(f, '#again'); },
     // Fly through the ring that carries the correct answer: the pointer aims the ship (aim(), line 5163, maps the viewport
     // to tx in [-11.5, 11.5] and ty in [-5.6, 5.6]; the ship sits at y = ty - 1, line 5262), so put the pointer where
@@ -287,7 +290,11 @@ async function openGame(page, g, rec) {
 }
 const frameOf = async page => { const h = await page.$('#frame'); return h ? await h.contentFrame() : null; };
 const frameBox = async page => (await page.locator('#frame').boundingBox().catch(() => null)) || { x: 0, y: 0, width: VIEW.width, height: VIEW.height };
-const fpsIn = f => f.evaluate(ms => new Promise(res => { let n = 0; const t0 = performance.now(); const step = () => { n++; if (performance.now() - t0 < ms) requestAnimationFrame(step); else res(Math.round(n * 1000 / ms)); }; requestAnimationFrame(step); setTimeout(() => res(0), ms + 2000); }), 1000).catch(() => null);
+// The arcade SDK holds a paused game's timers and animation frames, so an in-page timeout can never fire while the
+// game sits on its pause sheet: the node side gives up after 4 s and records null (no sample).
+const fpsIn = f => Promise.race([
+  f.evaluate(ms => new Promise(res => { let n = 0; const t0 = performance.now(); const step = () => { n++; if (performance.now() - t0 < ms) requestAnimationFrame(step); else res(Math.round(n * 1000 / ms)); }; requestAnimationFrame(step); setTimeout(() => res(0), ms + 2000); }), 1000).catch(() => null),
+  new Promise(r => setTimeout(() => r(null), 4000))]);
 const heapIn = f => f.evaluate(() => performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null).catch(() => null);
 const BAD_TEXT = /\bNaN\b|\bundefined\b|\[object Object\]|\bInfinity\b/;
 const scanText = f => f.evaluate(src => { const t = document.body ? document.body.innerText : ''; const m = t.match(new RegExp(src, 'g')) || []; const i = m.length ? t.search(new RegExp(src)) : -1; return { count: m.length, sample: i >= 0 ? t.slice(Math.max(0, i - 30), i + 30).replace(/\s+/g, ' ') : '' }; }, BAD_TEXT.source).catch(() => ({ count: 0, sample: '' }));
@@ -389,16 +396,40 @@ async function playOne() {
       let prev = null, lastChange = Date.now(), lastKey = '';
       const t0 = Date.now(); let tick = 0, nextFps = 10000, nextStress = 5000;
       while (Date.now() - t0 < SECS * 1000) {
-        const cur = await readState();
+        let cur = await readState();
+        // The arcade SDK's own pause sheet (P / Esc in the portal) freezes the game without telling its state: count it as paused.
+        if (cur.phase === 'playing' && await frame.evaluate(() => !!(window.ArcadeSDK && window.ArcadeSDK.paused)).catch(() => false)) cur = { ...cur, phase: 'paused', sdkPaused: 1 };
         checkState(prev, cur, ep);
         const key = JSON.stringify(cur);
         if (key !== lastKey) { lastKey = key; lastChange = Date.now(); }
         if (cur.phase === 'playing' && Date.now() - lastChange > GAME.stuckAfterMs) { ep.stuck = true; fail('stuck while playing'); break; }
         for (const s of GAME.progression) if (typeof cur[s] === 'number') { const p = ep.progression[s] || (ep.progression[s] = { first: cur[s], max: cur[s], last: cur[s] }); p.max = Math.max(p.max, cur[s]); p.last = cur[s]; }
-        if (cur.phase === 'over') break;
-        if (e === 0 && tick === 15 && cur.phase !== 'playing') { ep.invariantFailures.push(`not playing after start (phase=${cur.phase})`); fail('start did not reach playing'); }
+        if (cur.phase === 'over') {
+          // long mode is one long session: start the next run from the end screen and keep going until --secs
+          if (MODE === 'long' && Date.now() - t0 < SECS * 1000 - 8000) {
+            ep.longRestarts = (ep.longRestarts || 0) + 1;
+            const n = await pressUntilPlaying(GAME.restart).catch(() => 0);
+            if (!n) { ep.invariantFailures.push('long: restart from the end screen did not reach playing'); fail('restart did not work'); break; }
+            prev = null; lastChange = Date.now(); lastKey = ''; tick++; continue;
+          }
+          break;
+        }
+        // storm input may legitimately pause the game or leave the run; elsewhere the run must still be going at tick 15
+        if (e === 0 && tick === 15 && cur.phase !== 'playing' && MODE !== 'storm') { ep.invariantFailures.push(`not playing after start (phase=${cur.phase})`); fail('start did not reach playing'); }
         const box = await frameBox(page);
-        let actions = cur.phase === 'playing' ? ((mobile && GAME.touchPolicy ? GAME.touchPolicy : GAME.policy)(cur, tick, rnd, mem, box) || []) : [{ key: 'Enter' }];
+        let actions;
+        if (cur.phase === 'playing') actions = (mobile && GAME.touchPolicy ? GAME.touchPolicy : GAME.policy)(cur, tick, rnd, mem, box) || [];
+        else if (cur.phase === 'paused') {
+          // a player resumes: the SDK sheet's Resume, else the game's own resume control, else P
+          mem.pausedTicks = (mem.pausedTicks || 0) + 1;
+          actions = mem.pausedTicks % 6 === 3 ? [{ sel: cur.sdkPaused ? '[data-a="resume"]' : (GAME.resumeSel || '[data-a="resume"]') }] : mem.pausedTicks % 6 === 0 ? [{ key: 'p' }] : [];
+          if (mem.pausedTicks % 6 === 3) ep.resumes = (ep.resumes || 0) + 1;
+        } else if (cur.phase === 'menu' && tick - (mem.lastRestartTick ?? -99) > 20) {
+          // back on the title mid-episode (storm input left the run): press start again, as a player would
+          mem.lastRestartTick = tick; ep.menuReturns = (ep.menuReturns || 0) + 1;
+          await pressUntilPlaying(GAME.start).catch(() => 0); actions = [];
+        } else actions = [{ key: 'Enter' }];
+        if (cur.phase !== 'paused') mem.pausedTicks = 0;
         if (mobile && !GAME.touchPolicy) actions = actions.map(a => (a.key && GAME.touchMap && GAME.touchMap[a.key]) ? { tap: GAME.touchMap[a.key] } : a);
         if (MODE === 'storm') actions = actions.concat([randomAction(box), randomAction(box)]);
         for (const a of actions) await act(page, frame, box, a);
@@ -497,9 +528,9 @@ async function sweepOne(g) {
     r.badText = await scanText(frame);
     r.scenes = await page.evaluate(() => (window.__hs || []).filter(m => m.type === 'state' && m.scene).map(m => m.scene).filter((s, i, a) => i === 0 || a[i - 1] !== s)).catch(() => []);
     r.sdk = await page.evaluate(() => (window.__hs || []).some(m => m.type === 'ready')).catch(() => false);
-    await page.screenshot({ path: path.join(OUT, `sweep-${MODE}-${g.id}.jpg`), type: 'jpeg', quality: 60, timeout: 8000 }).catch(() => {});
+    await page.screenshot({ path: path.join(OUT, `sweep-${MODE}-${g.id}.jpg`), type: 'jpeg', quality: 60, timeout: 4000 }).catch(() => {});
   } catch (e) { r.note += 'blocked: ' + String(e.message || e).slice(0, 160); }
-  clearTimeout(deadline); await settle(ctx.close());
+  clearTimeout(deadline); await settle(ctx.close(), 4000);
   r.ownFailed = r.failedRequests.filter(x => !/^https?:\/\/(?!127\.0\.0\.1)/.test(x) || r.source !== 'live').length;
   r.verdict = r.pageErrors.length ? 'error' : (r.badText && r.badText.count) ? 'bad-text' : /blocked|deadline/.test(r.note) ? 'blocked'
     : (r.scenes.includes('play') || r.textChanged) ? 'ok' : 'no-start';
