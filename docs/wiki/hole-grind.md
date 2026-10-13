@@ -143,7 +143,7 @@ restart are proven only by reading the code, because no run on this box got thro
 - `62ea79f` Harness follow-up: bounded fps sample under the SDK pause, SDK-pause-aware state and resume, re-start after storm exits, long mode keeps playing across runs, tighter sweep timeouts (its message also lists the portal Play retry, which actually landed in `2b107b7`).
 - `b827933` Harness follow-up: blur-aware start check, explicit fail when three presses never start a run, Survivor Wave played on its own Low effects setting, Chili Firm mission index recorded.
 - `9c4e18f` Harness: The Long Way Home's phone policy steers with touch drags (the ship follows `touchmove`).
-- `8ae0280` Harness: Chili Firm's policy taps story dialogues on (they hid every pot on a phone); the SDK pause is a legal phase for it.
+- `8ae0280` Harness: Chili Firm's policy taps story dialogues on; the SDK pause is a legal phase for it. Its message says the letter hid every pot on a phone; the re-run disproved that (the letter was read and still nothing planted) and the 03:30 probe found the real cause, a 390x150 game frame.
 - `300050e` Harness: the Chili Firm policy no longer closes the Market before pressing Sell all (no run had sold anything).
 - `effc193` Harness: the Chili Firm policy closes celebration cards. Its message blames a card for the stuck 180 s run; that is not confirmed: the page also ran at 0 fps for about 70 s at load 24.6 in that run.
 - `ec9b637` Harness: faults match the served path; the `hub-no-play` fault had never been applied (its first run passed, exit 0) because `play.html` is always requested with `?g=<id>`.
