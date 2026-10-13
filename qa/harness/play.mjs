@@ -154,10 +154,11 @@ const GAMES = {
       const px = ((s.gateX / 11.5) + 1) / 2 * box.width, py = (1 - ((s.gateY + 1) / 5.6)) / 2 * box.height;
       return [{ move: [Math.max(2, Math.min(box.width - 2, px)), Math.max(2, Math.min(box.height - 2, py))] }];
     },
+    // Phone: the ship follows touchmove (index.html:5165-5166), so a short drag that ends on the aim point, not a tap.
     touchPolicy: (s, tick, rnd, mem, box) => {
       if (s.gateZ >= 0) return [];
-      const px = ((s.gateX / 11.5) + 1) / 2 * box.width, py = (1 - ((s.gateY + 1) / 5.6)) / 2 * box.height;
-      return [{ tap: [Math.max(2, Math.min(box.width - 2, px)), Math.max(2, Math.min(box.height - 2, py))] }];
+      const px = Math.max(2, Math.min(box.width - 2, ((s.gateX / 11.5) + 1) / 2 * box.width)), py = Math.max(2, Math.min(box.height - 2, (1 - ((s.gateY + 1) / 5.6)) / 2 * box.height));
+      return [{ tdrag: [px, Math.min(box.height - 2, py + 24), px, py, 120] }];
     },
     progression: ['score', 'q', 'dist'],
     bounded: { hull: [0, 3], score: [0, 1e7] },
