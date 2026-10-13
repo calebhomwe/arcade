@@ -14,6 +14,12 @@ PLAY / TEST
           clone arcade-hub, neon-game-arcade, playables, bloxburg-town next to this
           repo and run  node qa/harness/iphone.mjs ; see qa/harness/README.md and
           docs/HANDOFF.md for the other harnesses.)
+  Play harness: node qa/harness/play.mjs --sweep   (every game, 20 s each)
+          node qa/harness/play.mjs --game survivor-wave --mode default
+          (also hole-grind, long-way-home, chili-firm; modes default, mobile,
+          storm, resize, blur, storage-blocked, long; reports in harness-out/)
+  Game wiki: docs/GAME_WIKI.md  (a row per game, scorecards, and full pages for
+          four games in docs/wiki/)
 
 WHAT IS HERE
   index.html            the portal: a mosaic of big and small tiles, rows
