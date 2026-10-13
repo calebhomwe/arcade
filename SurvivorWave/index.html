@@ -1115,7 +1115,7 @@ function dailySeed(){const d=new Date();return d.getFullYear()*10000+(d.getMonth
 
 const DK='survivorDailyDone'+dailySeed();
 
-let dailyDone=localStorage.getItem(DK)==='1';
+let dailyDone=false;try{dailyDone=localStorage.getItem(DK)==='1';}catch(_){}
 
 let dailyActive=false,dailyMod=null;
 
@@ -1711,7 +1711,7 @@ let gameTime=0,spawnT=0,elapsed=0,difficulty=1;
 
 let state='ready';
 
-let best=+localStorage.getItem('survivorBest2')||0;
+let best=0;try{best=+localStorage.getItem('survivorBest2')||0;}catch(_){}
 
 let pendingLevelUps=0,rerollsLeft=1;
 
@@ -2886,7 +2886,7 @@ function gameOver(){
 
   const isNew=sc>best&&!swCheated();/*a run with codes on never replaces the best*/
 
-  if(isNew){best=sc;localStorage.setItem('survivorBest2',sc);}
+  if(isNew){best=sc;try{localStorage.setItem('survivorBest2',sc);}catch(_){}}
 
   document.getElementById('finTime').textContent=fmtTime(gameTime);
 
@@ -2934,7 +2934,7 @@ function victory(){
 
   const isNew=sc>best&&!swCheated();
 
-  if(isNew){best=sc;localStorage.setItem('survivorBest2',sc);}
+  if(isNew){best=sc;try{localStorage.setItem('survivorBest2',sc);}catch(_){}}
 
   document.getElementById('winKills').textContent=player.kills;
 
@@ -6191,7 +6191,7 @@ function sfx(n){
 
 function refreshMute(){document.getElementById('muteBtn').textContent=muted?'🔇':'🔊';}
 
-document.getElementById('muteBtn').onclick=()=>{muted=!muted;localStorage.setItem('survivorMute',muted?'1':'0');refreshMute();};
+document.getElementById('muteBtn').onclick=()=>{muted=!muted;try{localStorage.setItem('survivorMute',muted?'1':'0');}catch(_){}refreshMute();};
 
 refreshMute();
 
@@ -13938,7 +13938,7 @@ function renderSettings(){
 
 })();
 
-let tutDone=localStorage.getItem('survivorTut')==='1',tutGem=false,tutPick=false,tutT=null;
+let tutDone=false,tutGem=false,tutPick=false,tutT=null;try{tutDone=localStorage.getItem('survivorTut')==='1';}catch(_){}
 
 function tutShow(msg){
 
@@ -17086,7 +17086,7 @@ try{
 }catch(_){}
 /* ---------- C6: NG+ ---------- */
 window.__ngp=false;try{window.__ngp=localStorage.getItem('survivorNGP')==='1';}catch(_){}
-window.__everWon=+localStorage.getItem('survivorWins')||0;
+window.__everWon=0;try{window.__everWon=+localStorage.getItem('survivorWins')||0;}catch(_){}
 var _vi=victory;
 victory=function(){try{localStorage.setItem('survivorWins','1');window.__everWon=1;}catch(_){}return _vi.apply(null,arguments);};
 if(window.__ngp){
@@ -17159,7 +17159,7 @@ if(true){
   };
 }
 /* ---------- C8: paragons lifetime ---------- */
-window.__paragons=+localStorage.getItem('survivorParagons')||0;
+window.__paragons=0;try{window.__paragons=+localStorage.getItem('survivorParagons')||0;}catch(_){}
 setInterval(function(){
   try{
     if(state!=='play'||!window.TOWERSYS)return;

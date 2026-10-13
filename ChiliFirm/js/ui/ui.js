@@ -661,8 +661,11 @@
       case 'confirm-reset':
         $('#p-body').insertAdjacentHTML('afterbegin', `<div class="order critical" style="margin-bottom:10px"><div style="flex:1"><h4>Wipe everything?</h4><q>This deletes your whole chili empire. Abuela would cry.</q><div class="acts-row"><button class="btn ghost" data-action="ptab" data-id="save">Cancel</button><button class="btn red" data-action="reset">Yes, wipe it</button></div></div></div>`);
         return;
-      case 'reset':
-        CF.stateMod.wipeSave(localStorage);
+      case 'reset': {
+        let store = null;
+        try { store = localStorage; } catch (e) { /* storage blocked: nothing saved to wipe */ }
+        CF.stateMod.wipeSave(store);
+      }
         CF.state = CF.stateMod.createState(t);
         ui.level = null; ui.prev = {}; SC.room = 0; SC.invalidate(); ui.visitor = null;
         closePanel(); toast('Fresh start. One seed at a time.', 'good', 'seed');
