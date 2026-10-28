@@ -7,7 +7,7 @@ The existing 112-game catalogue and game URLs stay intact. The new `offline.html
 Open the existing [Caleb's Arcade](https://calebhomwe.github.io/arcade/) HTTPS site and choose **Offline games** (mobile category chips or desktop sidebar).
 
 - **iPhone:** open in Safari, Share → Add to Home Screen; enable **Open as Web App** if offered. Open the installed icon online and use Offline games there.
-- **Android:** Chrome → ⋮ → Add to home screen → Install, or use the Install arcade button when offered. Open the installed icon online.
+- **Android:** Chrome → ⋮ → Install and create shortcut → Install (older versions may show Add to home screen), or use the Install arcade button when offered. Open the installed icon online.
 - Download each desired game and wait for its **Ready offline** state. Close the app, enable airplane mode, reopen the installed icon, launch a downloaded game and check that progress survives a second close/reopen.
 
 Installing the icon prepares the catalogue; it does not download every game. Each game has an exact byte count and verifies its own complete package. Browser eviction or clearing site data can remove downloads; readiness checks detect missing files. Progress remains in the same storage keys on the same origin/game URLs. Use the existing profile backup before intentionally clearing site data.
