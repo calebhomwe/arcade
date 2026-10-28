@@ -45,8 +45,10 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(
+    // Legacy hg-* caches share an origin with Heaven's Grace. Preserve them
+    // and every other game's downloads; only Nistar-owned names may be evicted.
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => k.startsWith('nistar-') && k !== CACHE).map(k => caches.delete(k)))
     )
   );
   self.clients.claim();

@@ -1,0 +1,152 @@
+{
+  "verification": "local unit and static package audits; no browser or physical-device execution",
+  "results": [
+    {
+      "repository": "arcade",
+      "command": "python tools/build-mobile-offline.py",
+      "exit": 0,
+      "output": "arcade-mobile: 31 packages, 692 unique assets, 0dc889040d865998\n",
+      "errors": ""
+    },
+    {
+      "repository": "arcade",
+      "command": "python tools/build-mobile-offline.py --check",
+      "exit": 0,
+      "output": "arcade-mobile: 31 packages, 692 unique assets, 0dc889040d865998\n",
+      "errors": ""
+    },
+    {
+      "repository": "arcade",
+      "command": "node tools/check-mobile-offline.cjs",
+      "exit": 0,
+      "output": "PASS 31 packages: all release digests, entries, sizes, local asset URLs and save isolation\n",
+      "errors": ""
+    },
+    {
+      "repository": "arcade",
+      "command": "node --test qa/offline/worker.test.cjs",
+      "exit": 0,
+      "output": "\u2139 tests 11\n\u2139 suites 0\n\u2139 pass 11\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 133.208965",
+      "errors": ""
+    },
+    {
+      "repository": "arcade",
+      "command": "node --check tools/test-mobile-offline.cjs",
+      "exit": 0,
+      "output": "",
+      "errors": ""
+    },
+    {
+      "repository": "arcade",
+      "command": "node --test qa/offline/legacy-workers.test.cjs",
+      "exit": 0,
+      "output": "\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 92.124583",
+      "errors": ""
+    },
+    {
+      "repository": "arcade-hub",
+      "command": "python tools/build-mobile-offline.py",
+      "exit": 0,
+      "output": "arcade-hub-mobile: 37 packages, 568 unique assets, 9559b33cbdf9e409\n",
+      "errors": ""
+    },
+    {
+      "repository": "arcade-hub",
+      "command": "python tools/build-mobile-offline.py --check",
+      "exit": 0,
+      "output": "arcade-hub-mobile: 37 packages, 568 unique assets, 9559b33cbdf9e409\n",
+      "errors": ""
+    },
+    {
+      "repository": "arcade-hub",
+      "command": "node tools/check-mobile-offline.cjs",
+      "exit": 0,
+      "output": "PASS 37 packages: all release digests, entries, sizes, local asset URLs and save isolation\n",
+      "errors": ""
+    },
+    {
+      "repository": "arcade-hub",
+      "command": "node --test qa/offline/worker.test.cjs",
+      "exit": 0,
+      "output": "\u2139 tests 11\n\u2139 suites 0\n\u2139 pass 11\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 133.860628",
+      "errors": ""
+    },
+    {
+      "repository": "arcade-hub",
+      "command": "node --check tools/test-mobile-offline.cjs",
+      "exit": 0,
+      "output": "",
+      "errors": ""
+    },
+    {
+      "repository": "neon-game-arcade",
+      "command": "python tools/build-mobile-offline.py",
+      "exit": 0,
+      "output": "neon-game-arcade-mobile: 25 packages, 72 unique assets, 2aceb5f394de0150\n",
+      "errors": ""
+    },
+    {
+      "repository": "neon-game-arcade",
+      "command": "python tools/build-mobile-offline.py --check",
+      "exit": 0,
+      "output": "neon-game-arcade-mobile: 25 packages, 72 unique assets, 2aceb5f394de0150\n",
+      "errors": ""
+    },
+    {
+      "repository": "neon-game-arcade",
+      "command": "node tools/check-mobile-offline.cjs",
+      "exit": 0,
+      "output": "PASS 25 packages: all release digests, entries, sizes, local asset URLs and save isolation\n",
+      "errors": ""
+    },
+    {
+      "repository": "neon-game-arcade",
+      "command": "node --test qa/offline/worker.test.cjs",
+      "exit": 0,
+      "output": "\u2139 tests 11\n\u2139 suites 0\n\u2139 pass 11\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 134.483712",
+      "errors": ""
+    },
+    {
+      "repository": "neon-game-arcade",
+      "command": "node --check tools/test-mobile-offline.cjs",
+      "exit": 0,
+      "output": "",
+      "errors": ""
+    },
+    {
+      "repository": "playables",
+      "command": "python tools/build-mobile-offline.py",
+      "exit": 0,
+      "output": "playables-mobile: 6 packages, 156 unique assets, 2ab91ee0a5bfe35c\n",
+      "errors": ""
+    },
+    {
+      "repository": "playables",
+      "command": "python tools/build-mobile-offline.py --check",
+      "exit": 0,
+      "output": "playables-mobile: 6 packages, 156 unique assets, 2ab91ee0a5bfe35c\n",
+      "errors": ""
+    },
+    {
+      "repository": "playables",
+      "command": "node tools/check-mobile-offline.cjs",
+      "exit": 0,
+      "output": "PASS 6 packages: all release digests, entries, sizes, local asset URLs and save isolation\n",
+      "errors": ""
+    },
+    {
+      "repository": "playables",
+      "command": "node --test qa/offline/worker.test.cjs",
+      "exit": 0,
+      "output": "\u2139 tests 11\n\u2139 suites 0\n\u2139 pass 11\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 135.855493",
+      "errors": ""
+    },
+    {
+      "repository": "playables",
+      "command": "node --check tools/test-mobile-offline.cjs",
+      "exit": 0,
+      "output": "",
+      "errors": ""
+    }
+  ]
+}
