@@ -42,6 +42,7 @@
       resetting = true;
       try { var r = orig.apply(this, arguments); } finally { resetting = false; }
       battlefield = readBattlefield();
+      W.tickHud(1);
       $('#rankUp').classList.remove('show');
       call('updateBossBar');
       onRunStart();
@@ -275,7 +276,11 @@
   W.buildRoutesForMap(KD.selectedMap);
   W.buildRouteGeometry();
 
-  function readBattlefield() { return { width: KD.W, board: boardRect(), segments: routesSeg }; }
+  function readBattlefield() {
+    var board = boardRect();
+    doc.body.style.setProperty('--kd-board-bottom', (board.y + board.h) + 'px');
+    return { width: KD.W, board: board, segments: routesSeg };
+  }
   var battlefield = readBattlefield();
   W.addEventListener('resize', function () {
     // The game's resize handler runs first and repositions towers. Pods keep their position on
@@ -356,6 +361,9 @@
     'body.kd-playing #arcade-sdk-btn{display:none!important}body:not(.kd-playing) #controls>#pause{display:none!important}' +
     '#wavePreview{display:none}body.kd-playing #wavePreview{display:block}' +
     '#kd-next-mission{width:100%;margin:2px 0 8px}#kd-next-mission[hidden]{display:none}' +
+    '#endStars.show{transform:none!important}' +
+    '#message{width:max-content}' +
+    '@media(min-width:1200px){#message{top:calc(var(--safe-top) + 112px)}}' +
     '@media(max-width:1199px){' +
       '#shop .card{touch-action:pan-x}' +
       'body.kd-playing #wavePreview{top:calc(var(--safe-top) + 114px);left:calc(var(--safe-left) + 12px);right:calc(var(--safe-right) + 12px);max-width:none;padding:6px 10px;text-align:center;font-size:11px}' +
@@ -370,7 +378,8 @@
       '#controls>#startWave{grid-column:1/-1;font-size:12px}' +
       '#shopFilters .filter{min-height:44px}' +
       'body.kd-playing #wavePreview{top:calc(var(--safe-top) + 162px)}' +
-      '#message,#combo,#bossBar{top:calc(var(--safe-top) + 194px)}' +
+      '#combo,#bossBar{top:calc(var(--safe-top) + 194px)}' +
+      '#message{top:calc(var(--kd-board-bottom) + 8px);padding:7px 12px}' +
     '}' +
     '@media(min-width:650px) and (max-height:500px) and (orientation:landscape){' +
       '#stats{right:auto;width:224px}' +

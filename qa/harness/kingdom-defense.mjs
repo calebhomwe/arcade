@@ -136,6 +136,7 @@ async function run(view, options) {
   await page.evaluate(() => KD.finish(true));
   await waitForText(page, '#endTitle', 'KINGDOM SECURED');
   assert.equal(await page.locator('#kd-next-mission').isVisible(), true);
+  await page.waitForFunction(() => document.querySelectorAll('#endStars .lit').length === 3);
   await page.screenshot({path: `${proof}/${engine}-${view}-victory.png`});
   await page.locator('#kd-next-mission').click();
   assert.equal(await page.evaluate(() => KD.selectedMap), 1);
