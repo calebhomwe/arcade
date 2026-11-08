@@ -47,7 +47,8 @@ export async function routeExternal(ctx) {
   });
 }
 
-const preinstalled = (() => { try { const d = '/opt/pw-browsers'; const c = fss.readdirSync(d).filter(x => /^chromium-\d+$/.test(x)).sort().pop(); return c && path.join(d, c, 'chrome-linux/chrome'); } catch { return null; } })();
+// newer Chromium builds unpack to chrome-linux64/ instead of chrome-linux/
+const preinstalled = (() => { try { const d = '/opt/pw-browsers'; const c = fss.readdirSync(d).filter(x => /^chromium-\d+$/.test(x)).sort().pop(); return c && ['chrome-linux/chrome', 'chrome-linux64/chrome'].map(p => path.join(d, c, p)).find(p => fss.existsSync(p)); } catch { return null; } })();
 const launchArgs = ['--enable-webgl', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required', '--enable-precise-memory-info', '--js-flags=--expose-gc'];
 export const launch = async () => {
   if (ENGINE === 'webkit') return webkit.launch();

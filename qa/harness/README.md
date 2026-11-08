@@ -26,6 +26,26 @@ Environment options:
 
 Example: `GAME_IDS=market-merge,math-miner,maths-kart,surviv-royale node qa/harness/run.mjs`.
 
+## Play harness (`play.mjs`)
+
+Plays games through the portal like a player and fails when something breaks (it serves the repo itself; no
+separate web server):
+
+```sh
+node qa/harness/play.mjs --game survivor-wave --mode default --episodes 3     # one profiled game, episodes
+node qa/harness/play.mjs --game hole-grind --mode storage-blocked --secs 30   # modes: default mobile storm resize blur storage-blocked long
+node qa/harness/play.mjs --game hole-grind --fault nan-score                  # must exit 1 (proves the checks fire)
+node qa/harness/play.mjs --sweep [--local] [--only a,b] [--secs 20]           # every catalog game, 20 s each
+```
+
+Profiles (start, restart, a policy for that game, state readers, bounds, faults) exist for `hole-grind`,
+`survivor-wave`, `long-way-home` and `chili-firm`; `docs/GAME_WIKI.md` and `docs/wiki/` explain each one and
+quote the runs. A run exits 1 on a page error, a NaN/undefined state field, an illegal phase change, a stuck
+run, a restart that does not reach play, no progression signal moving, or heap growth in `long`. The sweep
+exits 1 when a game throws, shows NaN/undefined/[object Object] on screen, or does not load. Reports and
+screenshots go to `harness-out/` (git-ignored). On a box whose Chromium is not the one Playwright expects, set
+`CHROMIUM_PATH` or let `lib/common.mjs` fall back to the newest `/opt/pw-browsers/chromium-*`.
+
 ## Player profile tests
 
 `node qa/harness/profile-test.mjs` checks the arcade-wide profile (`assets/profile-core.js`, see `docs/PROGRESSION.md`): the XP

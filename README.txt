@@ -4,6 +4,23 @@ CALEB'S ARCADE
 The front door for every browser game Caleb has shipped: 112 games,
 no ads, no accounts, no installs. Live at https://calebhomwe.github.io/arcade/
 
+PLAY / TEST
+  Play:   https://calebhomwe.github.io/arcade/  (Pages, deployed from main)
+  Local:  python3 -m http.server 8800   then open http://localhost:8800/
+  Test:   npm install --prefix qa/harness && (cd qa/harness && npx playwright install chromium)
+          python3 -m http.server 3000 &   then   node qa/harness/run.mjs
+          (every catalog game through play.html, desktop + phone; report in qa/results/.
+          External games load from the live sites. To test sibling clones instead,
+          clone arcade-hub, neon-game-arcade, playables, bloxburg-town next to this
+          repo and run  node qa/harness/iphone.mjs ; see qa/harness/README.md and
+          docs/HANDOFF.md for the other harnesses.)
+  Play harness: node qa/harness/play.mjs --sweep   (every game, 20 s each)
+          node qa/harness/play.mjs --game survivor-wave --mode default
+          (also hole-grind, long-way-home, chili-firm; modes default, mobile,
+          storm, resize, blur, storage-blocked, long; reports in harness-out/)
+  Game wiki: docs/GAME_WIKI.md  (a row per game, scorecards, and full pages for
+          four games in docs/wiki/)
+
 WHAT IS HERE
   index.html            the portal: a mosaic of big and small tiles, rows
                         (Continue playing, Because you played, Favourites,

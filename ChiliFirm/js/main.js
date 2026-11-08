@@ -12,10 +12,16 @@
     try { document.documentElement.setAttribute('data-err', String(e.message || 'unknown').slice(0, 300)); } catch (_) { /* ignore */ }
   });
 
+  // localStorage access itself throws when storage is blocked (sandboxed iframe, cookies off);
+  // state.js treats a null store as "no save", so the game still boots and plays unsaved.
+  function storage() {
+    try { return window.localStorage; } catch (e) { return null; }
+  }
+
   async function boot() {
     const now = Date.now() / 1000;
     const q = new URLSearchParams(window.location.search);
-    let state = CF.stateMod.loadState(localStorage, now);
+    let state = CF.stateMod.loadState(storage(), now);
     let isNew = false;
     if (!state) { state = CF.stateMod.createState(now); isNew = true; }
     const imp = q.get('import');
@@ -28,7 +34,7 @@
         const raw = await fetch('tools/demo-save.txt');
         if (raw.ok) {
           const ns = CF.stateMod.importState((await raw.text()).trim(), now);
-          if (ns) { state = ns; isNew = false; CF.stateMod.saveState(ns, localStorage); }
+          if (ns) { state = ns; isNew = false; CF.stateMod.saveState(ns, storage()); }
         }
       } catch (e) { /* demo file absent: play fresh */ }
     }
@@ -40,7 +46,7 @@
       if (elapsed > 30) away = CF.logic.processOffline(state, elapsed, now);
     }
 
-    CF.save = () => { try { CF.stateMod.saveState(CF.state, localStorage); } catch (e) { /* quota */ } };
+    CF.save = () => { try { CF.stateMod.saveState(CF.state, storage()); } catch (e) { /* quota */ } };
     /* Compact career mirror of the real save (which is too big for progress tools to read):
        level from day+rep, coins, stars from rep milestones, unlocks, upgrades, a daily goal. */
     CF.careerKey = 'chili_career_v1';
