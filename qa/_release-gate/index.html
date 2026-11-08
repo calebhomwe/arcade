@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><title>Arcade harness</title><style>body{font:16px system-ui;background:#111513;color:#f5f7f1;max-width:1200px;margin:40px auto;padding:20px}a{color:#c5ee78}table{border-collapse:collapse;width:100%}td,th{padding:12px;border-bottom:1px solid #465046;text-align:left}img{max-width:280px}summary{cursor:pointer}</style><h1>Every-game browser harness</h1><p>3 games, desktop and phone. 6 checks. {&quot;needs-review&quot;:2,&quot;interaction-observed&quot;:3,&quot;blocked&quot;:1}</p><p>Interaction observed means visible text changed after input. This is smoke coverage, not proof of full game completion. Canvas-only gameplay needs visual review. Microphone, network and hardware-dependent features can remain unverified.</p><p><a href="results.json">Full machine-readable evidence</a></p><table><tr><th>Game</th><th>Viewport</th><th>Result</th><th>Evidence</th></tr><tr><td>Fishing for Words</td><td>desktop</td><td>interaction-observed<br></td><td><details><summary>Actions and screenshot</summary><p>Clicked portal Play → Started via 123
+Maths → Tapped canvas centre/lower play area → Pressed Enter → Pressed ArrowRight → Pressed Space → Pressed ArrowLeft → Pressed ArrowUp → Pressed w → Pressed d</p><a href="fishing-for-words-desktop.jpg"><img loading="lazy" src="fishing-for-words-desktop.jpg"></a></details></td></tr><tr><td>Fishing for Words</td><td>phone</td><td>blocked<br>locator.click: Timeout 4000ms exceeded.
+Call log:
+  - waiting for locator(&#39;#btn-math&#39;)
+    - locator resolved to &lt;button id=&quot;btn-math&quot; class=&quot;kl-btn blue play&quot;&gt;…&lt;/button&gt;
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 100ms
+    7 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - element is outside of the viewport
+    - retrying click action
+      - waiting 500ms
+</td><td><details><summary>Actions and screenshot</summary><p>Clicked portal Play</p><a href="fishing-for-words-phone.jpg"><img loading="lazy" src="fishing-for-words-phone.jpg"></a></details></td></tr><tr><td>Quiz Tower Defense</td><td>desktop</td><td>interaction-observed<br></td><td><details><summary>Actions and screenshot</summary><p>Clicked portal Play → Tapped canvas centre/lower play area → Pressed Enter → Pressed ArrowRight → Pressed Space → Pressed ArrowLeft → Pressed ArrowUp → Pressed w → Pressed d</p><a href="quiz-tower-desktop.jpg"><img loading="lazy" src="quiz-tower-desktop.jpg"></a></details></td></tr><tr><td>Quiz Tower Defense</td><td>phone</td><td>interaction-observed<br></td><td><details><summary>Actions and screenshot</summary><p>Clicked portal Play → Tapped canvas centre/lower play area → Pressed Enter → Pressed ArrowRight → Pressed Space → Pressed ArrowLeft → Pressed ArrowUp → Pressed w → Pressed d</p><a href="quiz-tower-phone.jpg"><img loading="lazy" src="quiz-tower-phone.jpg"></a></details></td></tr><tr><td>Word Dungeon</td><td>desktop</td><td>needs-review<br></td><td><details><summary>Actions and screenshot</summary><p>Clicked portal Play → Tapped canvas centre/lower play area → Pressed Enter → Pressed ArrowRight → Pressed Space → Pressed ArrowLeft → Pressed ArrowUp → Pressed w → Pressed d</p><a href="word-dungeon-desktop.jpg"><img loading="lazy" src="word-dungeon-desktop.jpg"></a></details></td></tr><tr><td>Word Dungeon</td><td>phone</td><td>needs-review<br></td><td><details><summary>Actions and screenshot</summary><p>Clicked portal Play → Tapped canvas centre/lower play area → Pressed Enter → Pressed ArrowRight → Pressed Space → Pressed ArrowLeft → Pressed ArrowUp → Pressed w → Pressed d</p><a href="word-dungeon-phone.jpg"><img loading="lazy" src="word-dungeon-phone.jpg"></a></details></td></tr></table>

@@ -13,21 +13,31 @@ const browser=await chromium.launch({args:['--enable-webgl','--use-angle=swiftsh
 const results=[];
 // Only observable DOM state is used as progression evidence. Animation alone is not a pass.
 async function snapshot(frame){return frame.evaluate(()=>({text:document.body.innerText.slice(0,14000),canvas:[...document.querySelectorAll('canvas')].map(c=>({width:c.width,height:c.height})),controls:[...document.querySelectorAll('button,[role=button],input')].filter(e=>e.getBoundingClientRect().width&&e.getBoundingClientRect().height).map(e=>({text:(e.innerText||e.value||e.getAttribute('aria-label')||'').trim(),id:e.id})).slice(0,50)}));}
-async function test(game,mobile){
- const r={id:game.id,title:game.title,source:game.src,viewport:mobile?'phone':'desktop',status:'unverified',actions:[],errors:[],http:[],requests:[],note:game.note};
- const ctx=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,serviceWorkers:'block',reducedMotion:'reduce'});
+async function test(game,mobile,landscape=false){
+ const viewport=mobile?(landscape?{width:844,height:390}:{width:390,height:844}):{width:1440,height:900};
+ const r={id:game.id,title:game.title,source:game.src,viewport:mobile?(landscape?'phone-landscape':'phone'):'desktop',status:'unverified',actions:[],errors:[],http:[],requests:[],note:game.note};
+ const ctx=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile,serviceWorkers:'block',reducedMotion:'reduce'});
  const deadline=setTimeout(()=>{r.deadlineExceeded=true;ctx.close().catch(()=>{});},65000);
  const page=await ctx.newPage();page.setDefaultTimeout(4000);
  page.on('pageerror',e=>r.errors.push(e.message));page.on('response',e=>{if(e.status()>=400)r.http.push({status:e.status(),url:e.url()})});page.on('requestfailed',e=>r.requests.push({url:e.url(),error:e.failure()?.errorText}));
  try{
   await page.goto(base+'play.html?g='+game.id,{waitUntil:'domcontentloaded',timeout:45000});
   await page.locator('#playbtn').click();r.actions.push('Clicked portal Play');
+  if(mobile){
+   const frameBox=await page.locator('#frame').boundingBox();
+   const viewportHeight=await page.evaluate(()=>innerHeight);
+   if(!frameBox||frameBox.height<viewportHeight*.9){
+    r.frameLayoutFailure=`Game frame is ${Math.round(frameBox?.height||0)}px high in a ${viewportHeight}px phone viewport`;
+    r.errors.push(r.frameLayoutFailure);
+   }
+  }
   const handle=await page.locator('#frame').elementHandle();const f=await handle.contentFrame();
   await f.waitForLoadState('domcontentloaded',{timeout:45000});
   await page.waitForTimeout(/Godot|Unity/.test(game.note)?14000:3000);
   r.before=await snapshot(f);
   const starts={'high-nest':'#play','market-merge':'#play','survivor-wave':'#playBtn','surviv-royale':'#btn-play','hole-grind':'#btnPlay','maths-kart':'#bPlay','math-miner':'#btnMath','fishing-for-words':'#btn-math','neon-dash':'#play-btn','critter-rush':'#playBtn','critter-rush-2d':'#play','sneaker-drop':'#startBtn','deepcut-mine':'#btnPlay','cook-rush':'#btnPlay','typhoon-mine':'#btnPlay','nistar':'#start-btn','chef-chloe-kitchen':'#bootStart'};
   if(starts[game.id]){const b=f.locator(starts[game.id]);if(await b.count()&&await b.isVisible()){const label=await b.innerText();await b.click();r.actions.push('Started via '+label);await page.waitForTimeout(800);}}
+  if(game.id==='word-dungeon'){await page.keyboard.press('2');r.actions.push('Started SPELL RUN with 2');await page.waitForTimeout(500);}
 
   if(game.id==='claire-pip'){
    const age=f.locator('#ageBands [data-band="medium"]');
@@ -63,12 +73,91 @@ async function test(game,mobile){
   r.url=f.url();
   r.status=r.errors.length||r.http.some(x=>x.status>=400)?'error':r.stateChanged?'interaction-observed':'needs-review';
   if(!r.before.text.trim()&&!r.before.canvas.length)r.status='blank';
-  try{await page.bringToFront();await page.screenshot({path:path.join(out,game.id+'-'+r.viewport+'.jpg'),type:'jpeg',quality:70,animations:'disabled',timeout:12000});}catch(e){r.screenshotError=e.message;}
+  try{
+   const pathOut=path.join(out,game.id+'-'+r.viewport+'.jpg');
+   const canvasShot=await f.evaluate(()=>{
+    const c=[...document.querySelectorAll('canvas')].filter(x=>x.clientWidth>180&&x.clientHeight>120).sort((a,b)=>b.clientWidth*b.clientHeight-a.clientWidth*a.clientHeight)[0];
+    return c&&c.getContext('2d')?c.toDataURL('image/jpeg',.7):null;
+   });
+   if(canvasShot)await fs.writeFile(pathOut,Buffer.from(canvasShot.split(',')[1],'base64'));
+   else await f.locator('body').screenshot({path:pathOut,type:'jpeg',quality:70,animations:'disabled',timeout:12000});
+  }catch(e){r.screenshotError=e.message;}
  }catch(e){r.status='blocked';r.failure=e.message;await page.screenshot({path:path.join(out,game.id+'-'+r.viewport+'.jpg'),type:'jpeg',quality:70,animations:'disabled',timeout:5000}).catch(e=>{r.screenshotError=e.message});}
  finally{clearTimeout(deadline);await ctx.close();results.push(r);await fs.writeFile(path.join(out,'results.json'),JSON.stringify(results,null,2));console.log(JSON.stringify({id:r.id,viewport:r.viewport,status:r.status,errors:r.errors,http:r.http,failure:r.failure,screenshotError:r.screenshotError,actions:r.actions}));}
 }
+async function checkWordDungeonShuffle(){
+ if(Number(process.env.SHARD_INDEX||0)!==0||!selectedCatalog.some(g=>g.id==='word-dungeon'))return;
+ const ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
+ const page=await ctx.newPage(),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ try{
+  await page.addInitScript(()=>{if(!sessionStorage.getItem('word-dungeon-corrupt-seed')){localStorage.setItem('worddungeon.meta.v1','{invalid');sessionStorage.setItem('word-dungeon-corrupt-seed','1');}});
+  await page.goto(base+'WordDungeon/index.html',{waitUntil:'domcontentloaded',timeout:45000});
+  await page.waitForFunction(()=>!!window.__dungeon_debug,{timeout:15000});
+  await page.evaluate(()=>{Math.random=()=>0.999999;});
+  await page.keyboard.press('2');
+  await page.waitForFunction(()=>window.__dungeon_debug.state().phase==='play',{timeout:5000});
+  const state=await page.evaluate(()=>window.__dungeon_debug.state());
+  const letters=state.gate.runes.map(r=>r.ch).join('');
+  if(errors.length)throw new Error('Word Dungeon threw during its spelling start: '+errors.join('; '));
+  if(new Set(state.gate.answer).size>1&&letters===state.gate.answer)throw new Error('Word Dungeon opened with its spelling runes already solved');
+  await page.screenshot({path:path.join(out,'word-dungeon-spell-phone.png'),type:'png',animations:'disabled',timeout:15000});
+  await fs.writeFile(path.join(out,'word-dungeon-spell-state.json'),JSON.stringify({answer:state.gate.answer,initialRunes:letters,phase:state.phase,viewport:{width:390,height:844}},null,2));
+  const runs=await page.evaluate(()=>window.__dungeon_debug.meta().runs);
+  await page.reload({waitUntil:'domcontentloaded',timeout:45000});
+  await page.waitForFunction(()=>!!window.__dungeon_debug,{timeout:15000});
+  const savedRuns=await page.evaluate(()=>window.__dungeon_debug.meta().runs);
+  if(savedRuns!==runs)throw new Error(`Word Dungeon save did not survive reload (${runs} became ${savedRuns})`);
+  if(errors.length)throw new Error('Word Dungeon threw after reloading its repaired save: '+errors.join('; '));
+  console.log(JSON.stringify({id:'word-dungeon',viewport:'phone',check:'unsolved spelling start',answer:state.gate.answer,initialRunes:letters}));
+  console.log(JSON.stringify({id:'word-dungeon',check:'corrupt-save recovery and reload',runs:savedRuns}));
+ }finally{await ctx.close();}
+}
+async function checkMathMinerLifecycle(){
+ if(Number(process.env.SHARD_INDEX||0)!==0||!selectedCatalog.some(g=>g.id==='math-miner'))return;
+ const ctx=await browser.newContext({viewport:{width:1440,height:900},serviceWorkers:'block'});
+ const page=await ctx.newPage(),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ try{
+  await page.goto(base+'play.html?g=math-miner',{waitUntil:'domcontentloaded',timeout:45000});
+  await page.locator('#playbtn').click();
+  const frame=await(await page.locator('#frame').elementHandle()).contentFrame();
+  await frame.waitForLoadState('domcontentloaded',{timeout:45000});
+  await frame.locator('#btnMath').click();
+  await page.waitForTimeout(200);
+  const started=await frame.evaluate(()=>window.__DEBUG.state);
+  if(!started.running)throw new Error('Math Miner did not start from its Math mode button');
+  await page.locator('#gpause').click();
+  await page.waitForFunction(()=>document.querySelector('#frame')?.contentWindow.ArcadeSDK?.debug().paused===true,{timeout:5000});
+  await frame.locator('#arcade-sdk [data-a="resume"]').click();
+  await page.waitForFunction(()=>document.querySelector('#frame')?.contentWindow.ArcadeSDK?.debug().paused===false,{timeout:5000});
+  await page.locator('#gpause').click();
+  await page.waitForFunction(()=>document.querySelector('#frame')?.contentWindow.ArcadeSDK?.debug().paused===true,{timeout:5000});
+  await frame.locator('#arcade-sdk [data-a="restart"]').click();
+  await frame.waitForFunction(runCount=>window.__DEBUG.state.running&&window.__DEBUG.state.runs>runCount,started.runs,{timeout:5000});
+  const restarted=await frame.evaluate(()=>window.__DEBUG.state);
+  await frame.locator('#elevBtn').click();
+  await frame.locator('#results.show').waitFor({state:'visible',timeout:5000});
+  const result=await frame.evaluate(()=>({title:document.querySelector('#resTitle').textContent,runs:window.__DEBUG.state.runs,saved:JSON.parse(localStorage.getItem('mm_save')||'{}').runs}));
+  if(result.runs!==result.saved)throw new Error(`Math Miner did not save its completed run (${result.runs} vs ${result.saved})`);
+  await frame.locator('body').screenshot({path:path.join(out,'math-miner-end-screen.jpg'),type:'jpeg',quality:70,timeout:12000}).catch(()=>{});
+  const url=frame.url();
+  await frame.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
+  await frame.waitForFunction(()=>!!window.__DEBUG,{timeout:15000});
+  const reloaded=await frame.evaluate(()=>window.__DEBUG.state.runs);
+  if(reloaded!==result.runs)throw new Error(`Math Miner run count did not survive reload (${result.runs} became ${reloaded})`);
+  if(errors.length)throw new Error('Math Miner threw during pause/restart/results/reload: '+errors.join('; '));
+  console.log(JSON.stringify({id:'math-miner',check:'pause/resume/restart/results/save-reload',runs:restarted.runs,result:result.title,reloaded}));
+ }finally{await ctx.close();}
+}
 const jobs=catalog.flatMap(g=>[{g,m:false},{g,m:true}]);
-await Promise.all(Array.from({length:1},async()=>{while(jobs.length){const job=jobs.shift();await test(job.g,job.m);}}));
+if(Number(process.env.SHARD_INDEX||0)===0){
+ const fishing=selectedCatalog.find(g=>g.id==='fishing-for-words');
+ if(fishing)jobs.push({g:fishing,m:true,landscape:true});
+}
+await Promise.all(Array.from({length:1},async()=>{while(jobs.length){const job=jobs.shift();await test(job.g,job.m,job.landscape);}}));
+await checkWordDungeonShuffle();
+await checkMathMinerLifecycle();
 await fs.writeFile(path.join(out,'results.json'),JSON.stringify(results,null,2));
 for(const mobile of [false,true]){
  const page=await browser.newPage({viewport:mobile?{width:390,height:844}:{width:1440,height:1000}});
@@ -80,4 +169,5 @@ const counts=results.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 await fs.writeFile(path.join(out,'index.html'),`<!doctype html><meta charset="utf-8"><title>Arcade harness</title><style>body{font:16px system-ui;background:#111513;color:#f5f7f1;max-width:1200px;margin:40px auto;padding:20px}a{color:#c5ee78}table{border-collapse:collapse;width:100%}td,th{padding:12px;border-bottom:1px solid #465046;text-align:left}img{max-width:280px}summary{cursor:pointer}</style><h1>Every-game browser harness</h1><p>${catalog.length} games, desktop and phone. ${results.length} checks. ${esc(JSON.stringify(counts))}</p><p>Interaction observed means visible text changed after input. This is smoke coverage, not proof of full game completion. Canvas-only gameplay needs visual review. Microphone, network and hardware-dependent features can remain unverified.</p><p><a href="results.json">Full machine-readable evidence</a></p><table><tr><th>Game</th><th>Viewport</th><th>Result</th><th>Evidence</th></tr>${results.sort((a,b)=>a.id.localeCompare(b.id)||a.viewport.localeCompare(b.viewport)).map(r=>`<tr><td>${esc(r.title)}</td><td>${r.viewport}</td><td>${r.status}<br>${esc(r.failure||r.errors.join('; '))}</td><td><details><summary>Actions and screenshot</summary><p>${esc(r.actions.join(' → '))}</p><a href="${r.id}-${r.viewport}.jpg"><img loading="lazy" src="${r.id}-${r.viewport}.jpg"></a></details></td></tr>`).join('')}</table>`);
 console.log('SUMMARY '+JSON.stringify(counts));
-if(results.length!==catalog.length*2)process.exitCode=1;
+if(results.length!==catalog.length*2+(jobs.length===0&&Number(process.env.SHARD_INDEX||0)===0&&selectedCatalog.some(g=>g.id==='fishing-for-words')?1:0))process.exitCode=1;
+if(results.some(r=>r.frameLayoutFailure||(r.id==='fishing-for-words'&&r.viewport!=='desktop'&&r.status==='blocked')))process.exitCode=1;

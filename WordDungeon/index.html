@@ -120,6 +120,14 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function shuffleWord(chars){
+  const shuffled=shuf(chars.slice());
+  if(shuffled.join('')===chars.join('')){
+    const different=shuffled.findIndex(ch=>ch!==shuffled[0]);
+    if(different>0)[shuffled[0],shuffled[different]]=[shuffled[different],shuffled[0]];
+  }
+  return shuffled;
+}
 function mulberry32(seed){let t=seed>>>0;return function(){t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296;};}
 const aabb=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 const TAU=Math.PI*2;
@@ -763,7 +771,7 @@ function makeQuestion(mode,level){
   const wt=LK.tier('word',Math.floor((level-1)/2));
   const w=word(wt);
   return{prompt:clueSentence(w,0),hint:'rebuild the word from the sentence clue',
-         answer:w.t,chars:shuf(w.t.split('')),word:w,kind:'spell',tier:wt};
+         answer:w.t,chars:shuffleWord(w.t.split('')),word:w,kind:'spell',tier:wt};
 }
 
 
