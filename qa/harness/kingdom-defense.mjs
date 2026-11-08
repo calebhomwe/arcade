@@ -82,7 +82,9 @@ async function run(view, options) {
   await page.evaluate(() => KD.step(1 / 30, 120));
   if (options.hasTouch) {
     const before = await page.evaluate(() => {
+      for (let i = 0; !KD.state.enemies.some(e => !e.dead) && i < 600; i++) KD.step(1 / 60, 1);
       const pod = KD.state.enemies.find(e => !e.dead);
+      if (!pod) throw new Error('Expected a live pod before rotating the viewport');
       pod.d = KD.pathTotal * 0.64;
       Object.assign(pod, window.pointAt(pod.d, pod.routeIndex));
       window.setPause(true);
