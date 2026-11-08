@@ -1,0 +1,49 @@
+name: Kingdom Defense browser checks
+on:
+  pull_request:
+    paths:
+      - 'KingdomDefense/**'
+      - 'assets/arcade-sdk.js'
+      - 'qa/harness/kingdom-defense.mjs'
+      - '.github/workflows/kingdom-defense.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'KingdomDefense/**'
+      - 'assets/arcade-sdk.js'
+      - 'qa/harness/kingdom-defense.mjs'
+      - '.github/workflows/kingdom-defense.yml'
+permissions:
+  contents: read
+jobs:
+  playtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
+    env:
+      ENGINE: ${{ matrix.engine }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix qa/harness
+      - run: cd qa/harness && npx playwright install --with-deps "$ENGINE"
+      - name: Run Kingdom Defense playtest
+        run: |
+          python3 -m http.server 3000 --bind 127.0.0.1 > /tmp/kingdom-defense-server.log 2>&1 &
+          trap 'kill $!' EXIT
+          for attempt in {1..20}; do
+            if curl -fs http://127.0.0.1:3000/KingdomDefense/ > /dev/null; then break; fi
+            sleep 0.2
+          done
+          node qa/harness/kingdom-defense.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kingdom-defense-${{ matrix.engine }}
+          path: qa/results/kingdom-defense
+          if-no-files-found: ignore
