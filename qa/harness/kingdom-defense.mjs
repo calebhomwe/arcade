@@ -96,10 +96,12 @@ async function run(view, options) {
     const after = await page.evaluate(() => {
       const pod = KD.state.enemies.find(e => !e.dead);
       const board = window.boardRect();
-      return {x: pod.x / KD.W, y: (pod.y - board.y) / board.h, lives: KD.state.lives};
+      const pixel = document.querySelector('#game').getContext('2d').getImageData(1, 1, 1, 1).data;
+      return {x: pod.x / KD.W, y: (pod.y - board.y) / board.h, lives: KD.state.lives, painted: pixel[3] > 0};
     });
     assert(Math.abs(before.x - after.x) < 0.005 && Math.abs(before.y - after.y) < 0.005);
     assert.equal(after.lives, 30);
+    assert(after.painted, 'rotation repaints the battlefield while paused');
     await page.locator('#resume').click();
     await page.screenshot({path: `${proof}/${engine}-${view}-rotated.png`});
   }
@@ -137,7 +139,7 @@ async function run(view, options) {
   await waitForText(page, '#endTitle', 'KINGDOM SECURED');
   assert.equal(await page.locator('#kd-next-mission').isVisible(), true);
   await page.waitForFunction(() => document.querySelectorAll('#endStars .lit').length === 3);
-  await page.screenshot({path: `${proof}/${engine}-${view}-victory.png`});
+  await page.screenshot({path: `${proof}/${engine}-${view}-victory.png`, animations: 'disabled'});
   await page.locator('#kd-next-mission').click();
   assert.equal(await page.evaluate(() => KD.selectedMap), 1);
   await page.reload();

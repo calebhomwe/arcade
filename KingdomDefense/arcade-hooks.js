@@ -282,6 +282,7 @@
     return { width: KD.W, board: board, segments: routesSeg };
   }
   var battlefield = readBattlefield();
+  var paintBattlefield = W.draw;
   W.addEventListener('resize', function () {
     // The game's resize handler runs first and repositions towers. Pods keep their position on
     // the same road segment even when the new aspect ratio changes that segment's length.
@@ -312,6 +313,8 @@
       shot.y = battlefield.board.y + (shot.y - previous.board.y) * scaleY;
       shot.py = battlefield.board.y + (shot.py - previous.board.y) * scaleY;
     }
+    // Changing the canvas dimensions clears it, including when the mission is paused.
+    paintBattlefield();
   });
 
   var canvas = $('#game');
